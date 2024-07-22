@@ -9,14 +9,18 @@ use App\Models\VehicleTModel;
 use App\Models\UserModel;
 use App\Models\ModulesModel;
 use App\Models\PartyModel;
+use App\Models\StateModel;
 
 class Vehicle extends BaseController
 {
 
   public $_access;
-
-
-
+  public $vehicleModel;
+  public $vehicletyredetailsmapModel;
+  public $vehicletypeModel;
+  public $vehicletModel;
+  public $PModel; 
+  public $SModel;
   public function __construct()
 
   {
@@ -31,7 +35,7 @@ class Vehicle extends BaseController
     $this->vehicletyredetailsmapModel = new VehicleTyreDetailsMapModel();
     $this->vehicletypeModel = new VehicleTypeModel();
     $this->vehicletModel = new VehicleTModel();
-
+    $this->SModel = new StateModel();
     $this->PModel = new PartyModel();
   }
 
@@ -96,7 +100,7 @@ class Vehicle extends BaseController
         'page_title' => view('partials/page-title', ['title' => 'Add Vehicle', 'li_2' => 'profile'])
 
       ];
-
+      $this->view['states'] =  $this->SModel->findAll();
       $this->view['party'] = $this->PModel->where('status', '1')->findAll();
 
       $this->view['vehicletype_data'] = $this->vehicletypeModel->where(['status' => 'Active'])->orderBy('name')->findAll();
@@ -216,7 +220,13 @@ class Vehicle extends BaseController
             'image4'  =>  $image_name4,
             'status'  => '1',
             'working_status'  => '1',
-            'created_at'  =>  date("Y-m-d h:i:sa"),
+            'created_at'  =>  date("Y-m-d h:i:sa"), 
+            'vehicle_class_id'  =>  $this->request->getVar('vehicle_class_id'),
+            'address'  =>  $this->request->getVar('address'),
+            'city'  =>  $this->request->getVar('city'),
+            'state_id'  =>  $this->request->getVar('state_id'),
+            'pincode'  =>  $this->request->getVar('pincode'),
+
           ]);
 
           $vehicle_id = $this->vehicleModel->getInsertID();
@@ -275,6 +285,7 @@ class Vehicle extends BaseController
       //     'updated_at'              =>  date("Y-m-d h:i:sa"),
       //   ]);
       // }
+      $this->view['states'] =  $this->SModel->findAll();
       $this->view['party'] = $this->PModel->where('status', '1')->findAll();
 
       $this->view['vehicletype_data'] = $this->vehicletypeModel->where(['status' => 'Active'])->orderBy('name')->findAll();
@@ -298,7 +309,7 @@ class Vehicle extends BaseController
         ->groupBy('vehicle.id')
 
         ->first();
-
+        // echo '<pre>';print_r($this->view['vehicle_data'] );exit;
 
       $request = service('request');
 
@@ -323,6 +334,7 @@ class Vehicle extends BaseController
 
           ->first();
 
+         
         $error = $this->validate([
 
           'owner'   =>  'required',
@@ -390,7 +402,12 @@ class Vehicle extends BaseController
               'approval_user_type'      =>  isset($user['usertype']) ? $user['usertype'] : '',
               'approval_date'           =>  date("Y-m-d h:i:sa"),
               'approval_ip_address'     =>  $_SERVER['REMOTE_ADDR'],
-              'updated_at'              =>  date("Y-m-d h:i:sa")
+              'updated_at'              =>  date("Y-m-d h:i:sa"),
+              'vehicle_class_id'  =>  $this->request->getVar('vehicle_class_id'),
+              'address'  =>  $this->request->getVar('address'),
+              'city'  =>  $this->request->getVar('city'),
+              'state_id'  =>  $this->request->getVar('state_id'),
+              'pincode'  =>  $this->request->getVar('pincode'),
             ]);
 
 

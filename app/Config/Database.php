@@ -31,7 +31,7 @@ class Database extends Config
         // 'password'     => 'ezi9E!l90SEt#q-{H;e!xm7u',
         // 'database'     => 'aubadetech_gcmgrop_dev',
         'username'     => 'root',
-        'password'     => '',       
+        'password'     => '',      
         'database'     => 'aubadetech_gcmgrop_dev',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',

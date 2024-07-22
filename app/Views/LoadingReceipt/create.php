@@ -30,351 +30,270 @@
 										<div class="settings-form">
 											<form action="<?php echo base_url('profile'); ?>" method="post" enctype="multipart/form-data">
                                                 <div class="settings-sub-header">
-                                                    <h6>Loading Receipt</h6>
+                                                    <h4>Loading Receipt</h4>
                                                 </div>
                                                 <div class="profile-details">
-													<div class="row">
-                                                        <div class="col-md-2">
+													<div class="row g-3">
+														<div class="col-md-4">
+															<label class="col-form-label">Booking Order No<span class="text-danger">*</span></label>
+															<select class="form-select select2" required name="booking_id" id="booking_id" aria-label="Default select example"  onchange="$.getBookingDetails();">
+																<option value="">Select Booking</option>
+																<?php foreach ($bookings as $o) {
+																echo '<option value="' . $o['id'] . '">' . $o['booking_number'] . '</option>';
+																} ?>
+															</select>
+														</div>
+
+														<div class="col-md-4">
+															<label class="col-form-label">Branch Name<span class="text-danger">*</span></label>
+															<select class="form-select select2" required name="office_id" id="office_id" aria-label="Default select example">
+																<option value="">Select Office</option>
+																<?php foreach ($offices as $o) {
+																echo '<option value="' . $o['id'] . '">' . $o['name'] . '</option>';
+																} ?>
+															</select>
+														</div>
+
+														<div class="col-md-4">
+															<label class="col-form-label">Booking Date<span class="text-danger">*</span></label>
+															<input type="date" name="booking_date" id="booking_date" class="form-control" required>
+														</div>
+
+														<div class="col-md-4">
+                                                            <label class="col-form-label">Vehicle Number<span class="text-danger">*</span></label> 
+															<select class="form-select select2" required name="vehicle_number" id="vehicle_number" aria-label="Default select example">
+																<option value="">Select</option>
+																<?php foreach ($vehicles as $o) {
+																echo '<option value="' . $o['id'] . '">' . $o['rc_number'] . '</option>';
+																} ?>
+															</select>
+                                                        </div>
+
+														<div class="col-md-4">
+                                                            <label class="col-form-label">Loading Station<span class="text-danger">*</span></label>
+                                                            <input type="text" name="loading_station" id="loading_station" class="form-control" required>
+                                                        </div>
+
+														<div class="col-md-4">
+                                                            <label class="col-form-label">Delivery Station<span class="text-danger">*</span></label>
+                                                            <input type="text" name="delivery_station" id="delivery_station" class="form-control" required>
+                                                        </div>
+
+                                                        <div class="col-md-4">
                                                             <label class="col-form-label">Consignment Date<span class="text-danger">*</span></label>
                                                             <input type="date" required name="consignment_date" id="consignment_date" min="<?= date('Y-m-d') ?>"  class="form-control">
+                                                        </div>  
+
+														<div class="col-md-4">
+                                                            <label class="col-form-label">Consignor Name<span class="text-danger">*</span></label>
+                                                            <input type="text" name="consignor_name" id="consignor_name" class="form-control" required>
+                                                        </div>
+
+														<div class="col-md-4">
+                                                            <label class="col-form-label">Consignee Name<span class="text-danger">*</span></label>
+                                                            <input type="text" name="consignee_name" id="consignee_name" class="form-control" required>
+                                                        </div>
+
+														<hr>
+
+														<h6>Consignor Address:</h6>
+														<div class="col-md-12">
+                                                            <label class="col-form-label">Address<span class="text-danger">*</span></label>
+                                                            <input type="text" name="consignor_address" id="consignor_address" class="form-control" required>
+                                                        </div>
+
+														<div class="col-md-4">
+                                                            <label class="col-form-label">City<span class="text-danger">*</span></label>
+                                                            <input type="text" name="consignor_city" id="consignor_city" class="form-control" required>
+                                                        </div>
+
+														<div class="col-md-4">
+                                                            <label class="col-form-label">State<span class="text-danger">*</span></label> 
+															<select class="form-select select2" required name="consignor_state" id="consignor_state" aria-label="Default select example">
+																<option value="">Select</option>
+																<?php foreach ($states as $o) {
+																echo '<option value="' . $o['state_id'] . '">' . $o['state_name'] . '</option>';
+																} ?>
+															</select>
+                                                        </div>
+
+														<div class="col-md-4">
+                                                            <label class="col-form-label">Pincode<span class="text-danger">*</span></label>
+                                                            <input type="number" name="consignor_pincode" id="consignor_pincode" class="form-control" required>
+                                                        </div>
+
+														<div class="col-md-4">
+                                                            <label class="col-form-label">GSTIN<span class="text-danger">*</span></label>
+                                                            <input type="number" name="consignor_GSTIN" id="consignor_GSTIN" class="form-control" required>
+                                                        </div>
+														
+														<hr>
+														
+														<h6>Consignee Address:</h6>
+														<div class="col-md-12">
+                                                            <label class="col-form-label">Address<span class="text-danger">*</span></label>
+                                                            <input type="text" name="consignee_address" id="consignee_address" class="form-control" required>
+                                                        </div>
+
+														<div class="col-md-4">
+                                                            <label class="col-form-label">City<span class="text-danger">*</span></label>
+                                                            <input type="text" name="consignee_city" id="consignee_city" class="form-control" required>
+                                                        </div>
+
+														<div class="col-md-4">
+                                                            <label class="col-form-label">State<span class="text-danger">*</span></label> 
+															<select class="form-select select2" required name="consignee_state" id="consignee_state" aria-label="Default select example">
+																<option value="">Select</option>
+																<?php foreach ($states as $o) {
+																echo '<option value="' . $o['state_id'] . '">' . $o['state_name'] . '</option>';
+																} ?>
+															</select>
+                                                        </div>
+
+														<div class="col-md-4">
+                                                            <label class="col-form-label">Pincode<span class="text-danger">*</span></label>
+                                                            <input type="number" name="consignee_pincode" id="consignee_pincode" class="form-control" required>
+                                                        </div>
+
+														<div class="col-md-4">
+                                                            <label class="col-form-label">GSTIN<span class="text-danger">*</span></label>
+                                                            <input type="number" name="consignee_GSTIN" id="consignee_GSTIN" class="form-control" required>
+                                                        </div>
+
+														<hr>
+														
+														<h6>Place of Delivery:</h6>
+														<div class="col-md-12">
+                                                            <label class="col-form-label">Address<span class="text-danger">*</span></label>
+                                                            <input type="text" name="place_of_delivery_address" id="place_of_delivery_address" class="form-control" required>
+                                                        </div>
+
+														<div class="col-md-4">
+                                                            <label class="col-form-label">City<span class="text-danger">*</span></label>
+                                                            <input type="text" name="place_of_delivery_city" id="place_of_delivery_city" class="form-control" required>
+                                                        </div>
+
+														<div class="col-md-4">
+                                                            <label class="col-form-label">State<span class="text-danger">*</span></label> 
+															<select class="form-select select2" required name="place_of_delivery_state" id="place_of_delivery_state" aria-label="Default select example">
+																<option value="">Select</option>
+																<?php foreach ($states as $o) {
+																echo '<option value="' . $o['state_id'] . '">' . $o['state_name'] . '</option>';
+																} ?>
+															</select>
+                                                        </div>
+
+														<div class="col-md-4">
+                                                            <label class="col-form-label">Pincode<span class="text-danger">*</span></label>
+                                                            <input type="number" name="place_of_delivery_pincode" id="place_of_delivery_pincode" class="form-control" required>
+                                                        </div> 
+														
+														<hr>
+
+														<h6>Place of Dispatch:</h6>
+														<div class="col-md-12">
+                                                            <label class="col-form-label">Address<span class="text-danger">*</span></label>
+                                                            <input type="text" name="place_of_delivery_address" id="place_of_delivery_address" class="form-control" required>
+                                                        </div>
+
+														<div class="col-md-4">
+                                                            <label class="col-form-label">City<span class="text-danger">*</span></label>
+                                                            <input type="text" name="place_of_delivery_city" id="place_of_delivery_city" class="form-control" required>
+                                                        </div>
+
+														<div class="col-md-4">
+                                                            <label class="col-form-label">State<span class="text-danger">*</span></label> 
+															<select class="form-select select2" required name="place_of_delivery_state" id="place_of_delivery_state" aria-label="Default select example">
+																<option value="">Select</option>
+																<?php foreach ($states as $o) {
+																echo '<option value="' . $o['state_id'] . '">' . $o['state_name'] . '</option>';
+																} ?>
+															</select>
+                                                        </div>
+
+														<div class="col-md-4">
+                                                            <label class="col-form-label">Pincode<span class="text-danger">*</span></label>
+                                                            <input type="number" name="place_of_delivery_pincode" id="place_of_delivery_pincode" class="form-control" required>
+                                                        </div> 
+
+														<hr>
+
+														<div class="col-md-4">
+                                                            <label class="col-form-label">Particulars<span class="text-danger">*</span></label>
+                                                            <input type="text" name="particulars" id="particulars" class="form-control" required>
                                                         </div>
 														<div class="col-md-4">
-															<div class="form-wrap">
-																<label class="col-form-label">
-																	Company Name <span class="text-danger">*</span>
-																</label>
-																<input type="text" name="company_name" 
-                                                                value="<?php
-                                                                    if (isset($profile_data)) {
-                                                                        echo $profile_data['company_name'];
-                                                                    } else {
-                                                                        echo set_value('company_name');
-                                                                    } ?>" class="form-control">
-																<?php
-																if ($validation->getError('company_name')) {
-																	echo '<div class="alert alert-danger mt-2">' . $validation->getError('company_name') . '</div>';
-																}
-																?>
-															</div>
-														</div>
+                                                            <label class="col-form-label">HSN Code<span class="text-danger">*</span></label>
+                                                            <input type="number" name="hsn_code" id="hsn_code" class="form-control" required>
+                                                        </div>
 														<div class="col-md-4">
-															<div class="form-wrap">
-																<label class="col-form-label">
-																	Abbreviation <span class="text-danger">*</span>
-																</label>
-																<input type="text" name="abbreviation" value="<?php
-																												if (isset($profile_data)) {
-																													echo $profile_data['abbreviation'];
-																												} else {
-																													echo set_value('abbreviation');
-																												}
-																												?>" class="form-control">
-																<?php
-																if ($validation->getError('abbreviation')) {
-																	echo '<div class="alert alert-danger mt-2">' . $validation->getError('abbreviation') . '</div>';
-																}
-																?>
-															</div>
-														</div>
+                                                            <label class="col-form-label">No. of Packages<span class="text-danger">*</span></label>
+                                                            <input type="number" name="no_of_packages" id="no_of_packages" class="form-control" required>
+                                                        </div>
 														<div class="col-md-4">
-															<div class="form-wrap">
-																<label class="col-form-label">
-																	Email id<span class="text-danger">*</span>
-																</label>
-																<input type="text" class="form-control" name="email" value="<?php
-																															if (isset($profile_data)) {
-																																echo $profile_data['email'];
-																															} else {
-																																echo set_value('email');
-																															}
-																															?>">
-																<?php
-																if ($validation->getError('email')) {
-																	echo '<div class="alert alert-danger mt-2">' . $validation->getError('email') . '</div>';
-																}
-																?>
-															</div>
-														</div>
+                                                            <label class="col-form-label">Actual Weight<span class="text-danger">*</span></label>
+                                                            <input type="text" name="actual_weight" id="actual_weight" class="form-control" required>
+                                                        </div>
 														<div class="col-md-4">
-															<div class="form-wrap">
-																<label class="col-form-label">
-																	Landline No.
-																</label>
-																<input type="text" class="form-control" name="landline_number" value="<?php
-																																		if (isset($profile_data)) {
-																																			echo $profile_data['landline_number'];
-																																		} else {
-																																			set_value('landline_number');
-																																		}
-																																		?>">
-																<?php
-																if ($validation->getError('landline_number')) {
-																	echo '<div class="alert alert-danger mt-2">' . $validation->getError('landline_number') . '</div>';
-																}
+                                                            <label class="col-form-label">Charge Weight<span class="text-danger">*</span></label>
+                                                            <input type="text" name="charge_weight" id="charge_weight" class="form-control" required>
+                                                        </div>
+														<div class="col-md-4">
+                                                            <label class="col-form-label">Payment Terms<span class="text-danger">*</span></label>
+                                                            <input type="text" name="payment_terms" id="payment_terms" class="form-control" required>
+                                                        </div>
+														<div class="col-md-4">
+                                                            <label class="col-form-label">E-WAY Bill Number<span class="text-danger">*</span></label>
+                                                            <input type="number" name="e_way_bill_number" id="e_way_bill_number" class="form-control" required>
+                                                        </div>
+														<div class="col-md-4">
+                                                            <label class="col-form-label">E-WAY Bill Expiry Date<span class="text-danger">*</span></label>
+                                                            <input type="date" name="e_way_expiry_date" id="e_way_expiry_date" class="form-control" required>
+                                                        </div>
+														<div class="col-md-4">
+                                                            <label class="col-form-label">Freight Charges Amount<span class="text-danger">*</span></label>
+                                                            <input type="number" name="freight_charges_amount" id="freight_charges_amount" class="form-control" required>
+                                                        </div>
 
-																?>
-															</div>
-														</div>
+														<hr>
+														
+														<h6>Party Document Details</h6>
 														<div class="col-md-4">
-															<div class="form-wrap">
-																<label class="col-form-label">
-																	Mobile No. <span class="text-danger">*</span>
-																</label>
-																<input type="text" class="form-control" name="phone_number" value="<?php
-																																	if (isset($profile_data)) {
-																																		echo $profile_data['phone_number'];
-																																	} else {
-																																		set_value('phone_number');
-																																	}
-																																	?>">
-																<?php
-																if ($validation->getError('phone_number')) {
-																	echo '<div class="alert alert-danger mt-2">' . $validation->getError('phone_number') . '</div>';
-																}
+                                                            <label class="col-form-label">Invoice/BOE No.<span class="text-danger">*</span></label>
+                                                            <input type="number" name="invoice_boe_no" id="invoice_boe_no" class="form-control" required>
+                                                        </div>
+														<div class="col-md-4">
+                                                            <label class="col-form-label">Invoice/BOE Date<span class="text-danger">*</span></label>
+                                                            <input type="date" name="invoice_boe_date" id="invoice_boe_date" class="form-control" required>
+                                                        </div>
+														<div class="col-md-4">
+                                                            <label class="col-form-label">Invoice Value<span class="text-danger">*</span></label>
+                                                            <input type="number" name="invoice_value" id="invoice_value" class="form-control" required>
+                                                        </div>
 
-																?>
-															</div>
-														</div>
+														<hr>
+														<h6>Transit Insurance</h6>
+														<h6>Dispatch Details:</h6>
 														<div class="col-md-4">
-															<div class="form-wrap">
-																<label class="col-form-label">
-																	Alternate Phone No.
-																</label>
-																<input type="text" class="form-control" name="alternate_phone_number" value="<?php
-																																				if (isset($profile_data)) {
-																																					echo $profile_data['alternate_phone_number'];
-																																				} else {
-																																					set_value('alternate_phone_number');
-																																				}
-																																				?>">
-																<?php
-																if ($validation->getError('alternate_phone_number')) {
-																	echo '<div class="alert alert-danger mt-2">' . $validation->getError('alternate_phone_number') . '</div>';
-																}
-
-																?>
-															</div>
-														</div>
+                                                            <label class="col-form-label">Reporting Date/Time<span class="text-danger">*</span></label>
+                                                            <input type="datetime-local" name="reporting_datetime" id="reporting_datetime" class="form-control" required>
+                                                        </div>
 														<div class="col-md-4">
-															<div class="form-wrap">
-																<label class="col-form-label">
-																	GST Number <span class="text-danger">*</span>
-																</label>
-																<input type="text" class="form-control" name="gst" value="<?php
-																															if (isset($profile_data)) {
-																																echo $profile_data['gst'];
-																															} else {
-																																echo set_value('gst');
-																															}
-																															?>">
-																<?php
-																if ($validation->getError('gst')) {
-																	echo '<div class="alert alert-danger mt-2">' . $validation->getError('gst') . '</div>';
-																}
-																?>
-															</div>
-														</div>
-
+                                                            <label class="col-form-label">Releasing Date/Time<span class="text-danger">*</span></label>
+                                                            <input type="datetime-local" name="releasing_datetime" id="releasing_datetime" class="form-control" required>
+                                                        </div>
+														<h6>Insurance Co.:</h6>
 														<div class="col-md-4">
-															<div class="form-wrap">
-																<label class="col-form-label">
-																	IT PAN No. <span class="text-danger">*</span>
-																</label>
-																<input type="text" class="form-control" name="pan_no" value="<?php
-																																if (isset($profile_data)) {
-																																	echo $profile_data['pan_no'];
-																																} else {
-																																	echo set_value('pan_no');
-																																}
-																																?>">
-																<?php
-																if ($validation->getError('pan_no')) {
-																	echo '<div class="alert alert-danger mt-2">' . $validation->getError('pan_no') . '</div>';
-																}
-																?>
-															</div>
-														</div>
-
+                                                            <label class="col-form-label">Policy Date<span class="text-danger">*</span></label>
+                                                            <input type="date" name="policy_date" id="policy_date" class="form-control" required>
+                                                        </div>
 														<div class="col-md-4">
-															<div class="form-wrap">
-																<label class="col-form-label">
-																	Other ID <span class="text-danger">*</span>
-																</label>
-																<input type="text" class="form-control" name="otherid" value="<?php
-																																if (isset($profile_data)) {
-																																	echo $profile_data['otherid'];
-																																} else {
-																																	echo set_value('otherid');
-																																}
-																																?>">
-																<?php
-																if ($validation->getError('otherid')) {
-																	echo '<div class="alert alert-danger mt-2">' . $validation->getError('otherid') . '</div>';
-																}
-																?>
-															</div>
-														</div>
+                                                            <label class="col-form-label">Policy Number<span class="text-danger">*</span></label>
+                                                            <input type="number" name="policy_no" id="policy_no" class="form-control" required>
+                                                        </div>
 													</div>
-												</div>
-												<div class="profile-address">
-
-													<div class="row">
-														<div class="col-md-12">
-															<div class="form-wrap">
-																<label class="col-form-label">
-																	Address <span class="text-danger">*</span>
-																</label>
-																<input type="text" class="form-control" name="company_business_address" value="<?php
-																																				if (isset($profile_data)) {
-																																					echo $profile_data['company_business_address'];
-																																				} else {
-																																					echo set_value('company_business_address');
-																																				}  ?>">
-																<?php
-																if ($validation->getError('company_business_address')) {
-																	echo '<div class="alert alert-danger mt-2">' . $validation->getError('company_business_address') . '</div>';
-																}
-																?>
-															</div>
-														</div>
-														<div class="col-lg-3 col-md-6">
-															<div class="form-wrap">
-																<label class="col-form-label">
-																	Country <span class="text-danger">*</span>
-																</label>
-																<input type="text" value="India" readonly class="form-control" name="country" value="<?php
-																																						if (isset($profile_data)) {
-																																							echo $profile_data['country'];
-																																						} else {
-																																							echo set_value('country');
-																																						}   ?>">
-																<?php
-																if ($validation->getError('country')) {
-																	echo '<div class="alert alert-danger mt-2">' . $validation->getError('country') . '</div>';
-																}
-																?>
-															</div>
-														</div>
-														<div class="col-lg-3 col-md-6">
-															<div class="form-wrap">
-																<label class="col-form-label">
-																	State / Province <span class="text-danger">*</span>
-																</label><br>
-																<select class="dropdown" name="state">
-																	<option>Select</option>
-																	<?php
-																	if (isset($state)) {
-																		foreach ($state as $row) { ?>
-																			<option value="<?php echo $row["state_id"] ?>" <?php
-																															if (isset($profile_data)) {
-																																if ($profile_data['state'] == $row["state_id"]) echo 'selected';
-																															} ?>><?php echo $row["state_name"] ?></option>
-																	<?php
-																		}
-																	}
-																	?>
-																</select>
-																<?php
-																if ($validation->getError('state')) {
-																	echo '<div class="alert alert-danger mt-2">' . $validation->getError('state') . '</div>';
-																}
-																?>
-															</div>
-														</div>
-														<div class="col-lg-3 col-md-6">
-															<div class="form-wrap">
-																<label class="col-form-label">
-																	City <span class="text-danger">*</span>
-																</label>
-																<input type="text" class="form-control" name="city" value="<?php
-																															if (isset($profile_data)) {
-																																echo $profile_data['city'];
-																															} else {
-																																echo set_value('city');
-																															}  ?>">
-																<?php
-																if ($validation->getError('city')) {
-																	echo '<div class="alert alert-danger mt-2">' . $validation->getError('city') . '</div>';
-																}
-																?>
-															</div>
-														</div>
-														<div class="col-lg-3 col-md-6">
-															<div class="form-wrap">
-																<label class="col-form-label">
-																	Postal Code <span class="text-danger">*</span>
-																</label>
-																<input type="text" class="form-control" name="pincode" value="<?php
-																																if (isset($profile_data)) {
-																																	echo $profile_data['pincode'];
-																																} else {
-																																	echo set_value('pincode');
-																																}  ?>">
-																<?php
-																if ($validation->getError('pincode')) {
-																	echo '<div class="alert alert-danger mt-2">' . $validation->getError('pincode') . '</div>';
-																}
-																?>
-															</div>
-														</div>
-
-														<div class="col-lg-3 col-md-6">
-															<div class="form-wrap">
-																<label class="col-form-label">
-																	Purchase Order Prefix
-																</label>
-																<input type="text" class="form-control" name="purchase_order_prefix" value="<?php
-																																			if (isset($profile_data)) {
-																																				echo $profile_data['purchase_order_prefix'];
-																																			} else {
-																																				echo set_value('purchase_order_prefix');
-																																			}  ?>">
-																<?php
-																if ($validation->getError('purchase_order_prefix')) {
-																	echo '<div class="alert alert-danger mt-2">' . $validation->getError('purchase_order_prefix') . '</div>';
-																}
-																?>
-															</div>
-														</div>
-														<div class="col-lg-3 col-md-6">
-															<div class="form-wrap">
-																<label class="col-form-label">
-																	Invoice Prefix
-																</label>
-																<input type="text" class="form-control" name="invoice_prefix" value="<?php
-																																		if (isset($profile_data)) {
-																																			echo $profile_data['invoice_prefix'];
-																																		} else {
-																																			echo set_value('invoice_prefix');
-																																		} ?>">
-																<?php
-																if ($validation->getError('invoice_prefix')) {
-																	echo '<div class="alert alert-danger mt-2">' . $validation->getError('invoice_prefix') . '</div>';
-																}
-																?>
-															</div>
-														</div>
-
-														<div class="col-lg-3 col-md-6">
-															<div class="form-wrap">
-																<label class="col-form-label">
-																	Booking Prefix
-																</label>
-																<input type="text" class="form-control" name="booking_prefix" value="<?php
-																																		if (isset($profile_data)) {
-																																			echo $profile_data['booking_prefix'];
-																																		} else {
-																																			echo set_value('booking_prefix');
-																																		} ?>">
-																<?php
-																if ($validation->getError('booking_prefix')) {
-																	echo '<div class="alert alert-danger mt-2">' . $validation->getError('booking_prefix') . '</div>';
-																}
-																?>
-															</div>
-														</div>
-													</div>
-												</div>
+													<br>
+												</div> 
 												<div class="submit-button">
 													<input type="submit" name="add_profile" class="btn btn-primary" value="Save">
 													<a href="<?php echo base_url(); ?>profile" class="btn btn-light">Cancel</a>
@@ -399,6 +318,27 @@
 
 	<?= $this->include('partials/vendor-scripts') ?>
 
+	<script>
+		$.getBookingDetails = function() {
+			var booking_id = $('#booking_id').val();
+
+			$.ajax({
+				method: "POST",
+				url: '<?php echo base_url('loadingreceipt/getBookingDetails') ?>',
+				data: {
+					booking_id: booking_id
+				},
+				dataType: "json",
+				success: function(res) { 
+					$("#office_id").val(res.office_id).attr("selected","selected").trigger('change');
+					$("#booking_date").val(res.booking_date);
+					$("#vehicle_number").val(res.vehicle_id).trigger('change');
+					$("#consignment_date").attr('min',res.booking_date);
+				}
+			});
+		}
+
+	</script>
 </body>
 
 </html>

@@ -90,39 +90,39 @@
                               </div>
                             </div>
 
-                            <div class="col-md-4">
+                            <hr> 
+                            <h6>RC DETAILS:</h6>
+                            <br>
+                            <br>
+                            <div class="col-md-3">
                               <div class="form-wrap">
                                 <label class="col-form-label"> RC No <span class="text-danger">*</span> </label>
                                 <input type="text" name="rc" class="form-control" value="<?= set_value('rc') ?>" required>
                               </div>
                             </div>
 
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                               <div class="form-wrap">
                                 <label class="col-form-label"> RC Date </label>
                                 <input type="date" name="rc_date" class="form-control" value="<?= set_value('rc_date') ?>">
                               </div>
                             </div>
 
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                               <div class="form-wrap">
                                 <label class="col-form-label"> Mfg. Month & Year </label>
                                 <input type="month" name="mfg" class="form-control" value="<?= set_value('mfg') ?>">
                               </div>
                             </div>
 
-                            <div class="col-md-4">
-                              <div class="form-wrap">
-                                <label class="col-form-label"> Invoice Number </label>
-                                <input type="text" name="inv_no" class="form-control" value="<?= set_value('inv_no') ?>">
-                              </div>
-                            </div>
-
-                            <div class="col-md-4">
-                              <div class="form-wrap">
-                                <label class="col-form-label"> Invoice Date </label>
-                                <input type="date" name="inv_date" class="form-control" value="<?= set_value('inv_date') ?>">
-                              </div>
+                            <div class="col-md-3">
+                              <label class="col-form-label">Vehicle Class</label> 
+															<select class="form-select select2" name="vehicle_class_id" id="vehicle_class_id" aria-label="Default select example">
+																<option value="">Select</option> 
+                                <?php foreach(VEHICLE_CLASSES as $key=> $val){ ?>
+                                  <option value="<?= $key?>"><?= $val?></option>
+                                <?php } ?>
+															</select>
                             </div>
 
                             <div class="col-md-6">
@@ -155,18 +155,65 @@
 
                             <div class="col-md-3">
                               <div class="form-wrap">
-                                <label class="col-form-label"> Unladen Weight (KG)</label>
+                                <label class="col-form-label"> Unladen/Empty Weight (KG)</label>
                                 <input type="text" name="unladen_wt" class="form-control" id="unladen_wt" value="<?= set_value('unladen_wt') ?>">
                               </div>
                             </div>
 
                             <div class="col-md-3">
                               <div class="form-wrap">
-                                <label class="col-form-label"> Laden Weight (KG)</label>
+                                <label class="col-form-label"> Laden/Gross Weight (KG)</label>
                                 <input type="text" name="laden_wt" class="form-control" id="laden_wt" value="<?= set_value('laden_wt') ?>">
+                              </div>
+                            </div>  
+
+                            <div class="col-md-12">
+                              <div class="form-wrap">
+                                <label class="col-form-label"> Address </label>
+                                <input type="text" name="address" class="form-control" value="<?= set_value('address') ?>">
                               </div>
                             </div>
 
+                            <div class="col-md-4">
+                              <div class="form-wrap">
+                                <label class="col-form-label"> City</label>
+                                <input type="text" name="city" class="form-control" value="<?= set_value('city') ?>">
+                              </div>
+                            </div>
+
+                            <div class="col-md-4">
+                              <label class="col-form-label">State</label> 
+															<select class="form-select select2" name="state_id" id="state_id" aria-label="Default select example">
+																<option value="">Select</option>
+																<?php foreach ($states as $o) {
+																echo '<option value="' . $o['state_id'] . '">' . $o['state_name'] . '</option>';
+																} ?>
+															</select>
+                            </div>
+
+                            <div class="col-md-4">
+                              <div class="form-wrap">
+                                <label class="col-form-label">Pincode</label>
+                                <input type="number" name="pincode" class="form-control" value="<?= set_value('pincode') ?>">
+                              </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="col-md-4">
+                              <div class="form-wrap">
+                                <label class="col-form-label"> Invoice Number </label>
+                                <input type="text" name="inv_no" class="form-control" value="<?= set_value('inv_no') ?>">
+                              </div>
+                            </div>
+
+                            <div class="col-md-4">
+                              <div class="form-wrap">
+                                <label class="col-form-label"> Invoice Date </label>
+                                <input type="date" name="inv_date" class="form-control" value="<?= set_value('inv_date') ?>">
+                              </div>
+                            </div>
+                            
                             <div class="col-md-12">
                               <div class="form-wrap">
                                 <label class="col-form-label"> KM reading at Start </label>
@@ -180,7 +227,7 @@
                                   Image 1
                                 </label>
                                 <input type="file" accept="image/*" name="image1" class="form-control" title="Image less than 100 KB">
-
+                                <span class="text-info ">(PNG,JPEG,JPG,PDF)</span>
                                 <?php
                                 if ($validation->getError('image1')) {
                                   echo '<div class="alert alert-danger mt-2">' . $validation->getError('image1') . '</div>';
@@ -196,6 +243,7 @@
                                   Image 2
                                 </label>
                                 <input type="file" accept="image/*" name="image2" class="form-control" title="Image less than 100 KB">
+                                <span class="text-info ">(PNG,JPEG,JPG,PDF)</span>
                                 <?php
                                 if ($validation->getError('image2')) {
                                   echo '<div class="alert alert-danger mt-2">' . $validation->getError('image2') . '</div>';
@@ -211,6 +259,7 @@
                                   Image 3
                                 </label>
                                 <input type="file" accept="image/*" name="image3" class="form-control" title="Image less than 100 KB">
+                                <span class="text-info ">(PNG,JPEG,JPG,PDF)</span>
                                 <?php
                                 if ($validation->getError('image3')) {
                                   echo '<div class="alert alert-danger mt-2">' . $validation->getError('image3') . '</div>';
@@ -226,7 +275,8 @@
                                   Image 4
                                 </label>
                                 <input type="file" accept="image/*" name="image4" class="form-control" title="Image less than 100 KB">
-                                <?php
+                                <span class="text-info ">(PNG,JPEG,JPG,PDF)</span>
+                               <?php
                                 if ($validation->getError('image4')) {
                                   echo '<div class="alert alert-danger mt-2">' . $validation->getError('image4') . '</div>';
                                 }
