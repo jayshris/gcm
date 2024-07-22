@@ -73,7 +73,7 @@
             <div class="card main-card">
               <div class="card-body">
 
-                <div class="row">
+                <div class="row mb-3">
                   <div class="col-md-12 col-sm-12">
                     <?php
                     $session = \Config\Services::session();

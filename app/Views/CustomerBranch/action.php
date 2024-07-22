@@ -39,15 +39,13 @@
                     <div class="settings-form">
 
 
-                      <form method="post" enctype="multipart/form-data" action="<?= isset($branch_detail) ? base_url('customer-branch/edit/' . $branch_detail['id']) : base_url('customer-branch/create') ?>">
+                      <form method="post" enctype="multipart/form-data" action="<?= isset($branch_detail) ? base_url('customerbranch/edit/' . $branch_detail['id']) : base_url('customerbranch/create') ?>">
 
                         <div class="settings-sub-header">
-                          <h6>Add Customer Branch</h6>
+                          <h6><?= isset($branch_detail) ? 'Edit' : 'Add' ?> Customer Branch</h6>
                         </div>
                         <div class="profile-details">
                           <div class="row g-3">
-
-
 
                             <div class="col-md-6">
                               <label class="col-form-label">Customers<span class="text-danger">*</span></label>
@@ -70,8 +68,6 @@
                               <label class="col-form-label">GST Number</label>
                               <input type="text" class="form-control" name="gst" value="<?= isset($branch_detail) ? $branch_detail['gst'] : '' ?>">
                             </div>
-
-
 
                             <?php if (isset($branch_detail)) {
                               $i = 1;
@@ -125,7 +121,6 @@
                             <?php } ?>
 
 
-
                             <div class="col-md-6">
                               <label class="col-form-label">Address</label>
                               <input type="text" class="form-control" name="address" value="<?= isset($branch_detail) ? $branch_detail['address'] : '' ?>">
@@ -175,7 +170,7 @@
                         <div class="submit-button">
                           <button type="submit" class="btn btn-primary">Save Changes</button>
                           <a href="./<?= isset($branch_detail) ? $branch_detail['id'] : 'create' ?>" class="btn btn-warning">Reset</a>
-                          <a href="<?php echo base_url('customer-branch'); ?>" class="btn btn-light">Back</a>
+                          <a href="<?php echo base_url('customerbranch'); ?>" class="btn btn-light">Back</a>
                         </div>
                       </form>
 
@@ -204,7 +199,7 @@
         var count = $('.count').length;
 
         $.ajax({
-          url: "<?= base_url('customer-branch/addPerson/') ?>" + (count + 1),
+          url: "<?= base_url('customerbranch/personBlock/') ?>" + (count + 1),
           type: "GET",
           data: {
             count: count

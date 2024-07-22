@@ -29,7 +29,7 @@
                 </div>
                 <div class="col-4 text-end">
                   <div class="head-icons">
-                    <a href="<?= base_url('vehicle-certificates') ?>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Refresh"><i class="ti ti-refresh-dot"></i></a>
+                    <a href="<?= base_url('vehiclecertificates') ?>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Refresh"><i class="ti ti-refresh-dot"></i></a>
                     <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Collapse" id="collapse-header"><i class="ti ti-chevrons-up"></i></a>
                   </div>
                 </div>
@@ -37,14 +37,14 @@
             </div>
             <!-- /Page Header -->
 
-            <form method="post" enctype="multipart/form-data" action="<?php echo base_url('vehicle-certificates'); ?>">
+            <form method="post" enctype="multipart/form-data" action="<?php echo base_url('vehiclecertificates'); ?>">
               <div class="card main-card">
                 <div class="card-body">
                   <h4>Search / Filter</h4>
                   <hr>
                   <div class="row mt-2">
 
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                       <label class="col-form-label">Vehicle Number</label>
                       <select class="form-select select2" name="vehicle_id" aria-label="Default select example">
                         <option value="">Select Vehicle</option>
@@ -54,7 +54,7 @@
                       </select>
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                       <label class="col-form-label">Certificate Type</label>
                       <select class="form-select select2" name="certificate_id" aria-label="Default select example">
                         <option value="">Select Certificate</option>
@@ -74,9 +74,12 @@
                       </select>
                     </div>
 
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                       <button class="btn btn-info mt-4">Search</button>&nbsp;&nbsp;
-                      <a href="./vehicle-certificates" class="btn btn-warning mt-4">Reset</a>&nbsp;&nbsp;
+                      <a href="./vehiclecertificates" class="btn btn-warning mt-4">Reset</a>&nbsp;&nbsp;
+                    </div>
+
+                    <div class="col-md-2 text-end mt-3">
                       <?php echo makeListActions($currentController, $Action, 0, 1); ?>
                     </div>
 

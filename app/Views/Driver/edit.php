@@ -292,11 +292,11 @@
                             </div>
                             <?php if ($last != 'create') { ?>
                               <div>
-                                <input type="checkbox" id="approve" class="form-check-input" name="approve" <?php if (isset($driver_data)) {
-                                                                                                              if ($driver_data['approved'] == 1) {
+                                <input type="checkbox" id="approve" class="form-check-input" name="status" <?php if (isset($driver_data)) {
+                                                                                                              if ($driver_data['status'] == 1) {
                                                                                                                 echo 'checked';
                                                                                                               }
-                                                                                                            } ?> value="1"> <label for="approve"> Approved</label>
+                                                                                                            } ?> value="1"> <label for="status"> Active</label>
                               </div>
                             <?php } ?>
 

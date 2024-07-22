@@ -44,7 +44,7 @@
                           <div class="row g-3">
 
 
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                               <label class="col-form-label">Booking For</label>
                               <select class="form-select select2" required name="booking_for" id="booking_for" aria-label="Default select example">
                                 <option value="">Select Material</option>
@@ -55,7 +55,7 @@
                               </select>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                               <label class="col-form-label">Branch Name<span class="text-danger">*</span></label>
                               <select class="form-select select2" required name="office_id" id="office_id" aria-label="Default select example">
                                 <option value="">Select Office</option>
@@ -65,7 +65,7 @@
                               </select>
                             </div>
 
-                            <div class="col-md-5">
+                            <div class="col-md-3">
                               <label class="col-form-label">Vehicle Type<span class="text-danger">*</span></label>
                               <select class="form-select " required name="vehicle_type" id="vehicle_type" aria-label="Default select example" onchange="$.getVehicles();">
                                 <option value="">Select Vehicle Type</option>
@@ -75,7 +75,7 @@
                               </select>
                             </div>
 
-                            <div class="col-md-5">
+                            <div class="col-md-3">
                               <label class="col-form-label">Vehicle RC</label>
                               <select class="form-select select2" name="vehicle_rc" id="vehicle_rc" aria-label="Default select example">
                                 <option value="">Select Type</option>
@@ -220,7 +220,7 @@
                             </div>
 
                             <div class="col-md-3">
-                              <label class="col-form-label">Rate (Rs) <span class="text-danger">*</span></label>
+                              <label class="col-form-label">Rate (Rs) <span class="text-danger">*</span> <span id="rate_msg"></span></label>
                               <input type="number" name="rate" id="rate" onchange="$.calculation()" class="form-control" required>
                             </div>
 
@@ -261,7 +261,7 @@
 
                             <div class="col-md-2">
                               <label class="col-form-label">Total Freight</label>
-                              <input type="number" name="freight" id="freight" onchange="$.calculation()" class="form-control">
+                              <input type="number" name="freight" id="freight" onchange="$.calculation()" class="form-control" readonly>
                             </div>
 
                             <div class="col-md-2">
@@ -276,7 +276,7 @@
 
                             <div class="col-md-2">
                               <label class="col-form-label">Balance</label>
-                              <input type="number" name="balance" id="balance" class="form-control">
+                              <input type="number" name="balance" id="balance" class="form-control" readonly>
                             </div>
 
                             <div class="col-md-3">
@@ -447,6 +447,20 @@
       var rate = parseFloat($('#rate').val());
       var freight = 0;
 
+
+      if (rate_type == 1) {
+        //by weight
+        $('#guranteed_wt_span').html('*');
+        $('#guranteed_wt').attr('required', 'required');
+        $('#rate_msg').html(' - Per KG');
+      } else {
+        //aggregate
+        $('#guranteed_wt_span').html('');
+        $('#guranteed_wt').removeAttr('required');
+        $('#rate_msg').html(' - Overall');
+      }
+
+
       if (rate > 0) {
 
         var billtotal = 0;
@@ -460,18 +474,9 @@
 
         // for guranteed weight
         if (rate_type == 1) {
-          //by weight
-          $('#guranteed_wt_span').html('*');
-          $('#guranteed_wt').attr('required', 'required');
-
           var guranteed_wt = parseFloat($('#guranteed_wt').val());
           freight = (rate * guranteed_wt) + billtotal;
-
         } else {
-          //aggregate
-          $('#guranteed_wt_span').html('');
-          $('#guranteed_wt').removeAttr('required');
-
           freight = rate + billtotal;
         }
 

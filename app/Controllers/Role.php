@@ -5,10 +5,8 @@ use App\Models\RoleModulesModel;
 
 class Role extends BaseController
 {
-        public $_access;
-        public $model = '';
-        public $view = [];
-
+        public $model;
+        
         public function __construct(){
             $this->model = new RoleModel();
         }
@@ -27,12 +25,16 @@ class Role extends BaseController
                 $request = service('request');
                 if($this->request->getMethod()=='POST'){
                         $rules = [
-                                'role_name' =>'required|is_unique[roles.role_name]'
+                                'role_name' => ['label'=>'Role Name', 'rules'=>'required|trim|is_unique[roles.role_name]']
                         ];
 
                         if($this->validate($rules)){
                                 $data = [
-                                        'role_name' => $this->request->getVar('role_name')
+                                        'role_name' => $this->request->getVar('role_name'),
+                                        'added_by' => $this->view['loggedIn'],
+                                        'added_ip' => $this->view['loggedIP'],
+                                        'added_date' => $this->view['actionTime'],
+                                        'modify_date' => $this->view['actionTime']
                                 ];
                                 $this->model->save($data);
                                 $session = \Config\Services::session();
@@ -49,83 +51,35 @@ class Role extends BaseController
         public function edit($id=0){
                 $this->view['token'] = $id;
                 if($this->request->getMethod()=='POST'){
-                        $id = $this->request->getVar('id');
                         $rules = [
-                                'user_type'	=>'required',
-                                'first_name'	=>'required',
-                                'last_name'	=>'required',
-                                'email'	        =>'required|valid_email|is_unique[users.email,users.id,'.$id.']',
-                                'mobile'        =>'required|is_unique[users.mobile,users.id,'.$id.']',
-                                'home_branch'   =>'required',
+                                'role_name' => ['label'=>'Role Name', 'rules'=>'required|trim|is_unique[roles.role_name,id,'.$id.']'],
+                                'status_id' =>'required|trim'
                         ];
 
                         if($this->validate($rules)){                                
-                                $modelData = $this->model->where('id',$id)->first();
-                                $pwd= $this->request->getVar('password');
-
-                                if(isset($pwd) && !empty($pwd)){
-                                        $password = password_hash($this->request->getVar('password'), PASSWORD_DEFAULT);
-                                }else{
-                                        $password = $modelData['password'];
-                                }
-
-                                $updateCol = [
-                                                'id'                => $id,
-                                                'usertype'          => $this->request->getVar('user_type'),
-                                                'first_name'        => $this->request->getVar('first_name'),
-                                                'last_name'         => $this->request->getVar('last_name'),
-                                                'login_expiry'      => $this->request->getVar('login_expiry'),
-                                                'email'             => $this->request->getVar('email'),
-                                                'mobile'            => $this->request->getVar('mobile'),
-                                                'company_id'        => $this->request->getVar('company_id'),
-                                                'home_branch'       => $this->request->getVar('home_branch'),
-                                                'password'          => $password,
-                                                'updated_at'        => date("Y-m-d h:i:sa"),
-                                                'status'            => 'Active'
+                                $data = [
+                                        'id'        => $this->view['token'],
+                                        'role_name' => $this->request->getVar('role_name'),
+                                        'status_id' => $this->request->getVar('status_id'),
+                                        'modify_by' => $this->view['loggedIn'],
+                                        'modify_ip' => $this->view['loggedIP'],
+                                        'modify_date' => $this->view['actionTime']
                                 ];
                                 
-                                $this->model->update($id, $updateCol);
-                                //echo '<pre>'.$model->getLastQuery();print_r($updateCol);print_r($this->request->getVar());die;
+                                $this->model->update($this->view['token'], $data);//echo '<pre>'.$this->model->getLastQuery();die;
                                 
-                                $userBranch= new UserBranchModel();
-                                $userBranchData = $userBranch->where('user_id', $id)->delete();
-                                
-                                $branches= $this->request->getVar('branch');
-                                if(!empty($branches)){
-                                        foreach ($branches as $key => $value) {
-                                                $userBranchData1 = [ 
-                                                        'user_id'       =>   $id,
-                                                        'office_id'     =>   $value,       
-                                                ];
-                                                $userBranch->save($userBranchData1);
-                                        }
-                                }
-
                                 $session = \Config\Services::session();
-                                $session->setFlashdata('success', 'User Added');
-                                return redirect()->to('/user');
+                                $session->setFlashdata('success', 'Role detail updated!');
+                                return redirect()->to('/'.$this->view['currentController']);
                         }else{
-                                $this->view['error'] 	= $this->validator;
-                                return redirect()->to('/user/edit/'.$id)->with('error', $this->view['error'] );
+                                $this->view['validation'] = $this->validator;
+                                return view($this->view['currentController'].'/action', $this->view);
+                                //return redirect()->to('/'.$this->view['currentController'].'/'.$this->view['currentMethod'].'/'.$this->view['token'])->with('error', $this->view['error'] );
                         }
                 }
 
-                $this->view['userdata'] = $this->model->where('id', $id)->first();
-                $company_id = ($this->view['userdata']['company_id']) ? $this->view['userdata']['company_id'] : 0;
-
-                $userTypeModel = new UserTypeModel();
-                $this->view['user_type'] = $userTypeModel->where(['status'=>'Active'])->orderBy('id')->findAll();
-
-                $compModel = new CompanyModel();
-                $this->view['company'] = $compModel->where(['status'=>'Active'])->orderBy('id')->findAll();
-
-                $officeModel = new OfficeModel();
-                $this->view['office'] = $officeModel->where(['company_id'=>$company_id])->where(['status'=>1])->orderBy('id')->findAll();
-
-                $userBranches = new UserBranchModel();
-                $this->view['branches'] = $userBranches->where('user_id', $id)->findAll();
-
-                return view('User/edit',$this->view);
+                $this->view['row'] = $this->model->where('id', $id)->first();
+                return view($this->view['currentController'].'/action',$this->view);
         }
 
         public function delete($id=null){

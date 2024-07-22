@@ -107,20 +107,17 @@ class Booking extends BaseController
         if ($this->access === 'false') {
             $this->session->setFlashdata('error', 'You are not permitted to access this page');
             return $this->response->redirect(base_url('/dashboard'));
-        } else if ($this->request->getPost()) {
-
-            // echo '<pre>';
-            // print_r($this->request->getPost());
-            // die;
-
-            $profile =  $this->profile->first();
+        }
+        else if ($this->request->getPost()) {
+            $profile =  $this->profile->first();//echo __LINE__.'<pre>';print_r($profile);die;
 
             $last_booking = $this->BModel->orderBy('id', 'desc')->first();
+            $lastBooking = isset($last_booking['id']) ? ((int)$last_booking['id']+1) : 1;
 
-            $booking_number = isset($profile['booking_prefix']) ? $profile['booking_prefix'] . '/' . $last_booking['id'] + 1 : 'BK/' . $last_booking['id'];
+            $booking_number = isset($profile['booking_prefix']) ? $profile['booking_prefix'].'/'.$lastBooking : 'BK/'.$lastBooking;
 
             // save booking
-            $booking_id = $this->BModel->insert([
+            $bookingData = [
                 'booking_number' => $booking_number,
                 'booking_for' => $this->request->getPost('booking_for'),
                 'office_id' => $this->request->getPost('office_id'),
@@ -128,7 +125,7 @@ class Booking extends BaseController
                 'vehicle_id' => $this->request->getPost('vehicle_rc'),
                 'customer_id' => $this->request->getPost('customer_id'),
                 'customer_branch' => $this->request->getPost('customer_branch'),
-                'customer_type' => $this->request->getPost('customer_type'),
+                'customer_type' => ($this->request->getPost('customer_type')) ? $this->request->getPost('customer_type') : 0,
                 'pickup_date' => $this->request->getPost('pickup_date'),
                 'drop_date' => $this->request->getPost('drop_date'),
                 'rate_type' => $this->request->getPost('rate_type'),
@@ -145,7 +142,8 @@ class Booking extends BaseController
                 'status' => '1',
                 'added_by' => $this->added_by,
                 'added_ip' => $this->added_ip
-            ]) ? $this->BModel->getInsertID() : '0';
+            ];//echo __LINE__.'<pre>';print_r($bookingData);die;
+            $booking_id = $this->BModel->insert($bookingData) ? $this->BModel->getInsertID() : '0';
 
 
             if ($booking_id > 0) {
@@ -376,7 +374,7 @@ class Booking extends BaseController
 
     public function getVehicles()
     {
-        $rows =  $this->VModel->where('vehicle_type_id', $this->request->getPost('vehicle_type'))->where('status', 'Active')->findAll();
+        $rows =  $this->VModel->where('vehicle_type_id', $this->request->getPost('vehicle_type'))->where('status', '1')->where('working_status', '1')->findAll();
 
         $html = '<option value="">Select Vehicle</option>';
         if (count($rows) > 0) {
@@ -434,5 +432,24 @@ class Booking extends BaseController
 
 
         return view('Booking/vehicle', $this->view);
+    }
+
+    public function cancel($id)
+    {
+        $booking_details =  $this->BModel->where('id', $id)->first();
+
+        // echo '<pre>';
+        // print_r($booking_details);
+
+        //change sstatus of driver and vehicle too
+
+        if ($booking_details['status'] >= '5') {
+            $this->session->setFlashdata('danger', 'Booking Cancellation Not Allowed As Trip Has Started');
+            return $this->response->redirect(base_url('booking'));
+        } else {
+            $this->BModel->update($id, ['status' => '15']);
+            $this->session->setFlashdata('sucess', 'Booking Cancelled');
+            return $this->response->redirect(base_url('booking'));
+        }
     }
 }

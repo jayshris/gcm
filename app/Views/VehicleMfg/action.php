@@ -30,10 +30,7 @@
                 <div class="card">
                   <div class="card-body">
                     <div class="settings-form">
-
-
-                      <form method="post" enctype="multipart/form-data" action="<?php echo isset($mfg_details) ?  base_url('vehicle-mfg/edit/' . $mfg_details['id']) : base_url('vehicle-mfg/create'); ?>">
-
+                      <?php echo form_open_multipart(base_url().$currentController.'/'.$currentMethod.(($token>0) ? '/'.$token : ''), ['name'=>'actionForm', 'id'=>'actionForm']);?>
                         <div class="settings-sub-header">
                           <h6><?= isset($mfg_details) ? 'Edit' : 'Add' ?> Vehicle Manufacturer</h6>
                         </div>
@@ -67,8 +64,7 @@
                         </div>
                         <div class="submit-button">
                           <button type="submit" class="btn btn-primary">Save Changes</button>
-                          <a href="./<?= isset($mfg_details) ? $mfg_details['id'] : 'create' ?>" class="btn btn-warning">Reset</a>
-                          <a href="<?php echo base_url('vehicle-mfg'); ?>" class="btn btn-light">Back</a>
+                          <a href="<?php echo base_url().$currentController;?>" class="btn btn-light">Back</a>
                         </div>
                       </form>
 

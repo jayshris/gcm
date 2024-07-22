@@ -54,7 +54,7 @@ class Kyc extends BaseController
         }
     }
 
-    public function generate_link()
+    public function create()
     {
         return view('KYC/kyc_link_gen', $this->view);
     }
@@ -364,7 +364,10 @@ class Kyc extends BaseController
             $this->view['partyDocs'] = $PartyDocModel->select('party_documents.*, flags.title, business_type_flags.mandatory')
                 ->join('flags', 'flags.id = party_documents.flag_id')
                 ->join('business_type_flags', 'business_type_flags.flags_id = flags.id')
-                ->where('party_id', $id)->where('business_type_flags.business_type_id', $this->view['pc_data']['business_type_id'])->findAll();
+                ->where('party_id', $id)
+                ->where('business_type_flags.business_type_id', $this->view['pc_data']['business_type_id'])
+                ->groupBy('party_documents.flag_id')
+                ->findAll();//echo '<pre>'.$PartyDocModel->getLastQuery();die;
 
 
             if ($this->request->getPost()) {

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <?= $this->include('partials/title-meta') ?>
+  <?= $this->include('partials/head-css') ?>
+</head>
+
+<body>
+
+  <!-- Main Wrapper -->
+  <div class="main-wrapper">
+
+    <?= $this->include('partials/menu') ?>
+
+    <!-- Page Wrapper -->
+    <div class="page-wrapper">
+      <div class="content">
+        <div class="row">
+          <div class="col-md-12">
+
+            <?= $this->include('partials/page-title') ?>
+            <div class="row">
+              <div class="col-xl-12 col-lg-12">
+
+                <?php $validation = \Config\Services::validation();
+
+                use App\Models\UserTypePermissionModel;
+                use App\Models\PartyModel;
+
+                ?>
+                <!-- Settings Info -->
+                <div class="card">
+                  <div class="card-body">
+                    <div class="settings-form">
+                      <?php
+                      $uriSegments = explode("/", parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+                      $last = array_pop($uriSegments);
+
+
+                      $userPermissions = new UserTypePermissionModel();
+
+                      // print_r($driver_data);
+                      // print_r($foreman);
+
+
+                      ?>
+                      <form method="post" id="driverform" action="<?php echo base_url('driver/edit/' . $driver_data['id']) ?>" enctype="multipart/form-data">
+                        <div class="settings-sub-header">
+                          <h6>Update Driver</h6>
+                        </div>
+                        <div class="profile-details">
+                          <div class="row">
+                            <div class="col-md-6">
+                              <div class="form-wrap">
+                                <label class="col-form-label">
+                                  Driver Name <span class="text-danger">*</span>
+                                </label>
+
+                                <select class="dropdown selectopt" name="name" id="party_id" style="pointer-events: none;">
+                                  <option>Select</option>
+                                  <?php
+                                  foreach ($parties as $party) {
+                                  ?>
+                                    <option value="<?php echo $party['id']; ?>" <?= $driver_data['name'] == $party['id'] ? 'selected' : '' ?>><?php echo ucwords($party['party_name']); ?></option>
+                                  <?php
+                                  }
+                                  ?>
+                                </select>
+                              </div>
+                            </div>
+
+                            <div class="col-md-6">
+                              <div class="form-wrap">
+                                <label class="col-form-label">
+                                  Foreman Name <span class="text-danger">*</span>
+                                </label>
+                                <select class="dropdown selectopt" id="forman_name" name="foreman_id" style="pointer-events: none;">
+                                  <option>Select</option>
+                                  <?php
+                                  foreach ($foreman as $fm) {
+                                  ?>
+                                    <option value="<?php echo $fm["party_id"] ?>" <?= $driver_data['foreman_id'] == $fm['party_id'] ? 'selected' : '' ?>><?php echo $fm['party_name'] ?></option>
+                                  <?php
+                                  }
+                                  ?>
+                                </select>
+                              </div>
+                            </div>
+
+                            <div class="col-md-6">
+                              <label class="col-form-label">
+                                Driver Type <span class="text-danger">*</span>
+                              </label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                              <input type="radio" class="radio" id="Employee" value="Employee" <?= $driver_data['driver_type'] == 'Employee' ? 'checked' : '' ?> name="driver_type" required>
+                              <label for="Employee">Employee</label>&nbsp;&nbsp;&nbsp;
+                              <input type="radio" class="radio" id="Contractor" value="Contractor" <?= $driver_data['driver_type'] == 'Contractor' ? 'checked' : '' ?> name="driver_type" required>
+                              <label for="Contractor">Contractor</label><br>
+                            </div>
+
+                            <div class="col-md-12"></div>
+
+                            <div class="col-md-6">
+                              <div class="form-wrap">
+                                <label class="col-form-label">
+                                  Email
+                                </label>
+                                <input readonly type="text" name="email" id="email" value="<?= $driver_data['email'] ?>" class="form-control">
+                              </div>
+                            </div>
+
+                            <div class="col-md-6">
+                              <div class="form-wrap">
+                                <label class="col-form-label">
+                                  Phone Number
+                                </label>
+                                <input readonly type="text" name="mobile" id="mobile" value="<?= $driver_data['primary_phone'] ?>" class="form-control">
+                              </div>
+                            </div>
+
+                            <div class="col-md-6">
+                              <div class="form-wrap">
+                                <label class="col-form-label">
+                                  Bank A/C No:
+                                </label>
+                                <input type="text" name="bank_account_number" value="<?= $driver_data['bank_ac'] ?>" class="form-control">
+                              </div>
+                            </div>
+
+                            <div class="col-md-6">
+                              <div class="form-wrap">
+                                <label class="col-form-label">
+                                  Bank IFSC:
+                                </label>
+                                <input type="text" name="bank_ifsc_code" value="<?= $driver_data['bank_ifsc'] ?>" class="form-control">
+                              </div>
+                            </div>
+
+                            <div class="col-md-6">
+                              <div class="form-wrap">
+                                <label class="col-form-label">Driving Licence Number</label>
+                                <input type="text" name="dl_no" value="<?= $driver_data['dl_no'] ?>" class="form-control">
+                              </div>
+                            </div>
+
+                            <div class="col-md-6">
+                              <div class="form-wrap">
+                                <label class="col-form-label">Driving Licence Issue Auth.</label>
+                                <input type="text" name="dl_authority" value="<?= $driver_data['dl_authority'] ?>" class="form-control">
+                              </div>
+                            </div>
+
+                            <div class="col-md-6">
+                              <div class="form-wrap">
+                                <label class="col-form-label">Driving Licence Expiry Date</label>
+                                <input type="date" name="dl_expiry" min="<?= date('Y-m-d') ?>" value="<?= $driver_data['dl_expiry'] ?>" class="form-control">
+                              </div>
+                            </div>
+
+
+                            <div class="col-md-3">
+                              <div class="form-wrap">
+                                <label class="col-form-label"> DL Image - Front </label>
+                                <br>
+                                <img src="<?= base_url('public/uploads/driverDocs/') . $driver_data['dl_image_front'] ?>" style="height: 150px;">
+                                <input type="file" name="dl_image_front" class="form-control">
+                              </div>
+                            </div>
+
+                            <div class="col-md-3">
+                              <div class="form-wrap">
+                                <label class="col-form-label"> DL Image - Back </label>
+                                <br>
+                                <img src="<?= base_url('public/uploads/driverDocs/') . $driver_data['dl_image_back'] ?>" style="height: 150px;">
+                                <input type="file" name="dl_image_back" class="form-control">
+                              </div>
+                            </div>
+
+
+                            <div class="col-md-3">
+                              <div class="form-wrap">
+                                <label class="col-form-label"> Profile Image 1 </label>
+                                <br>
+                                <img src="<?= base_url('public/uploads/driverDocs/') . $driver_data['profile_image1'] ?>" style="height: 150px;">
+                                <input type="file" name="profile_image1" class="form-control">
+                              </div>
+                            </div>
+
+                            <div class="col-md-3">
+                              <div class="form-wrap">
+                                <label class="col-form-label"> Profile Image 2 </label>
+                                <br>
+                                <img src="<?= base_url('public/uploads/driverDocs/') . $driver_data['profile_image2'] ?>" style="height: 150px;">
+                                <input type="file" name="profile_image2" class="form-control">
+
+                              </div>
+                            </div>
+
+                            <div class="col-md-3">
+                              <div class="form-wrap">
+                                <label class="col-form-label">UPI ID</label>
+                                <input type="text" name="upi" value="<?= $driver_data['upi_text'] ?>" class="form-control">
+                              </div>
+                            </div>
+
+                            <div class="col-md-3">
+                              <div class="form-wrap">
+                                <label class="col-form-label"> UPI ID Image </label>
+                                <br>
+                                <img src="<?= base_url('public/uploads/driverDocs/') . $driver_data['upi_id'] ?>" style="height: 150px;">
+                                <input type="file" name="upi_id" class="form-control">
+                              </div>
+                            </div>
+
+                            <h5>Current Address</h5><br><br>
+
+                            <div class="col-md-9">
+                              <div class="form-wrap">
+                                <label class="col-form-label">
+                                  Address<span class="text-danger">*</span>
+                                </label>
+                                <input type="text" required name="address" value="<?= $driver_data['address'] ?>" class="form-control">
+                              </div>
+                            </div>
+
+                            <div class="col-md-3">
+                              <div class="form-wrap">
+                                <label class="col-form-label"> WhatsApp No.<span class="text-danger">*</span> </label>
+                                <input type="text" required name="whatsapp" value="<?= $driver_data['whatsapp_no'] ?>" class="form-control">
+                              </div>
+                            </div>
+
+                            <div class="col-md-4">
+                              <div class="form-wrap">
+                                <label class="col-form-label">City:<span class="text-danger">*</span></label>
+                                <input type="text" required name="city" value="<?= $driver_data['city'] ?>" class="form-control">
+                              </div>
+                            </div>
+
+                            <div class="col-md-4">
+                              <div class="form-wrap">
+                                <label class="col-form-label">State<span class="text-danger">*</span></label>
+                                <select class="dropdown selectopt" name="state">
+                                  <option>Select</option>
+                                  <?php
+                                  if (isset($state)) {
+                                    foreach ($state as $row) { ?>
+                                      <option value="<?php echo $row["state_id"] ?>" <?= $driver_data['state'] == $row['state_id'] ? 'selected' : '' ?>><?php echo $row["state_name"] ?></option>
+                                  <?php
+                                    }
+                                  }
+                                  ?>
+                                </select>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4">
+                              <div class="form-wrap">
+                                <label class="col-form-label">Zip:</label>
+                                <input type="text" required name="zip" value="<?= $driver_data['zip'] ?>" class="form-control">
+                              </div>
+                            </div>
+
+                            <div class="col-md-6">
+                              <div class="form-wrap">
+                                <label class="col-form-label">
+                                  Vehicle Type
+                                </label><br>
+                                <?php
+                                $vehicletypesitem = [];
+                                if (isset($vehicletypes)) {
+                                  foreach ($vehicletypes as $row => $type) {
+                                    if (isset($vehicletypesdriver)) {
+                                      foreach ($vehicletypesdriver as $key => $value) {
+                                        $vehicletypesitem[] = $value['vehicle_type_id'];
+                                      }
+                                    }
+                                ?>
+                                    <input class="form-check-input" type="checkbox" name="vehicle_types[]" id="id_<?php echo $type["id"]; ?>" value="<?php echo $type["id"]; ?>" <?php if (in_array($type['id'], $vehicletypesitem)) {
+                                                                                                                                                                                    echo "checked";
+                                                                                                                                                                                  }
+                                                                                                                                                                                  ?>><label for="id_<?php echo $type["id"]; ?>" class="col-form-label" style=" margin: 0px 20px 0px 3px;">
+                                      <?php echo ucwords($type["name"]); ?></label>
+                                <?php
+                                  }
+                                }
+                                if ($validation->getError('vehicle_type')) {
+                                  echo '<div class="alert alert-danger mt-2">' . $validation->getError('vehicle_type') . '</div>';
+                                }
+                                ?>
+                              </div>
+                            </div>
+                            <?php if ($last != 'create') { ?>
+                              <div>
+                                <input type="checkbox" id="approve" class="form-check-input" name="approve" <?php if (isset($driver_data)) {
+                                                                                                              if ($driver_data['approved'] == 1) {
+                                                                                                                echo 'checked';
+                                                                                                              }
+                                                                                                            } ?> value="1"> <label for="approve"> Approved</label>
+                              </div>
+                            <?php } ?>
+
+                          </div>
+                        </div>
+                        <div class="submit-button">
+                          <button type="submit" class="btn btn-primary">Save Changes</button>
+                          <a href="<?php echo base_url(); ?>driver" class="btn btn-light">Cancel</a>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+                <!-- /Settings Info -->
+
+
+
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /Page Wrapper -->
+
+  </div>
+  <!-- /Main Wrapper -->
+
+  <?= $this->include('partials/vendor-scripts') ?>
+  <script>
+    jQuery(document).ready(function($) {
+      $("#party_id").on('change', function() {
+
+        var level = $(this).val();
+        if (level) {
+          $.ajax({
+            type: 'POST',
+            url: 'populate_fields_data',
+            data: {
+              party_id: '' + level + ''
+            },
+            success: function(htmlresponse) {
+              var res = JSON.parse(htmlresponse);
+              if (res != null) {
+
+                $('#email').val(res.email);
+                $('#mobile').val(res.primary_phone);
+                $('#adhaar_number').val(res.aadhaar);
+              } else {
+                $('#email').val('');
+                $('#mobile').val('');
+                $('#adhaar_number').val('');
+              }
+            }
+          });
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

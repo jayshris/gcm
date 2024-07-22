@@ -36,10 +36,21 @@ class Driver extends BaseController
     $userModel = new UserModel();
     $this->view['driver'] = $userModel->where('usertype', 'driver')->orderBy('id', 'DESC')->paginate(10);
     $driverModel = new DriverModel();
-    $this->view['driver_data'] = $driverModel->select('driver.*,t2.party_name, t3.party_name as foreman_name')
+    $driverModel->select('driver.*,t2.party_name, t3.party_name as foreman_name')
       ->join('party' . ' t2', 't2.id = driver.name')
-      ->join('party' . ' t3', 't3.id = driver.foreman_id')
-      ->orderBy('driver.id', 'DESC')->findAll();
+      ->join('party' . ' t3', 't3.id = driver.foreman_id');
+
+    if ($this->request->getPost('status') != '') {
+      $driverModel->where('driver.status', $this->request->getPost('status'));
+    } else {
+      $driverModel->where('driver.status', '1');
+    }
+
+    if ($this->request->getPost('working_status') != '') {
+      $driverModel->where('driver.working_status', $this->request->getPost('working_status'));
+    }
+
+    $this->view['driver_data'] = $driverModel->orderBy('driver.id', 'DESC')->findAll();
 
     // print_r($this->view['driver_data']);
     // die;
@@ -177,7 +188,8 @@ class Driver extends BaseController
             'city'  =>   $this->request->getPost('city'),
             'state'  =>  $this->request->getPost('state'),
             'zip'  =>  $this->request->getPost('zip'),
-            'status'  =>  'Active',
+            'status'  =>  '1',
+            'working_status'  =>  '1',
 
             'created_at'  =>  date("Y-m-d h:i:sa"),
           ]);
@@ -265,8 +277,9 @@ class Driver extends BaseController
           'city'  =>   $this->request->getPost('city'),
           'state'  =>  $this->request->getPost('state'),
           'zip'  =>  $this->request->getPost('zip'),
-          'status'  =>  'Active',
-          'approved'                =>  $this->request->getVar('approve'),
+          'status'  => $this->request->getVar('status'),
+          'working_status'  =>  '1',
+          'approved'                =>  $this->request->getVar('status'),
           'approval_user_id'        =>  isset($user['id']) ? $user['id'] : '',
           'approval_user_type'      =>  isset($user['usertype']) ? $user['usertype'] : '',
           'approval_date'           =>  date("Y-m-d h:i:sa"),
@@ -381,6 +394,7 @@ class Driver extends BaseController
       return $this->response->redirect(site_url('/driver'));
     }
   }
+
   public function view($id = null)
   {
     $access = $this->_access;
@@ -430,5 +444,10 @@ class Driver extends BaseController
       $party = $this->partyModel->where('id', $_POST['party_id'])->first();
       return json_encode($party);
     }
+  }
+
+  public function assign_vehicle($id)
+  {
+    print_r($id);
   }
 }

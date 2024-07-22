@@ -9,106 +9,84 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 class Vehiclemfg extends BaseController
 {
-
-    public $access;
-    public $session;
-    public $added_by;
-    public $added_ip;
-    public $VMModel;
+    public $model;
+    public $view = [];
 
     public function __construct()
     {
-        $user = new UserModel();
-        $this->access = $user->setPermission();
-
-        $this->session = \Config\Services::session();
-
-        $this->VMModel = new VehicleMfgModel();
-
-        $this->added_by = isset($_SESSION['id']) ? $_SESSION['id'] : '0';
-        $this->added_ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+        $this->model = new VehicleMfgModel();
     }
 
     public function index()
     {
-        if ($this->access === 'false') {
-            $this->session->setFlashdata('error', 'You are not permitted to access this page');
-            return $this->response->redirect(base_url('/dashboard'));
-        } else {
-
-            $this->view['body_types'] = $this->VMModel->where(['is_deleted' => '0'])->orderBy('id', 'DESC')->findAll();
-
-            return view('VehicleMfg/index', $this->view);
+        try {
+            $this->view['body_types'] = $this->model->where(['is_deleted' => '0'])->orderBy('id', 'DESC')->findAll();
+            return view($this->view['currentController'] . '/' . $this->view['currentMethod'], $this->view); //echo __LINE__;die;
+        } catch (\Exception $e) {
+            print_r($e->getMessage());
+            die;
+            log_message('error', '[ERROR] {exception}', ['exception' => $e]);
         }
     }
 
     public function create()
     {
-        if ($this->access === 'false') {
-            $this->session->setFlashdata('error', 'You are not permitted to access this page');
-            return $this->response->redirect(base_url('/dashboard'));
-        } else {
-            if ($this->request->getPost()) {
-                $valid = $this->validate([
-                    'mfg_name' => [
-                        'rules' => 'required|trim|is_unique[vehicle_mfg.name]',
-                        'errors' => [
-                            'required' => 'The Body Type Name field is required',
-                            'is_unique' => 'Duplicate Body Type is not allowed',
-                        ],
-                    ]
+        if ($this->request->getPost()) {
+            $valid = $this->validate([
+                'mfg_name' => [
+                    'rules' => 'required|trim|is_unique[vehicle_mfg.name]',
+                    'errors' => [
+                        'required' => 'The Body Type Name field is required',
+                        'is_unique' => 'Duplicate Body Type is not allowed',
+                    ],
+                ]
+            ]);
+
+            if (!$valid) {
+                $this->view['error'] = $this->validator;
+                return view($this->view['currentController'] . '/action', $this->view);
+            } else {
+
+                $this->model->save([
+                    'name' => $this->request->getVar('mfg_name'),
+                    'created_by' => $this->view['loggedIn'],
+                    'created_ip' => $this->view['loggedIP'],
+                    'modified_at' => $this->view['actionTime']
                 ]);
+                $this->view['session']->setFlashdata('success', 'Vehicle Manufacturer Successfully Added');
 
-                if (!$valid) {
-                    $this->view['error'] = $this->validator;
-                    return view('VehicleMfg/action', $this->view);
-                } else {
-
-                    $this->VMModel->save([
-                        'name' => $this->request->getVar('mfg_name'),
-                        'created_by' => $this->added_by,
-                        'created_ip' => $this->added_ip
-                    ]);
-                    $this->session->setFlashdata('success', 'Vehicle Manufacturer Successfully Added');
-
-                    return $this->response->redirect(base_url('vehicle-mfg'));
-                }
+                return $this->response->redirect(base_url($this->view['currentController']));
             }
-
-            return view('VehicleMfg/action');
         }
+
+        return view($this->view['currentController'] . '/action', $this->view);
     }
 
     public function edit($id)
     {
-        if ($this->access === 'false') {
-            $this->session->setFlashdata('error', 'You are not permitted to access this page');
-            return $this->response->redirect(base_url('/dashboard'));
-        } else {
+        $this->view['token'] = $id;
+        if ($this->request->getPost()) {
+            $this->model->update($id, [
+                'name' => $this->request->getVar('mfg_name'),
+                'status' => $this->request->getVar('status'),
+                'modified_by' => $this->view['loggedIn'],
+                'modified_at' => $this->view['actionTime'],
+                'modified_ip' => $this->view['loggedIP']
+            ]);
 
-            if ($this->request->getPost()) {
-
-                $this->VMModel->update($id, [
-                    'name' => $this->request->getVar('mfg_name'),
-                    'status' => $this->request->getVar('status'),
-                    'modified_by' => $this->added_by,
-                    'modified_at' => date('Y-m-d h:i:s'),
-                    'modified_ip' => $this->added_ip
-                ]);
-
-                $this->session->setFlashdata('success', 'Vehicle Manufacturer Updated Successfully ');
-                return $this->response->redirect(base_url('vehicle-mfg'));
-            }
-
-            $this->view['mfg_details'] = $this->VMModel->where('id', $id)->first();
-            return view('VehicleMfg/action', $this->view);
+            $this->view['session']->setFlashdata('success', 'Vehicle Manufacturer Updated Successfully ');
+            return $this->response->redirect(base_url($this->view['currentController']));
         }
+
+        $this->view['mfg_details'] = $this->model->where('id', $id)->first();
+        return view($this->view['currentController'] . '/action', $this->view);
     }
 
     public function delete($id)
     {
-        $this->VMModel->update($id, ['is_deleted' => '1']);
-        $this->session->setFlashdata('success', 'Vehicle Manufacturer Successfully Deleted');
-        return $this->response->redirect(base_url('vehicle-mfg'));
+        $this->model->update($id, ['is_deleted' => '1']);
+        $this->view['session']->setFlashdata('success', 'Vehicle Manufacturer Successfully Deleted');
+        return redirect()->to('/' . $this->view['currentController']);
+        return $this->response->redirect(base_url($this->view['currentController']));
     }
 }

@@ -29,30 +29,73 @@ use App\Models\PartyModel;
 
             <?= $this->include('partials/page-title') ?>
 
-            <div class="card main-card">
-              <div class="card-body">
+            <form method="post" enctype="multipart/form-data" action="<?php echo base_url('driver'); ?>">
+              <div class="card main-card">
+                <div class="card-body">
+                  <h4>Search / Filter</h4>
+                  <hr>
+                  <div class="row mt-2">
 
-                <!-- Search -->
-                <div class="search-section">
-                  <div class="row mb-3">
-                    <div class="col-md-8">
-                      <div class="form-wrap icon-form">
-                        <?php
-                        $session = \Config\Services::session();
-                        if ($session->getFlashdata('success')) {
-                          echo '<div class="alert alert-success">' . $session->getFlashdata("success") . '</div>';
-                        }
-                        ?>
+                    <div class="col-md-2">
+                      <div class="form-wrap">
+                        <label class="col-form-label">Status</label>
+                        <select class="form-select" name="status" aria-label="Default select example">
+                          <option value="">Select Status</option>
+                          <option value="1" <?= set_value('status') == 1 ? 'selected' : '' ?>>Active</option>
+                          <option value="0" <?= set_value('status') == 0 ? 'selected' : '' ?>>Inactive</option>
+                        </select>
                       </div>
                     </div>
 
-                    <div class="col-md-4 text-sm-end">
+                    <div class="col-md-2">
+                      <div class="form-wrap">
+                        <label class="col-form-label">Working Status</label>
+                        <select class="form-select" name="working_status" aria-label="Default select example">
+                          <option value="">Select Status</option>
+                          <option value="1" <?= set_value('working_status') == 1 ? 'selected' : '' ?>>Not Assigned</option>
+                          <option value="2" <?= set_value('working_status') == 2 ? 'selected' : '' ?>>Assigned </option>
+                          <option value="3" <?= set_value('working_status') == 3 ? 'selected' : '' ?>>On Trip </option>
+                          <option value="4" <?= set_value('working_status') == 4 ? 'selected' : '' ?>>Waiting For Trip </option>
+                          <option value="5" <?= set_value('working_status') == 5 ? 'selected' : '' ?>>Absconding </option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="col-md-5">
+                      <button class="btn btn-info mt-4">Search</button>&nbsp;&nbsp;
+                      <a href="./driver" class="btn btn-warning mt-4">Reset</a>&nbsp;&nbsp;
+                    </div>
+
+                    <div class="col-md-2 text-end mt-4">
                       <a href="<?= base_url('driver/assigned-list') ?>" class="btn btn-warning">Assigned List</a>
+
+                    </div>
+
+                    <div class="col-md-1 text-end mt-4">
                       <?php echo makeListActions($currentController, $Action, 0, 1); ?>
                     </div>
 
+
+
+                  </div>
+
+                  <div class="col-md-12">
+                    <?php
+                    $session = \Config\Services::session();
+
+                    if ($session->getFlashdata('success')) {
+                      echo '<div class="alert alert-success">' . $session->getFlashdata("success") . '</div>';
+                    }
+                    ?>
                   </div>
                 </div>
+              </div>
+            </form>
+
+            <div class="card main-card">
+              <div class="card-body">
+
+
 
                 <!-- Contact List -->
                 <div class="table-responsive custom-table">
@@ -67,6 +110,7 @@ use App\Models\PartyModel;
                         <th>Current Trip</th>
                         <th>No. of Trips</th>
                         <th>Status</th>
+                        <th>Wroking Status</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -74,13 +118,27 @@ use App\Models\PartyModel;
                       if ($driver_data) {
                         foreach ($driver_data as $driver) {
 
-                          if (!$driver['assigned']) {
-                            $assign_link = '<a href="' . base_url() . 'driver/assign-vehicle/' . $driver['id'] . '" class="btn btn-info btn-sm" role="button"><i class="fa fa-bus" data-bs-toggle="tooltip" aria-label="fa fa-bus" data-bs-original-title="Assign Vehicle To Driver"></i></a>';
-                          } else
-                            $assign_link = '<a href="' . base_url() . 'driver/unassign-vehicle/' . $driver['id'] . '" class="btn btn-success btn-sm" role="button"><i class="fa fa-bus" data-bs-toggle="tooltip" aria-label="fa fa-bus" data-bs-original-title="Unassign Vehicle From Driver"></i></a>';
-
-                          $edit_link = '<a href="' . base_url() . 'driver/edit/' . $driver['id'] . '" class="btn btn-warning btn-sm" role="button"><i class="fa fa-pencil" data-bs-toggle="tooltip" aria-label="fa fa-pencil" data-bs-original-title="Edit"></i></a>';
-
+                          //working status
+                          $ws = '';
+                          switch ($driver['working_status']) {
+                            case "1":
+                              $ws = '<span class="badge badge-pill bg-danger">Not Assigned</span>';
+                              break;
+                            case "2":
+                              $ws = '<span class="badge badge-pill bg-success">Assigned</span>';
+                              break;
+                            case "3":
+                              $ws = '<span class="badge badge-pill bg-warning">On Trip</span>';
+                              break;
+                            case "4":
+                              $ws = '<span class="badge badge-pill bg-warning">Waiting For Trip</span>';
+                              break;
+                            case "5":
+                              $ws = '<span class="badge badge-pill bg-warning">Absconding</span>';
+                              break;
+                            default:
+                              $ws = '<span class="badge badge-pill bg-warning">N/A</span>';
+                          }
                       ?>
                           <tr>
                             <td><?= makeListActions($currentController, $Action, $driver['id'], 2) ?></td>
@@ -99,6 +157,7 @@ use App\Models\PartyModel;
                               }
                               ?>
                             </td>
+                            <td><?= $ws ?></td>
                           </tr>
 
                       <?php

@@ -18,4 +18,8 @@ function validateInteger(event) {
     event.target.value = event.target.value.replace(/[^0-9]/g, '');
 }
 
+function validatePAN(event) {
+    var input = event.target.value;
+    event.target.value = input.replace(/[^0-9]/g, '').substring(0, 10);
+}
 

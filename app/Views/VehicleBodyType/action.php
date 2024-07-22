@@ -32,7 +32,7 @@
                     <div class="settings-form">
 
 
-                      <form method="post" enctype="multipart/form-data" action="<?php echo isset($type_details) ?  base_url('vehicle-body-type/edit/' . $type_details['id']) : base_url('vehicle-body-type/create'); ?>">
+                      <form method="post" enctype="multipart/form-data" action="<?php echo isset($type_details) ?  base_url('vehiclebodytype/edit/' . $type_details['id']) : base_url('vehiclebodytype/create'); ?>">
 
                         <div class="settings-sub-header">
                           <h6><?= isset($type_details) ? 'Edit' : 'Add' ?> Vehicle Body Type</h6>
@@ -68,7 +68,7 @@
                         <div class="submit-button">
                           <button type="submit" class="btn btn-primary">Save Changes</button>
                           <a href="./<?= isset($type_details) ? $type_details['id'] : 'create' ?>" class="btn btn-warning">Reset</a>
-                          <a href="<?php echo base_url('vehicle-body-type'); ?>" class="btn btn-light">Back</a>
+                          <a href="<?php echo base_url('vehiclebodytype'); ?>" class="btn btn-light">Back</a>
                         </div>
                       </form>
 

@@ -23,37 +23,69 @@
 
             <?= $this->include('partials/page-title') ?>
 
-            <div class="card main-card">
-              <div class="card-body">
+            <form method="post" enctype="multipart/form-data" action="<?php echo base_url('vehicle'); ?>">
+              <div class="card main-card">
+                <div class="card-body">
+                  <h4>Search / Filter</h4>
+                  <hr>
+                  <div class="row mt-2">
 
-                <!-- Search -->
-                <div class="search-section">
-                  <div class="row">
-                    <div class="col-md-9">
-                      <div class="form-wrap icon-form">
-                        <!-- <span class="form-icon"><i class="ti ti-search"></i></span>
-                        <input type="text" class="form-control" placeholder="Search Deals"> -->
 
-                        <?php
 
-                        $session = \Config\Services::session();
-
-                        if ($session->getFlashdata('success')) {
-                          echo '<div class="alert alert-success">' . $session->getFlashdata("success") . '</div>';
-                        }
-
-                        ?>
+                    <div class="col-md-2">
+                      <div class="form-wrap">
+                        <label class="col-form-label">Status</label>
+                        <select class="form-select" name="status" aria-label="Default select example">
+                          <option value="">Select Status</option>
+                          <option value="1" <?= set_value('status') == 1 ? 'selected' : '' ?>>Active</option>
+                          <option value="0" <?= set_value('status') == 0 ? 'selected' : '' ?>>Inactive</option>
+                        </select>
                       </div>
                     </div>
 
-                    <div class="col-md-3 text-end mb-3">
+                    <div class="col-md-2">
+                      <div class="form-wrap">
+                        <label class="col-form-label">Working Status</label>
+                        <select class="form-select" name="working_status" aria-label="Default select example">
+                          <option value="">Select Status</option>
+                          <option value="1" <?= set_value('working_status') == 1 ? 'selected' : '' ?>>Not Assigned</option>
+                          <option value="2" <?= set_value('working_status') == 2 ? 'selected' : '' ?>>Assigned </option>
+                          <option value="3" <?= set_value('working_status') == 3 ? 'selected' : '' ?>>In Running </option>
+                          <option value="4" <?= set_value('working_status') == 4 ? 'selected' : '' ?>>In Service </option>
+                          <option value="5" <?= set_value('working_status') == 5 ? 'selected' : '' ?>>On Hold </option>
+                          <option value="6" <?= set_value('working_status') == 6 ? 'selected' : '' ?>>Waiting for Load </option>
+                          <option value="7" <?= set_value('working_status') == 7 ? 'selected' : '' ?>>Ready for Unloading </option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <button class="btn btn-info mt-4">Search</button>&nbsp;&nbsp;
+                      <a href="./vehicle" class="btn btn-warning mt-4">Reset</a>&nbsp;&nbsp;
+                    </div>
+
+                    <div class="col-md-2 text-end mt-4">
                       <?php echo makeListActions($currentController, $Action, 0, 1); ?>
                     </div>
 
                   </div>
-                </div>
-                <!-- /Search -->
 
+                  <div class="col-md-12">
+                    <?php
+                    $session = \Config\Services::session();
+
+                    if ($session->getFlashdata('success')) {
+                      echo '<div class="alert alert-success">' . $session->getFlashdata("success") . '</div>';
+                    }
+                    ?>
+                  </div>
+                </div>
+              </div>
+            </form>
+
+
+            <div class="card main-card">
+              <div class="card-body">
 
                 <!-- Contact List -->
                 <div class="table-responsive custom-table">
@@ -68,17 +100,49 @@
                         <th>Chassis No</th>
                         <th>Engine No</th>
                         <th>Status</th>
+                        <th>Working Status</th>
                       </tr>
                     </thead>
                     <tbody>
                       <?php
                       if ($vehicle_data) {
+
                         foreach ($vehicle_data as $row) {
-                          if ($row['status'] == 'Inactive') {
-                            $status = '<span class="badge badge-pill bg-danger">Inactive</span>';
-                          } else {
+                          if ($row['status']) {
                             $status = '<span class="badge badge-pill bg-success">Active</span>';
+                          } else {
+                            $status = '<span class="badge badge-pill bg-danger">Inactive</span>';
                           }
+
+                          //working status
+                          $ws = '';
+                          switch ($row['working_status']) {
+                            case "1":
+                              $ws = '<span class="badge badge-pill bg-danger">Not Assigned</span>';
+                              break;
+                            case "2":
+                              $ws = '<span class="badge badge-pill bg-success">Assigned</span>';
+                              break;
+                            case "3":
+                              $ws = '<span class="badge badge-pill bg-warning">In Running</span>';
+                              break;
+                            case "4":
+                              $ws = '<span class="badge badge-pill bg-warning">In Service</span>';
+                              break;
+                            case "5":
+                              $ws = '<span class="badge badge-pill bg-warning">On Hold</span>';
+                              break;
+                            case "6":
+                              $ws = '<span class="badge badge-pill bg-warning">Waiting For Load</span>';
+                              break;
+                            case "7":
+                              $ws = '<span class="badge badge-pill bg-warning">Waiting For Unload</span>';
+                              break;
+                            default:
+                              $ws = '<span class="badge badge-pill bg-warning">N/A</span>';
+                          }
+
+
                           $created_at_str = '';
                           $updated_at_str = '';
                           if (isset($row["created_at"])) {
@@ -101,6 +165,7 @@
                                     <td>' . ucwords($row["chassis_number"]) . '</td>
                                     <td>' . ucwords($row["engine_number"]) . '</td>
                                     <td>' . $status . '</td>
+                                    <td>' . $ws . '</td>
                                 </tr>';
                         }
                       }

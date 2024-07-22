@@ -34,7 +34,7 @@ class Party extends BaseController
     if ($access === 'false') {
       $session = \Config\Services::session();
       $session->setFlashdata('error', 'You are not permitted to access this page');
-      return $this->response->redirect(site_url('/dashboard'));
+      return $this->response->redirect(base_url('/dashboard'));
     } else {
       $partyModel = new PartyModel();
 
@@ -55,7 +55,7 @@ class Party extends BaseController
     if ($access === 'false') {
       $session = \Config\Services::session();
       $session->setFlashdata('error', 'You are not permitted to access this page');
-      return $this->response->redirect(site_url('/dashboard'));
+      return $this->response->redirect(base_url('/dashboard'));
     } else {
       helper(['form', 'url']);
       $this->view['page_data'] = [
@@ -156,7 +156,7 @@ class Party extends BaseController
 
           $session = \Config\Services::session();
           $session->setFlashdata('success', 'Party added');
-          return $this->response->redirect(site_url('/party'));
+          return $this->response->redirect(base_url('/party'));
         }
       }
       return view('Party/create', $this->view);
@@ -169,7 +169,7 @@ class Party extends BaseController
     if ($access === 'false') {
       $session = \Config\Services::session();
       $session->setFlashdata('error', 'You are not permitted to access this page');
-      return $this->response->redirect(site_url('/dashboard'));
+      return $this->response->redirect(base_url('/dashboard'));
     } else {
       $pcModel = new PartyModel();
       $this->view['pc_data'] = $pcModel->where('id', $id)->first();
@@ -237,7 +237,7 @@ class Party extends BaseController
     if ($access === 'false') {
       $session = \Config\Services::session();
       $session->setFlashdata('error', 'You are not permitted to access this page');
-      return $this->response->redirect(site_url('/dashboard'));
+      return $this->response->redirect(base_url('/dashboard'));
     } else {
 
       $pcModel = new PartyModel();

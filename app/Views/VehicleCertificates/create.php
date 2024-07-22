@@ -36,7 +36,7 @@
                     <div class="settings-form">
 
 
-                      <form method="post" enctype="multipart/form-data" action="<?php echo base_url('vehicle-certificates/create'); ?>">
+                      <form method="post" enctype="multipart/form-data" action="<?php echo base_url('vehiclecertificates/create'); ?>">
 
                         <div class="settings-sub-header">
                           <h6>Add New Certificate</h6>

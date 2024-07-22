@@ -2,12 +2,13 @@
 
 namespace App\Controllers;
 
-use App\Models\EmployeeModel;
-use App\Models\CompanyModel;
 use App\Models\UserModel;
-use App\Models\ModulesModel;
-use App\Models\AadhaarNumberMapModule;
+use App\Models\StateModel;
 use App\Models\OfficeModel;
+use App\Models\CompanyModel;
+use App\Models\ModulesModel;
+use App\Models\EmployeeModel;
+use App\Models\AadhaarNumberMapModule;
 
 class Employee extends BaseController
 {
@@ -67,7 +68,8 @@ class Employee extends BaseController
       helper(['form', 'url']);
       $this->view['page_data'] = ['page_title' => view('partials/page-title', ['title' => 'Add Employee', 'li_2' => 'profile'])];
       $this->view['company'] = $this->companyModel->where(['status' => 'Active'])->orderBy('name')->findAll();
-
+      $stateModel = new StateModel();
+      $this->view['state'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
 
       if ($this->request->getMethod() == 'POST') {
 
@@ -76,12 +78,13 @@ class Employee extends BaseController
           'office_location' => 'required',
           'name' => 'required|min_length[3]|max_length[50]',
           'mobile' => 'required|numeric|min_length[10]|max_length[15]',
-          'image1' => 'max_size[image1,100]|ext_in[image1,jpg,jpeg,png]',
-          'image2' => 'max_size[image2,100]|ext_in[image2,jpg,jpeg,png]',
-          'aadhaarfront' => 'max_size[aadhaarfront,100]|ext_in[aadhaarfront,jpg,jpeg,png,pdf]',
-          'aadhaarback' => 'max_size[aadhaarback,100]|ext_in[aadhaarback,jpg,jpeg,png,pdf]',
+          'image1' => 'ext_in[image1,jpg,jpeg,png]',
+          'image2' => 'ext_in[image2,jpg,jpeg,png]',
+          'aadhaarfront' => 'ext_in[aadhaarfront,jpg,jpeg,png,pdf]',
+          'aadhaarback' => 'ext_in[aadhaarback,jpg,jpeg,png,pdf]',
           'joiningdate' => 'required',
-          'upi_id' => 'max_size[upi_id,100]|ext_in[upi_id,jpg,jpeg,png]',
+          'upi_id' => 'ext_in[upi_id,jpg,jpeg,png]',
+          'image_front' => 'ext_in[aadhaarback,jpg,jpeg,png,pdf]',
         ]);
         if (!$error) {
           $this->view['error'] = $this->validator;
@@ -135,6 +138,22 @@ class Employee extends BaseController
             $aadhaarfrontimage_name = $aadhaarfrontnewName;
           }
 
+          $image_frontnewName = '';
+          $image_front = $this->request->getFile('image_front');
+          if ($image_front->isValid() && !$image_front->hasMoved()) {
+            $image_frontnewName = $image_front->getRandomName();
+            $imgpathimage_front = 'public/uploads/employeeDocs';
+            if (!is_dir($imgpathimage_front)) {
+              mkdir($imgpathimage_front, 0777, true);
+            }
+            $image_front->move($imgpathimage_front, $image_frontnewName);
+          }
+          if ($image_frontnewName == '') {
+            $image_front_name = '';
+          } else {
+            $image_front_name = $image_frontnewName;
+          }
+
           $aadhaarbacknewName = '';
           $aadhaarback = $this->request->getFile('aadhaarback');
           if ($aadhaarback->isValid() && !$aadhaarback->hasMoved()) {
@@ -183,6 +202,22 @@ class Employee extends BaseController
             $signature =  $digitalSign;
           }
 
+          $image_backnewName = '';
+          $imageback = $this->request->getFile('image_back');
+          if ($imageback->isValid() && !$imageback->hasMoved()) {
+            $image_backnewName = $imageback->getRandomName();
+            $imgpathimage_back = 'public/uploads/employeeDocs';
+            if (!is_dir($imgpathimage_back)) {
+              mkdir($imgpathimage_back, 0777, true);
+            }
+            $imageback->move($imgpathimage_back, $image_backnewName);
+          }
+          if ($image_backnewName == '') {
+            $image_back = '';
+          } else {
+            $image_back = $image_backnewName;
+          }
+
           $this->employeeModel->save([
             'company_id' => $this->request->getVar('company_name'),
             'branch_id' => $this->request->getVar('office_location'),
@@ -206,6 +241,21 @@ class Employee extends BaseController
             'joining_date' => $this->request->getPost('joiningdate'),
             'created_by' => $this->added_by,
             'created_ip' =>  $this->added_ip,
+            'it_pan_card' => $this->request->getPost('it_pan_card'),
+            'image_front' => $image_front_name,
+            'image_back' => $image_back,
+            'current_address'=> $this->request->getPost('current_address'),
+            'current_city'=> $this->request->getPost('current_city'),
+            'current_state'=> $this->request->getPost('current_state'),
+            'current_pincode'=> $this->request->getPost('current_pincode'),
+            'permanent_address'=> $this->request->getPost('permanent_address'),
+            'permanent_city'=> $this->request->getPost('permanent_city'),
+            'permanent_state'=> $this->request->getPost('permanent_state'),
+            'permanent_pincode'=> $this->request->getPost('permanent_pincode'),
+            'permanent_phone'=> $this->request->getPost('permanent_phone'),
+            'relation'=> $this->request->getPost('relation'),
+            'alternate_mobile'=> $this->request->getPost('alternate_mobile'),
+            'comp_mobile2'=> $this->request->getPost('comp_mobile2'),
           ]);
 
 
@@ -227,7 +277,8 @@ class Employee extends BaseController
       $session->setFlashdata('error', 'You are not permitted to access this page');
       return $this->response->redirect(site_url('/dashboard'));
     } else {
-
+      $stateModel = new StateModel();
+      $this->view['state'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
       $this->view['employee_detail'] = $this->employeeModel->where('id', $id)->first();
 
       $this->view['company'] = $this->companyModel->where(['status' => 'Active'])->orderBy('name')->findAll();
@@ -243,12 +294,13 @@ class Employee extends BaseController
           'name' => 'required|min_length[3]|max_length[50]',
           'mobile' => 'required|numeric|min_length[10]|max_length[15]',
           'aadhaar' => 'required|numeric|max_length[16]',
-          'image1' => 'max_size[image1,100]|ext_in[image1,jpg,jpeg,png]',
-          'image2' => 'max_size[image2,100]|ext_in[image2,jpg,jpeg,png]',
-          'aadhaarfront' => 'max_size[aadhaarfront,100]|ext_in[aadhaarfront,jpg,jpeg,png,pdf]',
-          'aadhaarback' => 'max_size[aadhaarback,100]|ext_in[aadhaarback,jpg,jpeg,png,pdf]',
+          'image1' => 'ext_in[image1,jpg,jpeg,png]',
+          'image2' => 'ext_in[image2,jpg,jpeg,png]',
+          'aadhaarfront' => 'ext_in[aadhaarfront,jpg,jpeg,png,pdf]',
+          'aadhaarback' => 'ext_in[aadhaarback,jpg,jpeg,png,pdf]',
           'joiningdate' => 'required',
-          'upi_id' => 'max_size[upi_id,100]|ext_in[upi_id,jpg,jpeg,png]'
+          'upi_id' => 'ext_in[upi_id,jpg,jpeg,png]',
+          'image_front' => 'ext_in[aadhaarback,jpg,jpeg,png,pdf]',
         ]);
         if (!$error) {
           $this->view['error'] = $this->validator;
@@ -272,7 +324,20 @@ class Employee extends BaseController
             'status' => '0',
             'approved' => '0',
             'updated_at' => date('Y-m-d'),
-            'updated_by' =>  $this->added_by
+            'updated_by' =>  $this->added_by, 
+            'it_pan_card' => $this->request->getPost('it_pan_card'), 
+            'current_address'=> $this->request->getPost('current_address'),
+            'current_city'=> $this->request->getPost('current_city'),
+            'current_state'=> $this->request->getPost('current_state'),
+            'current_pincode'=> $this->request->getPost('current_pincode'),
+            'permanent_address'=> $this->request->getPost('permanent_address'),
+            'permanent_city'=> $this->request->getPost('permanent_city'),
+            'permanent_state'=> $this->request->getPost('permanent_state'),
+            'permanent_pincode'=> $this->request->getPost('permanent_pincode'),
+            'permanent_phone'=> $this->request->getPost('permanent_phone'),
+            'relation'=> $this->request->getPost('relation'),
+            'alternate_mobile'=> $this->request->getPost('alternate_mobile'),
+            'comp_mobile2'=> $this->request->getPost('comp_mobile2'),
           ]);
 
 
@@ -360,7 +425,33 @@ class Employee extends BaseController
             $this->employeeModel->update($id, ['upi_img' => $newName1]);
           }
 
+          if ($_FILES['image_front']['name'] != '') {
+            $newName1 = '';
+            $image1 = $this->request->getFile('image_front');
+            if ($image1->isValid() && !$image1->hasMoved()) {
+              $newName1 =  $image1->getRandomName();
+              $imgpath1 = 'public/uploads/employeeDocs';
+              if (!is_dir($imgpath1)) {
+                mkdir($imgpath1, 0777, true);
+              }
+              $image1->move($imgpath1, $newName1);
+            }
+            $this->employeeModel->update($id, ['image_front' => $newName1]);
+          }
 
+          if ($_FILES['image_back']['name'] != '') {
+            $newName1 = '';
+            $image1 = $this->request->getFile('image_back');
+            if ($image1->isValid() && !$image1->hasMoved()) {
+              $newName1 =  $image1->getRandomName();
+              $imgpath1 = 'public/uploads/employeeDocs';
+              if (!is_dir($imgpath1)) {
+                mkdir($imgpath1, 0777, true);
+              }
+              $image1->move($imgpath1, $newName1);
+            }
+            $this->employeeModel->update($id, ['image_back' => $newName1]);
+          }
 
           // if ($this->request->getVar('approve') == 1) {
           //   $status = 'Active';
@@ -403,12 +494,12 @@ class Employee extends BaseController
           'name' => 'required|min_length[3]|max_length[50]',
           'mobile' => 'required|numeric|min_length[10]|max_length[15]',
           'aadhaar' => 'required|numeric|max_length[16]',
-          'image1' => 'max_size[image1,100]|ext_in[image1,jpg,jpeg,png]',
-          'image2' => 'max_size[image2,100]|ext_in[image2,jpg,jpeg,png]',
-          'aadhaarfront' => 'max_size[aadhaarfront,100]|ext_in[aadhaarfront,jpg,jpeg,png,pdf]',
-          'aadhaarback' => 'max_size[aadhaarback,100]|ext_in[aadhaarback,jpg,jpeg,png,pdf]',
+          'image1' => 'ext_in[image1,jpg,jpeg,png]',
+          'image2' => 'ext_in[image2,jpg,jpeg,png]',
+          'aadhaarfront' => 'ext_in[aadhaarfront,jpg,jpeg,png,pdf]',
+          'aadhaarback' => 'ext_in[aadhaarback,jpg,jpeg,png,pdf]',
           'joiningdate' => 'required',
-          'upi_id' => 'max_size[upi_id,100]|ext_in[upi_id,jpg,jpeg,png]'
+          'upi_id' => 'ext_in[upi_id,jpg,jpeg,png]'
         ]);
         if (!$error) {
           $this->view['error'] = $this->validator;

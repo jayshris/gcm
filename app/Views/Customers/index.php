@@ -80,7 +80,7 @@
                       <a href="./customers" class="btn btn-warning mt-4">Reset</a>&nbsp;&nbsp;
                     </div>
 
-                    <div class="col-md-4 text-end">
+                    <div class="col-md-4 text-end mt-4">
                       <?php echo makeListActions($currentController, $Action, 0, 1); ?>
                     </div>
                   </div>
