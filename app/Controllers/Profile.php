@@ -122,6 +122,7 @@ class Profile extends BaseController
               'purchase_order_prefix' => $this->request->getVar('purchase_order_prefix'),
               'invoice_prefix'        => $this->request->getVar('invoice_prefix'),
               'booking_prefix'        => $this->request->getVar('booking_prefix'),
+              'loading_receipt_prefix'        => $this->request->getVar('loading_receipt_prefix'),
               'updated_at'            => date("Y-m-d h:i:sa")
             ]);
           }
@@ -207,6 +208,7 @@ class Profile extends BaseController
               'purchase_order_prefix' => $this->request->getVar('purchase_order_prefix'),
               'invoice_prefix'        => $this->request->getVar('invoice_prefix'),
               'booking_prefix'        => $this->request->getVar('booking_prefix'),
+              'loading_receipt_prefix'        => $this->request->getVar('loading_receipt_prefix'),
               'created_at'            => date("Y-m-d h:i:sa")
             ]);
           } else {
@@ -230,6 +232,7 @@ class Profile extends BaseController
               'purchase_order_prefix' => $this->request->getVar('purchase_order_prefix'),
               'invoice_prefix'        => $this->request->getVar('invoice_prefix'),
               'booking_prefix'        => $this->request->getVar('booking_prefix'),
+              'loading_receipt_prefix'        => $this->request->getVar('loading_receipt_prefix'),
               'updated_at'            => date("Y-m-d h:i:sa")
             ]);
           }

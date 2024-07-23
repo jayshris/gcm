@@ -87,7 +87,7 @@
 
         <div class="col-md-4">
             <label class="col-form-label">Consignment Date<span class="text-danger">*</span></label>
-            <input type="date" required name="consignment_date" id="consignment_date" min="<?= date('Y-m-d') ?>"  class="form-control" value="<?= (isset($loading_receipts['consignment_date'])) ?  $loading_receipts['consignment_date'] : ''?>">
+            <input type="date" required name="consignment_date" id="consignment_date" min="<?= (isset($loading_receipts['booking_date'])) ?  $loading_receipts['booking_date'] : '' ?>"  class="form-control" value="<?= (isset($loading_receipts['consignment_date'])) ?  $loading_receipts['consignment_date'] : ''?>">
             <?php
             if ($validation->getError('consignment_date')) {
                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('consignment_date') . '</div>';
