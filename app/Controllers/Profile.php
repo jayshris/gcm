@@ -36,8 +36,8 @@ class Profile extends BaseController
       ];
       $stateModel = new StateModel();
       $this->view['state'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
-      $profiledata = new ProfileModel();
-      $this->view['profile_data'] = $profiledata->where('id', 1)->first();
+      $profiledata = new ProfileModel(); 
+      $this->view['profile_data'] = $profiledata->where('logged_in_userid',  session()->get('id'))->first();
 
 
       $request = service('request');
@@ -55,15 +55,15 @@ class Profile extends BaseController
           $this->view['error']   = $this->validator;
         } else {
           $profilemodel = new ProfileModel();
-          $model = $profilemodel->where('id', 1)->first();
-          $id = 1;
+          $model = $profilemodel->where('logged_in_userid', session()->get('id'))->first(); 
           $newName = '';
           $image = $this->request->getFile('company_logo');
           $image_name = '';
           if (isset($image)) {
             if ($image->isValid() && !$image->hasMoved()) {
               $newName = $image->getRandomName();
-              $imgpath = rtrim(WRITEPATH, "writable/") . '/public/writable/uploads/profiles';
+              // $imgpath = rtrim(WRITEPATH, "writable/") . '/public/writable/uploads/profiles';
+              $imgpath ='public/writable/uploads/profiles/';
               if (!is_dir($imgpath)) {
                 mkdir($imgpath, 0777, true);
               }
@@ -98,10 +98,11 @@ class Profile extends BaseController
               'purchase_order_prefix' => $this->request->getVar('purchase_order_prefix'),
               'invoice_prefix'        => $this->request->getVar('invoice_prefix'),
               'booking_prefix'        => $this->request->getVar('booking_prefix'),
+              'loading_receipt_prefix'        => $this->request->getVar('loading_receipt_prefix'),
               'created_at'            => date("Y-m-d h:i:sa")
             ]);
           } else {
-            $profilemodel->update($id, [
+            $profilemodel->update($model['id'], [
               'logged_in_userid'      => session()->get('id'),
               'company_name'          => $this->request->getVar('company_name'),
               'abbreviation'          => $this->request->getVar('abbreviation'),
@@ -142,7 +143,7 @@ class Profile extends BaseController
     $stateModel = new StateModel();
     $this->view['state'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
     $profiledata = new ProfileModel();
-    $this->view['profile_data'] = $profiledata->where('id', 1)->first();
+    $this->view['profile_data'] = $profiledata->where('logged_in_userid', session()->get('id'))->first();
     if ($access === 'false') {
       $session = \Config\Services::session();
       $session->setFlashdata('error', 'You are not permitted to access this page');
@@ -163,8 +164,8 @@ class Profile extends BaseController
           $this->view['error']   = $this->validator;
         } else {
           $profilemodel = new ProfileModel();
-          $model = $profilemodel->where('id', 1)->first();
-          $id = 1;
+          $model = $profilemodel->where('logged_in_userid', session()->get('id'))->first();
+          $id = $model['id'];
           $newName = '';
           $image = $this->request->getFile('company_logo');
           $image_name = '';

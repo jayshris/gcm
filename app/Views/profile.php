@@ -45,7 +45,6 @@
 												<div class="form-wrap">
 													<div class="profile-upload">
 														<div class="profile-upload-img">
-															<span><i class="ti ti-photo"></i></span>
 															<?php if (isset($profile_data['company_logo']) && $profile_data['company_logo'] != '') { ?>
 																<img id="ImgPreview" src="<?= $profile_data['company_logo'] ?>" alt="img" name="company_logo">
 															<?php } else { ?>
@@ -289,7 +288,7 @@
 																?>
 															</div>
 														</div>
-														<div class="col-lg-3 col-md-6">
+														<div class="col-lg-4 col-md-6">
 															<div class="form-wrap">
 																<label class="col-form-label">
 																	State / Province <span class="text-danger">*</span>
@@ -315,7 +314,7 @@
 																?>
 															</div>
 														</div>
-														<div class="col-lg-3 col-md-6">
+														<div class="col-lg-2 col-md-6">
 															<div class="form-wrap">
 																<label class="col-form-label">
 																	City <span class="text-danger">*</span>
@@ -403,6 +402,25 @@
 																<?php
 																if ($validation->getError('booking_prefix')) {
 																	echo '<div class="alert alert-danger mt-2">' . $validation->getError('booking_prefix') . '</div>';
+																}
+																?>
+															</div>
+														</div>
+
+														<div class="col-lg-3 col-md-6">
+															<div class="form-wrap">
+																<label class="col-form-label">
+																	Loading Receipt Prefix
+																</label>
+																<input type="text" class="form-control" name="loading_receipt_prefix" value="<?php
+																																		if (isset($profile_data)) {
+																																			echo $profile_data['loading_receipt_prefix'];
+																																		} else {
+																																			echo set_value('loading_receipt_prefix');
+																																		} ?>">
+																<?php
+																if ($validation->getError('loading_receipt_prefix')) {
+																	echo '<div class="alert alert-danger mt-2">' . $validation->getError('loading_receipt_prefix') . '</div>';
 																}
 																?>
 															</div>

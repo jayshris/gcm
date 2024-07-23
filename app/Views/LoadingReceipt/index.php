@@ -28,12 +28,18 @@
 							</div>
 						</div>
 						<!-- /Page Header -->
-
 						
-						<div class="col-md-3 text-end mt-3">
-							<?php echo makeListActions($currentController, $Action, 0, 1); ?>
-						</div>
-
+						<form method="post" enctype="multipart/form-data" action="<?php echo base_url('booking'); ?>">
+							<div class="card main-card">
+								<div class="card-body"> 
+									<div class="row">  
+										<div class="col-md-3">
+											<?php echo makeListActions($currentController, $Action, 0, 1); ?>
+										</div>
+									</div>
+								</div>
+							</div>
+						</form>
 
 						<div class="card main-card">
 							<div class="card-body">
@@ -48,14 +54,41 @@
 										echo '<div class="alert alert-danger">' . $session->getFlashdata("danger") . '</div>';
 										}
 										?>
+										<br>
 									</div>
-
 								</div>
 								<!-- /Search -->
 
 								<!-- Product Type List -->
 								<div class="table-responsive custom-table">
-								 
+									<table class="table" id="loading-receipt-table">
+										<thead class="thead-light">
+										<tr>
+											<th>#</th>
+											<th>Action</th>
+											<th>Consignment No.</th>
+											<th>Booking Number</th>
+											<th>Branch Name</th>
+											<th>Booking Date</th> 
+										</tr>
+										</thead>
+										<tbody>
+											<?php
+											$i = 1;
+											foreach ($loading_receipts as $b) {
+											?>
+											<tr>
+												<td><?= $i++; ?>.</td> 
+												<td><?= makeListActions($currentController, $Action, $b['id'], 2) ?></td>
+												<td><?= $b['consignment_no'] ?></td>
+												<td><?= $b['booking_number'] ?></td>
+												<td><?= $b['branch_name'] ?></td>
+												<td><?= date('d M Y', strtotime($b['booking_date'])) ?></td> 
+											</td>
+											</tr>
+										<?php } ?>
+										</tbody>
+									</table>
 								</div>
 								<div class="row align-items-center">
 								<div class="col-md-6">
@@ -80,7 +113,47 @@
 	<!-- /Main Wrapper -->
 
 	<?= $this->include('partials/vendor-scripts') ?>
+	<script>
+    function delete_data(id) {
+      if (confirm("Are you sure you want to remove this product category ?")) {
+        window.location.href = "<?php echo base_url('product-categories-delete/'); ?>" + id;
+      }
+      return false;
+    }
 
+
+    // datatable init
+    if ($(' #loading-receipt-table').length > 0) {
+      $('#loading-receipt-table').DataTable({
+        "bFilter": false,
+        "bInfo": false,
+        "autoWidth": true,
+        "language": {
+          search: ' ',
+          sLengthMenu: '_MENU_',
+          searchPlaceholder: "Search",
+          info: "_START_ - _END_ of _TOTAL_ items",
+          "lengthMenu": "Show _MENU_ entries",
+          paginate: {
+            next: 'Next <i class=" fa fa-angle-right"></i> ',
+            previous: '<i class="fa fa-angle-left"></i> Prev '
+          },
+        },
+        initComplete: (settings, json) => {
+          $('.dataTables_paginate').appendTo('.datatable-paginate');
+          $('.dataTables_length').appendTo('.datatable-length');
+        } 
+      });
+    }
+
+	function delete_data(id) {
+      if (confirm("Are you sure you want to remove it?")) {
+        window.location.href = "<?php echo base_url(); ?>/loadingreceipt/delete/" + id;
+      }
+      return false;
+    }
+
+  </script>											
 </body>
 
 </html>
