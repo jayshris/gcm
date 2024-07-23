@@ -28,12 +28,11 @@
 								<div class="card">
 									<div class="card-body">
 										<div class="settings-form">
-											<form action="<?php echo base_url('expensehead/create'); ?>" method="post" enctype="multipart/form-data">
-                                                <div class="settings-sub-header">
-                                                    <h4>Add Expense Head</h4>
-                                                </div>
-												<?= $this->include('ExpenseHead/form.php') ?>                                                
-											</form>
+											<?php echo form_open_multipart(base_url().$currentController.'/'.$currentMethod.(($token>0) ? '/'.$token : ''), ['name'=>'actionForm', 'id'=>'actionForm']);?>
+											<div class="settings-sub-header">
+												<h4>Add Expense Head</h4>
+											</div>
+											<?= $this->include('ExpenseHead/form.php') ?>   
 										</div>
 									</div>
 								</div>

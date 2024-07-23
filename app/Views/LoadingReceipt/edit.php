@@ -28,12 +28,11 @@
 								<div class="card">
 									<div class="card-body">
 										<div class="settings-form"> 
-											<form action="<?php echo base_url('loadingreceipt/edit/'.$loading_receipts['id']); ?>" method="post" enctype="multipart/form-data">
-                                                <div class="settings-sub-header">
-                                                    <h4>Edit Loading Receipt</h4>
-                                                </div>
-												<?= $this->include('LoadingReceipt/form.php') ?>                                                
-											</form>
+											<?php echo form_open_multipart(base_url().$currentController.'/'.$currentMethod.(($loading_receipts['id']>0) ? '/'.$loading_receipts['id'] : ''), ['name'=>'actionForm', 'id'=>'actionForm']);?>
+											<div class="settings-sub-header">
+												<h4>Edit Loading Receipt</h4>
+											</div>
+											<?= $this->include('LoadingReceipt/form.php') ?>     
 										</div>
 									</div>
 								</div>

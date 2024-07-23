@@ -151,6 +151,7 @@ class LoadingReceipt extends BaseController
           'releasing_datetime'   =>  $this->request->getVar('releasing_datetime'),
           'policy_date'   =>  $this->request->getVar('policy_date'),
           'policy_no'   =>  $this->request->getVar('policy_no'),
+          'added_by' => isset($_SESSION['id']) ? $_SESSION['id'] : '0'
         ];
 
         $this->LoadingReceiptModel->save($data); 

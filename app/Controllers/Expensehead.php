@@ -63,7 +63,8 @@ class ExpenseHead extends BaseController
           $data['type_2'] = $this->request->getVar('type_2');
           $data['type_3'] = $this->request->getVar('type_3');
           $data['status'] = 1;
-  
+          $data['added_by'] = isset($_SESSION['id']) ? $_SESSION['id'] : '0';
+
           $this->ExpenseHeadModel->save($data); 
           // echo 'data<pre>';print_r($data);exit;
           $this->session->setFlashdata('success', 'Expense Head Added Successfully');
