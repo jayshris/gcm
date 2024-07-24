@@ -12,7 +12,7 @@ class VehicleModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
-    protected $allowedFields = ['owner', 'party_id', 'vehicle_type_id', 'model_number_id', 'rc_number', 'rc_date', 'mfg', 'invoice_no', 'invoice_date',  'chassis_number', 'engine_number', 'colour', 'seating', 'unladen_wt', 'laden_wt', 'km_reading_start', 'image1', 'image2', 'image3', 'image4', 'trip_status', 'vehicle_status', 'created_at', 'status', 'working_status', 'updated_at', 'deleted_at', 'approved', 'approval_user_id', 'approval_user_type', 'approval_date', 'approval_ip_address','vehicle_class_id','address','city','state_id','pincode'];
+    protected $allowedFields = ['owner', 'party_id', 'vehicle_type_id', 'model_number_id', 'rc_number', 'rc_date', 'mfg', 'invoice_no', 'invoice_date',  'chassis_number', 'engine_number', 'colour', 'seating', 'unladen_wt', 'laden_wt', 'km_reading_start', 'image1', 'image2', 'image3', 'image4', 'trip_status', 'vehicle_status', 'created_at', 'status', 'working_status', 'updated_at', 'deleted_at', 'approved', 'approval_user_id', 'approval_user_type', 'approval_date', 'approval_ip_address', 'vehicle_class_id', 'address', 'city', 'state_id', 'pincode'];
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
 

@@ -36,8 +36,16 @@ class Foreman extends BaseController
       return $this->response->redirect(site_url('/dashboard'));
     } else {
       $foremanModel = new ForemanModel();
-      $this->view['foreman_data'] = $foremanModel->orderBy('id', 'DESC')->paginate(50);
-      $this->view['pagination_link'] = $foremanModel->pager;
+      $foremanModel->select('foreman.*, party.party_name, party.status')
+        ->join('party', 'party.id = foreman.party_id');
+      if ($this->request->getPost('status') != '') {
+        $foremanModel->where('party.status', $this->request->getPost('status'));
+      } else {
+        $foremanModel->where('party.status', '1');
+      }
+
+      $this->view['foreman_data'] = $foremanModel->orderBy('id', 'DESC')->findAll();
+
       $this->view['page_data'] = [
         'page_title' => view('partials/page-title', ['title' => 'Foreman', 'li_1' => '123', 'li_2' => 'deals'])
       ];
@@ -59,10 +67,6 @@ class Foreman extends BaseController
       ];
       $stateModel = new StateModel();
       $this->view['state'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_id')->findAll();
-      $this->view['partytpe'] = $this->partyTypeModel->like('name', '%Foreman%')->first();
-      if (isset($this->view['partytpe'])) {
-        $this->view['party_map_data'] = $this->partyTypePartyModel->where(['party_type_id' => $this->view['partytpe']['id']])->findAll();
-      }
 
       $PartyModel = new PartyModel();
       $this->view['parties'] = $PartyModel->where('status', '1')->findAll();
@@ -71,7 +75,7 @@ class Foreman extends BaseController
       if ($this->request->getMethod() == 'POST') {
 
         $error = $this->validate([
-          'name'                    =>  'required|alpha_numeric'
+          'party_id' =>  'required|alpha_numeric'
         ]);
 
         if (!$error) {
@@ -146,7 +150,7 @@ class Foreman extends BaseController
 
 
           $foremanModel->save([
-            'name'  =>  $this->request->getVar('name'),
+            'party_id'  =>  $this->request->getVar('party_id'),
             'email'  =>  $this->request->getVar('email'),
             'mobile'  =>   $request->getPost('mobile'),
             'bank_account_number' => $request->getPost('bank_account_number'),
@@ -157,7 +161,6 @@ class Foreman extends BaseController
             'dl_image_front' => $image_name3,
             'dl_image_back' => $image_name4,
             'upi_text' => $request->getPost('upi'),
-            'status'  =>   'Inactive',
             'profile_image1'  =>  $image_name1,
             'profile_image2'  => $image_name2,
             'upi_id'    =>  $image_name5,
@@ -167,7 +170,7 @@ class Foreman extends BaseController
 
           $session = \Config\Services::session();
           $session->setFlashdata('success', 'Foreman Added');
-          return $this->response->redirect(base_url('/foreman'));
+          return $this->response->redirect(base_url('foreman'));
         }
       }
       return view('Foreman/create', $this->view);
@@ -196,9 +199,6 @@ class Foreman extends BaseController
       }
       $foremanModel = new ForemanModel();
       $this->view['foreman_data'] = $foremanModel->where('id', $id)->first();
-      $this->view['partytpe'] = $this->partyTypeModel->like('name', '%Foreman%')->first();
-
-      $this->view['party_map_data'] = $this->partyTypePartyModel->where(['party_type_id' => $this->view['partytpe']['id']])->findAll();
 
       helper(['form', 'url']);
       $this->view['page_data'] = [
@@ -212,7 +212,7 @@ class Foreman extends BaseController
       if ($this->request->getMethod() == 'POST') {
         $id = $this->request->getVar('id');
         $error = $this->validate([
-          'name'                    =>  'required|alpha_numeric',
+          'party_id' =>  'required|alpha_numeric',
         ]);
 
         if (!$error) {
@@ -220,7 +220,7 @@ class Foreman extends BaseController
         } else {
 
           $foremanModel->update($id, [
-            'name'  =>  $this->request->getVar('name'),
+            'party_id'  =>  $this->request->getVar('party_id'),
             'email'  =>  $this->request->getVar('email'),
             'mobile'  =>   $request->getPost('mobile'),
             'bank_account_number' => $request->getPost('bank_account_number'),
@@ -300,41 +300,12 @@ class Foreman extends BaseController
             }
           }
 
-
           $session = \Config\Services::session();
           $session->setFlashdata('success', 'Foreman updated');
-          return $this->response->redirect(base_url('/foreman'));
+          return $this->response->redirect(base_url('foreman'));
         }
       }
       return view('Foreman/edit', $this->view);
-    }
-  }
-
-  public function approve($id = null)
-  {
-    $access = $this->_access;
-    if ($access === 'false') {
-      $session = \Config\Services::session();
-      $session->setFlashdata('error', 'You are not permitted to access this page');
-      return $this->response->redirect(site_url('/dashboard'));
-    } else {
-      if (session()->get('isLoggedIn')) {
-        $login_id = session()->get('id');
-      }
-      $user = new UserModel();
-      $user = $user->where('id', $login_id)->first();
-      $foremanModel = new ForemanModel();
-      $foremanModel->update($id, [
-        'approved'              =>  1,
-        'approval_user_id'      =>  $user['id'],
-        'approval_user_type'    =>  $user['usertype'],
-        'approval_date'         =>  date("Y-m-d h:i:sa"),
-        'approval_ip_address'   =>  $_SERVER['REMOTE_ADDR']
-      ]);
-
-      $session = \Config\Services::session();
-      $session->setFlashdata('success', 'Foreman Approved');
-      return $this->response->redirect(site_url('/foreman'));
     }
   }
 

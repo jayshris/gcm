@@ -12,7 +12,7 @@ class DriverModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
-    protected $allowedFields    = ['name', 'foreman_id', 'driver_type', 'bank_ac', 'bank_ifsc', 'whatsapp_no', 'dl_no', 'dl_authority', 'dl_expiry', 'dl_image_front', 'dl_image_back', 'upi_text', 'upi_id', 'profile_image1', 'profile_image2', 'address', 'city', 'state', 'zip', 'status', 'working_status', 'created_at', 'vehicle_type', 'deleted_at', 'updated_at', 'approved', 'approval_user_id', 'approval_user_type', 'approval_date', 'approval_ip_address'];
+    protected $allowedFields    = ['party_id', 'foreman_id', 'driver_type', 'bank_ac', 'bank_ifsc', 'whatsapp_no', 'dl_no', 'dl_authority', 'dl_expiry', 'dl_image_front', 'dl_image_back', 'upi_text', 'upi_id', 'profile_image1', 'profile_image2', 'address', 'city', 'state', 'zip', 'working_status', 'created_at', 'deleted_at', 'updated_at'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

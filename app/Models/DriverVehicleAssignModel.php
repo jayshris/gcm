@@ -12,7 +12,7 @@ class DriverVehicleAssignModel extends Model
   protected $returnType       = 'array';
   protected $useSoftDeletes   = false;
   protected $protectFields    = true;
-  protected $allowedFields    = ['driver_id', 'vehicle_id', 'vehicle_location', 'vehicle_fuel_status', 'vehicle_km_reading', 'assign_date', 'unassign_date', 'assigned_by', 'unassigned_by', 'created_at'];
+  protected $allowedFields    = ['driver_id', 'vehicle_id', 'vehicle_location', 'vehicle_fuel_status', 'vehicle_km_reading', 'assign_date', 'unassign_date', 'assigned_by', 'unassigned_by'];
 
   protected bool $allowEmptyInserts = false;
   protected bool $updateOnlyChanged = true;

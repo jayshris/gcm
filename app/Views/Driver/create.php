@@ -52,7 +52,7 @@
                                   Driver Name <span class="text-danger">*</span>
                                 </label>
 
-                                <select class="dropdown selectopt" name="name" id="party_id">
+                                <select class="dropdown select2" name="party_id" id="party_id">
                                   <option>Select</option>
                                   <?php
                                   foreach ($parties as $party) {
@@ -63,7 +63,6 @@
                                   ?>
                                 </select>
 
-
                               </div>
                             </div>
                             <div class="col-md-6">
@@ -71,13 +70,13 @@
                                 <label class="col-form-label">
                                   Foreman Name <span class="text-danger">*</span>
                                 </label>
-                                <select class="dropdown selectopt" id="forman_name" name="foreman_id">
+                                <select class="dropdown select2" id="forman_name" name="foreman_id">
                                   <option>Select</option>
                                   <?php
                                   if (isset($foreman)) {
                                     foreach ($foreman as $row) {
                                       $party = new PartyModel();
-                                      $partydata = $party->where('id', $row["name"])->first();
+                                      $partydata = $party->where('id', $row["party_id"])->first();
                                       if ($partydata) {
                                         $name = $partydata['party_name'];
                                       } else {
@@ -166,7 +165,8 @@
                                 <label class="col-form-label">
                                   DL Image - Front
                                 </label>
-                                <input type="file" name="dl_image_front" class="form-control">
+                                <input type="file" name="dl_image_front" class="form-control" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps">
+                                <span class="text-info ">(PNG,JPEG,JPG,PDF)</span>
                               </div>
                             </div>
 
@@ -175,7 +175,8 @@
                                 <label class="col-form-label">
                                   DL Image - Back
                                 </label>
-                                <input type="file" name="dl_image_back" class="form-control">
+                                <input type="file" name="dl_image_back" class="form-control" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps">
+                                <span class="text-info ">(PNG,JPEG,JPG,PDF)</span>
                               </div>
                             </div>
 
@@ -185,7 +186,8 @@
                                 <label class="col-form-label">
                                   Profile Image 1
                                 </label>
-                                <input type="file" name="profile_image1" class="form-control">
+                                <input type="file" name="profile_image1" class="form-control" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps">
+                                <span class="text-info ">(PNG,JPEG,JPG,PDF)</span>
                               </div>
                             </div>
 
@@ -194,9 +196,8 @@
                                 <label class="col-form-label">
                                   Profile Image 2
                                 </label>
-
-                                <input type="file" name="profile_image2" class="form-control">
-
+                                <input type="file" name="profile_image2" class="form-control" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps">
+                                <span class="text-info ">(PNG,JPEG,JPG,PDF)</span>
                               </div>
                             </div>
 
@@ -212,7 +213,8 @@
                                 <label class="col-form-label">
                                   UPI ID Image
                                 </label>
-                                <input type="file" name="upi_id" class="form-control">
+                                <input type="file" name="upi_id" class="form-control" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps">
+                                <span class="text-info ">(PNG,JPEG,JPG,PDF)</span>
                               </div>
                             </div>
 
@@ -244,7 +246,7 @@
                             <div class="col-md-4">
                               <div class="form-wrap">
                                 <label class="col-form-label">State<span class="text-danger">*</span></label>
-                                <select class="dropdown selectopt" name="state">
+                                <select class="dropdown select2" name="state">
                                   <option>Select</option>
                                   <?php
                                   if (isset($state)) {

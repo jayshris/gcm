@@ -62,7 +62,7 @@
                                   <?php
                                   foreach ($parties as $party) {
                                   ?>
-                                    <option value="<?php echo $party['id']; ?>" <?= $driver_data['name'] == $party['id'] ? 'selected' : '' ?>><?php echo ucwords($party['party_name']); ?></option>
+                                    <option value="<?php echo $party['id']; ?>" <?= $driver_data['party_id'] == $party['id'] ? 'selected' : '' ?>><?php echo ucwords($party['party_name']); ?></option>
                                   <?php
                                   }
                                   ?>
@@ -160,18 +160,30 @@
 
                             <div class="col-md-3">
                               <div class="form-wrap">
-                                <label class="col-form-label"> DL Image - Front </label>
-                                <br>
-                                <img src="<?= base_url('public/uploads/driverDocs/') . $driver_data['dl_image_front'] ?>" style="height: 150px;">
+                                <label class="col-form-label"> DL Image - Front </label><br>
+                                <?php if (isset($driver_data) && $driver_data['dl_image_front'] != '') {
+                                  if (pathinfo($driver_data['dl_image_front'], PATHINFO_EXTENSION) != 'pdf') {
+                                    echo '<img src="' . base_url('public/uploads/driverDocs/') . $driver_data['dl_image_front'] . '" style="height: 150px;">';
+                                  } else {
+                                    echo '<a href="' . base_url('public/uploads/driverDocs/') . $driver_data['dl_image_front'] . '" target="_blank"><span class="text-danger">Click To View PDF</span></a>';
+                                  }
+                                }
+                                ?>
                                 <input type="file" name="dl_image_front" class="form-control">
                               </div>
                             </div>
 
                             <div class="col-md-3">
                               <div class="form-wrap">
-                                <label class="col-form-label"> DL Image - Back </label>
-                                <br>
-                                <img src="<?= base_url('public/uploads/driverDocs/') . $driver_data['dl_image_back'] ?>" style="height: 150px;">
+                                <label class="col-form-label"> DL Image - Back </label><br>
+                                <?php if (isset($driver_data) && $driver_data['dl_image_back'] != '') {
+                                  if (pathinfo($driver_data['dl_image_back'], PATHINFO_EXTENSION) != 'pdf') {
+                                    echo '<img src="' . base_url('public/uploads/driverDocs/') . $driver_data['dl_image_back'] . '" style="height: 150px;">';
+                                  } else {
+                                    echo '<a href="' . base_url('public/uploads/driverDocs/') . $driver_data['dl_image_back'] . '" target="_blank"><span class="text-danger">Click To View PDF</span></a>';
+                                  }
+                                }
+                                ?>
                                 <input type="file" name="dl_image_back" class="form-control">
                               </div>
                             </div>
@@ -179,18 +191,30 @@
 
                             <div class="col-md-3">
                               <div class="form-wrap">
-                                <label class="col-form-label"> Profile Image 1 </label>
-                                <br>
-                                <img src="<?= base_url('public/uploads/driverDocs/') . $driver_data['profile_image1'] ?>" style="height: 150px;">
+                                <label class="col-form-label"> Profile Image 1 </label><br>
+                                <?php if (isset($driver_data) && $driver_data['profile_image1'] != '') {
+                                  if (pathinfo($driver_data['profile_image1'], PATHINFO_EXTENSION) != 'pdf') {
+                                    echo '<img src="' . base_url('public/uploads/driverDocs/') . $driver_data['profile_image1'] . '" style="height: 150px;">';
+                                  } else {
+                                    echo '<a href="' . base_url('public/uploads/driverDocs/') . $driver_data['profile_image1'] . '" target="_blank"><span class="text-danger">Click To View PDF</span></a>';
+                                  }
+                                }
+                                ?>
                                 <input type="file" name="profile_image1" class="form-control">
                               </div>
                             </div>
 
                             <div class="col-md-3">
                               <div class="form-wrap">
-                                <label class="col-form-label"> Profile Image 2 </label>
-                                <br>
-                                <img src="<?= base_url('public/uploads/driverDocs/') . $driver_data['profile_image2'] ?>" style="height: 150px;">
+                                <label class="col-form-label"> Profile Image 2 </label><br>
+                                <?php if (isset($driver_data) && $driver_data['profile_image2'] != '') {
+                                  if (pathinfo($driver_data['profile_image2'], PATHINFO_EXTENSION) != 'pdf') {
+                                    echo '<img src="' . base_url('public/uploads/driverDocs/') . $driver_data['profile_image2'] . '" style="height: 150px;">';
+                                  } else {
+                                    echo '<a href="' . base_url('public/uploads/driverDocs/') . $driver_data['profile_image2'] . '" target="_blank"><span class="text-danger">Click To View PDF</span></a>';
+                                  }
+                                }
+                                ?>
                                 <input type="file" name="profile_image2" class="form-control">
 
                               </div>
@@ -205,9 +229,15 @@
 
                             <div class="col-md-3">
                               <div class="form-wrap">
-                                <label class="col-form-label"> UPI ID Image </label>
-                                <br>
-                                <img src="<?= base_url('public/uploads/driverDocs/') . $driver_data['upi_id'] ?>" style="height: 150px;">
+                                <label class="col-form-label"> UPI ID Image </label><br>
+                                <?php if (isset($driver_data) && $driver_data['upi_id'] != '') {
+                                  if (pathinfo($driver_data['upi_id'], PATHINFO_EXTENSION) != 'pdf') {
+                                    echo '<img src="' . base_url('public/uploads/driverDocs/') . $driver_data['upi_id'] . '" style="height: 150px;">';
+                                  } else {
+                                    echo '<a href="' . base_url('public/uploads/driverDocs/') . $driver_data['upi_id'] . '" target="_blank"><span class="text-danger">Click To View PDF</span></a>';
+                                  }
+                                }
+                                ?>
                                 <input type="file" name="upi_id" class="form-control">
                               </div>
                             </div>
@@ -290,15 +320,7 @@
                                 ?>
                               </div>
                             </div>
-                            <?php if ($last != 'create') { ?>
-                              <div>
-                                <input type="checkbox" id="approve" class="form-check-input" name="status" <?php if (isset($driver_data)) {
-                                                                                                              if ($driver_data['status'] == 1) {
-                                                                                                                echo 'checked';
-                                                                                                              }
-                                                                                                            } ?> value="1"> <label for="status"> Active</label>
-                              </div>
-                            <?php } ?>
+
 
                           </div>
                         </div>

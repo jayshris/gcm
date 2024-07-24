@@ -33,12 +33,12 @@ use App\Models\PartyModel;
                   Foreman Name <span class="text-danger">*</span>
                 </label>
 
-                <select class="dropdown selectopt" name="name" id="party_id" <?= isset($foreman_data) && $foreman_data['name'] != '' ? 'style="pointer-events: none;"' : '' ?>>
+                <select class="dropdown selectopt" name="party_id" id="party_id" <?= isset($foreman_data) && $foreman_data['party_id'] != '' ? 'style="pointer-events: none;"' : '' ?>>
                   <option>Select</option>
                   <?php
                   foreach ($parties as $party) {
                   ?>
-                    <option value="<?php echo $party['id']; ?>" <?= isset($foreman_data) && $foreman_data['name'] == $party['id'] ? 'selected' : '' ?>><?php echo ucwords($party['party_name']); ?></option>
+                    <option value="<?php echo $party['id']; ?>" <?= isset($foreman_data) && $foreman_data['party_id'] == $party['id'] ? 'selected' : '' ?>><?php echo ucwords($party['party_name']); ?></option>
                   <?php
                   }
                   ?>
@@ -129,16 +129,23 @@ use App\Models\PartyModel;
               <div class="form-wrap">
                 <label class="col-form-label">
                   DL Image - Front
-                </label>
-                <?php if (isset($foreman_data) && $foreman_data['dl_image_front'] != '') { ?>
-                  <img src="<?= base_url('public/uploads/foremanDocs/') . $foreman_data['dl_image_front'] ?>" style="height: 150px;">
-                <?php } ?>
-                <input type="file" name="dl_image_front" class="form-control">
+                </label><br>
+                <?php if (isset($foreman_data) && $foreman_data['dl_image_front'] != '') {
+                  if (pathinfo($foreman_data['dl_image_front'], PATHINFO_EXTENSION) != 'pdf') {
+                    echo '<img src="' . base_url('public/uploads/foremanDocs/') . $foreman_data['dl_image_front'] . '" style="height: 150px;">';
+                  } else {
+                    echo '<a href="' . base_url('public/uploads/foremanDocs/') . $foreman_data['dl_image_front'] . '" target="_blank"><span class="text-danger">Click To View PDF</span></a>';
+                  }
+                }
+                ?>
+
+                <input type="file" name="dl_image_front" class="form-control" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps">
                 <?php
                 if ($validation->getError('dl_image_front')) {
                   echo '<div class="alert alert-danger mt-2">' . $validation->getError('dl_image_front') . '</div>';
                 }
                 ?>
+                <span class="text-info ">(PNG,JPEG,JPG,PDF)</span>
               </div>
             </div>
 
@@ -146,16 +153,22 @@ use App\Models\PartyModel;
               <div class="form-wrap">
                 <label class="col-form-label">
                   DL Image - Back
-                </label>
-                <?php if (isset($foreman_data) && $foreman_data['dl_image_back'] != '') { ?>
-                  <img src="<?= base_url('public/uploads/foremanDocs/') . $foreman_data['dl_image_back'] ?>" style="height: 150px;">
-                <?php } ?>
-                <input type="file" name="dl_image_back" class="form-control">
+                </label><br>
+                <?php if (isset($foreman_data) && $foreman_data['dl_image_back'] != '') {
+                  if (pathinfo($foreman_data['dl_image_back'], PATHINFO_EXTENSION) != 'pdf') {
+                    echo '<img src="' . base_url('public/uploads/foremanDocs/') . $foreman_data['dl_image_back'] . '" style="height: 150px;">';
+                  } else {
+                    echo '<a href="' . base_url('public/uploads/foremanDocs/') . $foreman_data['dl_image_back'] . '" target="_blank"><span class="text-danger">Click To View PDF</span></a>';
+                  }
+                }
+                ?>
+                <input type="file" name="dl_image_back" class="form-control" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps">
                 <?php
                 if ($validation->getError('dl_image_back')) {
                   echo '<div class="alert alert-danger mt-2">' . $validation->getError('dl_image_back') . '</div>';
                 }
                 ?>
+                <span class="text-info ">(PNG,JPEG,JPG,PDF)</span>
               </div>
             </div>
 
@@ -164,11 +177,16 @@ use App\Models\PartyModel;
               <div class="form-wrap">
                 <label class="col-form-label">
                   Profile Image 1
-                </label>
-                <?php if (isset($foreman_data) && $foreman_data['profile_image1'] != '') { ?>
-                  <img src="<?= base_url('public/uploads/foremanDocs/') . $foreman_data['profile_image1'] ?>" style="height: 150px;">
-                <?php } ?>
-                <input type="file" name="profile_image1" class="form-control">
+                </label><br>
+                <?php if (isset($foreman_data) && $foreman_data['profile_image1'] != '') {
+                  if (pathinfo($foreman_data['profile_image1'], PATHINFO_EXTENSION) != 'pdf') {
+                    echo '<img src="' . base_url('public/uploads/foremanDocs/') . $foreman_data['profile_image1'] . '" style="height: 150px;">';
+                  } else {
+                    echo '<a href="' . base_url('public/uploads/foremanDocs/') . $foreman_data['profile_image1'] . '" target="_blank"><span class="text-danger">Click To View PDF</span></a>';
+                  }
+                }
+                ?>
+                <input type="file" name="profile_image1" class="form-control" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps">
                 <?php if (isset($foreman_data)) { ?>
 
                 <?php }
@@ -176,6 +194,7 @@ use App\Models\PartyModel;
                   echo '<div class="alert alert-danger mt-2">' . $validation->getError('profile_image1') . '</div>';
                 }
                 ?>
+                <span class="text-info ">(PNG,JPEG,JPG,PDF)</span>
               </div>
             </div>
 
@@ -183,19 +202,23 @@ use App\Models\PartyModel;
               <div class="form-wrap">
                 <label class="col-form-label">
                   Profile Image 2
-                </label>
-                <?php if (isset($foreman_data) && $foreman_data['profile_image2'] != '') { ?>
-                  <img src="<?= base_url('public/uploads/foremanDocs/') . $foreman_data['profile_image2'] ?>" style="height: 150px;">
-                <?php } ?>
+                </label><br>
+                <?php if (isset($foreman_data) && $foreman_data['profile_image2'] != '') {
+                  if (pathinfo($foreman_data['profile_image2'], PATHINFO_EXTENSION) != 'pdf') {
+                    echo '<img src="' . base_url('public/uploads/foremanDocs/') . $foreman_data['profile_image2'] . '" style="height: 150px;">';
+                  } else {
+                    echo '<a href="' . base_url('public/uploads/foremanDocs/') . $foreman_data['profile_image2'] . '" target="_blank"><span class="text-danger">Click To View PDF</span></a>';
+                  }
+                }
+                ?>
                 <?php
                 if ($validation->getError('profile_image2')) {
                   echo '<div class="alert alert-danger mt-2">' . $validation->getError('profile_image2') . '</div>';
                 }
                 ?>
-                <input type="file" name="profile_image2" class="form-control">
-                <?php if (isset($foreman_data)) { ?>
+                <input type="file" name="profile_image2" class="form-control" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps">
+                <span class="text-info ">(PNG,JPEG,JPG,PDF)</span>
 
-                <?php } ?>
               </div>
             </div>
 
@@ -210,15 +233,22 @@ use App\Models\PartyModel;
               <div class="form-wrap">
                 <label class="col-form-label">
                   UPI ID Image
-                </label>
-                <?php if (isset($foreman_data) &&  $foreman_data['upi_id'] != '') { ?>
-                  <img src="<?= base_url('public/uploads/foremanDocs/') . $foreman_data['upi_id'] ?>" style="height: 150px;">
-                <?php } ?>
-                <input type="file" name="upi_id" class="form-control">
+                </label><br>
+                <?php if (isset($foreman_data) && $foreman_data['upi_id'] != '') {
+                  if (pathinfo($foreman_data['upi_id'], PATHINFO_EXTENSION) != 'pdf') {
+                    echo '<img src="' . base_url('public/uploads/foremanDocs/') . $foreman_data['upi_id'] . '" style="height: 150px;">';
+                  } else {
+                    echo '<a href="' . base_url('public/uploads/foremanDocs/') . $foreman_data['upi_id'] . '" target="_blank"><span class="text-danger">Click To View PDF</span></a>';
+                  }
+                }
+
+                ?>
+                <input type="file" name="upi_id" class="form-control" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps">
                 <?php
                 if ($validation->getError('upi_id')) {
                   echo '<div class="alert alert-danger mt-2">' . $validation->getError('upi_id') . '</div>';
                 } ?>
+                <span class="text-info ">(PNG,JPEG,JPG,PDF)</span>
               </div>
             </div>
 

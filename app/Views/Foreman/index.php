@@ -30,28 +30,45 @@ use App\Models\PartyModel;
                 <!-- Search -->
 
 
-
-                <div class="search-section">
-                  <div class="row mb-3">
-                    <div class="col-md-9 col-sm-4">
-                      <div class="form-wrap icon-form">
-                        <?php
-                        $session = \Config\Services::session();
-                        if ($session->getFlashdata('success')) {
-                          echo '<div class="alert alert-success">' . $session->getFlashdata("success") . '</div>';
-                        }
-                        ?>
+                <form method="post" enctype="multipart/form-data" action="<?php echo base_url('foreman'); ?>">
+                  <div class="search-section">
+                    <div class="row mb-3">
+                      <div class="col-md-12">
+                        <div class="form-wrap icon-form">
+                          <?php
+                          $session = \Config\Services::session();
+                          if ($session->getFlashdata('success')) {
+                            echo '<div class="alert alert-success">' . $session->getFlashdata("success") . '</div>';
+                          }
+                          ?>
+                        </div>
                       </div>
-                    </div>
 
-                    <div class="col-md-3 text-end">
-                      <?php echo makeListActions($currentController, $Action, 0, 1); ?>
-                    </div>
+                      <div class="col-md-2">
+                        <div class="form-wrap">
+                          <label class="col-form-label">Status</label>
+                          <select class="form-select" name="status" aria-label="Default select example">
+                            <option value="">Select Status</option>
+                            <option value="1" <?= set_value('status') == 1 ? 'selected' : '' ?>>Active</option>
+                            <option value="0" <?= set_value('status') == 0 ? 'selected' : '' ?>>Inactive</option>
+                          </select>
+                        </div>
+                      </div>
 
+
+
+                      <div class="col-md-5">
+                        <button class="btn btn-info mt-4">Search</button>&nbsp;&nbsp;
+                        <a href="./foreman" class="btn btn-warning mt-4">Reset</a>&nbsp;&nbsp;
+                      </div>
+
+                      <div class="col-md-5 text-end">
+                        <?php echo makeListActions($currentController, $Action, 0, 1); ?>
+                      </div>
+
+                    </div>
                   </div>
-                </div>
-
-
+                </form>
 
                 <!-- Contact List -->
                 <div class="table-responsive custom-table">
@@ -59,54 +76,24 @@ use App\Models\PartyModel;
                     <thead class="thead-light">
                       <tr>
                         <th>Action</th>
-                        <!-- <th>Thumbnail Image</th> -->
                         <th>Foreman Name</th>
                         <th>Mobile</th>
                         <th>Email</th>
-                        <!-- <th>Status</th> -->
+                        <th>Status</th>
                       </tr>
                     </thead>
                     <tbody>
                       <?php
-                      if ($foreman_data) {
-                        foreach ($foreman_data as $foreman) {
-                          if ($foreman['status'] == 'Inactive') {
-                            $status = '<span class="badge badge-pill bg-danger">Inactive</span>';
-                          } else {
-                            $status = '<span class="badge badge-pill bg-success">Active</span>';
-                          }
-                          $created_at_str = '';
-                          $updated_at_str = '';
-                          if (isset($foreman["created_at"])) {
-                            $created_at_str = strtotime($foreman["created_at"]);
-                            $created_at_str = date('d-m-Y', $created_at_str);
-                          }
-                          if (isset($foreman["updated_at"])) {
-                            $updated_at_str = strtotime($foreman["updated_at"]);
-                            $updated_at_str = date('d-m-Y', $updated_at_str);
-                          }
-
-                          if ($foreman['approved'] == NULL) {
-                            $bun = '<a href="foreman/approve/' . $foreman['id'] . '" class="btn btn-success btn-sm" role="button">Approve</a>';
-                          } else {
-                            $bun = '<strong>Approved</strong>';
-                          }
-
-                          $party = new PartyModel();
-                          $partydata = $party->where('id', $foreman["name"])->first();
-                          if ($partydata) {
-                            $name = $partydata['party_name'];
-                          } else {
-                            $name = '';
-                          }
-                          echo '
-                                <tr>
-                                    <td>' . makeListActions($currentController, $Action, $foreman['id'], 2) . '</td>
-                                    <td>' . $name . '</td>
-                                    <td>' . $foreman['mobile'] . '</td>
-                                    <td>' . $foreman['email'] . '</td>
-                                </tr>';
-                        }
+                      foreach ($foreman_data as $foreman) {
+                      ?>
+                        <tr>
+                          <td><?= makeListActions($currentController, $Action, $foreman['id'], 2) ?></td>
+                          <td><?= $foreman['party_name'] ?></td>
+                          <td><?= $foreman['mobile'] ?></td>
+                          <td><?= $foreman['email'] ?></td>
+                          <td><?= $foreman['status'] ? '<span class="badge badge-pill bg-success">Active</span>' : '<span class="badge badge-pill bg-danger">Inactive</span>' ?></td>
+                        </tr>
+                      <?php
                       }
                       ?>
                     </tbody>

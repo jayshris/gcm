@@ -61,21 +61,18 @@ use App\Models\PartyModel;
                       </div>
                     </div>
 
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                       <button class="btn btn-info mt-4">Search</button>&nbsp;&nbsp;
                       <a href="./driver" class="btn btn-warning mt-4">Reset</a>&nbsp;&nbsp;
                     </div>
 
-                    <div class="col-md-2 text-end mt-4">
-                      <a href="<?= base_url('driver/assigned-list') ?>" class="btn btn-warning">Assigned List</a>
-
+                    <div class="col-md-3 text-end mt-4">
+                      <button id="list" type="button" class="btn btn-warning">Currently Assigned List</button>
                     </div>
 
                     <div class="col-md-1 text-end mt-4">
                       <?php echo makeListActions($currentController, $Action, 0, 1); ?>
                     </div>
-
-
 
                   </div>
 
@@ -193,6 +190,24 @@ use App\Models\PartyModel;
   </div>
   <!-- /Main Wrapper -->
 
+  <!-- modal  -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">List Of Assigned Drivers and Vehicles</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <?= $this->include('partials/vendor-scripts') ?>
   <script>
@@ -226,6 +241,25 @@ use App\Models\PartyModel;
         }
       });
     }
+
+
+    $(document).ready(function() {
+      $('#list').on('click', function() {
+        var id = $(this).data('id');
+        $.ajax({
+          type: 'GET',
+          url: '<?= base_url('driver/assigned_list') ?>', // replace with your URL
+          data: {
+            id: id
+          },
+          success: function(data) {
+            console.log(data);
+            $('#exampleModal').modal('show'); // show the modal
+            $('.modal-body').html(data); // populate the modal body with the fetched data
+          }
+        });
+      });
+    });
   </script>
 </body>
 

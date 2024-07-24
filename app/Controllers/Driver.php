@@ -9,11 +9,13 @@ use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\StateModel;
 use App\Models\ForemanModel;
 use App\Models\AadhaarNumberMapModule;
+use App\Models\DriverVehicleAssignModel;
 use App\Models\PartyModel;
 use App\Models\VehicleTypeModel;
 use App\Models\PartytypeModel;
 use App\Models\PartyTypePartyModel;
 use App\Models\DriverVehicleType;
+use App\Models\VehicleModel;
 
 class Driver extends BaseController
 {
@@ -21,6 +23,7 @@ class Driver extends BaseController
 
   public function __construct()
   {
+    $this->session = \Config\Services::session();
     $u = new UserModel();
     $access = $u->setPermission();
     $this->_access = $access;
@@ -29,6 +32,13 @@ class Driver extends BaseController
     $this->partyTypePartyModel = new PartyTypePartyModel();
     $this->vehicletypeDriver =  new DriverVehicleType();
     $this->vehicletype = new VehicleTypeModel();
+    $this->DVAModel = new DriverVehicleAssignModel();
+    $this->VTModel = new VehicleTypeModel();
+    $this->VModel = new VehicleModel();
+    $this->DModel = new DriverModel();
+
+    $this->added_by = isset($_SESSION['id']) ? $_SESSION['id'] : '0';
+    $this->added_ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
   }
 
   public function index()
@@ -36,14 +46,14 @@ class Driver extends BaseController
     $userModel = new UserModel();
     $this->view['driver'] = $userModel->where('usertype', 'driver')->orderBy('id', 'DESC')->paginate(10);
     $driverModel = new DriverModel();
-    $driverModel->select('driver.*,t2.party_name, t3.party_name as foreman_name')
-      ->join('party' . ' t2', 't2.id = driver.name')
+    $driverModel->select('driver.*,t2.party_name, t2.status, t3.party_name as foreman_name')
+      ->join('party' . ' t2', 't2.id = driver.party_id')
       ->join('party' . ' t3', 't3.id = driver.foreman_id');
 
     if ($this->request->getPost('status') != '') {
-      $driverModel->where('driver.status', $this->request->getPost('status'));
+      $driverModel->where('t2.status', $this->request->getPost('status'));
     } else {
-      $driverModel->where('driver.status', '1');
+      $driverModel->where('t2.status', '1');
     }
 
     if ($this->request->getPost('working_status') != '') {
@@ -66,7 +76,7 @@ class Driver extends BaseController
     if ($access === 'false') {
       $session = \Config\Services::session();
       $session->setFlashdata('error', 'You are not permitted to access this page');
-      return $this->response->redirect(site_url('/dashboard'));
+      return $this->response->redirect(base_url('/dashboard'));
     } else {
       helper(['form', 'url']);
       $this->view['page_data'] = [
@@ -169,7 +179,7 @@ class Driver extends BaseController
 
           $driverModel->save([
 
-            'name'  =>  $this->request->getVar('name'),
+            'party_id'  =>  $this->request->getVar('party_id'),
             'foreman_id'  =>  $this->request->getVar('foreman_id'),
             'driver_type'  =>   $this->request->getPost('driver_type'),
             'bank_ac' => $this->request->getPost('bank_account_number'),
@@ -188,10 +198,8 @@ class Driver extends BaseController
             'city'  =>   $this->request->getPost('city'),
             'state'  =>  $this->request->getPost('state'),
             'zip'  =>  $this->request->getPost('zip'),
-            'status'  =>  '1',
             'working_status'  =>  '1',
-
-            'created_at'  =>  date("Y-m-d h:i:sa"),
+            'created_at'  =>  date("Y-m-d h:i:sa")
           ]);
 
           $user_id = $driverModel->getInsertID();
@@ -207,7 +215,7 @@ class Driver extends BaseController
 
           $session = \Config\Services::session();
           $session->setFlashdata('success', 'Driver Added');
-          return $this->response->redirect(base_url('/driver'));
+          return $this->response->redirect(base_url('driver'));
         }
       }
       return view('Driver/create', $this->view);
@@ -220,7 +228,7 @@ class Driver extends BaseController
     if ($access === 'false') {
       $session = \Config\Services::session();
       $session->setFlashdata('error', 'You are not permitted to access this page');
-      return $this->response->redirect(site_url('/dashboard'));
+      return $this->response->redirect(base_url('/dashboard'));
     } else {
 
       if (session()->get('isLoggedIn')) {
@@ -233,12 +241,9 @@ class Driver extends BaseController
       $stateModel = new StateModel();
       $this->view['state'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_id')->findAll();
 
-      $this->view['partytpe'] = $this->partyTypeModel->like('name', '%Driver%')->first();
-      $this->view['party_map_data'] = $this->partyTypePartyModel->where(['party_type_id' => $this->view['partytpe']['id']])->findAll();
-
       $driverModel = new DriverModel();
       $this->view['driver_data'] = $driverModel->select('driver.*,party.email,party.primary_phone')
-        ->join('party', 'party.id = driver.name')
+        ->join('party', 'party.id = driver.party_id')
         ->where('driver.id', $id)->first();
 
       $this->view['vehicletypes'] = $this->vehicletype->where('status', 'Active')->findAll();
@@ -246,7 +251,7 @@ class Driver extends BaseController
 
       $foremanModel = new ForemanModel();
       $this->view['foreman'] = $foremanModel->select('foreman.*, party.party_name, party.id as party_id')
-        ->join('party', 'foreman.name = party.id')
+        ->join('party', 'foreman.party_id = party.id')
         ->findAll();
 
       $PartyModel = new PartyModel();
@@ -255,12 +260,6 @@ class Driver extends BaseController
       if ($this->request->getMethod() == 'POST') {
 
         $driverModel = new DriverModel();
-
-        if ($this->request->getVar('approve') == 1) {
-          $status = 'Active';
-        } else {
-          $status = 'Inactive';
-        }
 
         $driverModel->update($id, [
           'name'  =>  $this->request->getVar('name'),
@@ -277,14 +276,8 @@ class Driver extends BaseController
           'city'  =>   $this->request->getPost('city'),
           'state'  =>  $this->request->getPost('state'),
           'zip'  =>  $this->request->getPost('zip'),
-          'status'  => $this->request->getVar('status'),
-          'working_status'  =>  '1',
-          'approved'                =>  $this->request->getVar('status'),
-          'approval_user_id'        =>  isset($user['id']) ? $user['id'] : '',
-          'approval_user_type'      =>  isset($user['usertype']) ? $user['usertype'] : '',
-          'approval_date'           =>  date("Y-m-d h:i:sa"),
-          'approval_ip_address'     =>  $_SERVER['REMOTE_ADDR'],
-          'updated_at'              =>  date("Y-m-d h:i:sa"),
+          'working_status' =>  '1',
+          'updated_at' =>  date("Y-m-d h:i:sa"),
         ]);
 
         // update image if uploaded
@@ -373,7 +366,7 @@ class Driver extends BaseController
 
         $session = \Config\Services::session();
         $session->setFlashdata('success', 'Driver updated');
-        return $this->response->redirect(site_url('/driver'));
+        return $this->response->redirect(base_url('driver'));
       }
       return view('Driver/edit', $this->view);
     }
@@ -385,13 +378,13 @@ class Driver extends BaseController
     if ($access === 'false') {
       $session = \Config\Services::session();
       $session->setFlashdata('error', 'You are not permitted to access this page');
-      return $this->response->redirect(site_url('/dashboard'));
+      return $this->response->redirect(base_url('/dashboard'));
     } else {
       $driverModel = new DriverModel();
       $driverModel->where('id', $id)->delete($id);
       $session = \Config\Services::session();
       $session->setFlashdata('success', 'Driver Deleted');
-      return $this->response->redirect(site_url('/driver'));
+      return $this->response->redirect(base_url('/driver'));
     }
   }
 
@@ -401,7 +394,7 @@ class Driver extends BaseController
     if ($access === 'false') {
       $session = \Config\Services::session();
       $session->setFlashdata('error', 'You are not permitted to access this page');
-      return $this->response->redirect(site_url('/dashboard'));
+      return $this->response->redirect(base_url('/dashboard'));
     } else {
       $driverModel = new DriverModel();
       $this->view['driver_data'] = $driverModel->where('id', $id)->first();
@@ -416,7 +409,7 @@ class Driver extends BaseController
     if ($access === 'false') {
       $session = \Config\Services::session();
       $session->setFlashdata('error', 'You are not permitted to access this page');
-      return $this->response->redirect(site_url('/dashboard'));
+      return $this->response->redirect(base_url('/dashboard'));
     } else {
       if (session()->get('isLoggedIn')) {
         $login_id = session()->get('id');
@@ -434,7 +427,7 @@ class Driver extends BaseController
 
       $session = \Config\Services::session();
       $session->setFlashdata('success', 'Driver Approved');
-      return $this->response->redirect(site_url('/foreman'));
+      return $this->response->redirect(base_url('/foreman'));
     }
   }
 
@@ -448,6 +441,68 @@ class Driver extends BaseController
 
   public function assign_vehicle($id)
   {
-    print_r($id);
+    if ($this->_access === 'false') {
+      $this->session->setFlashdata('error', 'You are not permitted to access this page');
+      return $this->response->redirect(base_url('dashboard'));
+    } else if ($this->request->getPost()) {
+
+      $result = $this->DVAModel->where('driver_id', $id)->where('unassign_date', '')->first();
+
+      if ($result) {
+        $this->VModel->update($result['vehicle_id'], ['working_status' => '1']);
+        $this->DVAModel->update($result['id'], ['unassign_date' => date('Y-m-d h:i:s'), 'unassigned_by' => $this->added_by]);
+      }
+
+      $arr = [
+        'driver_id' => $id,
+        'vehicle_id' => $this->request->getPost('vehicle_id'),
+        'vehicle_location' => $this->request->getPost('location'),
+        'vehicle_fuel_status' => $this->request->getPost('fuel'),
+        'vehicle_km_reading' => $this->request->getPost('km'),
+        'assigned_by' => $this->added_by
+      ];
+      $this->DVAModel->insert($arr);
+      $this->session->setFlashdata('success', 'Vehicle assigned to driver');
+
+      // change driver and vehicle status
+      $this->VModel->update($this->request->getPost('vehicle_id'), ['working_status' => '2']);
+
+      return $this->response->redirect(base_url('driver'));
+    } else {
+
+      $this->view['token'] = $id;
+      $this->view['free_vehicles'] = $this->VModel->where('working_status', '1')->findAll();
+      $this->view['vehicles'] = $this->VModel->findAll();
+      $this->view['driver_detail'] = $this->DModel->select('driver.*, party.party_name')->join('party', 'party.id = driver.party_id')->where('driver.id', $id)->first();
+      $this->view['assignment_details'] = $this->DVAModel->where('driver_id', $id)->where('unassign_date', '')->first();
+
+      return view('Driver/assign', $this->view);
+    }
+  }
+
+  public function unassign_vehicle($id)
+  {
+    $link = $this->DVAModel->where('driver_id', $id)->where('unassign_date', '')->first();
+
+    if ($link) {
+      $this->DVAModel->update($link['id'], ['unassign_date' =>  date("Y-m-d h:i:sa"), 'unassigned_by' => $this->added_by]);
+      $this->VModel->update($link['vehicle_id'], ['working_status' => '1']);
+
+      $this->session->setFlashdata('success', 'Vehicle Unassigned From Driver');
+    } else $this->session->setFlashdata('success', 'No Vehicle Assigned');
+
+    return $this->response->redirect(base_url('driver'));
+  }
+
+  public function assigned_list()
+  {
+    $data['assigned_list'] = $this->DVAModel->select('driver_vehicle_map.*, vehicle.rc_number, party.party_name ')
+      ->join('vehicle', 'vehicle.id = driver_vehicle_map.vehicle_id')
+      ->join('driver', 'driver.id = driver_vehicle_map.driver_id')
+      ->orderBy('driver_vehicle_map.assign_date', 'descs')
+      ->join('party', 'party.id = driver.party_id')
+      ->where('driver_vehicle_map.unassign_date', '')
+      ->findAll();
+    return view('Driver/assigned_list', $data);
   }
 }

@@ -4,8 +4,6 @@
 <head>
   <?= $this->include('partials/title-meta') ?>
   <?= $this->include('partials/head-css') ?>
-  <!-- Feathericon CSS -->
-  <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/feather.css">
 
 
 </head>
@@ -30,9 +28,9 @@
                   <h6>Add New Foreman</h6>
                 </div>
 
-              <?= $this->include('Foreman/form.php') ?>
+                <?= $this->include('Foreman/form.php') ?>
 
-              
+
               </div>
             </div>
 
@@ -46,30 +44,26 @@
   <!-- /Main Wrapper -->
 
   <?= $this->include('partials/vendor-scripts') ?>
-  <script >
-  jQuery(document).ready(function($) {
-  $("#party_id").on('change', function() {
-      $("#target").empty();
-      var level = $(this).val();
-      if(level){
-             $.ajax ({
-              type: 'POST',
-              url: 'populate_fields_data',
-              data: { party_id: '' + level + '' },
-              success : function(htmlresponse) {
-                  $('#target').append(htmlresponse);
-               }
+  <script>
+    jQuery(document).ready(function($) {
+      $("#party_id").on('change', function() {
+        $("#target").empty();
+        var level = $(this).val();
+        if (level) {
+          $.ajax({
+            type: 'POST',
+            url: 'populate_fields_data',
+            data: {
+              party_id: '' + level + ''
+            },
+            success: function(htmlresponse) {
+              $('#target').append(htmlresponse);
+            }
           });
-      }
-  });
-});
-</script>
-  <!-- Profile Upload JS -->
-  <script src="<?php echo base_url(); ?>assets/js/profile-upload.js"></script>
-
-  <!-- Sticky Sidebar JS -->
-  <script src="<?php echo base_url(); ?>assets/plugins/theia-sticky-sidebar/ResizeSensor.js"></script>
-  <script src="<?php echo base_url(); ?>assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js"></script>
+        }
+      });
+    });
+  </script>
 </body>
 
 </html>
