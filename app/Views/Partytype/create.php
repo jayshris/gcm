@@ -51,6 +51,22 @@
   <!-- Sticky Sidebar JS -->
   <script src="<?php echo base_url(); ?>assets/plugins/theia-sticky-sidebar/ResizeSensor.js"></script>
   <script src="<?php echo base_url(); ?>assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js"></script>
+
+  <script>  
+    checkLR();
+    $("input[name='sale']").click(function(){      
+      checkLR();
+    });
+    function checkLR(){
+      var sale = $('input[name="sale"]:checked').val() 
+      $('input[name=LR]').attr("disabled",true).prop('checked', false); 
+      $('.lr-span').text(''); 
+      if(sale==1){ 
+        $('input[name="LR"]').removeAttr('disabled');
+        $('.lr-span').text('*');
+      }
+    }
+  </script>
 </body>
 
 </html>
