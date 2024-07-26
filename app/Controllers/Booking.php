@@ -77,43 +77,191 @@ class Booking extends BaseController
     }
 
     public function index()
-    {
-        if ($this->access === 'false') {
-            $this->session->setFlashdata('error', 'You are not permitted to access this page');
-            return $this->response->redirect(base_url('/dashboard'));
-        } else {
-            $this->BModel->select('bookings.*, party.party_name, vehicle.rc_number, booking_status.status_name, booking_status.status_bg')
-                ->join('customer', 'customer.id = bookings.customer_id')
-                ->join('party', 'party.id = customer.party_id')
-                ->join('vehicle', 'vehicle.id = bookings.vehicle_id', 'left')
-                ->join('booking_status', 'booking_status.id = bookings.status', 'left');
+    { 
+        $this->BModel->select('bookings.*, party.party_name, vehicle.rc_number, booking_status.status_name, booking_status.status_bg')
+            ->join('customer', 'customer.id = bookings.customer_id')
+            ->join('party', 'party.id = customer.party_id')
+            ->join('vehicle', 'vehicle.id = bookings.vehicle_id', 'left')
+            ->join('booking_status', 'booking_status.id = bookings.status', 'left');
 
-            if ($this->request->getPost('status') != '') {
-                $this->BModel->where('bookings.status', $this->request->getPost('status'));
-            }
-
-            $this->view['bookings'] = $this->BModel->orderBy('bookings.id', 'desc')->findAll();
-
-            $this->view['statuses'] = $this->BSModel->findAll();
-            $this->view['pickup'] = $this->BPModel;
-            $this->view['drop'] = $this->BDModel;
-
-            return view('Booking/index', $this->view);
+        if ($this->request->getPost('status') != '') {
+            $this->BModel->where('bookings.status', $this->request->getPost('status'));
         }
+
+        $this->view['bookings'] = $this->BModel->orderBy('bookings.id', 'desc')->findAll();
+
+        $this->view['statuses'] = $this->BSModel->findAll();
+        $this->view['pickup'] = $this->BPModel;
+        $this->view['drop'] = $this->BDModel;
+
+        return view('Booking/index', $this->view); 
     }
 
     public function create()
-    {
-        if ($this->access === 'false') {
-            $this->session->setFlashdata('error', 'You are not permitted to access this page');
-            return $this->response->redirect(base_url('/dashboard'));
-        }
-        else if ($this->request->getPost()) {
-            $profile =  $this->profile->first();//echo __LINE__.'<pre>';print_r($profile);die;
+    {  
+        if ($this->request->getPost()) {
+            $post = $this->request->getPost();
+            // echo '<pre>';print_r($post);//exit;                      
+                //show booking_details page
+            if(isset($post['office_id'])){
+                // echo '<pre>';print_r($post);exit;   
+                $error = $this->validate([
+                    'vehicle_type' =>  'required',
+                    'office_id' =>  'required',
+                    'customer_branch' =>  'required',
+                    'customer_id' =>  'required',
+                    'booking_by' =>  'required',
+                    'booking_date' =>  'required',
+                    ]);
+    
+                if (!$error) {
+                    // echo 'b<pre>';print_r($error);exit;
+                    $this->view['error']   = $this->validator;
+                } else {
+                    $profile =  $this->profile->first();//echo __LINE__.'<pre>';print_r($profile);die;
+                    $last_booking = $this->BModel->orderBy('id', 'desc')->first();
+                    $lastBooking = isset($last_booking['id']) ? ((int)$last_booking['id']+1) : 1;
+                    $booking_number = isset($profile['booking_prefix']) ? $profile['booking_prefix'].'/'.$lastBooking : 'BK/'.$lastBooking;
 
+                    // save booking
+                    $bookingData = [
+                        'booking_number' => $booking_number,
+                        'booking_for' => $this->request->getPost('booking_for'),
+                        'office_id' => $this->request->getPost('office_id'),
+                        'vehicle_type_id' => $this->request->getPost('vehicle_type'),
+                        'vehicle_id' => $this->request->getPost('vehicle_rc'),
+                        'customer_id' => $this->request->getPost('customer_id'),
+                        'customer_branch' => $this->request->getPost('customer_branch'),                
+                        'booking_by' => $this->request->getPost('booking_by'),
+                        'booking_date' => $this->request->getPost('booking_date'),
+                        'booking_type' => $this->request->getPost('booking_type') ? $this->request->getPost('booking_type') : '',
+                        'LR' => $this->request->getPost('LR'),
+                    ];
+                    
+                    $booking_id = $this->BModel->insert($bookingData) ? $this->BModel->getInsertID() : '0';    
+
+                    if(isset($post['booking_type'])){
+                        $this->view['booking_type'] =$post['booking_type'];
+                        $this->view['booking_id'] = $booking_id;
+                    }else{
+                        $this->session->setFlashdata('success', 'Booking Successfully Added');
+                        return $this->response->redirect(base_url('booking'));
+                    }
+                }
+                
+            }else if(isset($post['booking_details']) && ($post['booking_details'] ==  'PTL' || $post['booking_details'] ==  'FTL')){
+                //validation for booking details
+                $error = $this->validate([
+                    'pickup_state_id' =>  'required',
+                    'pickup_city' =>  'required',
+                    'pickup_date' =>  'required',
+                    'drop_state_id' =>  'required',
+                    'drop_city' =>  'required',
+                    'rate_type' =>  'required',
+                    'rate' =>  'required', 
+                    'bill_to' =>  'required', 
+                    ]);
+                    
+                if (!$error) {
+                    // echo 'error <pre>';print_r($error);exit;
+                    $this->view['error']   = $this->validator;
+                } else {
+                    // echo 'post <pre>';print_r($post);exit;
+                    $booking_id =  $this->request->getPost('id');
+                    $bookingPTLData = [    
+                        'customer_type' => ($this->request->getPost('customer_type')) ? $this->request->getPost('customer_type') : 0,
+                        'pickup_date' => $this->request->getPost('pickup_date'),
+                        'drop_date' => $this->request->getPost('drop_date'),
+                        'rate_type' => $this->request->getPost('rate_type'),
+                        'rate' => $this->request->getPost('rate'),
+                        'guranteed_wt' => $this->request->getPost('guranteed_wt'),
+                        'freight' => $this->request->getPost('freight'),
+                        'advance' => $this->request->getPost('advance'),
+                        'balance' => $this->request->getPost('balance'),
+                        'discount' => $this->request->getPost('discount'),
+                        'bill_to_party' => $this->request->getPost('bill_to'),
+                        'remarks' => $this->request->getPost('remarks'),
+                        'status' => '1',
+                        'added_by' => $this->added_by,
+                        'added_ip' => $this->added_ip
+                    ];//echo __LINE__.'<pre>';print_r($bookingData);die;
+
+                    $this->BModel->update($booking_id,$bookingPTLData);
+                    
+                    // save pickups 
+                    $this->BPModel->insert([
+                        'booking_id' => $booking_id,
+                        'sequence' => $this->request->getPost('pickup_seq'),
+                        'city' => $this->request->getPost('pickup_city'),
+                        'state' => $this->request->getPost('pickup_state_id'),
+                        'pincode' => $this->request->getPost('pickup_pin')
+                    ]); 
+
+                    // save drops
+                    $this->BDModel->insert([
+                        'booking_id' => $booking_id,
+                        'sequence' => $this->request->getPost('drop_seq'),
+                        'city' => $this->request->getPost('drop_city'),
+                        'state' => $this->request->getPost('drop_state_id'),
+                        'pincode' => $this->request->getPost('drop_pin')
+                    ]);
+
+                    // save expenses
+                    foreach ($this->request->getPost('expense') as $key => $val) {
+                        $this->BEModel->insert([
+                            'booking_id' => $booking_id,
+                            'expense' => $this->request->getPost('expense')[$key],
+                            'value' => $this->request->getPost('expense_value')[$key],
+                            'bill_to_party' => $this->request->getPost('expense_flag_' . $key) != null ? '1' : '0'
+                        ]);
+                    }
+
+                    $this->session->setFlashdata('success', 'Booking Successfully Added');
+
+                    return $this->response->redirect(base_url('booking'));
+                    //redirect to bookings index
+                }                     
+            }else{
+                return $this->response->redirect(base_url('booking'));
+            }  
+        }
+        $this->view['party'] = $this->PModel->select('party.*')->join('party_type_party_map', 'party_type_party_map.party_id = party.id')
+            ->whereIn('party_type_party_map.party_type_id', [1, 2, 5])->groupBy('party.id')->orderBy('party.party_name')->findAll();
+        $this->view['offices'] = $this->OModel->where('status', '1')->findAll(); 
+        $this->view['vehicle_types'] = $this->VTModel->where('status', 'Active')->findAll();
+        $this->view['employees'] = $this->user->where('usertype', 'employee')->where('status', 'active')->findall();
+        $this->view['states'] =  $this->SModel->findAll();
+
+        $party_type_ids = $this->PTModel->select("(GROUP_CONCAT(id)) party_type_ids") 
+        ->where('sale', '1') 
+        ->first(); 
+         $party_type_ids = str_replace([',',', '],'|', $party_type_ids );
+       
+        $this->view['customers'] = $this->CModel->select('customer.*, party.party_name')
+            ->join('party', 'party.id = customer.party_id')
+            ->where('customer.status', '1')
+            ->where('CONCAT(",", party_type_id, ",") REGEXP ",('.$party_type_ids['party_type_ids'].'),"')
+            ->findAll();
+
+        // $db = \Config\Database::connect();  
+        // echo  $db->getLastQuery()->getQuery(); 
+        // echo '  <pre>';print_r($this->view['customers'] );exit; 
+
+        return view('Booking/create', $this->view); 
+    }
+
+    public function getPatyTypeDetails()
+    {
+        $party_type = $this->PTModel->where('id', $this->request->getPost('customer_id'))->first();
+        echo $party_type['LR'];exit;
+    }
+
+    public function create_bk()
+    {
+         if ($this->request->getPost()) {
+            $profile =  $this->profile->first();//echo __LINE__.'<pre>';print_r($profile);die;
             $last_booking = $this->BModel->orderBy('id', 'desc')->first();
             $lastBooking = isset($last_booking['id']) ? ((int)$last_booking['id']+1) : 1;
-
             $booking_number = isset($profile['booking_prefix']) ? $profile['booking_prefix'].'/'.$lastBooking : 'BK/'.$lastBooking;
 
             // save booking
@@ -404,7 +552,7 @@ class Booking extends BaseController
         $this->view['vehicle_rcs'] = $this->VModel->select('vehicle.id, vehicle.rc_number, party.party_name')
             ->join('driver_vehicle_map', 'driver_vehicle_map.vehicle_id = vehicle.id')
             ->join('driver', 'driver.id = driver_vehicle_map.driver_id')
-            ->join('party', 'party.id = driver.name')
+            ->join('party', 'party.id = driver.party_id')
             ->where('driver_vehicle_map.unassign_date', '')
             ->where('vehicle_type_id', $this->view['booking_details']['vehicle_type_id'])
             ->where('vehicle.status', 'active')->groupBy('vehicle.id')->findAll();
@@ -451,5 +599,146 @@ class Booking extends BaseController
             $this->session->setFlashdata('sucess', 'Booking Cancelled');
             return $this->response->redirect(base_url('booking'));
         }
+    }
+    
+    public function edit($id)
+    {  
+        if ($this->request->getPost()) {
+            $post = $this->request->getPost();
+            // echo '<pre>';print_r($post);//exit;                      
+                //show booking_details page
+            if(isset($post['office_id'])){
+                // echo '<pre>';print_r($post);exit;   
+                $error = $this->validate([
+                    'vehicle_type' =>  'required',
+                    'office_id' =>  'required',
+                    'customer_branch' =>  'required',
+                    'customer_id' =>  'required',
+                    'booking_by' =>  'required',
+                    'booking_date' =>  'required',
+                    ]);
+    
+                if (!$error) {
+                    // echo 'b<pre>';print_r($error);exit;
+                    $this->view['error']   = $this->validator;
+                } else {
+                     // save booking
+                    $bookingData = [ 
+                        'booking_for' => $this->request->getPost('booking_for'),
+                        'office_id' => $this->request->getPost('office_id'),
+                        'vehicle_type_id' => $this->request->getPost('vehicle_type'),
+                        'vehicle_id' => $this->request->getPost('vehicle_rc'),
+                        'customer_id' => $this->request->getPost('customer_id'),
+                        'customer_branch' => $this->request->getPost('customer_branch'),                
+                        'booking_by' => $this->request->getPost('booking_by'),
+                        'booking_date' => $this->request->getPost('booking_date'),
+                        'booking_type' => $this->request->getPost('booking_type') ? $this->request->getPost('booking_type') : '',
+                    ];
+                    
+                    $booking_id = $this->BModel->save($id,$bookingData) ? $this->BModel->getInsertID() : '0';    
+
+                    if(isset($post['booking_type'])){
+                        $this->view['booking_type'] =$post['booking_type'];
+                        $this->view['booking_id'] = $booking_id;
+                        $this->view['bookings'] = $this->BModel->where(['id' => $id])->first();
+                        $this->view['bookings'] = $this->BModel->where(['id' => $id])->first();
+                        $this->view['bookings'] = $this->BModel->where(['id' => $id])->first();
+                        $this->view['bookings'] = $this->BModel->where(['id' => $id])->first();
+                    }else{
+                        $this->session->setFlashdata('success', 'Booking Successfully Added');
+                        return $this->response->redirect(base_url('booking'));
+                    }
+                }
+                
+            }else if(isset($post['booking_details']) && ($post['booking_details'] ==  'PTL' || $post['booking_details'] ==  'FTL')){
+                //validation for booking details
+                $error = $this->validate([
+                    'pickup_state_id' =>  'required',
+                    'pickup_city' =>  'required',
+                    'pickup_date' =>  'required',
+                    'drop_state_id' =>  'required',
+                    'drop_city' =>  'required',
+                    'rate_type' =>  'required',
+                    'rate' =>  'required', 
+                    'bill_to' =>  'required', 
+                    ]);
+                    
+                if (!$error) {
+                    // echo 'error <pre>';print_r($error);exit;
+                    $this->view['error']   = $this->validator;
+                } else {
+                    // echo 'post <pre>';print_r($post);exit;
+                    $booking_id =  $this->request->getPost('id');
+                    $bookingPTLData = [    
+                        'customer_type' => ($this->request->getPost('customer_type')) ? $this->request->getPost('customer_type') : 0,
+                        'pickup_date' => $this->request->getPost('pickup_date'),
+                        'drop_date' => $this->request->getPost('drop_date'),
+                        'rate_type' => $this->request->getPost('rate_type'),
+                        'rate' => $this->request->getPost('rate'),
+                        'guranteed_wt' => $this->request->getPost('guranteed_wt'),
+                        'freight' => $this->request->getPost('freight'),
+                        'advance' => $this->request->getPost('advance'),
+                        'balance' => $this->request->getPost('balance'),
+                        'discount' => $this->request->getPost('discount'),
+                        'bill_to_party' => $this->request->getPost('bill_to'),
+                        'remarks' => $this->request->getPost('remarks'),
+                        'status' => '1',
+                        'added_by' => $this->added_by,
+                        'added_ip' => $this->added_ip
+                    ];//echo __LINE__.'<pre>';print_r($bookingData);die;
+
+                    $this->BModel->update($booking_id,$bookingPTLData);
+                    
+                    // save pickups 
+                    $this->BPModel->insert([
+                        'booking_id' => $booking_id,
+                        'sequence' => $this->request->getPost('pickup_seq'),
+                        'city' => $this->request->getPost('pickup_city'),
+                        'state' => $this->request->getPost('pickup_state_id'),
+                        'pincode' => $this->request->getPost('pickup_pin')
+                    ]); 
+
+                    // save drops
+                    $this->BDModel->insert([
+                        'booking_id' => $booking_id,
+                        'sequence' => $this->request->getPost('drop_seq'),
+                        'city' => $this->request->getPost('drop_city'),
+                        'state' => $this->request->getPost('drop_state_id'),
+                        'pincode' => $this->request->getPost('drop_pin')
+                    ]);
+
+                    // save expenses
+                    foreach ($this->request->getPost('expense') as $key => $val) {
+                        $this->BEModel->insert([
+                            'booking_id' => $booking_id,
+                            'expense' => $this->request->getPost('expense')[$key],
+                            'value' => $this->request->getPost('expense_value')[$key],
+                            'bill_to_party' => $this->request->getPost('expense_flag_' . $key) != null ? '1' : '0'
+                        ]);
+                    }
+
+                    $this->session->setFlashdata('success', 'Booking Successfully Added');
+
+                    return $this->response->redirect(base_url('booking'));
+                    //redirect to bookings index
+                }                     
+            }else{
+                return $this->response->redirect(base_url('booking'));
+            }  
+        }
+        $this->view['bookings'] = $this->BModel->where(['id' => $id])->first();
+        $this->view['party'] = $this->PModel->select('party.*')->join('party_type_party_map', 'party_type_party_map.party_id = party.id')
+            ->whereIn('party_type_party_map.party_type_id', [1, 2, 5])->groupBy('party.id')->orderBy('party.party_name')->findAll();
+        $this->view['offices'] = $this->OModel->where('status', '1')->findAll(); 
+        $this->view['vehicle_types'] = $this->VTModel->where('status', 'Active')->findAll();
+        $this->view['employees'] = $this->user->where('usertype', 'employee')->where('status', 'active')->findall();
+        $this->view['states'] =  $this->SModel->findAll();
+
+        $this->view['customers'] = $this->CModel->select('customer.*, party.party_name')
+            ->join('party', 'party.id = customer.party_id')
+            ->where('customer.status', '1')
+            ->findAll();
+
+        return view('Booking/edit', $this->view); 
     }
 }

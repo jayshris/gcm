@@ -308,4 +308,8 @@ class LoadingReceipt extends BaseController
     // echo '<pre>';print_r($this->view['loading_receipts']);exit;
     return view('LoadingReceipt/preview', $this->view); 
   }
+
+  function print(){
+    return view('LoadingReceipt/print', $this->view); 
+  }
 }

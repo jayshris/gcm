@@ -311,8 +311,6 @@
                               <select class="form-select" name="customer_type" id="customer_type" aria-label="Default select example">
                                 <option value="">Select Type</option>
                               </select>
-                              <input type="hidden" name="LR" id="lr-txt" />
-                              <span class="text-info" id="lr-info"></span>
                             </div>
 
                             <div class="col-md-3">
@@ -385,29 +383,6 @@
 
   <?= $this->include('partials/vendor-scripts') ?>
   <script>
-   
-    $(function() { 
-        $("#customer_type").change(function() {
-            if($('option:selected', this).val() > 0){
-                $.ajax({
-                  method: "POST",
-                  url: '<?php echo base_url('booking/getPatyTypeDetails') ?>',
-                  data: {
-                    customer_id: $('option:selected', this).val()
-                  },
-                  success: function(response) {
-                    $('#lr-txt').val(response); 
-                    if(response == 1){
-                      $('#lr-info').html('LR is mandatory');                     
-                    }else{
-                      $('#lr-info').html(''); 
-                    }
-                    
-                  }
-                });
-            }
-        });
-    });
     $.addPickup = function() {
       var tot = $('#pickup_table').children('tbody').children('tr').length;
 
@@ -471,7 +446,6 @@
         },
         success: function(response) {
           $('#customer_type').html(response);
-          $("#customer_type").trigger('change');
         }
       });
 
