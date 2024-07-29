@@ -69,7 +69,14 @@ class Foreman extends BaseController
       $this->view['state'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_id')->findAll();
 
       $PartyModel = new PartyModel();
-      $this->view['parties'] = $PartyModel->where('status', '1')->findAll();
+      $this->view['parties'] = $PartyModel->select('party.*,foreman.party_id')
+        ->join('foreman', 'foreman.party_id = party.id', 'left')
+        ->where('foreman.party_id', null)
+        ->where('party.status', '1')->findAll();
+
+      // echo '<pre>';
+      // print_r($this->view['parties']);
+      // die;
 
       $request = service('request');
       if ($this->request->getMethod() == 'POST') {
@@ -371,5 +378,13 @@ class Foreman extends BaseController
                                     ';
       }
     }
+  }
+
+  public function validate_dl()
+  {
+    $foremanModel = new ForemanModel();
+    $row = $foremanModel->where('dl_no', $this->request->getPost('dl_no'))->first();
+
+    echo  $row ? '1' : '0';
   }
 }

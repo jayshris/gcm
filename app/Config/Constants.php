@@ -94,3 +94,4 @@ define('EVENT_PRIORITY_NORMAL', 100);
 define('EVENT_PRIORITY_HIGH', 10);
 
 define('VEHICLE_CLASSES', [1=>'Goods Carrier',2=>'Commercial Carrier',3=>'Carrier 3']);
+

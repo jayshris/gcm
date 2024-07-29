@@ -362,7 +362,7 @@
                         <div class="submit-button">
                           <button type="submit" class="btn btn-primary" id="save-btn">Save Changes</button>
                           <a href="./create" class="btn btn-warning">Reset</a>
-                          <a href="<?php echo base_url('bookings'); ?>" class="btn btn-light">Back</a>
+                          <a href="<?php echo base_url('booking'); ?>" class="btn btn-light">Back</a>
                         </div> 
 
                     </div>

@@ -13,12 +13,12 @@
 	<div class="main-wrapper">
 
 		<div class="account-content">
-			<div class="login-wrapper">
+			<div class="login-wrapper account-bg">
                 <div class="login-content">
                     <form class="needs-validation" novalidate action="<?php echo base_url('/login/authenticate'); ?>">
                         <div class="login-user-info">
                             <div class="login-logo">
-                               <img src="<?php echo base_url();?>public/assets/img/logo.svg" class="img-fluid" alt="Logo">
+                               <img src="<?php echo base_url();?>public/assets/img/logo.png" class="img-fluid" alt="Logo">
                            </div>
                            <?php
                             $session = \Config\Services::session();
@@ -36,7 +36,7 @@
                           <?php endif;?>
                            <div class="login-heading">
                                <h4>Sign In</h4>
-                               <p>Access the CRMS panel using your email and passcode.</p>
+                               <p>Access the CRM panel using your email and passcode.</p>
                            </div>
                            <div class="form-wrap">
                                <label class="col-form-label">Email Address</label>
@@ -65,6 +65,10 @@
                            <!-- <div class="text-end">
                                <a href="<?php echo base_url('/register');?>" class="forgot-link">Register?</a>
                            </div> -->
+
+                           <div class="copyright-text">
+                               <p>GCM Group &copy;<?php echo date('Y');?></p>
+                           </div>
                            
                        </div>
                     </form>

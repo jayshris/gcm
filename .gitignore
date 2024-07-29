@@ -126,8 +126,3 @@ nb-configuration.xml
 /phpunit*.xml
 /.phpunit.*.cache
 
-#uploads
-public/uploads
-public/writable/uploads
-public/writable
-writable

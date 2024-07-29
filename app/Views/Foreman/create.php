@@ -62,6 +62,31 @@
           });
         }
       });
+      
+
+      $("#dl_no").on('change', function() {
+        var dl_no = $(this).val();
+
+        $('#span_dl').html('');
+        $('#submit-btn').removeAttr('disabled');
+
+        if (dl_no) {
+          $.ajax({
+            type: 'POST',
+            url: 'validate_dl',
+            data: {
+              dl_no: dl_no
+            },
+            success: function(response) {
+
+              if (response == '1') {
+                $('#span_dl').html('DL already exists !!');
+                $('#submit-btn').attr('disabled', 'disabled');
+              }
+            }
+          });
+        }
+      });
     });
   </script>
 </body>

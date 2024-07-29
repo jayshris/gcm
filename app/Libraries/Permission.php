@@ -13,7 +13,7 @@ class Permission
 	
 	public function __construct() {
 		$this->router = \Config\Services::router();
-		$this->session = \Config\Services::session();//echo __LINE__.'<pre>';print_r($this->session->get('NAME'));die;
+		$this->session = \Config\Services::session();
 		
 		$this->db = \Config\Database::connect();
 		$this->db->query("SET sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''));");
@@ -29,7 +29,7 @@ class Permission
 
 		$this->viewData['curController']  = class_basename($this->router->controllerName());
 		$this->viewData['currentController']  = strtolower($this->viewData['curController']);
-		$this->viewData['currentMethod'] = $this->router->methodName();//echo __LINE__.'<pre>';print_r($this->viewData);die;
+		$this->viewData['currentMethod'] = $this->router->methodName();
 		$this->viewData['page_title'] = ucwords(str_replace('_',' ',$this->viewData['currentMethod'])).' '.ucwords($this->viewData['currentController']);
 		if($this->viewData['currentMethod']=='index'){
 			$this->viewData['page_title'] = ucwords($this->viewData['currentController']).' List';
@@ -48,7 +48,6 @@ class Permission
 			}
 			else {
 				$sectionNames = isset($actions[$controller]) ? array_column($actions[$controller],'section_link') : [];
-				//echo __LINE__.'<pre>';print_r($sectionNames);print_r($action);die;
 				if((!in_array($controller,$controllers,TRUE)) || ($action != 'index' && !in_array($action, $sectionNames, TRUE))) {
 					return 0;
 				}
@@ -63,13 +62,13 @@ class Permission
 	}
 	
 	public function HeaderMenuItems($model=''){
-		if(!in_array($this->viewData['currentController'], ['home','login','kyc']) && empty($this->viewData['loggedIn'])){
-			$this->session->setFlashdata('error', LOGIN_MSG);//echo __LINE__.'<br>File: '.__FILE__.'<br>'.base_url();die;
+		if(!in_array($this->viewData['currentController'], ['home','login','kyc','driverkyc','foremankyc']) && empty($this->viewData['loggedIn'])){
+			$this->session->setFlashdata('error', LOGIN_MSG);
 			header("Location: ".base_url());die;
 		}
 
 		$this->viewData['parent_menu'] = $this->getParentController();
-		$menuItems = ($this->viewData['logLevel']==1) ? $this->getSuperUserPrivileges() : $this->getUserPrivileges($this->viewData['loggedIn']);//echo __LINE__.'<pre>';print_r($menuItems);die;
+		$menuItems = ($this->viewData['logLevel']==1) ? $this->getSuperUserPrivileges() : $this->getUserPrivileges($this->viewData['loggedIn']);
 		$this->viewData['menus']= (isset($menuItems['Names'])) ? $menuItems['Names'] : [];
 		$Controllers 			= (isset($menuItems['Controllers'])) ? $menuItems['Controllers'] : [];
 		$Actions 				= (isset($menuItems['Actions'])) ? $menuItems['Actions'] : [];
@@ -77,8 +76,8 @@ class Permission
 		$this->viewData['Actions'] = $Actions;
 
 		$condition = ['controllers'=>$Controllers,'actions'=>$Actions,'controller'=>$this->viewData['currentController'],'action'=>$this->viewData['currentMethod']];
-		if($this->checkPrivileged($condition)==0 && !in_array($this->viewData['currentController'], ['home','login','dashboard','kyc'])) {
-			$this->session->setFlashdata('error', ACCESS_MSG);//echo __LINE__.'<br>File: '.__FILE__;die;
+		if($this->checkPrivileged($condition)==0 && !in_array($this->viewData['currentController'], ['home','login','dashboard','kyc','driverkyc','foremankyc'])) {
+			$this->session->setFlashdata('error', ACCESS_MSG);
 			header("Location: ".base_url()."dashboard");die;
 		}
 

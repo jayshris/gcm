@@ -5,9 +5,9 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\UserModel;
-use App\Models\BusinesstypeModel;
+use App\Models\BusinessTypeModel;
 use App\Models\FlagsModel;
-use App\Models\BusinesstypeFlagModel;
+use App\Models\BusinessTypeFlagModel;
 
 class Businesstype extends BaseController
 {
@@ -28,7 +28,7 @@ class Businesstype extends BaseController
       $session->setFlashdata('error', 'You are not permitted to access this page');
       return $this->response->redirect(site_url('/dashboard'));
     } else {
-      $businestsypeModel = new BusinesstypeModel();
+      $businestsypeModel = new BusinessTypeModel();
       $this->view['businestsype_data'] = $businestsypeModel->select('business_type.*, MAX(business_type_flags.flags_id) as flags_id, GROUP_CONCAT(flags.title) as flags_names', false)
 
         ->join('business_type_flags', 'business_type_flags.business_type_id = business_type.id', 'left')
@@ -77,7 +77,7 @@ class Businesstype extends BaseController
         if (!$error) {
           $this->view['error']   = $this->validator;
         } else {
-          $businestsypeModel = new BusinesstypeModel();
+          $businestsypeModel = new BusinessTypeModel();
           $businestsypeModel->save([
             'company_structure_name'      =>  $this->request->getVar('company_structure_name'),
             'condition'     =>   'Enable',
@@ -89,7 +89,7 @@ class Businesstype extends BaseController
           if (!isset($flags_array) || empty($flags_array)) {
             $this->view['error'] = "Please select atleast one flag";
           } else {
-            $flagModel = new BusinesstypeFlagModel();
+            $flagModel = new BusinessTypeFlagModel();
             foreach ($flags_array as $key => $value) {
               $flagsData = [
                 'business_type_id' =>  $business_type_id,
@@ -117,13 +117,13 @@ class Businesstype extends BaseController
       $session->setFlashdata('error', 'You are not permitted to access this page');
       return $this->response->redirect(site_url('/dashboard'));
     } else {
-      $businestsypeModel = new BusinesstypeModel();
+      $businestsypeModel = new BusinessTypeModel();
       $this->view['business_data'] = $businestsypeModel->where('id', $id)->first();
 
       $flags = new FlagsModel();
       $this->view['flags'] = $flags->where('status', 'Active')->findAll();
 
-      $businessFlags = new BusinesstypeFlagModel();
+      $businessFlags = new BusinessTypeFlagModel();
       $this->view['businessFlags'] = $businessFlags->where('business_type_id', $id)->findAll();
 
 
@@ -139,7 +139,7 @@ class Businesstype extends BaseController
         if (!$error) {
           $this->view['error']   = $this->validator;
         } else {
-          $businestsypeModel = new BusinesstypeModel();
+          $businestsypeModel = new BusinessTypeModel();
           $normalizedStr = strtolower(str_replace(' ', '', $this->request->getVar('company_structure_name')));
           $flagstypecnt_data = $businestsypeModel
             ->where('status', 'Active')
@@ -153,7 +153,7 @@ class Businesstype extends BaseController
               'updated_at'  =>  date("Y-m-d h:i:sa"),
             ]);
 
-            $flagModel = new BusinesstypeFlagModel();
+            $flagModel = new BusinessTypeFlagModel();
             $flagModeldata = $flagModel->where('business_type_id', $id)->delete();
             $flags_array = $this->request->getVar('flags');
 
@@ -192,8 +192,8 @@ class Businesstype extends BaseController
       $session->setFlashdata('error', 'You are not permitted to access this page');
       return $this->response->redirect(site_url('/dashboard'));
     } else {
-      $BusinesstypeModel = new BusinesstypeModel();
-      $BusinesstypeModel->where('id', $id)->delete($id);
+      $BusinessTypeModel = new BusinessTypeModel();
+      $BusinessTypeModel->where('id', $id)->delete($id);
       $session = \Config\Services::session();
       $session->setFlashdata('success', 'Business type Deleted');
       return $this->response->redirect(site_url('/Businesstype'));
@@ -208,14 +208,14 @@ class Businesstype extends BaseController
       $session->setFlashdata('error', 'You are not permitted to access this page');
       return $this->response->redirect(site_url('/dashboard'));
     } else {
-      $businesstypeModel = new BusinesstypeModel();
-      $model = $businesstypeModel->where('id', $id)->first();
+      $BusinessTypeModel = new BusinessTypeModel();
+      $model = $BusinessTypeModel->where('id', $id)->first();
       if ($model['condition'] == 'Enable') {
         $status = 'Disable';
       } elseif ($model['condition'] == 'Disable') {
         $status = 'Enable';
       }
-      $businesstypeModel->update($id, [
+      $BusinessTypeModel->update($id, [
         'condition'  =>  $status,
         'updated_at'  =>  date("Y-m-d h:i:sa"),
       ]);

@@ -33,7 +33,7 @@ use App\Models\PartyModel;
                   Foreman Name <span class="text-danger">*</span>
                 </label>
 
-                <select class="dropdown selectopt" name="party_id" id="party_id" <?= isset($foreman_data) && $foreman_data['party_id'] != '' ? 'style="pointer-events: none;"' : '' ?>>
+                <select class="dropdown select2" name="party_id" id="party_id" <?= isset($foreman_data) && $foreman_data['party_id'] != '' ? 'style="pointer-events: none;"' : '' ?>>
                   <option>Select</option>
                   <?php
                   foreach ($parties as $party) {
@@ -99,28 +99,28 @@ use App\Models\PartyModel;
 
             <div class="col-md-6">
               <div class="form-wrap">
-                <label class="col-form-label">Driving Licence Number</label>
-                <input type="text" name="dl_no" class="form-control" value="<?php
-                                                                            if (isset($foreman_data)) {
-                                                                              echo $foreman_data['dl_no'];
-                                                                            } else {
-                                                                              echo set_value('dl_no');
-                                                                            }
-                                                                            ?>">
+                <label class="col-form-label">Driving Licence Number <span class="text-danger">*</span> <span class="text-danger" id="span_dl"></span></label>
+                <input type="text" name="dl_no" class="form-control" id="dl_no" value="<?php
+                                                                                        if (isset($foreman_data)) {
+                                                                                          echo $foreman_data['dl_no'];
+                                                                                        } else {
+                                                                                          echo set_value('dl_no');
+                                                                                        }
+                                                                                        ?>" required>
               </div>
             </div>
 
             <div class="col-md-6">
               <div class="form-wrap">
-                <label class="col-form-label">Driving Licence Issue Auth.</label>
-                <input type="text" name="dl_authority" value="<?= isset($foreman_data) ? $foreman_data['dl_authority'] : '' ?>" class="form-control">
+                <label class="col-form-label">Driving Licence Issue Auth. <span class="text-danger">*</span></label>
+                <input type="text" name="dl_authority" value="<?= isset($foreman_data) ? $foreman_data['dl_authority'] : '' ?>" class="form-control" required>
               </div>
             </div>
 
             <div class="col-md-6">
               <div class="form-wrap">
-                <label class="col-form-label">Driving Licence Expiry Date</label>
-                <input type="date" name="dl_expiry" value="<?= isset($foreman_data) ? $foreman_data['dl_expiry'] : '' ?>" min="<?= date('Y-m-d') ?>" class="form-control">
+                <label class="col-form-label">Driving Licence Expiry Date <span class="text-danger">*</span></label>
+                <input type="date" name="dl_expiry" value="<?= isset($foreman_data) ? $foreman_data['dl_expiry'] : '' ?>" min="<?= date('Y-m-d') ?>" class="form-control" required>
               </div>
             </div>
 
@@ -129,7 +129,7 @@ use App\Models\PartyModel;
               <div class="form-wrap">
                 <label class="col-form-label">
                   DL Image - Front
-                </label><br>
+                </label> <span class="text-danger">*</span><br>
                 <?php if (isset($foreman_data) && $foreman_data['dl_image_front'] != '') {
                   if (pathinfo($foreman_data['dl_image_front'], PATHINFO_EXTENSION) != 'pdf') {
                     echo '<img src="' . base_url('public/uploads/foremanDocs/') . $foreman_data['dl_image_front'] . '" style="height: 150px;">';
@@ -256,7 +256,7 @@ use App\Models\PartyModel;
         </div>
 
         <div class="submit-button">
-          <button type="submit" class="btn btn-primary">Save Changes</button>
+          <button type="submit" id="submit-btn" class="btn btn-primary">Save Changes</button>
           <a href="<?php echo base_url(); ?>foreman" class="btn btn-light">Cancel</a>
         </div>
       </form>

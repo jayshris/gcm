@@ -45,6 +45,7 @@
 												<div class="form-wrap">
 													<div class="profile-upload">
 														<div class="profile-upload-img">
+															<span><i class="ti ti-photo"></i></span>
 															<?php if (isset($profile_data['company_logo']) && $profile_data['company_logo'] != '') { ?>
 																<img id="ImgPreview" src="<?= $profile_data['company_logo'] ?>" alt="img" name="company_logo">
 															<?php } else { ?>
@@ -425,6 +426,7 @@
 																?>
 															</div>
 														</div>
+
 													</div>
 												</div>
 												<div class="submit-button">

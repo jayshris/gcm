@@ -46,6 +46,7 @@
                         </div>
                         <div class="profile-details">
                           <div class="row">
+
                             <div class="col-md-6">
                               <div class="form-wrap">
                                 <label class="col-form-label">
@@ -140,22 +141,22 @@
 
                             <div class="col-md-6">
                               <div class="form-wrap">
-                                <label class="col-form-label">Driving Licence Number</label>
-                                <input type="text" name="dl_no" class="form-control">
+                                <label class="col-form-label">Driving Licence Number <span class="text-danger">*</span> <span class="text-danger" id="span_dl"></span></label>
+                                <input type="text" name="dl_no" id="dl_no" class="form-control" required>
                               </div>
                             </div>
 
                             <div class="col-md-6">
                               <div class="form-wrap">
-                                <label class="col-form-label">Driving Licence Issue Auth.</label>
-                                <input type="text" name="dl_authority" class="form-control">
+                                <label class="col-form-label">Driving Licence Issue Auth. <span class="text-danger">*</span></label>
+                                <input type="text" name="dl_authority" class="form-control" required>
                               </div>
                             </div>
 
                             <div class="col-md-6">
                               <div class="form-wrap">
-                                <label class="col-form-label">Driving Licence Expiry Date</label>
-                                <input type="date" name="dl_expiry" min="<?= date('Y-m-d') ?>" class="form-control">
+                                <label class="col-form-label">Driving Licence Expiry Date <span class="text-danger">*</span></label>
+                                <input type="date" name="dl_expiry" min="<?= date('Y-m-d') ?>" class="form-control" required>
                               </div>
                             </div>
 
@@ -163,9 +164,9 @@
                             <div class="col-md-3">
                               <div class="form-wrap">
                                 <label class="col-form-label">
-                                  DL Image - Front
+                                  DL Image - Front <span class="text-danger">*</span>
                                 </label>
-                                <input type="file" name="dl_image_front" class="form-control" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps">
+                                <input type="file" name="dl_image_front" class="form-control" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps" required>
                                 <span class="text-info ">(PNG,JPEG,JPG,PDF)</span>
                               </div>
                             </div>
@@ -184,9 +185,9 @@
                             <div class="col-md-3">
                               <div class="form-wrap">
                                 <label class="col-form-label">
-                                  Profile Image 1
+                                  Profile Image 1 <span class="text-danger">*</span>
                                 </label>
-                                <input type="file" name="profile_image1" class="form-control" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps">
+                                <input type="file" name="profile_image1" class="form-control" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps" required>
                                 <span class="text-info ">(PNG,JPEG,JPG,PDF)</span>
                               </div>
                             </div>
@@ -296,6 +297,24 @@
                                 ?>
                               </div>
                             </div>
+
+                            <div class="col-md-3">
+                              <div class="form-wrap">
+                                <label class="col-form-label">Scheme <span class="text-danger">*</span></label>
+                                <select class="dropdown form-control" name="scheme_id" required>
+                                  <option>Select Scheme</option>
+                                  <?php
+                                  if (isset($schemes)) {
+                                    foreach ($schemes as $row) { ?>
+                                      <option value="<?php echo $row["id"] ?>"><?php echo $row["scheme_name"] . ' - ' . $row["rate"] . '/Km' ?></option>
+                                  <?php
+                                    }
+                                  }
+                                  ?>
+                                </select>
+                              </div>
+                            </div>
+
                             <?php if ($last != 'create') { ?>
                               <div>
                                 <input type="checkbox" id="approve" class="form-check-input" name="approve" <?php if (isset($driver_data)) {
@@ -309,7 +328,7 @@
                           </div>
                         </div>
                         <div class="submit-button">
-                          <button type="submit" class="btn btn-primary">Save Changes</button>
+                          <button type="submit" id="submit-btn" class="btn btn-primary">Save Changes</button>
                           <a href="<?php echo base_url(); ?>driver" class="btn btn-light">Cancel</a>
                         </div>
                       </form>
@@ -362,6 +381,32 @@
           });
         }
       });
+
+
+
+      $("#dl_no").on('change', function() {
+        var dl_no = $(this).val();
+
+        $('#span_dl').html('');
+        $('#submit-btn').removeAttr('disabled');
+
+        if (dl_no) {
+          $.ajax({
+            type: 'POST',
+            url: 'validate_dl',
+            data: {
+              dl_no: dl_no
+            },
+            success: function(response) {
+              if (response == '1') {
+                $('#span_dl').html('DL already exists !!');
+                $('#submit-btn').attr('disabled', 'disabled');
+              }
+            }
+          });
+        }
+      });
+
     });
   </script>
 </body>

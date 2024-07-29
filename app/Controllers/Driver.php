@@ -9,12 +9,14 @@ use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\StateModel;
 use App\Models\ForemanModel;
 use App\Models\AadhaarNumberMapModule;
+use App\Models\DriverSchemeMapModel;
 use App\Models\DriverVehicleAssignModel;
 use App\Models\PartyModel;
 use App\Models\VehicleTypeModel;
 use App\Models\PartytypeModel;
 use App\Models\PartyTypePartyModel;
 use App\Models\DriverVehicleType;
+use App\Models\SchemesModel;
 use App\Models\VehicleModel;
 
 class Driver extends BaseController
@@ -36,6 +38,8 @@ class Driver extends BaseController
     $this->VTModel = new VehicleTypeModel();
     $this->VModel = new VehicleModel();
     $this->DModel = new DriverModel();
+    $this->SCModel = new SchemesModel();
+    $this->DSMModel = new DriverSchemeMapModel();
 
     $this->added_by = isset($_SESSION['id']) ? $_SESSION['id'] : '0';
     $this->added_ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
@@ -46,9 +50,10 @@ class Driver extends BaseController
     $userModel = new UserModel();
     $this->view['driver'] = $userModel->where('usertype', 'driver')->orderBy('id', 'DESC')->paginate(10);
     $driverModel = new DriverModel();
-    $driverModel->select('driver.*,t2.party_name, t2.status, t3.party_name as foreman_name')
+    $driverModel->select('driver.*, t2.party_name, t2.status, t4.party_name as foreman_name')
       ->join('party' . ' t2', 't2.id = driver.party_id')
-      ->join('party' . ' t3', 't3.id = driver.foreman_id');
+      ->join('foreman' . ' t3', 't3.id = driver.foreman_id')
+      ->join('party' . ' t4', 't4.id = t3.party_id');
 
     if ($this->request->getPost('status') != '') {
       $driverModel->where('t2.status', $this->request->getPost('status'));
@@ -61,7 +66,7 @@ class Driver extends BaseController
     }
 
     $this->view['driver_data'] = $driverModel->orderBy('driver.id', 'DESC')->findAll();
-
+    $this->view['DVAModel'] = $this->DVAModel;
     // print_r($this->view['driver_data']);
     // die;
 
@@ -97,7 +102,14 @@ class Driver extends BaseController
       $this->view['foreman'] = $foremanModel->findAll();
 
       $PartyModel = new PartyModel();
-      $this->view['parties'] = $PartyModel->where('status', '1')->findAll();
+      // $this->view['parties'] = $PartyModel->where('status', '1')->findAll();
+
+      $this->view['parties'] = $PartyModel->select('party.*,driver.party_id')
+        ->join('driver', 'driver.party_id = party.id', 'left')
+        ->where('driver.party_id', null)
+        ->where('party.status', '1')->findAll();
+
+      $this->view['schemes'] = $this->SCModel->orderBy('id', 'ASC')->findAll();
 
 
       if ($this->request->getMethod() == 'POST') {
@@ -213,6 +225,13 @@ class Driver extends BaseController
             $this->vehicletypeDriver->save($vehicledata);
           }
 
+          // add scheme
+          $this->DSMModel->insert([
+            'driver_id' => $user_id,
+            'scheme_id' => $this->request->getPost('scheme_id'),
+            'added_date' => date("Y-m-d h:i:sa")
+          ]);
+
           $session = \Config\Services::session();
           $session->setFlashdata('success', 'Driver Added');
           return $this->response->redirect(base_url('driver'));
@@ -256,6 +275,9 @@ class Driver extends BaseController
 
       $PartyModel = new PartyModel();
       $this->view['parties'] = $PartyModel->where('status', '1')->findAll();
+
+      $this->view['schemes'] = $this->SCModel->orderBy('id', 'ASC')->findAll();
+      $this->view['driver_scheme'] = $this->DSMModel->where('driver_id', $id)->first();
 
       if ($this->request->getMethod() == 'POST') {
 
@@ -363,6 +385,14 @@ class Driver extends BaseController
           $driverModel->update($id, ['profile_image2' => $newName5]);
         }
 
+        // add scheme
+        $this->DSMModel->where('driver_id', $id)->where('removal_date', '')->set(['removal_date' => date('Y-m-d h:i:s')])->update();
+
+        $this->DSMModel->insert([
+          'driver_id' => $id,
+          'scheme_id' => $this->request->getPost('scheme_id'),
+          'added_date' => date("Y-m-d h:i:s")
+        ]);
 
         $session = \Config\Services::session();
         $session->setFlashdata('success', 'Driver updated');
@@ -437,6 +467,13 @@ class Driver extends BaseController
       $party = $this->partyModel->where('id', $_POST['party_id'])->first();
       return json_encode($party);
     }
+  }
+
+  public function validate_dl()
+  {
+    $row = $this->DModel->where('dl_no', $this->request->getPost('dl_no'))->first();
+
+    echo  $row ? '1' : '0';
   }
 
   public function assign_vehicle($id)

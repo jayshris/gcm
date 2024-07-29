@@ -45,7 +45,7 @@ class LoadingReceipt extends BaseController
     $stateModel = new StateModel();
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
     $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
-    $this->view['bookings'] = $this->BookingsModel->where('status', '1')->findAll();
+    $this->view['bookings'] = $this->BookingsModel->where('approved', '1')->findAll();
     $this->view['vehicles'] = $this->VModel->where('status', 1)->findAll();
     if($this->request->getPost()){
       $error = $this->validate([
@@ -103,7 +103,7 @@ class LoadingReceipt extends BaseController
         $profile =  $this->profile->select('loading_receipt_prefix')->where('logged_in_userid',  session()->get('id'))->first();//echo __LINE__.'<pre>';print_r($profile);//die;
         $last_lr = $this->LoadingReceiptModel->orderBy('id', 'desc')->first();
         $lastlr = isset($last_lr['id']) ? ((int)$last_lr['id']+1) : 1;
-        $consignment_no = isset($profile['loading_receipt_prefix']) ? $profile['loading_receipt_prefix'].'/'.$lastlr : 'LR/'.$lastlr;
+        $consignment_no = isset($profile['loading_receipt_prefix'])  && !empty($profile['loading_receipt_prefix']) ? $profile['loading_receipt_prefix'].'/'.$lastlr : 'LR/'.$lastlr;
         // echo $consignment_no.'<pre>';print_r($last_lr);die;
 
         $data = [
@@ -307,9 +307,5 @@ class LoadingReceipt extends BaseController
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll(); 
     // echo '<pre>';print_r($this->view['loading_receipts']);exit;
     return view('LoadingReceipt/preview', $this->view); 
-  }
-
-  function print(){
-    return view('LoadingReceipt/print', $this->view); 
   }
 }

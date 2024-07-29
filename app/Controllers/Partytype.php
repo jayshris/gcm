@@ -56,7 +56,6 @@ class Partytype extends BaseController
         if (!$error) {
           $this->view['error']   = $this->validator;
         } else {
-          // echo '<pre>';print_r($_POST);exit;
           $partyModel = new PartytypeModel();
           $partyModel->save([
             'name'  =>  $this->request->getVar('name'),
@@ -100,7 +99,7 @@ class Partytype extends BaseController
             'name'  =>  $this->request->getVar('name'),
             'sale' => $this->request->getVar('sale'),
             'updated_at'  =>  date("Y-m-d h:i:sa"),
-            'LR' => $this->request->getVar('LR'),
+            'LR' => ($this->request->getVar('LR')) ? $this->request->getVar('LR') : '',
           ]);
           $session = \Config\Services::session();
           $session->setFlashdata('success', 'Party type updated');

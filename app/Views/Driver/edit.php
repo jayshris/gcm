@@ -80,7 +80,7 @@
                                   <?php
                                   foreach ($foreman as $fm) {
                                   ?>
-                                    <option value="<?php echo $fm["party_id"] ?>" <?= $driver_data['foreman_id'] == $fm['party_id'] ? 'selected' : '' ?>><?php echo $fm['party_name'] ?></option>
+                                    <option value="<?php echo $fm["party_id"] ?>" <?= $driver_data['foreman_id'] == $fm['id'] ? 'selected' : '' ?>><?php echo $fm['party_name'] ?></option>
                                   <?php
                                   }
                                   ?>
@@ -138,29 +138,29 @@
 
                             <div class="col-md-6">
                               <div class="form-wrap">
-                                <label class="col-form-label">Driving Licence Number</label>
-                                <input type="text" name="dl_no" value="<?= $driver_data['dl_no'] ?>" class="form-control">
+                                <label class="col-form-label">Driving Licence Number <span class="text-danger">*</span></label>
+                                <input type="text" name="dl_no" value="<?= $driver_data['dl_no'] ?>" class="form-control" required>
                               </div>
                             </div>
 
                             <div class="col-md-6">
                               <div class="form-wrap">
-                                <label class="col-form-label">Driving Licence Issue Auth.</label>
-                                <input type="text" name="dl_authority" value="<?= $driver_data['dl_authority'] ?>" class="form-control">
+                                <label class="col-form-label">Driving Licence Issue Auth. <span class="text-danger">*</span></label>
+                                <input type="text" name="dl_authority" value="<?= $driver_data['dl_authority'] ?>" class="form-control" required>
                               </div>
                             </div>
 
                             <div class="col-md-6">
                               <div class="form-wrap">
-                                <label class="col-form-label">Driving Licence Expiry Date</label>
-                                <input type="date" name="dl_expiry" min="<?= date('Y-m-d') ?>" value="<?= $driver_data['dl_expiry'] ?>" class="form-control">
+                                <label class="col-form-label">Driving Licence Expiry Date <span class="text-danger">*</span></label>
+                                <input type="date" name="dl_expiry" min="<?= date('Y-m-d') ?>" value="<?= $driver_data['dl_expiry'] ?>" class="form-control" required>
                               </div>
                             </div>
 
 
                             <div class="col-md-3">
                               <div class="form-wrap">
-                                <label class="col-form-label"> DL Image - Front </label><br>
+                                <label class="col-form-label"> DL Image - Front <span class="text-danger">*</span></label><br>
                                 <?php if (isset($driver_data) && $driver_data['dl_image_front'] != '') {
                                   if (pathinfo($driver_data['dl_image_front'], PATHINFO_EXTENSION) != 'pdf') {
                                     echo '<img src="' . base_url('public/uploads/driverDocs/') . $driver_data['dl_image_front'] . '" style="height: 150px;">';
@@ -191,7 +191,7 @@
 
                             <div class="col-md-3">
                               <div class="form-wrap">
-                                <label class="col-form-label"> Profile Image 1 </label><br>
+                                <label class="col-form-label"> Profile Image 1 <span class="text-danger">*</span></label><br>
                                 <?php if (isset($driver_data) && $driver_data['profile_image1'] != '') {
                                   if (pathinfo($driver_data['profile_image1'], PATHINFO_EXTENSION) != 'pdf') {
                                     echo '<img src="' . base_url('public/uploads/driverDocs/') . $driver_data['profile_image1'] . '" style="height: 150px;">';
@@ -318,6 +318,23 @@
                                   echo '<div class="alert alert-danger mt-2">' . $validation->getError('vehicle_type') . '</div>';
                                 }
                                 ?>
+                              </div>
+                            </div>
+
+                            <div class="col-md-3">
+                              <div class="form-wrap">
+                                <label class="col-form-label">Scheme <span class="text-danger">*</span></label>
+                                <select class="dropdown form-control" name="scheme_id" required>
+                                  <option>Select Scheme</option>
+                                  <?php
+                                  if (isset($schemes)) {
+                                    foreach ($schemes as $row) { ?>
+                                      <option value="<?php echo $row["id"] ?>" <?= isset($driver_scheme) && $driver_scheme['scheme_id'] == $row['id'] ? 'selected' : '' ?>><?php echo $row["scheme_name"] . ' - ' . $row["rate"] . '/Km' ?></option>
+                                  <?php
+                                    }
+                                  }
+                                  ?>
+                                </select>
                               </div>
                             </div>
 

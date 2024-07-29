@@ -46,7 +46,7 @@
 
 
                             <div class="col-md-3">
-                              <label class="col-form-label">Booking For</label>
+                              <label class="col-form-label">Booking For <span class="text-danger">*</span></label>
                               <select class="form-select select2" required name="booking_for" id="booking_for" aria-label="Default select example">
                                 <option value="">Select Material</option>
                                 <option value="1" <?= $booking_details['booking_for'] == '1' ? 'selected' : '' ?>>Material 1</option>
@@ -112,106 +112,76 @@
                             </div>
 
                             <div class="col-md-12"></div>
+ 
+                            <label class="col-form-label">Pickup Details<span class="text-danger">*</span></label>
 
-
-                            <div class="col-md-9">
-
-                              <label class="col-form-label">Pickup Details<span class="text-danger">*</span></label>
-                              <table class="table table-borderless" id="pickup_table">
-                                <tbody id="pickup_body">
-                                  <tr>
-                                    <td width="15%">Sequence</td>
-                                    <td width="25%">State<span class="text-danger">*</span></td>
-                                    <td width="40%">City<span class="text-danger">*</span></td>
-                                    <td width="20%">PinCode</td>
-                                  </tr>
-
-                                  <?php
-                                  $i = 1;
-                                  foreach ($booking_pickups as $bp) { ?>
-
-                                    <tr <?= $i > 1 ? 'id="del_pickup_' . $i . '"' : '' ?>>
-                                      <td>
-                                        <input type="number" name="pickup_seq[]" value="<?= $bp['sequence'] ?>" class="form-control">
-                                      </td>
-                                      <td>
-                                        <select class="form-select" name="pickup_state_id[]" aria-label="Default select example" required>
-                                          <option value="">Select State</option>
-                                          <?php foreach ($states as $s) {
-                                            echo '<option value="' . $s['state_id'] . '" ' . ($bp['state'] == $s['state_id'] ? 'selected' : '') . '>' . $s['state_name'] . '</option>';
-                                          } ?>
-                                        </select>
-                                      </td>
-                                      <td>
-                                        <input type="text" name="pickup_city[]" class="form-control" value="<?= $bp['city'] ?>" required>
-                                      </td>
-                                      <td>
-                                        <input type="text" name="pickup_pin[]" class="form-control" value="<?= $bp['pincode'] ?>">
-                                      </td>
-                                      <td>
-                                        <?php if ($i > 1) { ?>
-                                          <button type="button" class="btn btn-sm btn-danger" onclick="$.delete(<?= $i ?>,'pickup')"><i class="fa fa-trash" aria-hidden="true"></i></button>
-                                        <?php } else { ?>
-                                          <button type="button" class="btn btn-sm btn-warning" onclick="$.addPickup()"><i class="fa fa-plus" aria-hidden="true"></i></button>
+                            <div class="col-md-3">
+                                <label class="col-form-label">State<span class="text-danger">*</span></label>
+                                <select class="form-select" name="pickup_state_id" aria-label="Default select example" required>
+                                        <option value="">Select State</option>
+                                        <?php foreach ($states as $s) { ?>
+                                        <option value="<?= $s['state_id'] ?>" <?= isset($booking_pickups['state']) && ($booking_pickups['state'] == $s['state_id']) ? 'selected' : '' ?>><?= $s['state_name'] ?></option>
                                         <?php } ?>
-                                      </td>
-                                    </tr>
-
-                                  <?php $i++;
-                                  } ?>
-
-                                </tbody>
-                              </table>
+                                </select>
+                                <?php
+                                if ($validation->getError('pickup_state_id')) {
+                                    echo '<div class="alert alert-danger mt-2">' . $validation->getError('pickup_state_id') . '</div>';
+                                }   
+                                ?>
                             </div>
 
+                            <div class="col-md-3">
+                                <label class="col-form-label">City<span class="text-danger">*</span></label>
+                                <input type="text" name="pickup_city" class="form-control" required value="<?= isset($booking_pickups['city']) ? $booking_pickups['city'] : '' ?>">
+                                <?php
+                                if ($validation->getError('pickup_city')) {
+                                    echo '<div class="alert alert-danger mt-2">' . $validation->getError('pickup_city') . '</div>';
+                                }   
+                                ?>
+                            </div>
 
-                            <div class="col-md-9">
-                              <label class="col-form-label">Drop Details<span class="text-danger">*</span></label>
-                              <table class="table table-borderless" id="drop_table">
-                                <tbody id="drop_body">
-                                  <tr>
-                                    <td width="15%">Sequence</td>
-                                    <td width="25%">State<span class="text-danger">*</span></td>
-                                    <td width="40%">City<span class="text-danger">*</span></td>
-                                    <td width="20%">PinCode</td>
-                                  </tr>
+                            <div class="col-md-3">
+                                <label class="col-form-label">PinCode</label>
+                                <input type="text" name="pickup_pin" class="form-control" value="<?= isset($booking_pickups['pincode']) ? $booking_pickups['pincode'] : '' ?>">
+                                <?php if ($validation->getError('pickup_pin')) {
+                                  echo '<div class="alert alert-danger mt-2">' . $validation->getError('pickup_pin') . '</div>';
+                                }   
+                                ?>
+                            </div>
 
-                                  <?php
-                                  $i = 1;
-                                  foreach ($booking_drops as $bd) { ?>
-
-                                    <tr <?= $i > 1 ? 'id="del_drop_' . $i . '"' : '' ?>>
-                                      <td>
-                                        <input type="number" name="drop_seq[]" value="<?= $bd['sequence'] ?>" class="form-control">
-                                      </td>
-                                      <td>
-                                        <select class="form-select" name="drop_state_id[]" aria-label="Default select example" required>
-                                          <option value="">Select State</option>
-                                          <?php foreach ($states as $s) {
-                                            echo '<option value="' . $s['state_id'] . '" ' . ($bd['state'] == $s['state_id'] ? 'selected' : '') . '>' . $s['state_name'] . '</option>';
-                                          } ?>
-                                        </select>
-                                        </select>
-                                      </td>
-                                      <td>
-                                        <input type="text" name="drop_city[]" class="form-control" value="<?= $bd['city'] ?>" required>
-                                      </td>
-                                      <td>
-                                        <input type="text" name="drop_pin[]" class="form-control" value="<?= $bd['pincode'] ?>">
-                                      </td>
-                                      <td>
-                                        <?php if ($i > 1) { ?>
-                                          <button type="button" class="btn btn-sm btn-danger" onclick="$.delete(<?= $i ?>,'drop')"><i class="fa fa-trash" aria-hidden="true"></i></button>
-                                        <?php } else { ?>
-                                          <button type="button" class="btn btn-sm btn-warning" onclick="$.addDrop()"><i class="fa fa-plus" aria-hidden="true"></i></button>
+                            <label class="col-form-label">Drop Details<span class="text-danger">*</span></label>
+                            <div class="col-md-3">
+                                <label class="col-form-label">State<span class="text-danger">*</span></label>
+                                <select class="form-select" name="drop_state_id" aria-label="Default select example" required>
+                                        <option value="">Select State</option>
+                                        <?php foreach ($states as $s) { ?>
+                                        <option value="<?= $s['state_id'] ?>" <?= isset($booking_drops['state']) && ($booking_drops['state'] == $s['state_id']) ? 'selected' : '' ?>><?= $s['state_name'] ?></option> 
                                         <?php } ?>
-                                      </td>
-                                    </tr>
+                                </select>
+                                <?php
+                                if ($validation->getError('drop_state_id')) {
+                                    echo '<div class="alert alert-danger mt-2">' . $validation->getError('drop_state_id') . '</div>';
+                                }   
+                                ?>
+                            </div>
 
-                                  <?php $i++;
-                                  } ?>
-                                </tbody>
-                              </table>
+                            <div class="col-md-3">
+                                <label class="col-form-label">City<span class="text-danger">*</span></label>
+                                <input type="text" name="drop_city" class="form-control" required value="<?= isset($booking_drops['city']) ? $booking_drops['city'] : '' ?>">
+                                <?php
+                                if ($validation->getError('drop_city')) {
+                                    echo '<div class="alert alert-danger mt-2">' . $validation->getError('drop_city') . '</div>';
+                                }   
+                                ?>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="col-form-label">PinCode</label>
+                                <input type="text" name="drop_pin" class="form-control" value="<?= isset($booking_drops['pincode']) ? $booking_drops['pincode'] : '' ?>">
+                                <?php if ($validation->getError('drop_pin')) {
+                                  echo '<div class="alert alert-danger mt-2">' . $validation->getError('drop_pin') . '</div>';
+                                }   
+                                ?>
                             </div>
 
                             <div class="col-md-12"></div>
@@ -269,6 +239,7 @@
                                   </tr>
 
                                   <?php
+                                  if(isset($booking_expences) && !empty($booking_expences)){
                                   $i = 1;
                                   foreach ($booking_expences as $be) {
                                   ?>
@@ -295,8 +266,22 @@
                                     </tr>
                                   <?php
                                     $i++;
-                                  }
-                                  ?>
+                                  }}else{ ?>
+                                    <tr>
+                                      <td>
+                                        <select class="form-select" name="expense[]" aria-label="Default select example">
+                                          <option value="">Select Expense</option>
+                                          <option value="1">Loading</option>
+                                          <option value="2">Unloading</option>
+                                          <option value="3">Detention</option>
+                                          <option value="4">Munshiana</option>
+                                        </select>
+                                      </td>
+                                      <td><input type="number" name="expense_value[]" id="expense_1" class="form-control"></td>
+                                      <td><input class="form-check-input" type="checkbox" name="expense_flag_1" id="expense_flag_1" style="height:30px; width:30px; border-radius: 50%;" onchange="$.billToParty('1');"></td>
+                                      <td><button type="button" class="btn btn-sm btn-warning" onclick="$.addExpense()"><i class="fa fa-plus" aria-hidden="true"></i></button></td>
+                                    </tr>
+                                    <?php } ?>
 
                                 </tbody>
                               </table>
@@ -380,7 +365,7 @@
   <?= $this->include('partials/vendor-scripts') ?>
   <script>
     $(document).ready(function() {
-      $.getPartyType();
+      $.getPartyType(); 
     });
 
 
