@@ -45,12 +45,14 @@
                             <input type="hidden" name="pickup_seq" value="1" class="form-control">
                             <input type="hidden" name="drop_seq" value="1" class="form-control">
                             <div class="col-md-12"></div>
-                             
+                              
+                            <h6>Booking Number: <?= $booking_number ?></h6>  
+
                             <label class="col-form-label">Pickup Details<span class="text-danger">*</span></label>
 
                             <div class="col-md-3">
                                 <label class="col-form-label">State<span class="text-danger">*</span></label>
-                                <select class="form-select" name="pickup_state_id" aria-label="Default select example" required>
+                                <select class="form-select" name="pickup_state_id" aria-label="Default select example" required onchange="getCitiesByState(this.value,'pickup_city')">
                                         <option value="">Select State</option>
                                         <?php foreach ($states as $s) {
                                         echo '<option value="' . $s['state_id'] . '">' . $s['state_name'] . '</option>';
@@ -64,8 +66,12 @@
                             </div>
 
                             <div class="col-md-3">
-                                <label class="col-form-label">City<span class="text-danger">*</span></label>
-                                <input type="text" name="pickup_city" class="form-control" required>
+                                <label class="col-form-label">City<span class="text-danger">*</span></label> 
+                                <input type="hidden"  name="pickup_city_id" id="pickup_city_id" class="form-control">   
+                                <select class="form-select" name="pickup_city" id="pickup_city" aria-label="Default select example" required  onchange="changeCity(this,$(this).find(':selected').attr('pickup_city_id'),'pickup_city_id')">
+                                        <option value="">Select </option> 
+                                </select>
+
                                 <?php
                                 if ($validation->getError('pickup_city')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('pickup_city') . '</div>';
@@ -91,7 +97,7 @@
                             <label class="col-form-label">Drop Details<span class="text-danger">*</span></label>
                             <div class="col-md-3">
                                 <label class="col-form-label">State<span class="text-danger">*</span></label>
-                                <select class="form-select" name="drop_state_id" aria-label="Default select example" required>
+                                <select class="form-select" name="drop_state_id" aria-label="Default select example" required onchange="getCitiesByState(this.value,'drop_city')">
                                         <option value="">Select State</option>
                                         <?php foreach ($states as $s) {
                                         echo '<option value="' . $s['state_id'] . '">' . $s['state_name'] . '</option>';
@@ -106,7 +112,11 @@
 
                             <div class="col-md-3">
                                 <label class="col-form-label">City<span class="text-danger">*</span></label>
-                                <input type="text" name="drop_city" class="form-control" required>
+                                <input type="hidden"  name="drop_city_id" id="drop_city_id" class="form-control">                               
+                                <select class="form-select" name="drop_city" id="drop_city" aria-label="Default select example" required  onchange="changeCity(this,$(this).find(':selected').attr('drop_city_id'),'drop_city_id')">
+                                        <option value="">Select </option> 
+                                </select>
+ 
                                 <?php
                                 if ($validation->getError('drop_city')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('drop_city') . '</div>';
@@ -164,13 +174,18 @@
                                     <td>
                                       <select class="form-select" name="expense[]" aria-label="Default select example">
                                         <option value="">Select Expense</option>
-                                        <option value="1">Loading</option>
+                                        <?php if(isset($expense_heads)){
+                                          foreach($expense_heads as $val){ ?> 
+                                                <option value="<?= $val['id'] ?>"><?= $val['head_name'] ?></option>
+                                         <?php }
+                                        } ?>
+                                        <!-- <option value="1">Loading</option>
                                         <option value="2">Unloading</option>
                                         <option value="3">Detention</option>
-                                        <option value="4">Munshiana</option>
+                                        <option value="4">Munshiana</option> -->
                                       </select>
                                     </td>
-                                    <td><input type="number" name="expense_value[]" id="expense_1" class="form-control"></td>
+                                    <td><input type="number" name="expense_value[]" id="expense_1" class="form-control not_to_bill" onchange="$.billToParty('1');"></td>
                                     <td><input class="form-check-input" type="checkbox" name="expense_flag_1" id="expense_flag_1" style="height:30px; width:30px; border-radius: 50%;" onchange="$.billToParty('1');"></td>
                                     <td><button type="button" class="btn btn-sm btn-warning" onclick="$.addExpense()"><i class="fa fa-plus" aria-hidden="true"></i></button></td>
                                   </tr>
@@ -180,8 +195,8 @@
 
                             <div class="col-md-12"></div>
 
-                            <div class="col-md-2">
-                              <label class="col-form-label">Guranteed Weight <span class="text-danger" id="guranteed_wt_span"></span></label>
+                            <div class="col-md-3">
+                              <label class="col-form-label">Guranteed / Charged Weight <span class="text-danger" id="guranteed_wt_span"></span></label>
                               <input type="number" name="guranteed_wt" id="guranteed_wt" onchange="$.calculation()" class="form-control">
                             </div>
 
@@ -197,7 +212,7 @@
 
                             <div class="col-md-2">
                               <label class="col-form-label">Discount</label>
-                              <input type="number" name="discount" id="discount" onchange="$.calculation()" class="form-control">
+                              <input type="number" name="discount" id="discount" onchange="$.calculation()" class="form-control" readonly>
                             </div>
 
                             <div class="col-md-2">
@@ -332,7 +347,7 @@
 
                             <div class="col-md-2">
                               <label class="col-form-label">Booking Date<span class="text-danger">*</span></label>
-                              <input type="date" required name="booking_date" min="<?= date('Y-m-d', strtotime('-30 days')) ?>" class="form-control">
+                              <input type="date" required name="booking_date" min="<?= date('Y-m-d', strtotime('-30 days')) ?>" value="<?= date('Y-m-d') ?>" class="form-control">
                               <?php
                               if ($validation->getError('booking_date')) {
                                   echo '<div class="alert alert-danger mt-2">' . $validation->getError('booking_date') . '</div>';
@@ -342,11 +357,11 @@
 
                             <div class="form-wrap col-md-12"> 
                                 <label class="col-form-label" style="padding-right: 10px;">
-                                    Booking Type
+                                    Booking Type<span class="text-danger">*</span>
                                 </label>
-                                <input type="radio" name="booking_type" id="FTL" value="FTL" <?= isset($bookings['booking_type']) && $bookings['booking_type'] === 'FTL' ? 'checked' : '' ?>>
+                                <input type="radio" name="booking_type" id="FTL" value="FTL" checked required>
                                 <label for="FTL" style="padding-right:15px">FTL</label>
-                                <input type="radio" name="booking_type" id="PTL" value="PTL" <?= isset($bookings['booking_type']) && $bookings['booking_type'] === 'PTL' ? 'checked' : '' ?>>
+                                <input type="radio" name="booking_type" id="PTL" value="PTL" required>
                                 <label for="PTL">PTL</label> 
 
                                 <?php
@@ -386,7 +401,7 @@
   <?= $this->include('partials/vendor-scripts') ?>
   <script>
    
-    $(function() { 
+    $(function() {        
         $("#customer_type").change(function() {
             if($('option:selected', this).val() > 0){
                 $.ajax({
@@ -456,6 +471,7 @@
 
     $.delete = function(index, str) {
       $('#del_' + str + '_' + index).remove();
+      $.calculation();
     }
 
     $.getPartyType = function() {
@@ -519,7 +535,9 @@
     $.billToParty = function(index) {
       if ($("#expense_flag_" + index).prop("checked")) {
         $('#expense_' + index).addClass('bill');
+        $('#expense_' + index).removeClass('not_to_bill');
       } else {
+        $('#expense_' + index).addClass('not_to_bill');
         $('#expense_' + index).removeClass('bill');
       }
 
@@ -544,6 +562,11 @@
         $('#rate_msg').html(' - Overall');
       }
 
+      var notbilltotal = 0;
+      $('.not_to_bill').each(function() {
+        notbilltotal += parseFloat($(this).val());
+      });
+      $('#discount').val(notbilltotal);
 
       if (rate > 0) {
 
@@ -574,6 +597,42 @@
 
         console.log(rate_type, rate);
       }
+    }
+ 
+    function getCitiesByState(val,changed_id){ 
+      if(val > 0){
+            $.ajax({
+              method: "POST",
+              url: '<?php echo base_url('booking/getCitiesByState') ?>',
+              data: {
+                state_id: val
+              },
+              dataType:'json',
+              success: function(response) {
+                console.log(response);
+                var html ='<option value="0">Select</option>';
+                if(response){
+                  response.forEach(function(val) {
+                      html += '<option value="'+val.city+'" '+changed_id+'_id="'+val.id+'" >'+val.city+'</option>'
+                  });
+                }
+                $('#'+changed_id).html(html);
+                $('#'+changed_id).trigger('change');
+              }
+            });
+        }
+    }
+    $(document).ready(function() {
+      var pickup_city =  $("#pickup_city").select2({
+        tags: true
+      }); 
+      var drop_city =  $("#drop_city").select2({
+        tags: true
+      }); 
+    });
+
+    function changeCity(thisv,city_id_val,id){   
+      $('#'+id).val( (city_id_val) > 0 ? city_id_val : 0) ;
     }
   </script>
 

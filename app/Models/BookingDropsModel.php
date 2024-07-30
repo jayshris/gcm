@@ -12,5 +12,5 @@ class BookingDropsModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['booking_id', 'sequence', 'city', 'state', 'pincode'];
+    protected $allowedFields    = ['booking_id', 'sequence', 'city', 'state', 'pincode','city_id'];
 }

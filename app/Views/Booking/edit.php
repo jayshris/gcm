@@ -47,7 +47,7 @@
 
                             <div class="col-md-3">
                                 <label class="col-form-label">State<span class="text-danger">*</span></label>
-                                <select class="form-select" name="pickup_state_id" aria-label="Default select example" required>
+                                <select class="form-select" name="pickup_state_id" aria-label="Default select example" required onchange="getCitiesByState(this.value,'pickup_city')">
                                         <option value="">Select State</option>
                                         <?php foreach ($states as $s) { ?>
                                         <option value="<?= $s['state_id'] ?>" <?= isset($booking_pickups['state']) && ($booking_pickups['state'] == $s['state_id']) ? 'selected' : '' ?>><?= $s['state_name'] ?></option>
@@ -61,8 +61,16 @@
                             </div>
 
                             <div class="col-md-3">
-                                <label class="col-form-label">City<span class="text-danger">*</span></label>
-                                <input type="text" name="pickup_city" class="form-control" required value="<?= isset($booking_pickups['city']) ? $booking_pickups['city'] : '' ?>">
+                                <label class="col-form-label">City<span class="text-danger">*</span></label> 
+                                <input type="hidden"  name="pickup_city_id" id="pickup_city_id" class="form-control" value="<?= isset($booking_pickups['city_id']) ? $booking_pickups['city_id'] : '' ?>">   
+                                <select class="form-select" name="pickup_city" id="pickup_city" aria-label="Default select example" required  onchange="changeCity(this,$(this).find(':selected').attr('pickup_city_id'),'pickup_city_id')">
+                                        <option value="">Select </option> 
+                                        <?php if(!empty($pickup_cities)){ ?>
+                                          <?php foreach($pickup_cities as $key => $c){ ?>
+                                            <option value="<?php echo $c;?>" pickup_city_id="<?php echo $key;?>"><?php echo $c;?></option>
+                                          <?php }?>
+                                        <?php } ?>
+                                </select>
                                 <?php
                                 if ($validation->getError('pickup_city')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('pickup_city') . '</div>';
@@ -92,7 +100,7 @@
                             <label class="col-form-label">Drop Details<span class="text-danger">*</span></label>
                             <div class="col-md-3">
                                 <label class="col-form-label">State<span class="text-danger">*</span></label>
-                                <select class="form-select" name="drop_state_id" aria-label="Default select example" required>
+                                <select class="form-select" name="drop_state_id" aria-label="Default select example" required  onchange="getCitiesByState(this.value,'drop_city')">
                                         <option value="">Select State</option>
                                         <?php foreach ($states as $s) { ?>
                                          <option value="<?= $s['state_id'] ?>" <?= isset($booking_drops['state']) && ($booking_drops['state'] == $s['state_id']) ? 'selected' : '' ?>><?= $s['state_name'] ?></option> 
@@ -106,8 +114,16 @@
                             </div>
 
                             <div class="col-md-3">
-                                <label class="col-form-label">City<span class="text-danger">*</span></label>
-                                <input type="text" name="drop_city" class="form-control" required value="<?= isset($booking_drops['city']) ? $booking_drops['city'] : '' ?>">
+                                <label class="col-form-label">City<span class="text-danger">*</span></label>                                 
+                                <input type="hidden"  name="drop_city_id" id="drop_city_id" class="form-control" value="<?= isset($booking_drops['city_id']) ? $booking_drops['city_id'] : '' ?>">                               
+                                <select class="form-select" name="drop_city" id="drop_city" aria-label="Default select example" required  onchange="changeCity(this,$(this).find(':selected').attr('drop_city_id'),'drop_city_id')">
+                                        <option value="">Select </option> 
+                                        <?php if(!empty($drop_cities)){ ?>
+                                          <?php foreach($drop_cities as $key => $c){ ?>
+                                            <option value="<?php echo $c;?>" drop_city_id="<?php echo $key;?>"><?php echo $c;?></option>
+                                          <?php }?>
+                                        <?php } ?>
+                                </select>
                                 <?php
                                 if ($validation->getError('drop_city')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('drop_city') . '</div>';
@@ -179,13 +195,14 @@
                                       <td>
                                         <select class="form-select" name="expense[]" aria-label="Default select example">
                                           <option value="">Select Expense</option>
-                                          <option value="1" <?= $be['expense'] == '1' ? 'selected' : '' ?>>Loading</option>
-                                          <option value="2" <?= $be['expense'] == '2' ? 'selected' : '' ?>>Unloading</option>
-                                          <option value="3" <?= $be['expense'] == '3' ? 'selected' : '' ?>>Detention</option>
-                                          <option value="4" <?= $be['expense'] == '4' ? 'selected' : '' ?>>Munshiana</option>
+                                          <?php if(isset($expense_heads)){
+                                            foreach($expense_heads as $val){ ?> 
+                                                  <option value="<?= $val['id'] ?>" <?= $be['expense'] == $val['id'] ? 'selected' : '' ?> ><?= $val['head_name'] ?></option>
+                                          <?php }
+                                          } ?> 
                                         </select>
                                       </td>
-                                      <td><input type="number" name="expense_value[]" id="expense_<?= $i ?>" value="<?= $be['value'] ?>" class="form-control"></td>
+                                      <td><input type="number" name="expense_value[]" id="expense_<?= $i ?>" value="<?= $be['value'] ?>" class="form-control <?= $be['bill_to_party'] != 1 ? 'not_to_bill' : '' ?>" onchange="$.billToParty('<?= $i ?>');"></td>
                                       <td><input class="form-check-input" type="checkbox" name="expense_flag_<?= $i ?>" id="expense_flag_<?= $i ?>" style="height:30px; width:30px; border-radius: 50%;" onchange="$.billToParty('<?= $i ?>');" <?= $be['bill_to_party'] == 1 ? 'checked' : '' ?>></td>
                                       <td>
                                         <?php if ($i > 1) { ?>
@@ -203,13 +220,14 @@
                                     <td>
                                       <select class="form-select" name="expense[]" aria-label="Default select example">
                                         <option value="">Select Expense</option>
-                                        <option value="1">Loading</option>
-                                        <option value="2">Unloading</option>
-                                        <option value="3">Detention</option>
-                                        <option value="4">Munshiana</option>
+                                        <?php if(isset($expense_heads)){
+                                          foreach($expense_heads as $val){ ?> 
+                                                <option value="<?= $val['id'] ?>"><?= $val['head_name'] ?></option>
+                                         <?php }
+                                        } ?>
                                       </select>
                                     </td>
-                                    <td><input type="number" name="expense_value[]" id="expense_1" class="form-control"></td>
+                                    <td><input type="number" name="expense_value[]" id="expense_1" class="form-control not_to_bill" onchange="$.billToParty('1');"></td>
                                     <td><input class="form-check-input" type="checkbox" name="expense_flag_1" id="expense_flag_1" style="height:30px; width:30px; border-radius: 50%;" onchange="$.billToParty('1');"></td>
                                     <td><button type="button" class="btn btn-sm btn-warning" onclick="$.addExpense()"><i class="fa fa-plus" aria-hidden="true"></i></button></td>
                                   </tr>
@@ -221,8 +239,8 @@
 
                             <div class="col-md-12"></div>
 
-                            <div class="col-md-2">
-                              <label class="col-form-label">Guranteed Weight</label>
+                            <div class="col-md-3">
+                              <label class="col-form-label">Guranteed / Charged Weight</label>
                               <input type="number" name="guranteed_wt" id="guranteed_wt" onchange="$.calculation()" class="form-control" value="<?= $booking_details['guranteed_wt'] ?>">
                             </div>
 
@@ -238,7 +256,7 @@
 
                             <div class="col-md-2">
                               <label class="col-form-label">Discount</label>
-                              <input type="number" name="discount" id="discount" onchange="$.calculation()" class="form-control" value="<?= $booking_details['discount'] ?>">
+                              <input type="number" name="discount" id="discount" onchange="$.calculation()" class="form-control" value="<?= $booking_details['discount'] ?>" readonly>
                             </div>
 
                             <div class="col-md-2">
@@ -269,8 +287,8 @@
                           <br>
                         </div>
                         <div class="submit-button">
-                          <button type="submit" class="btn btn-primary" id="save-btn">Save Changes</button>
-                          <button type="reset" class="btn btn-warning">Reset</button>
+                          <button type="submit" class="btn btn-primary" id="save-btn">Save Changes</button> 
+                          <a href="<?= base_url().$currentController.'/'.$currentMethod.(($token>0) ? '/'.$token : '') ?>" class="btn btn-warning">Reset</a>
                           <a href="<?php echo base_url('booking'); ?>" class="btn btn-light">Back</a>
                         </div> 
 
@@ -291,6 +309,8 @@
   </div>
   <!-- /Main Wrapper -->
 
+  <input type="hidden" id="selected_pickup_city" value="<?php echo $selected_pickup_city; ?>"/> 
+  <input type="hidden" id="selected_drop_city" value="<?php echo $selected_drop_city; ?>"/> 
 
   <?= $this->include('partials/vendor-scripts') ?>
   <script>
@@ -342,6 +362,7 @@
 
     $.delete = function(index, str) {
       $('#del_' + str + '_' + index).remove();
+      $.calculation();
     }
 
     $.getPartyType = function() {
@@ -404,7 +425,9 @@
     $.billToParty = function(index) {
       if ($("#expense_flag_" + index).prop("checked")) {
         $('#expense_' + index).addClass('bill');
+        $('#expense_' + index).removeClass('not_to_bill');
       } else {
+        $('#expense_' + index).addClass('not_to_bill');
         $('#expense_' + index).removeClass('bill');
       }
 
@@ -428,7 +451,11 @@
         $('#guranteed_wt').removeAttr('required');
         $('#rate_msg').html(' - Overall');
       }
-
+      var notbilltotal = 0;
+        $('.not_to_bill').each(function() {
+          notbilltotal += parseFloat($(this).val());
+        });
+        $('#discount').val(notbilltotal);
 
       if (rate > 0) {
 
@@ -459,6 +486,44 @@
 
         console.log(rate_type, rate);
       }
+    }
+
+    
+    function getCitiesByState(val,changed_id){ 
+      if(val > 0){
+            $.ajax({
+              method: "POST",
+              url: '<?php echo base_url('booking/getCitiesByState') ?>',
+              data: {
+                state_id: val
+              },
+              dataType:'json',
+              success: function(response) {
+                console.log(response);
+                var html ='<option value="0">Select</option>';
+                if(response){
+                  response.forEach(function(val) {
+                      html += '<option value="'+val.city+'" '+changed_id+'_id="'+val.id+'" >'+val.city+'</option>'
+                  });
+                }
+                $('#'+changed_id).html(html);
+                $('#'+changed_id).trigger('change');
+              }
+            });
+        }
+    }
+    $(document).ready(function() {
+      var pickup_city =  $("#pickup_city").select2({
+        tags: true
+      }); 
+      var drop_city =  $("#drop_city").select2({
+        tags: true
+      }); 
+    });
+    $("#pickup_city").val($('#selected_pickup_city').val()).trigger('change');
+    $("#drop_city").val($('#selected_drop_city').val()).trigger('change');
+    function changeCity(thisv,city_id_val,id){   
+      $('#'+id).val( (city_id_val) > 0 ? city_id_val : 0) ;
     }
   </script>
 
