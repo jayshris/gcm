@@ -271,7 +271,7 @@
                                           } ?> 
                                         </select>
                                       </td>
-                                      <td><input type="number" name="expense_value[]" id="expense_<?= $i ?>" value="<?= $be['value'] ?>" class="form-control <?= $be['bill_to_party'] != 1 ? 'not_to_bill' : '' ?>" onchange="$.billToParty('<?= $i ?>');"></td>
+                                      <td><input type="number" name="expense_value[]" id="expense_<?= $i ?>" value="<?= $be['value'] ?>" class="form-control <?= $be['bill_to_party'] != 1 ? 'not_to_bill' : 'bill' ?>" onchange="$.billToParty('<?= $i ?>');"></td>
                                       <td><input class="form-check-input" type="checkbox" name="expense_flag_<?= $i ?>" id="expense_flag_<?= $i ?>" style="height:30px; width:30px; border-radius: 50%;" onchange="$.billToParty('<?= $i ?>');" <?= $be['bill_to_party'] == 1 ? 'checked' : '' ?>></td>
                                       <td>
                                         <?php if ($i > 1) { ?>
@@ -309,7 +309,7 @@
                             <div class="col-md-12"></div>
 
                             <div class="col-md-3">
-                              <label class="col-form-label">Guranteed / Charged Weight</label>
+                              <label class="col-form-label">Guaranteed / Charged Weight</label>
                               <input type="number" name="guranteed_wt" id="guranteed_wt" onchange="$.calculation()" class="form-control" value="<?= $booking_details['guranteed_wt'] ?>">
                             </div>
 

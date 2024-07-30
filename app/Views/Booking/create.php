@@ -196,7 +196,7 @@
                             <div class="col-md-12"></div>
 
                             <div class="col-md-3">
-                              <label class="col-form-label">Guranteed / Charged Weight <span class="text-danger" id="guranteed_wt_span"></span></label>
+                              <label class="col-form-label">Guaranteed / Charged Weight <span class="text-danger" id="guranteed_wt_span"></span></label>
                               <input type="number" name="guranteed_wt" id="guranteed_wt" onchange="$.calculation()" class="form-control">
                             </div>
 
