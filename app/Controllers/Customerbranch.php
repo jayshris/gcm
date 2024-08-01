@@ -56,7 +56,7 @@ class Customerbranch extends BaseController
                 ->where('party.created_by!=', '')
                 ->findAll();
 
-            return view('CustomerBranch/index', $this->view);
+            return view('Customerbranch/index', $this->view);
         }
     }
 
@@ -102,7 +102,7 @@ class Customerbranch extends BaseController
 
                 return $this->response->redirect(base_url('customerbranch'));
             }
-            return view('CustomerBranch/action', $this->view);
+            return view('Customerbranch/action', $this->view);
         }
     }
 
@@ -157,9 +157,9 @@ class Customerbranch extends BaseController
 
                 $this->session->setFlashdata('success', 'Customer Successfully Modified');
 
-                return $this->response->redirect(base_url('CustomerBranch'));
+                return $this->response->redirect(base_url('Customerbranch'));
             }
-            return view('CustomerBranch/action', $this->view);
+            return view('Customerbranch/action', $this->view);
         }
     }
 

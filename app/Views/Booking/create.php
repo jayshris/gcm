@@ -47,6 +47,8 @@
                             <div class="col-md-12"></div>
                               
                             <h6>Booking Number: <?= $booking_number ?></h6>  
+                            <br/>
+                            <h6>Customer: <?= $booking_customer ?></h6>  
 
                             <label class="col-form-label">Pickup Details<span class="text-danger">*</span></label>
 

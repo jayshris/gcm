@@ -12,5 +12,5 @@ class DriverKycLinksModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['token', 'gen_date', 'gen_by', 'gen_ip', 'link_used'];
+    protected $allowedFields    = ['token', 'gen_for', 'gen_date', 'gen_by', 'gen_ip', 'link_used'];
 }

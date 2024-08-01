@@ -244,18 +244,18 @@ class Employee extends BaseController
             'it_pan_card' => $this->request->getPost('it_pan_card'),
             'image_front' => $image_front_name,
             'image_back' => $image_back,
-            'current_address'=> $this->request->getPost('current_address'),
-            'current_city'=> $this->request->getPost('current_city'),
-            'current_state'=> $this->request->getPost('current_state'),
-            'current_pincode'=> $this->request->getPost('current_pincode'),
-            'permanent_address'=> $this->request->getPost('permanent_address'),
-            'permanent_city'=> $this->request->getPost('permanent_city'),
-            'permanent_state'=> $this->request->getPost('permanent_state'),
-            'permanent_pincode'=> $this->request->getPost('permanent_pincode'),
-            'permanent_phone'=> $this->request->getPost('permanent_phone'),
-            'relation'=> $this->request->getPost('relation'),
-            'alternate_mobile'=> $this->request->getPost('alternate_mobile'),
-            'comp_mobile2'=> $this->request->getPost('comp_mobile2'),
+            'current_address' => $this->request->getPost('current_address'),
+            'current_city' => $this->request->getPost('current_city'),
+            'current_state' => $this->request->getPost('current_state'),
+            'current_pincode' => $this->request->getPost('current_pincode'),
+            'permanent_address' => $this->request->getPost('permanent_address'),
+            'permanent_city' => $this->request->getPost('permanent_city'),
+            'permanent_state' => $this->request->getPost('permanent_state'),
+            'permanent_pincode' => $this->request->getPost('permanent_pincode'),
+            'permanent_phone' => $this->request->getPost('permanent_phone'),
+            'relation' => $this->request->getPost('relation'),
+            'alternate_mobile' => $this->request->getPost('alternate_mobile'),
+            'comp_mobile2' => $this->request->getPost('comp_mobile2'),
           ]);
 
 
@@ -324,20 +324,20 @@ class Employee extends BaseController
             'status' => '0',
             'approved' => '0',
             'updated_at' => date('Y-m-d'),
-            'updated_by' =>  $this->added_by, 
-            'it_pan_card' => $this->request->getPost('it_pan_card'), 
-            'current_address'=> $this->request->getPost('current_address'),
-            'current_city'=> $this->request->getPost('current_city'),
-            'current_state'=> $this->request->getPost('current_state'),
-            'current_pincode'=> $this->request->getPost('current_pincode'),
-            'permanent_address'=> $this->request->getPost('permanent_address'),
-            'permanent_city'=> $this->request->getPost('permanent_city'),
-            'permanent_state'=> $this->request->getPost('permanent_state'),
-            'permanent_pincode'=> $this->request->getPost('permanent_pincode'),
-            'permanent_phone'=> $this->request->getPost('permanent_phone'),
-            'relation'=> $this->request->getPost('relation'),
-            'alternate_mobile'=> $this->request->getPost('alternate_mobile'),
-            'comp_mobile2'=> $this->request->getPost('comp_mobile2'),
+            'updated_by' =>  $this->added_by,
+            'it_pan_card' => $this->request->getPost('it_pan_card'),
+            'current_address' => $this->request->getPost('current_address'),
+            'current_city' => $this->request->getPost('current_city'),
+            'current_state' => $this->request->getPost('current_state'),
+            'current_pincode' => $this->request->getPost('current_pincode'),
+            'permanent_address' => $this->request->getPost('permanent_address'),
+            'permanent_city' => $this->request->getPost('permanent_city'),
+            'permanent_state' => $this->request->getPost('permanent_state'),
+            'permanent_pincode' => $this->request->getPost('permanent_pincode'),
+            'permanent_phone' => $this->request->getPost('permanent_phone'),
+            'relation' => $this->request->getPost('relation'),
+            'alternate_mobile' => $this->request->getPost('alternate_mobile'),
+            'comp_mobile2' => $this->request->getPost('comp_mobile2'),
           ]);
 
 
@@ -646,6 +646,7 @@ class Employee extends BaseController
     }
   }
 
+
   public function status($id = null)
   {
     $access = $this->_access;
@@ -675,10 +676,22 @@ class Employee extends BaseController
     }
   }
 
+
   public function getOfficeLocations()
   {
     $companyId = $this->request->getPost('company_id');
     $officeLocations = $this->officeModel->where('company_id', $companyId)->orderBy('name')->findAll();
     return $this->response->setJSON($officeLocations);
+  }
+
+
+  public function preview($id)
+  {
+    $this->view['employee_data'] = $this->employeeModel->select('employee.*, company.name as company_name, office.name as office_name')
+      ->join('company', 'company.id = employee.company_id')
+      ->join('office', 'office.id = employee.branch_id')
+      ->where('employee.id', $id)->first();
+
+    return view('Employee/preview', $this->view);
   }
 }

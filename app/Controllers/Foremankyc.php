@@ -60,6 +60,8 @@ class Foremankyc extends BaseController
 
     public function create()
     {
+        $this->view['gen_links'] = $this->KLModel->orderBy('id', 'desc')->findAll(50);
+
         return view('Foremankyc/kyc_link_gen', $this->view);
     }
 
@@ -69,6 +71,7 @@ class Foremankyc extends BaseController
 
         $this->view = [
             'token' => $token,
+            'gen_for' => $this->request->getPost('gen_for'),
             'gen_by' => isset($_SESSION['id']) ? $_SESSION['id'] : '0',
             'gen_ip' => isset($_SERVER['REMOTE_ADDR'])  ? $_SERVER['REMOTE_ADDR'] : '',
         ];
@@ -86,16 +89,15 @@ class Foremankyc extends BaseController
         if ($link_data) {
 
             $dateProvided = $link_data['gen_date'];
-            $dateProvidedTimestamp = strtotime($dateProvided);
+            $dateProvidedTimestamp = strtotime($dateProvided) + (24 * 60 * 60);
 
             $currentDateTimestamp = time();
-            $twentyFourHoursAhead = $currentDateTimestamp + (24 * 60 * 60); // 24 hours in seconds
 
-            if ($dateProvidedTimestamp > $twentyFourHoursAhead) {
-                $this->session->setFlashdata('error', 'This Link Has Expired,  Please Contact The Administrator');
-                return $this->response->redirect(base_url('kyc/thanks'));
-            } else if ($link_data['link_used'] != 0) {
+            if ($link_data['link_used'] != 0) {
                 $this->session->setFlashdata('error', 'Your Kyc is already submitted,  Please Contact The Administrator');
+                return $this->response->redirect(base_url('kyc/thanks'));
+            } else if ($dateProvidedTimestamp < $currentDateTimestamp) {
+                $this->session->setFlashdata('error', 'This Link Has Expired,  Please Contact The Administrator');
                 return $this->response->redirect(base_url('kyc/thanks'));
             } else {
 

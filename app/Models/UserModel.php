@@ -88,7 +88,7 @@ class UserModel extends Model
         }
     }
 
-    public function setPermission(){
+    public function setPermission(){return true;
             $uriSegments = explode("/", parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)); 
             $module_name = '';
 

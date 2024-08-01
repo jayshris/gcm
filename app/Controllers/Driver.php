@@ -542,4 +542,17 @@ class Driver extends BaseController
       ->findAll();
     return view('Driver/assigned_list', $data);
   }
+
+  public function preview($id)
+  {
+    $driverModel = new DriverModel();
+
+    $this->view['driver_data'] = $driverModel->select('driver.*, t1.party_name as driver_name, t1.primary_phone, t1.other_phone, t1.email, t2.party_name as foreman_name')
+      ->join('party t1', 't1.id = driver.party_id')
+      ->join('foreman', 'foreman.id = driver.foreman_id')
+      ->join('party t2', 't2.id = foreman.party_id')
+      ->where('driver.id', $id)->first();
+
+    return view('Driver/preview', $this->view);
+  }
 }

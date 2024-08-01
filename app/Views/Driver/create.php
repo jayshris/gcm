@@ -84,7 +84,7 @@
                                         $name = '';
                                       }
                                   ?>
-                                      <option value="<?php echo $partydata["id"] ?>"><?php echo $name ?></option>
+                                      <option value="<?php echo $row["id"] ?>"><?php echo $name ?></option>
                                   <?php
                                     }
                                   }

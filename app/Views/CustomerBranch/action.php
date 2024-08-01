@@ -60,9 +60,22 @@
                             <div class="col-12"> </div>
 
                             <div class="col-md-6">
+                              <label class="col-form-label">Office Name<span class="text-danger">*</span></label>
+                              <select class="form-select select2" required name="office_name">
+                                <option value="">Select Office Name</option>
+                                <option value="Head Office" <?= isset($branch_detail) && $branch_detail['office_name'] == "Head Office" ? "selected" : "" ?>>Head Office</option>
+                                <option value="Warehouse" <?= isset($branch_detail) && $branch_detail['office_name'] == "Warehouse" ? "selected" : "" ?>>Warehouse</option>
+                                <option value="Parking" <?= isset($branch_detail) && $branch_detail['office_name'] == "Parking" ? "selected" : "" ?>>Parking</option>
+                                <option value="Branch 1" <?= isset($branch_detail) && $branch_detail['office_name'] == "Branch 1" ? "selected" : "" ?>>Branch 1</option>
+                                <option value="Branch 2" <?= isset($branch_detail) && $branch_detail['office_name'] == "Branch 2" ? "selected" : "" ?>>Branch 2</option>
+                                <option value="Branch 3" <?= isset($branch_detail) && $branch_detail['office_name'] == "Branch 3" ? "selected" : "" ?>>Branch 3</option>
+                              </select>
+                            </div>
+
+                            <!-- <div class="col-md-6">
                               <label class="col-form-label">Office Name</label>
                               <input type="text" class="form-control" name="office_name" value="<?= isset($branch_detail) ? $branch_detail['office_name'] : '' ?>">
-                            </div>
+                            </div> -->
 
                             <div class="col-md-6">
                               <label class="col-form-label">GST Number</label>
