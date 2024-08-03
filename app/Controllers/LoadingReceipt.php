@@ -306,6 +306,7 @@ class LoadingReceipt extends BaseController
 
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll(); 
     // echo '<pre>';print_r($this->view['loading_receipts']);exit;
+    // return view('LoadingReceipt/print', $this->view); 
     return view('LoadingReceipt/preview', $this->view); 
   }
 }

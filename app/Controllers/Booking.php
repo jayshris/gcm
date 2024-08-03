@@ -871,4 +871,33 @@ class Booking extends BaseController
         return view('Booking/edit', $this->view); 
     }
     
+    function preview($id){
+        $this->view['token'] = $id;
+        $this->view['booking_details'] = $this->BModel->select('bookings.*,cb.office_name,e.name booking_by_name,vt.name vehicle_type_name,v.rc_number,p.party_name bill_to_party_name,party.party_name as customer')
+        ->join('vehicle v', 'v.id = bookings.vehicle_id','left')
+        ->join('vehicle_type vt', 'vt.id = bookings.vehicle_type_id','left')
+        ->join('employee e', 'e.id = bookings.booking_by','left')
+        ->join('customer_branches cb', 'cb.id = bookings.customer_branch','left')
+        ->join('customer c', 'c.id = bookings.bill_to_party','left')
+        ->join('party p', 'p.id = c.party_id')
+        ->join('customer cust', 'cust.id = bookings.customer_id','left')
+        ->join('party', 'party.id = cust.party_id')
+        ->where('bookings.id', $id)->first();
+   
+        
+        $this->view['booking_pickups'] = $this->BPModel->where('booking_id', $id)->first();
+        $this->view['booking_drops'] = $this->BDModel->where('booking_id', $id)->first();
+        $this->view['booking_pickups_state'] =  $this->SModel->where('state_id', $this->view['booking_pickups']['state'])->first();
+        $this->view['booking_drops_state'] =  $this->SModel->where('state_id', $this->view['booking_drops']['state'])->first(); 
+        
+        $this->view['booking_expences'] = $this->BEModel->select('eh.id eh_id,eh.*,booking_expenses.*')
+        ->join('expense_heads eh','eh.id= booking_expenses.expense')
+        ->where('booking_expenses.booking_id', $id)->findAll();   
+
+        // $db = \Config\Database::connect();  
+        // echo  $db->getLastQuery()->getQuery(); 
+        // echo '  <pre>';print_r($this->view['booking_expences'] );exit; 
+      
+        return view('Booking/preview', $this->view); 
+    }
 }

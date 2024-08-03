@@ -82,8 +82,13 @@
                                         <a href="mailto:gaecargo21@yahoo.com" class="s4" target="_blank">
                                             Mobile : 7669027902, EMail :gaecargo21@yahoo.com
                                         </a>
+                                    </p> 
+                                    <p class="s5" style="padding-left: 214pt;padding-right: 213pt;text-indent: 0pt;line-height: 9pt;text-align: center;">
+                                        <span class="s3">PAN NO - AAICG9037G</span> <br/>
+                                        <span class="s3">GSTIN - 07AAICG9037G1ZF</span> <br/>
+                                        <span class="s3">CIN - U63030DL2021PTC378353</span> <br/>
+                                        <span class="s3">MSME - UDYAM-DL-06-0016237</span>
                                     </p>
-                                    <p class="s5" style="padding-left: 214pt;padding-right: 213pt;text-indent: 0pt;line-height: 9pt;text-align: center;">PAN NO AAICG9037G GSTIN 07AAICG9037G1ZF <span class="s3">CIN U63030DL2021PTC378353</span></p>
                                 </td>
                             </tr>
                             <tr style="height:21pt">
