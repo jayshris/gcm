@@ -9,6 +9,7 @@ use App\Models\CompanyModel;
 use App\Models\ModulesModel;
 use App\Models\EmployeeModel;
 use App\Models\AadhaarNumberMapModule;
+use App\Models\DepartmentModel;
 
 class Employee extends BaseController
 {
@@ -19,6 +20,7 @@ class Employee extends BaseController
   public $aadhaarModel;
   public $user;
   public $officeModel;
+  public $departmentModel;
   public $added_by;
   public $added_ip;
 
@@ -32,6 +34,7 @@ class Employee extends BaseController
     $this->aadhaarModel = new AadhaarNumberMapModule();
     $this->user = new UserModel();
     $this->officeModel = new OfficeModel();
+    $this->departmentModel = new DepartmentModel();
 
     $this->added_by = isset($_SESSION['id']) ? $_SESSION['id'] : '0';
     $this->added_ip = isset($_SERVER['REMOTE_ADDR'])  ? $_SERVER['REMOTE_ADDR'] : '';
@@ -70,6 +73,7 @@ class Employee extends BaseController
       $this->view['company'] = $this->companyModel->where(['status' => 'Active'])->orderBy('name')->findAll();
       $stateModel = new StateModel();
       $this->view['state'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
+      $this->view['departments'] = $this->departmentModel->where(['status' => '1'])->orderBy('dept_name', 'ASC')->findAll();
 
       if ($this->request->getMethod() == 'POST') {
 
@@ -221,6 +225,7 @@ class Employee extends BaseController
           $this->employeeModel->save([
             'company_id' => $this->request->getVar('company_name'),
             'branch_id' => $this->request->getVar('office_location'),
+            'dept_id' => $this->request->getVar('dept_id'),
             'name' => $this->request->getVar('name'),
             'adhaar_number' => $this->request->getPost('aadhaar'),
             'aadhar_img_front' => $aadhaarfrontimage_name,
@@ -283,7 +288,7 @@ class Employee extends BaseController
 
       $this->view['company'] = $this->companyModel->where(['status' => 'Active'])->orderBy('name')->findAll();
       $this->view['office_data'] = $this->officeModel->where('id', $this->view['employee_detail']['branch_id'])->findAll();
-
+      $this->view['departments'] = $this->departmentModel->where(['status' => '1'])->orderBy('dept_name', 'ASC')->findAll();
 
       $request = service('request');
 
@@ -309,6 +314,7 @@ class Employee extends BaseController
           $this->employeeModel->update($id, [
             'company_id' => $this->request->getVar('company_name'),
             'branch_id' => $this->request->getVar('office_location'),
+            'dept_id' => $this->request->getVar('dept_id'),
             'name' => $this->request->getVar('name'),
             'adhaar_number' => $this->request->getPost('aadhaar'),
             'mobile' => $this->request->getPost('mobile'),
@@ -483,7 +489,7 @@ class Employee extends BaseController
 
       $this->view['company'] = $this->companyModel->where(['status' => 'Active'])->orderBy('name')->findAll();
       $this->view['office_data'] = $this->officeModel->where('id', $this->view['employee_detail']['branch_id'])->findAll();
-
+      $this->view['departments'] = $this->departmentModel->where(['status' => '1'])->orderBy('dept_name', 'ASC')->findAll();
 
       $request = service('request');
 
@@ -508,6 +514,7 @@ class Employee extends BaseController
           $this->employeeModel->update($id, [
             'company_id' => $this->request->getVar('company_name'),
             'branch_id' => $this->request->getVar('office_location'),
+            'dept_id' => $this->request->getVar('dept_id'),
             'name' => $this->request->getVar('name'),
             'adhaar_number' => $this->request->getPost('aadhaar'),
             'mobile' => $this->request->getPost('mobile'),

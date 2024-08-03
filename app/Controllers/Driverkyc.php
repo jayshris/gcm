@@ -72,7 +72,9 @@ class Driverkyc extends BaseController
 
     public function create()
     {
-        $this->view['gen_links'] = $this->KLModel->orderBy('id', 'desc')->findAll(50);
+        $this->view['gen_links'] = $this->KLModel->select('driver_kyc_links.*, users.first_name, users.last_name')
+            ->join('users', 'users.id = driver_kyc_links.gen_by')
+            ->orderBy('driver_kyc_links.id', 'desc')->findAll(50);
 
         return view('Driverkyc/kyc_link_gen', $this->view);
     }
@@ -253,6 +255,7 @@ class Driverkyc extends BaseController
                         'whatsapp_no' => $this->request->getPost('whatsapp'),
                         'dl_no' => $this->request->getPost('dl_no'),
                         'dl_authority' => $this->request->getPost('dl_authority'),
+                        'dl_dob' => $this->request->getPost('dl_dob'),
                         'dl_expiry' => $this->request->getPost('dl_expiry'),
                         'dl_image_front' => $image_name3,
                         'dl_image_back' => $image_name4,
@@ -457,6 +460,7 @@ class Driverkyc extends BaseController
                     'whatsapp_no' => $this->request->getPost('whatsapp'),
                     'dl_no' => $this->request->getPost('dl_no'),
                     'dl_authority' => $this->request->getPost('dl_authority'),
+                    'dl_dob' => $this->request->getPost('dl_dob'),
                     'dl_expiry' => $this->request->getPost('dl_expiry'),
                     'upi_text' => $this->request->getPost('upi'),
                     'address'  =>   $this->request->getPost('address'),

@@ -72,8 +72,8 @@ class Flags extends BaseController
             $this->flagsModel->save([
               'title' =>  $this->request->getVar('title'),
               'status'  => 'Active',
+              'dob_required' => $this->request->getVar('dob'),
               'created_at'  =>  date("Y-m-d h:i:sa"),
-
             ]);
           } else {
             $this->validator->setError('title', 'The field must contain a unique value.');
@@ -123,6 +123,7 @@ class Flags extends BaseController
             $this->flagsModel->update($id, [
               'title'  =>  $this->request->getVar('title'),
               'status'  => 'Active',
+              'dob_required' => $this->request->getVar('dob'),
               'updated_at'  =>  date("Y-m-d h:i:sa"),
             ]);
           } else {

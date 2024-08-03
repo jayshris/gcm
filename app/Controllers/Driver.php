@@ -16,6 +16,7 @@ use App\Models\VehicleTypeModel;
 use App\Models\PartytypeModel;
 use App\Models\PartyTypePartyModel;
 use App\Models\DriverVehicleType;
+use App\Models\PartyDocumentsModel;
 use App\Models\SchemesModel;
 use App\Models\VehicleModel;
 
@@ -40,6 +41,7 @@ class Driver extends BaseController
     $this->DModel = new DriverModel();
     $this->SCModel = new SchemesModel();
     $this->DSMModel = new DriverSchemeMapModel();
+    $this->PDModel = new PartyDocumentsModel();
 
     $this->added_by = isset($_SESSION['id']) ? $_SESSION['id'] : '0';
     $this->added_ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
@@ -49,6 +51,7 @@ class Driver extends BaseController
   {
     $userModel = new UserModel();
     $this->view['driver'] = $userModel->where('usertype', 'driver')->orderBy('id', 'DESC')->paginate(10);
+    
     $driverModel = new DriverModel();
     $driverModel->select('driver.*, t2.party_name, t2.status, t4.party_name as foreman_name')
       ->join('party' . ' t2', 't2.id = driver.party_id')
@@ -199,6 +202,7 @@ class Driver extends BaseController
             'whatsapp_no' => $this->request->getPost('whatsapp'),
             'dl_no' => $this->request->getPost('dl_no'),
             'dl_authority' => $this->request->getPost('dl_authority'),
+            'dl_dob' => $this->request->getPost('dl_dob'),
             'dl_expiry' => $this->request->getPost('dl_expiry'),
             'dl_image_front' => $image_name3,
             'dl_image_back' => $image_name4,
@@ -292,6 +296,7 @@ class Driver extends BaseController
           'whatsapp_no' => $this->request->getPost('whatsapp'),
           'dl_no' => $this->request->getPost('dl_no'),
           'dl_authority' => $this->request->getPost('dl_authority'),
+          'dl_dob' => $this->request->getPost('dl_dob'),
           'dl_expiry' => $this->request->getPost('dl_expiry'),
           'upi_text' => $this->request->getPost('upi'),
           'address'  =>   $this->request->getPost('address'),
@@ -384,6 +389,19 @@ class Driver extends BaseController
 
           $driverModel->update($id, ['profile_image2' => $newName5]);
         }
+
+
+        $this->vehicletypeDriver->where('driver_id', $id)->delete();
+
+        $vehicle = $this->request->getVar('vehicle_types');
+        foreach ($vehicle as $key => $value) {
+          $vehicledata = [
+            'vehicle_type_id' =>  $value,
+            'driver_id'       =>  $id,
+          ];
+          $this->vehicletypeDriver->save($vehicledata);
+        }
+
 
         // add scheme
         $this->DSMModel->where('driver_id', $id)->where('removal_date', '')->set(['removal_date' => date('Y-m-d h:i:s')])->update();
@@ -552,6 +570,13 @@ class Driver extends BaseController
       ->join('foreman', 'foreman.id = driver.foreman_id')
       ->join('party t2', 't2.id = foreman.party_id')
       ->where('driver.id', $id)->first();
+
+    $this->view['driver_docs'] = $this->PDModel->where('party_id', $this->view['driver_data']['party_id'])->where('flag_id', '1')->first();
+
+    // echo '<pre>';
+    // print_r($this->view['driver_data']);
+    // print_r($this->view['driver_docs']);
+    // die;
 
     return view('Driver/preview', $this->view);
   }

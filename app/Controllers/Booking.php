@@ -12,6 +12,7 @@ use App\Models\BookingVehicleLogModel;
 use App\Models\CityModel;
 use App\Models\CustomerBranchModel;
 use App\Models\CustomersModel;
+use App\Models\EmployeeModel;
 use App\Models\ExpenseHeadModel;
 use App\Models\OfficeModel;
 use App\Models\PartyModel;
@@ -50,7 +51,7 @@ class Booking extends BaseController
     public $user;
     public $profile;
     public $ExpenseHeadModel;
-
+    public $EmployeeModel;
     public function __construct()
     {
         $this->session = \Config\Services::session();
@@ -80,11 +81,12 @@ class Booking extends BaseController
         $this->BVLModel = new BookingVehicleLogModel();
         $this->CityModel = new CityModel();
         $this->ExpenseHeadModel = new ExpenseHeadModel();
+        $this->EmployeeModel = new EmployeeModel();
     }
 
     public function index()
     { 
-        $this->BModel->select('bookings.*, party.party_name, vehicle.rc_number, booking_status.status_name, booking_status.status_bg')
+        $this->BModel->select('bookings.*, party.party_name, vehicle.rc_number, IF(bookings.status = 0, "Created", booking_status.status_name) as status_name,IF(bookings.status = 0, "bg-success", booking_status.status_bg) as status_bg')
             ->join('customer', 'customer.id = bookings.customer_id')
             ->join('party', 'party.id = customer.party_id')
             ->join('vehicle', 'vehicle.id = bookings.vehicle_id', 'left')
@@ -127,7 +129,7 @@ class Booking extends BaseController
                     $profile =  $this->profile->where('logged_in_userid',  session()->get('id'))->first();//echo __LINE__.'<pre>';print_r($profile);die;
                     $last_booking = $this->BModel->orderBy('id', 'desc')->first();
                     $lastBooking = isset($last_booking['id']) ? ((int)$last_booking['id']+1) : 1;
-                    $booking_number = isset($profile['booking_prefix']) && !empty($profile['booking_prefix']) ? $profile['booking_prefix'].'/'.date('m').'/'.$lastBooking : 'BK/'.date('m').'/'.$lastBooking;
+                    $booking_number = isset($profile['booking_prefix']) && !empty($profile['booking_prefix']) ? $profile['booking_prefix'].'/'.date('m').'/000'.$lastBooking : 'BK/'.date('m').'/000'.$lastBooking;
 
                     // save booking
                     $bookingData = [
@@ -146,7 +148,13 @@ class Booking extends BaseController
                     
                     $booking_id = $this->BModel->insert($bookingData) ? $this->BModel->getInsertID() : '0';    
 
-                    if(isset($post['booking_type'])){
+                    if(isset($post['next_or_generate_link']) && ($post['next_or_generate_link'] == 'next')){
+                        $this->view['booking_customer'] = $this->CModel->select('customer.*, party.party_name')
+                        ->join('bookings b', 'customer.id = b.customer_id')
+                        ->join('party', 'party.id = customer.party_id')
+                        ->where('b.id', $booking_id) 
+                        ->first();
+
                         $this->view['booking_number'] =$booking_number;
                         $this->view['booking_type'] =$post['booking_type'];
                         $this->view['booking_id'] = $booking_id;
@@ -238,7 +246,7 @@ class Booking extends BaseController
             ->whereIn('party_type_party_map.party_type_id', [1, 2, 5])->groupBy('party.id')->orderBy('party.party_name')->findAll();
         $this->view['offices'] = $this->OModel->where('status', '1')->findAll(); 
         $this->view['vehicle_types'] = $this->VTModel->where('status', 'Active')->findAll();
-        $this->view['employees'] = $this->user->where('usertype', 'employee')->where('status', 'active')->findall();
+        $this->view['employees'] = $this->EmployeeModel->whereIN('dept_id', [1,2])->where('status', 1)->findall();
         $this->view['states'] =  $this->SModel->orderBy('state_name', 'asc')->findAll();
         $this->view['expense_heads'] =  $this->ExpenseHeadModel->orderBy('head_name', 'asc')->findAll();
         
@@ -470,22 +478,22 @@ class Booking extends BaseController
         // $this->view['vehicle_rcs'] = $this->VModel->where('status', 'active')->findAll();
         $this->view['vehicle_rcs'] =  $this->VModel->where('vehicle_type_id', $this->view['booking_details']['vehicle_type_id'] )->where('status', '1')->where('working_status', '1')->findAll();
 
-        //city drop down changes
-        $this->view['pickup_cities'] = $this->CityModel->where('state_id', $this->view['booking_pickups']['state'])->findAll();
-        $this->view['drop_cities'] = $this->CityModel->where('state_id', $this->view['booking_drops']['state'])->findAll();
+        //city drop down changes 
+        $this->view['pickup_cities'] = isset($this->view['booking_pickups']) ? $this->CityModel->where('state_id', $this->view['booking_pickups']['state'])->findAll() : [];
+        $this->view['drop_cities'] = isset($this->view['booking_drops']) ? $this->CityModel->where('state_id', $this->view['booking_drops']['state'])->findAll() : [];
 
-        $this->view['selected_pickup_city'] = $this->view['booking_pickups']['city'];
-        $this->view['selected_drop_city'] = $this->view['booking_drops']['city'];
+        $this->view['selected_pickup_city'] = isset($this->view['booking_pickups']) ? $this->view['booking_pickups']['city'] : '';
+        $this->view['selected_drop_city'] = isset($this->view['booking_drops']) ? $this->view['booking_drops']['city'] : '';
 
         $this->view['pickup_cities']  = array_column($this->view['pickup_cities'],'city','id');
         $this->view['drop_cities']  = array_column($this->view['drop_cities'],'city','id');
-        if(!empty($this->view['booking_pickups']['city'])){
+        if(isset($this->view['booking_pickups']) && !empty($this->view['booking_pickups']['city'])){
             if(!in_array($this->view['booking_pickups']['city'],$this->view['pickup_cities'])){
                 array_push($this->view['pickup_cities'],$this->view['booking_pickups']['city']);
             }
         } 
 
-        if(!empty($this->view['booking_drops']['city'])){
+        if(isset($this->view['booking_drops']) && !empty($this->view['booking_drops']['city'])){
             if(!in_array($this->view['booking_drops']['city'],$this->view['drop_cities'])){
                 array_push($this->view['drop_cities'],$this->view['booking_drops']['city']);
             }
@@ -549,7 +557,7 @@ class Booking extends BaseController
     }
 
     public function getVehicles()
-    {
+    {  
         $rows =  $this->VModel->where('vehicle_type_id', $this->request->getPost('vehicle_type'))->where('status', '1')->where('working_status', '1')->findAll();
 
         $html = '<option value="">Select Vehicle</option>';
@@ -562,8 +570,78 @@ class Booking extends BaseController
         return $html;
     }
 
+    public function getUnassignVehicles()
+    {
+        $current_booking = $this->BModel->select('id,booking_type,vehicle_id')->where('id',$this->request->getPost('booking_id'))->first();
+        $booking_id = $current_booking['id'];
+        $isVehicle_type = $this->request->getPost('vehicle_type');
+        //get unassigned vehicles  
+        $unassigned_vehicles =  $this->VModel->select('vehicle.id, vehicle.rc_number, party.party_name,vehicle.vehicle_type_id')
+        ->join('booking_vehicle_logs bvl', 'bvl.vehicle_id = vehicle.id','left')
+        ->join('driver_vehicle_map', 'driver_vehicle_map.vehicle_id = vehicle.id','left')
+        ->join('driver', 'driver.id = driver_vehicle_map.driver_id','left')
+        ->join('party', 'party.id = driver.party_id','left')
+        ->where('driver_vehicle_map.unassign_date', '')
+        ->where('vehicle.vehicle_type_id', $isVehicle_type)
+        ->where('vehicle.status', '1')
+        ->where('vehicle.working_status', '1')
+        ->orWhere("(bvl.booking_id = '$booking_id' and vehicle.working_status = '2' and vehicle.vehicle_type_id = '$isVehicle_type' )")
+        ->groupBy('vehicle.id')
+        ->findAll();
+        
+        // $db = \Config\Database::connect();  
+        // echo  $db->getLastQuery()->getQuery(); 
+        // echo '<pre>';print_r($unassigned_vehicles);exit;
+        
+        if(isset($current_booking['booking_type']) && ($current_booking['booking_type'] == 'PTL')){
+            //get assigned vehicles(working_status=2) but assigned booking type PTL
+            $assigned_vehicles = $this->VModel->select('vehicle.id, vehicle.rc_number, party.party_name')
+            ->join('booking_vehicle_logs bvl', 'bvl.vehicle_id = vehicle.id','left')
+            ->join('bookings b', 'b.id = bvl.booking_id','left')
+            ->where('vehicle.vehicle_type_id', $isVehicle_type)
+            ->join('driver_vehicle_map', 'driver_vehicle_map.vehicle_id = vehicle.id','left')
+            ->join('driver', 'driver.id = driver_vehicle_map.driver_id','left')
+            ->join('party', 'party.id = driver.party_id','left')
+            ->where('driver_vehicle_map.unassign_date', '')
+            ->where('vehicle.status', '1')
+            ->where('vehicle.working_status', '2')
+            ->where('b.booking_type', 'PTL')
+            ->where('b.status', '1')
+            ->orWhere("(bvl.booking_id = '$booking_id' and vehicle.working_status = '2' and vehicle.vehicle_type_id = '$isVehicle_type' )")
+            ->groupBy('vehicle.id')
+            ->findAll();
+            
+            $rows = array_merge($unassigned_vehicles,$assigned_vehicles); 
+            // echo '  <pre>';print_r($assigned_vehicles);
+        }else{
+            $rows = $unassigned_vehicles; 
+        }
+         
+        // echo '  <pre>';print_r($rows);exit; 
+
+        $html = '<option value="">Select Vehicle</option>';
+        if (count($rows) > 0) {
+            foreach ($rows as $row) {
+                $party_name = isset($row['party_name']) ? ' - '.$row['party_name'] : '';
+                $html .= '<option value="' . $row['id'] . '" ' . ($current_booking['vehicle_id'] == $row['id'] ? 'selected' : '') . '>' . $row['rc_number']. $party_name . '</option>';
+            }
+        }
+
+        return $html;
+    }
+
     public function assign_vehicle($id)
     {
+    
+        //for booking data
+        $this->view['booking_details'] = $this->BModel->where('id', $id)->first();
+        
+        // IF BOOKING NOT APPROVED (STATUS LESS THAN 2), THEN VEHICLE ASSIGN FEATURE WILL BE DISABLED.
+        if($this->view['booking_details']['status'] < 2){
+            $this->session->setFlashdata('danger', 'You does not have access to assign vehicle because this booking is not approved.'); 
+            return $this->response->redirect(base_url('booking'));
+        }
+        
         $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
         $this->view['vehicle_types'] = $this->VTModel->where('status', 'Active')->findAll();
         $this->view['customers'] = $this->CModel->select('customer.*, party.party_name')
@@ -571,43 +649,82 @@ class Booking extends BaseController
             ->where('customer.status', '1')
             ->findAll();
         $this->view['states'] =  $this->SModel->findAll();
-        //for booking data
-        $this->view['booking_details'] = $this->BModel->where('id', $id)->first();
+     
         $this->view['booking_pickups'] = $this->BPModel->where('booking_id', $id)->findAll();
         $this->view['booking_drops'] = $this->BDModel->where('booking_id', $id)->findAll();
         $this->view['booking_expences'] = $this->BEModel->where('booking_id', $id)->findAll();
 
         $this->view['vehicle_rcs'] = $this->VModel->select('vehicle.id, vehicle.rc_number, party.party_name')
-            ->join('driver_vehicle_map', 'driver_vehicle_map.vehicle_id = vehicle.id')
-            ->join('driver', 'driver.id = driver_vehicle_map.driver_id')
-            ->join('party', 'party.id = driver.party_id')
+            ->join('driver_vehicle_map', 'driver_vehicle_map.vehicle_id = vehicle.id','left')
+            ->join('driver', 'driver.id = driver_vehicle_map.driver_id','left')
+            ->join('party', 'party.id = driver.party_id','left')
             ->where('driver_vehicle_map.unassign_date', '')
             ->where('vehicle_type_id', $this->view['booking_details']['vehicle_type_id'])
-            ->where('vehicle.status', 'active')->groupBy('vehicle.id')->findAll();
+            ->where('vehicle.status', 1)->where('vehicle.working_status', '1')->groupBy('vehicle.id')->findAll(); 
+        
 
-
-
+        // $this->view['vehicle_rcs'] =  $this->VModel->where('vehicle_type_id', $this->view['booking_details']['vehicle_type_id'] )->where('status', '1')->where('working_status', '1')->findAll();
+       
+        $this->view['expense_heads'] =  $this->ExpenseHeadModel->orderBy('head_name', 'asc')->findAll();
+       
         if ($this->request->getPost()) {
+            $current_booking = $this->BModel->select('status,booking_type,vehicle_id')->where('id',$id)->first();
+            //update vevhicl status assigned as 2
+            $this->VModel->update($current_booking['vehicle_id'], [ 
+                'working_status' => '1'
+            ]); 
+            //IF ON VEHICLE ASSIGNED, BOOKING STATUS IS APPROVED (2) IT WILL CHANGE TO READY FOR TRIP (3)
+            $booking_status = 3;
+
+            // IF ON VEHICLE ASSIGNED, BOOKING STATUS IS GREATER THAN APPROVED (2) THEN IT WILL CHANGE TO 1
+            if($current_booking['status'] > 2){
+                $booking_status = 1;
+            }
+
+            if(($current_booking['status']==2) && ($current_booking['booking_type'] == 'PTL')){
+                $booking_status = 1;
+            }
+
             $this->BModel->update($id, [
                 'vehicle_id' => $this->request->getPost('vehicle_rc'),
-                'status' => '3'
+                'vehicle_type_id' => $this->request->getPost('vehicle_type'),
+                'status' => $booking_status,
+                'is_vehicle_assigned' => 1
             ]);
-
+            $this->BVLModel->where('booking_id', $id)->delete();
             $this->BVLModel->insert([
                 'booking_id' => $id,
                 'vehicle_id' => $this->request->getPost('vehicle_rc'),
                 'assign_by' => $this->added_by
             ]);
 
+            //update vevhicl status assigned as 2
+            $this->VModel->update($this->request->getPost('vehicle_rc'), [ 
+                'working_status' => '2'
+            ]); 
+
             $this->session->setFlashdata('success', 'Vehicle Assigned To Booking');
 
             return $this->response->redirect(base_url('booking'));
         }
 
-
-
-
         return view('Booking/vehicle', $this->view);
+    }
+
+    public function getBookingVehicleDetails()
+    {
+        $bookings = $this->BVLModel->select('p.party_name,bp.city bpcity,bpstates.state_name bpstate,bp.pincode bppin,,bd.*,bdstates.state_name bdstate')
+        ->join('bookings b', 'b.id = booking_vehicle_logs.booking_id')
+        ->join('customer c', 'c.id = b.customer_id')
+        ->join('party p', 'p.id = c.party_id')
+        ->join('booking_pickups bp', 'b.id = bp.booking_id')
+        ->join('states bpstates', 'bp.state = bpstates.state_id')
+        ->join('booking_drops bd', 'b.id = bd.booking_id')
+        ->join('states bdstates', 'bd.state = bdstates.state_id')
+        ->where('b.id !=', $this->request->getPost('booking_id'))
+        ->where('booking_vehicle_logs.vehicle_id', $this->request->getPost('vehicle_id'))
+        ->findAll();
+        echo json_encode($bookings);exit;
     }
 
     public function cancel($id)
@@ -715,21 +832,21 @@ class Booking extends BaseController
         $this->view['booking_expences'] = $this->BEModel->where('booking_id', $id)->findAll();  
         $this->view['states'] =  $this->SModel->orderBy('state_name', 'asc')->findAll();
 
-        $this->view['pickup_cities'] = $this->CityModel->where('state_id', $this->view['booking_pickups']['state'])->findAll();
-        $this->view['drop_cities'] = $this->CityModel->where('state_id', $this->view['booking_drops']['state'])->findAll();
+        $this->view['pickup_cities'] = isset($this->view['booking_pickups']) ? $this->CityModel->where('state_id', $this->view['booking_pickups']['state'])->findAll() : [];
+        $this->view['drop_cities'] = isset($this->view['booking_drops']) ? $this->CityModel->where('state_id', $this->view['booking_drops']['state'])->findAll() : [];
 
-        $this->view['selected_pickup_city'] = $this->view['booking_pickups']['city'];
-        $this->view['selected_drop_city'] = $this->view['booking_drops']['city'];
+        $this->view['selected_pickup_city'] = isset($this->view['booking_pickups']) ? $this->view['booking_pickups']['city'] : '';
+        $this->view['selected_drop_city'] =isset($this->view['booking_drops']) ? $this->view['booking_drops']['city'] : '';
 
         $this->view['pickup_cities']  = array_column($this->view['pickup_cities'],'city','id');
         $this->view['drop_cities']  = array_column($this->view['drop_cities'],'city','id');
-        if(!empty($this->view['booking_pickups']['city'])){
+        if(isset($this->view['booking_pickups']) && !empty($this->view['booking_pickups']['city'])){
             if(!in_array($this->view['booking_pickups']['city'],$this->view['pickup_cities'])){
                 array_push($this->view['pickup_cities'],$this->view['booking_pickups']['city']);
             }
         } 
 
-        if(!empty($this->view['booking_drops']['city'])){
+        if(isset($this->view['booking_drops']) && !empty($this->view['booking_drops']['city'])){
             if(!in_array($this->view['booking_drops']['city'],$this->view['drop_cities'])){
                 array_push($this->view['drop_cities'],$this->view['booking_drops']['city']);
             }
