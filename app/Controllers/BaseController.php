@@ -2,12 +2,13 @@
 namespace App\Controllers;
 
 use CodeIgniter\Controller;
+use Psr\Log\LoggerInterface;
+use App\Libraries\Permission;
 use CodeIgniter\HTTP\CLIRequest;
+use App\Models\NotificationModel;
 use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
-use Psr\Log\LoggerInterface;
-use App\Libraries\Permission;
 
 /**
  * Class BaseController
@@ -55,9 +56,14 @@ abstract class BaseController extends Controller
 
         // Preload any models, libraries, etc, here.
 
-        // E.g.: $this->session = \Config\Services::session();
-
+        // E.g.: $this->session = \Config\Services::session();  
+        
         $permission = new Permission();
         $this->view = $permission->HeaderMenuItems();//echo __LINE__.'<pre>';print_r($this->view);die;
+
+        $NModel = new NotificationModel();
+        $user_id = isset($_SESSION['id']) ? $_SESSION['id'] : '0';
+        $this->view['notifications'] =  $NModel->where(['status'=>0,'user_id'=>$user_id,'is_deleted'=>0])->orderBy('id', 'desc')->findAll(); 
+        // echo 'data <pre>';print_r( $this->view['notifications']);exit;
     }
 }

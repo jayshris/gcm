@@ -226,16 +226,34 @@
 			<!-- Notifications -->
 			<li class="nav-item dropdown nav-item-box">
 				<a href="javascript:void(0);" class="nav-link" data-bs-toggle="dropdown">
-					<i class="ti ti-bell"></i>
-					<span class="badge rounded-pill">13</span>
+					<i class="ti ti-bell"></i> 
+					<span class="badge rounded-pill"><?php echo count($notifications); ?></span>
 				</a>
 				<div class="dropdown-menu dropdown-menu-end notification-dropdown">
 					<div class="topnav-dropdown-header">
 						<h4 class="notification-title">Notifications</h4>
 					</div>
-					<div class="noti-content">
-						<ul class="notification-list">
-							<li class="notification-message">
+					<div class="noti-content" style="height: auto;">
+					<?php if(count($notifications) >0 ){ ?>
+						<ul class="notification-list"> 
+								<?php foreach($notifications as $data){?>
+									<li class="notification-message">
+										<a href="#">
+											<div class="media d-flex">
+												<span class="avatar flex-shrink-0">
+													<img src="<?php echo base_url(); ?>public/assets/img/profiles/avatar-02.jpg" alt="Profile">
+													<!-- <span class="badge badge-info rounded-pill"></span> -->
+												</span>
+												<div class="media-body flex-grow-1">
+													<p class="noti-details"><?php echo $data['message'];?></p>
+													<p class="noti-time"><?php echo $newDateTime = date('jS F, h:i A', strtotime($data['created_at']));?></p>
+												</div>
+											</div>
+										</a>
+									</li>
+								<?php } ?>
+							
+							<!-- <li class="notification-message">
 								<a href="<?php echo base_url(); ?>activities">
 									<div class="media d-flex">
 										<span class="avatar flex-shrink-0">
@@ -284,13 +302,14 @@
 										</div>
 									</div>
 								</a>
-							</li>
+							</li> -->
 						</ul>
+						<?php }  ?>
 					</div>
-					<div class="topnav-dropdown-footer">
+					<!-- <div class="topnav-dropdown-footer">
 						<a href="<?php echo base_url(); ?>activities" class="view-link">View all</a>
 						<a href="javascript:void(0);" class="clear-link">Clear all</a>
-					</div>
+					</div> -->
 				</div>
 			</li>
 			<!-- /Notifications -->

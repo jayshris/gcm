@@ -17,6 +17,7 @@ use App\Models\BookingLinkModel;
 use App\Models\ExpenseHeadModel;
 use App\Models\VehicleTypeModel;
 use App\Models\BookingDropsModel;
+use App\Models\NotificationModel;
 use App\Models\BookingStatusModel;
 use App\Controllers\BaseController;
 use App\Models\BookingPickupsModel;
@@ -54,6 +55,7 @@ class Booking extends BaseController
     public $ExpenseHeadModel;
     public $EmployeeModel;
     public $BookingLinkModel;
+    public $NModel;
     public function __construct()
     {
         $this->session = \Config\Services::session();
@@ -85,6 +87,7 @@ class Booking extends BaseController
         $this->ExpenseHeadModel = new ExpenseHeadModel();
         $this->EmployeeModel = new EmployeeModel();
         $this->BookingLinkModel = new BookingLinkModel();
+        $this->NModel = new NotificationModel();
     }
 
     public function index()
@@ -756,10 +759,20 @@ class Booking extends BaseController
             $this->session->setFlashdata('danger', 'Booking Cancellation Not Allowed As Trip Has Started');
             return $this->response->redirect(base_url('booking'));
         } else {
-            $this->BModel->update($id, ['status' => '15']);
-            $this->session->setFlashdata('sucess', 'Booking Cancelled');
+            //send notfication 
+            $this->sendNotification($booking_details);
+            $this->BModel->update($id, ['status' => '14']);
+            $this->session->setFlashdata('sucess', 'Approval is send for Cancellation');
             return $this->response->redirect(base_url('booking'));
         }
+    }
+
+    function sendNotification($booking_details){ 
+        $this->NModel->save([
+            'order_id' => $booking_details['id'],
+            'user_id'=>$_SESSION['id'],
+            'message' => $booking_details['booking_number'].' order has been send approval for cancellation'
+        ]); 
     }
 
     public function edit($id){
@@ -915,5 +928,92 @@ class Booking extends BaseController
         // echo '  <pre>';print_r($this->view['booking_expences'] );exit; 
       
         return view('Booking/preview', $this->view); 
+    }
+
+    public function approval_for_cancellation($id)
+    { 
+        $booking_details =  $this->BModel->where('id', $id)->first();
+        if(isset($booking_details['status']) && $booking_details['status'] != 14){
+            $this->session->setFlashdata('danger', 'Booking is not send for cancellation approval');
+            return $this->response->redirect(base_url('booking'));
+        }
+        if ($this->request->getPost()) { 
+            // echo '<pre>';print_r( $this->request->getPost()); 
+            // update booking
+            $data['guranteed_wt'] = $this->request->getPost('guranteed_wt');
+            $data['freight'] = $this->request->getPost('freight');
+            $data['advance'] = $this->request->getPost('advance');
+            $data['balance'] = $this->request->getPost('balance');
+            $data['discount'] = $this->request->getPost('discount');
+            if($this->request->getPost('approval_for_cancellation')){
+                $data['status'] = $this->request->getPost('approval_for_cancellation'); 
+            }
+            // echo '<pre>';print_r( $data);exit; 
+            $this->BModel->update($id,$data);
+
+            // update Drops, Pickups and delete Expences 
+            $this->BEModel->where('booking_id', $id)->delete();  
+          
+            // save expenses
+            foreach ($this->request->getPost('expense') as $key => $val) {
+                $expense_data = [
+                    'booking_id' => $id,
+                    'expense' => $this->request->getPost('expense')[$key],
+                    'value' => $this->request->getPost('expense_value')[$key],
+                    'bill_to_party' => ($this->request->getPost('expense_flag_' . $key +1) == 'on') ? '1' : '0'
+                ]; 
+                $this->BEModel->insert($expense_data);
+            }    
+
+            $this->session->setFlashdata('success', 'Booking is approved for cancellation Successfully');
+
+            return $this->response->redirect(base_url('booking'));
+        }
+
+        $this->view['party'] = $this->PModel->select('party.*')->join('party_type_party_map', 'party_type_party_map.party_id = party.id')
+            ->whereIn('party_type_party_map.party_type_id', [1, 2, 5])->groupBy('party.id')->orderBy('party.party_name')->findAll();
+
+        $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
+
+        $this->view['vehicle_types'] = $this->VTModel->where('status', 'Active')->findAll();
+        $this->view['employees'] = $this->user->where('usertype', 'employee')->where('status', 'active')->findall();
+        $this->view['states'] =  $this->SModel->orderBy('state_name', 'asc')->findAll();
+
+        $this->view['customers'] = $this->CModel->select('customer.*, party.party_name')
+            ->join('party', 'party.id = customer.party_id')
+            ->where('customer.status', '1')
+            ->findAll();
+
+        //for booking data
+        $this->view['booking_details'] = $this->BModel->where('id', $id)->first();
+        $this->view['booking_pickups'] = $this->BPModel->where('booking_id', $id)->first();
+        $this->view['booking_drops'] = $this->BDModel->where('booking_id', $id)->first();
+        $this->view['booking_expences'] = $this->BEModel->where('booking_id', $id)->findAll();
+        // $this->view['vehicle_rcs'] = $this->VModel->where('status', 'active')->findAll();
+        $this->view['vehicle_rcs'] =  $this->VModel->where('vehicle_type_id', $this->view['booking_details']['vehicle_type_id'] )->where('status', '1')->where('working_status', '1')->findAll();
+
+        //city drop down changes 
+        $this->view['pickup_cities'] = isset($this->view['booking_pickups']) ? $this->CityModel->where('state_id', $this->view['booking_pickups']['state'])->findAll() : [];
+        $this->view['drop_cities'] = isset($this->view['booking_drops']) ? $this->CityModel->where('state_id', $this->view['booking_drops']['state'])->findAll() : [];
+
+        $this->view['selected_pickup_city'] = isset($this->view['booking_pickups']) ? $this->view['booking_pickups']['city'] : '';
+        $this->view['selected_drop_city'] = isset($this->view['booking_drops']) ? $this->view['booking_drops']['city'] : '';
+
+        $this->view['pickup_cities']  = array_column($this->view['pickup_cities'],'city','id');
+        $this->view['drop_cities']  = array_column($this->view['drop_cities'],'city','id');
+        if(isset($this->view['booking_pickups']) && !empty($this->view['booking_pickups']['city'])){
+            if(!in_array($this->view['booking_pickups']['city'],$this->view['pickup_cities'])){
+                array_push($this->view['pickup_cities'],$this->view['booking_pickups']['city']);
+            }
+        } 
+
+        if(isset($this->view['booking_drops']) && !empty($this->view['booking_drops']['city'])){
+            if(!in_array($this->view['booking_drops']['city'],$this->view['drop_cities'])){
+                array_push($this->view['drop_cities'],$this->view['booking_drops']['city']);
+            }
+        } 
+        $this->view['token'] = $id;
+        $this->view['expense_heads'] =  $this->ExpenseHeadModel->orderBy('head_name', 'asc')->findAll();
+        return view('Booking/approval_for_cancellation', $this->view); 
     }
 }
