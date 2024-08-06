@@ -27,7 +27,7 @@
                                 </div>
                                 <?php $validation = \Config\Services::validation(); ?>
                                 <!-- Settings Info -->
-                                <form method="post" action="<?php echo base_url('KYC/approve/' . $pc_data['id']) ?>" enctype="multipart/form-data">
+                                <form method="post" action="<?php echo base_url('kyc/approve/' . $pc_data['id']) ?>" enctype="multipart/form-data">
 
                                     <div class="card">
                                         <div class="card-body">
@@ -166,39 +166,39 @@
 
                                                 <div class="col-md-6">
                                                     <label class="col-form-label">Office Name<span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" required name="office_name" value="<?= $customer_details['office_name'] ?>">
+                                                    <input type="text" class="form-control" required name="office_name" value="<?php echo isset($customer_details['office_name']) ? $customer_details['office_name'] : ''; ?>">
                                                 </div>
 
                                                 <div class="col-md-6">
                                                     <label class="col-form-label">GST Number (Branch)</label>
-                                                    <input type="text" class="form-control" name="office_gst" value="<?= $customer_details['gst'] ?>">
+                                                    <input type="text" class="form-control" name="office_gst" value="<?php echo isset($customer_details['gst']) ? $customer_details['gst'] : ''; ?>">
                                                 </div>
 
                                                 <div class="col-md-4 count">
                                                     <label class="col-form-label">Contact Person Name<span class="text-danger">*</span></label>
-                                                    <input type="text" required class="form-control" name="office_person" value="<?= $customer_details['name'] ?>">
+                                                    <input type="text" required class="form-control" name="office_person" value="<?php echo isset($customer_details['name']) ? $customer_details['name'] : ''; ?>">
                                                 </div>
                                                 <div class="col-md-2">
                                                     <label class="col-form-label">Designation<span class="text-danger">*</span></label>
-                                                    <input type="text" required class="form-control" name="office_designation" value="<?= $customer_details['designation'] ?>">
+                                                    <input type="text" required class="form-control" name="office_designation" value="<?php echo isset($customer_details['designation']) ? $customer_details['designation'] : ''; ?>">
                                                 </div>
                                                 <div class="col-md-3">
                                                     <label class="col-form-label">Phone No.<span class="text-danger">*</span></label>
-                                                    <input type="number" required class="form-control" name="office_phone" value="<?= $customer_details['phone'] ?>">
+                                                    <input type="number" required class="form-control" name="office_phone" value="<?php echo isset($customer_details['phone']) ? $customer_details['phone'] : ''; ?>">
                                                 </div>
                                                 <div class="col-md-3">
                                                     <label class="col-form-label">Email</label>
-                                                    <input type="email" class="form-control" name="office_email" value="<?= $customer_details['email'] ?>">
+                                                    <input type="email" class="form-control" name="office_email" value="<?php echo isset($customer_details['email']) ? $customer_details['email'] : ''; ?>">
                                                 </div>
 
                                                 <div class="col-md-12">
                                                     <label class="col-form-label">Office Address <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" required name="office_address" value="<?= $customer_details['address'] ?>">
+                                                    <input type="text" class="form-control" required name="office_address" value="<?php echo isset($customer_details['address']) ? $customer_details['address'] : ''; ?>">
                                                 </div>
 
                                                 <div class="col-md-3">
                                                     <label class="col-form-label">Office City <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" required name="office_city" value="<?= $customer_details['city'] ?>">
+                                                    <input type="text" class="form-control" required name="office_city" value="<?php echo isset($customer_details['city']) ? $customer_details['city'] : ''; ?>">
                                                 </div>
 
                                                 <div class="col-md-3">
@@ -206,14 +206,14 @@
                                                     <select class="form-select select2" name="office_state_id" required>
                                                         <option value="">Select State</option>
                                                         <?php foreach ($state as $row) { ?>
-                                                            <option value="<?php echo $row["state_id"]; ?>" <?= $customer_details['state_id'] == $row['state_id'] ? 'selected' : '' ?>><?php echo ucwords($row["state_name"]); ?></option>
+                                                            <option value="<?php echo $row["state_id"]; ?>" <?php echo (isset($customer_details['state_id']) && $customer_details['state_id'] == $row['state_id']) ? 'selected' : '' ?>><?php echo ucwords($row["state_name"]); ?></option>
                                                         <?php } ?>
                                                     </select>
                                                 </div>
 
                                                 <div class="col-md-2">
                                                     <label class="col-form-label">Office Postcode <span class="text-danger">*</span></label>
-                                                    <input type="number" class="form-control" name="office_postcode" required value="<?= $customer_details['pincode'] ?>">
+                                                    <input type="number" class="form-control" name="office_postcode" required value="<?php echo isset($customer_details['pincode']) ? $customer_details['pincode'] : ''; ?>">
                                                 </div>
 
                                                 <div class="col-md-12 mb-3">

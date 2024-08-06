@@ -109,14 +109,21 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-2">
+                                    <div class="col-md-3">
+                                        <div class="form-wrap">
+                                            <label class="col-form-label">Driving Licence DOB <span class="text-danger">*</span></label>
+                                            <input type="date" name="dl_dob" class="form-control" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
                                         <div class="form-wrap">
                                             <label class="col-form-label">Driving Licence Expiry Date <span class="text-danger">*</span></label>
                                             <input type="date" name="dl_expiry" min="<?= date('Y-m-d') ?>" class="form-control" required>
                                         </div>
                                     </div>
 
-                                    <div class="col-md-2">
+                                    <div class="col-md-6">
                                         <div class="form-wrap">
                                             <label class="col-form-label">
                                                 DL Image - Front <span class="text-danger">*</span>
@@ -126,7 +133,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-2">
+                                    <div class="col-md-6">
                                         <div class="form-wrap">
                                             <label class="col-form-label">
                                                 DL Image - Back

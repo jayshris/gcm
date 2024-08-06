@@ -58,17 +58,19 @@ define('ROLE_MODULE', TABLE_PRE . 'role_modules' . TABLE_SUF);
 define('USER', TABLE_PRE . 'users' . TABLE_SUF);
 define('USER_MODULE', TABLE_PRE . 'user_modules' . TABLE_SUF);
 
-function makeListActions($module = '', $actions = [], $token = 0, $pos = '2')
+function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $dropdown=false)
 {
-	$menu = ''; //echo __LINE__.'<pre>'.$token;print_r($actions);die;
+	$menu = '';
 	if (!empty($actions)) {
 		$token = ($token > 0) ? encryptToken($token) : $token;
 		if ($pos == 1) {
 			$menu .= '<ul>';
 		} elseif ($pos == 2) {
-			$menu .= '<div class="dropdown table-action" style="padding:0px; min-height:0px; box-shadow: none;">'; // text-end
-			$menu .= '<a href="#" class="action-icon " data-bs-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>';
-			$menu .= '<div class="dropdown-menu dropdown-menu-right">';
+			if($dropdown){
+				$menu .= '<div class="dropdown table-action" style="padding:0px; min-height:0px; box-shadow: none;">'; // text-end
+				$menu .= '<a href="#" class="action-icon " data-bs-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>';
+				$menu .= '<div class="dropdown-menu dropdown-menu-right">';
+			}
 		}
 
 		foreach ($actions as $act) {
@@ -81,14 +83,20 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2')
 				if ($pos == 1) {
 					$menu .= '<li>' . anchor(PANEL . $module . '/' . $secLink, '<i class="' . $cssClass . '"></i> &nbsp;' . ucfirst($secName), ['class' => 'btn btn-primary']) . '</li>';
 				} elseif ($pos == 2 && !empty($token)) {
-					$menu .= anchor(PANEL . $module . '/' . $secLink . '/' . $token, '<i class="' . $cssClass . '"></i> ' . ucfirst($secName), ['class' => 'dropdown-item', 'onclick' => $confirm]);
+					if($dropdown){
+						$menu .= anchor(PANEL . $module . '/' . $secLink . '/' . $token, '<i class="' . $cssClass . '"></i> ' . ucfirst($secName), ['class' => 'dropdown-item', 'onclick' => $confirm]);
+					}
+					else{
+						$menu .= anchor(PANEL . $module . '/' . $secLink . '/' . $token, '<i class="'.$cssClass.'" data-bs-toggle="tooltip" aria-label="'.$cssClass.'" data-bs-original-title="'.ucfirst($secName).'"></i> ', ['class' => 'btn btn-icon btn-outline-primary rounded-pill', 'onclick' => $confirm, 'title'=>ucfirst($secName)]);
+						$menu .= ' &nbsp; ';
+					}
 				}
 			}
 		}
 		if ($pos == 1) {
-			$menu .= '<div class="dropdown-menu dropdown-menu-right">';
-		} elseif ($pos == 2) {
 			$menu .= '</ul>';
+		} elseif ($pos == 2) {
+			$menu .= ($dropdown) ? '</div></div>' : '';
 		}
 	}
 

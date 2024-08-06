@@ -27,8 +27,6 @@ class Database extends Config
     public array $default = [
         'DSN'          => '',
         'hostname'     => 'localhost',
-        // 'username'     => 'aubadetech_gcm_dev',
-        // 'password'     => 'ezi9E!l90SEt#q-{H;e!xm7u',
         'username'     => 'root',
         'password'     => '',
         'database'     => 'gcm_sync',
@@ -201,3 +199,4 @@ class Database extends Config
         }
     }
 }
+

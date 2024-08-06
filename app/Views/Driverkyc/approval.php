@@ -122,14 +122,21 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-2">
+                                                <div class="col-md-3">
                                                     <div class="form-wrap">
                                                         <label class="col-form-label">Driving Licence Expiry Date <span class="text-danger">*</span></label>
                                                         <input type="date" name="dl_expiry" min="<?= date('Y-m-d') ?>" class="form-control" required value="<?= $driver_data['dl_expiry'] ?>">
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-2">
+                                                <div class="col-md-3">
+                                                    <div class="form-wrap">
+                                                        <label class="col-form-label">Driving Licence DOB <span class="text-danger">*</span></label>
+                                                        <input type="date" name="dl_dob" class="form-control" required value="<?= $driver_data['dl_dob'] ?>">
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6">
                                                     <div class="form-wrap">
                                                         <label class="col-form-label"> DL Image - Front </label><br>
                                                         <?php if (isset($driver_data) && $driver_data['dl_image_front'] != '') {
@@ -145,7 +152,7 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-2">
+                                                <div class="col-md-6">
                                                     <div class="form-wrap">
                                                         <label class="col-form-label"> DL Image - Back </label><br>
                                                         <?php if (isset($driver_data) && $driver_data['dl_image_back'] != '') {

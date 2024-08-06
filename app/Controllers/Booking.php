@@ -2,26 +2,27 @@
 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
-use App\Models\BookingDropsModel;
-use App\Models\BookingExpensesModel;
-use App\Models\BookingPickupsModel;
-use App\Models\BookingsModel;
-use App\Models\BookingStatusModel;
-use App\Models\BookingVehicleLogModel;
 use App\Models\CityModel;
-use App\Models\CustomerBranchModel;
-use App\Models\CustomersModel;
-use App\Models\EmployeeModel;
-use App\Models\ExpenseHeadModel;
-use App\Models\OfficeModel;
-use App\Models\PartyModel;
-use App\Models\PartytypeModel;
-use App\Models\ProfileModel;
-use App\Models\StateModel;
 use App\Models\UserModel;
+use App\Models\PartyModel;
+use App\Models\StateModel;
+use App\Models\OfficeModel;
+use App\Models\ProfileModel;
 use App\Models\VehicleModel;
+use App\Models\BookingsModel;
+use App\Models\EmployeeModel;
+use App\Models\CustomersModel;
+use App\Models\PartytypeModel;
+use App\Models\BookingLinkModel;
+use App\Models\ExpenseHeadModel;
 use App\Models\VehicleTypeModel;
+use App\Models\BookingDropsModel;
+use App\Models\BookingStatusModel;
+use App\Controllers\BaseController;
+use App\Models\BookingPickupsModel;
+use App\Models\CustomerBranchModel;
+use App\Models\BookingExpensesModel;
+use App\Models\BookingVehicleLogModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class Booking extends BaseController
@@ -52,6 +53,7 @@ class Booking extends BaseController
     public $profile;
     public $ExpenseHeadModel;
     public $EmployeeModel;
+    public $BookingLinkModel;
     public function __construct()
     {
         $this->session = \Config\Services::session();
@@ -82,6 +84,7 @@ class Booking extends BaseController
         $this->CityModel = new CityModel();
         $this->ExpenseHeadModel = new ExpenseHeadModel();
         $this->EmployeeModel = new EmployeeModel();
+        $this->BookingLinkModel = new BookingLinkModel();
     }
 
     public function index()
@@ -158,6 +161,19 @@ class Booking extends BaseController
                         $this->view['booking_number'] =$booking_number;
                         $this->view['booking_type'] =$post['booking_type'];
                         $this->view['booking_id'] = $booking_id;
+                    }elseif(isset($post['next_or_generate_link']) && ($post['next_or_generate_link'] == 'generate_link')){
+                        $token = md5(date('YMDHis'));
+        
+                        $generate_link_data = [
+                            'token' => $token,
+                            'booking_id' => $booking_id,
+                            'gen_by' => isset($_SESSION['id']) ? $_SESSION['id'] : '0',
+                            'gen_ip' => isset($_SERVER['REMOTE_ADDR'])  ? $_SERVER['REMOTE_ADDR'] : '',
+                        ];
+                        $this->BookingLinkModel->save($generate_link_data);
+                        $this->session->setFlashdata('success', 'Booking link generated successfully');
+                        return $this->response->redirect(base_url('booking'));
+                        
                     }else{
                         $this->session->setFlashdata('success', 'Booking Successfully Added');
                         return $this->response->redirect(base_url('booking'));

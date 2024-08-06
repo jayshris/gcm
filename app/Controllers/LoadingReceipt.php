@@ -3,12 +3,14 @@
 namespace App\Controllers;
 
 use App\Models\UserModel;
+use App\Models\PartyModel;
 use App\Models\StateModel;
 use App\Models\OfficeModel;
 use App\Models\ProfileModel;
 use App\Models\VehicleModel;
 use App\Models\BookingsModel; 
 use App\Controllers\BaseController;
+use App\Models\CustomersModel;
 use App\Models\LoadingReceiptModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
@@ -20,7 +22,8 @@ class LoadingReceipt extends BaseController
   public $LoadingReceiptModel;
   public $session;
   public $profile;
-
+  public $PModel;
+  public $CustomersModel;
   public function __construct()
   {
     $u = new UserModel(); 
@@ -30,6 +33,8 @@ class LoadingReceipt extends BaseController
     $this->LoadingReceiptModel = new LoadingReceiptModel();
     $this->session = \Config\Services::session();
     $this->profile = new ProfileModel();
+    $this->PModel = new PartyModel();
+    $this->CustomersModel = new CustomersModel();
   }
 
   public function index()
@@ -47,6 +52,23 @@ class LoadingReceipt extends BaseController
     $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
     $this->view['bookings'] = $this->BookingsModel->where('approved', '1')->findAll();
     $this->view['vehicles'] = $this->VModel->where('status', 1)->findAll();
+    
+    $this->view['consignors'] = $this->CustomersModel->select('party.*')
+    ->join('party', 'customer.party_id = party.id')
+    ->where("FIND_IN_SET (8,customer.party_type_id)")
+    ->orderBy('party.party_name')->findAll();    
+    $this->view['consignors']  = array_column($this->view['consignors'],'party_name','id');      
+
+    $this->view['consignees'] = $this->CustomersModel->select('party.*')
+    ->join('party', 'customer.party_id = party.id')
+    ->where("FIND_IN_SET (9,customer.party_type_id)")
+    ->orderBy('party.party_name')->findAll();  
+    $this->view['consignees']  = array_column($this->view['consignees'],'party_name','id');
+    
+//     $db = \Config\Database::connect();  
+//     echo  $db->getLastQuery()->getQuery(); 
+// echo '<pre>consignees';print_r($this->view['consignees']);exit;
+
     if($this->request->getPost()){
       $error = $this->validate([
         'booking_id'   =>  'required',  
@@ -164,13 +186,51 @@ class LoadingReceipt extends BaseController
     return view('LoadingReceipt/create', $this->view); 
   }
 
+  function getPartyDetails(){
+    $rows =  $this->PModel->where('id', $this->request->getPost('party_id'))->first();
+    echo json_encode($rows);exit;
+  }
   function edit($id){  
     $stateModel = new StateModel();
     $this->view['loading_receipts'] = $this->LoadingReceiptModel->where(['id' => $id])->first();
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
     $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
-    $this->view['bookings'] = $this->BookingsModel->where('status', '1')->findAll();
+    $this->view['bookings'] = $this->BookingsModel->where('approved', '1')->findAll();
     $this->view['vehicles'] = $this->VModel->where('status', 1)->findAll();
+
+    //consignor, consignees changes
+      
+    $this->view['consignors'] = $this->CustomersModel->select('party.*')
+    ->join('party', 'customer.party_id = party.id')
+    ->where("FIND_IN_SET (8,customer.party_type_id)")
+    ->orderBy('party.party_name')->findAll();    
+    $this->view['consignors']  = array_column($this->view['consignors'],'party_name','id');      
+
+    $this->view['consignees'] = $this->CustomersModel->select('party.*')
+    ->join('party', 'customer.party_id = party.id')
+    ->where("FIND_IN_SET (9,customer.party_type_id)")
+    ->orderBy('party.party_name')->findAll();  
+    $this->view['consignees']  = array_column($this->view['consignees'],'party_name','id');
+
+    $this->view['selected_consignor_name'] = isset($this->view['loading_receipts']) ? $this->view['loading_receipts']['consignor_name'] : '';
+    $this->view['selected_consignee_name'] = isset($this->view['loading_receipts']) ? $this->view['loading_receipts']['consignee_name'] : '';
+
+    $this->view['consignor_list']  = array_column($this->view['consignors'],'party_name','id');
+    $this->view['consignees_list']  = array_column($this->view['consignees'],'party_name','id');
+
+    if(isset($this->view['loading_receipts']) && !empty($this->view['loading_receipts']['consignor_name'])){
+        if(!in_array($this->view['loading_receipts']['consignor_name'],$this->view['consignor_list'])){
+            array_push($this->view['consignor_list'],$this->view['loading_receipts']['consignor_name']);
+        }
+    } 
+
+    if(isset($this->view['loading_receipts']) && !empty($this->view['loading_receipts']['consignee_name'])){
+        if(!in_array($this->view['loading_receipts']['consignee_name'],$this->view['consignees_list'])){
+            array_push($this->view['consignees_list'],$this->view['loading_receipts']['consignee_name']);
+        }
+    } 
+
+
     // echo '<pre>';print_r($this->view['loading_receipts']);exit;
     if($this->request->getPost()){
       $error = $this->validate([
@@ -280,7 +340,10 @@ class LoadingReceipt extends BaseController
   }
 
   function getBookingDetails(){
-    $rows =  $this->BookingsModel->where('id', $this->request->getPost('booking_id'))->first();
+    $rows =  $this->BookingsModel->select('bookings.*,bp.city bp_city,bd.city bd_city')
+    ->join('booking_drops bd', 'bd.booking_id = bookings.id','left')
+    ->join('booking_pickups bp', 'bp.booking_id  = bookings.id','left')
+    ->where('bookings.id', $this->request->getPost('booking_id'))->first();
     echo json_encode($rows);exit;
   }
 
@@ -306,7 +369,6 @@ class LoadingReceipt extends BaseController
 
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll(); 
     // echo '<pre>';print_r($this->view['loading_receipts']);exit;
-    // return view('LoadingReceipt/print', $this->view); 
     return view('LoadingReceipt/preview', $this->view); 
   }
 }

@@ -53,7 +53,7 @@ use App\Models\PartytypeModel;
                     <thead class="thead-light">
                       <tr>
                         <th>Action</th>
-                        <th>Driver Name</th>
+                        <th>Foreman Name</th>
                         <th>Contact Person</th>
                         <th>Phone</th>
                         <th>Status</th>

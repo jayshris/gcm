@@ -68,10 +68,54 @@
 					$("#booking_date").val(res.booking_date).attr('disabled','disabled');
 					$("#vehicle_number").val(res.vehicle_id).trigger('change').attr('disabled','disabled');
 					$("#consignment_date").attr('min',res.booking_date);
+					$("#loading_station").val(res.bp_city);
+					$("#delivery_station").val(res.bp_city);
+					$("#charge_weight").val(res.guranteed_wt);
 				}
 			});
 		}
 
+		$(document).ready(function() {
+			$("#consignor_name").select2({
+				tags: true
+			}); 
+			 $("#consignee_name").select2({
+				tags: true
+			}); 
+ 
+		}); 
+		function changeIdIpt(thisv,party_id,id,key = 'consignor'){   
+			$('#'+id).val( (party_id) > 0 ? party_id : 0) ;
+
+			if(party_id>0){
+				$.ajax({
+				method: "POST",
+				url: '<?php echo base_url('loadingreceipt/getPartyDetails') ?>',
+				data: {
+					party_id: party_id
+				},
+				dataType: "json",
+				success: function(res) { 
+					// alert(res.state_id); 
+						var pre = 'place_of_delivery';
+						if(key == 'consignor'){
+							pre = 'place_of_dispatch';
+						}
+						$("#"+key+"_state").val(res.state_id).attr("selected","selected").trigger('change');  
+						$("#"+pre+"_state").val(res.state_id).attr("selected","selected").trigger('change');  
+						$("#"+key+"_address").val(res.business_address);
+						$("#"+pre+"_address").val(res.business_address);
+
+						$("#"+key+"_city").val(res.city);
+						$("#"+pre+"_city").val(res.city);
+
+						$("#"+key+"_pincode").val(res.postcode);
+						$("#"+pre+"_pincode").val(res.postcode);
+					}
+				});
+			}
+		}
+		
 	</script>
 </body>
 

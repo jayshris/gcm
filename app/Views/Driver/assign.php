@@ -34,7 +34,8 @@
                                             // print_r($assignment_details);
                                             ?>
 
-                                            <form method="post" action="<?php echo base_url('driver/assign_vehicle/' . $token); ?>">
+                                            <!-- <form method="post" action="<?php //echo base_url('driver/assign_vehicle/' . $token); ?>"> -->
+                                            <?php echo form_open_multipart(base_url().$currentController.'/'.$currentMethod.(($token>0) ? '/'.$token : ''), ['name'=>'actionForm', 'id'=>'actionForm']);?>
 
                                                 <div class="settings-sub-header">
                                                     <h6>Assign Vehicle To Driver</h6>
@@ -75,6 +76,26 @@
                                                                 </select>
                                                             </div>
                                                         <?php  } ?>
+
+                                                        <div class="col-md-2">
+                                                            <label class="col-form-label">Assigned Date<span class="text-danger">*</span></label>
+                                                            <input type="date" required name="assigned_date" min="<?= date('Y-m-d') ?>" value="<?= isset($assignment_details["assign_date"])  && (strtotime($assignment_details["assign_date"]) > 0) ? date('Y-m-d',strtotime($assignment_details["assign_date"])) : ''; ?>" class="form-control">
+                                                            <?php
+                                                            if ($validation->getError('assigned_date')) {
+                                                                echo '<div class="alert alert-danger mt-2">' . $validation->getError('assigned_date') . '</div>';
+                                                            }   
+                                                            ?>
+                                                        </div>
+
+                                                        <div class="col-md-2">
+                                                            <label class="col-form-label">Assigned Time<span class="text-danger">*</span></label>
+                                                            <input type="time" required name="assigned_time" class="form-control" value="<?= isset($assignment_details["assign_date"])  && (strtotime($assignment_details["assign_date"]) > 0) ? date('H:i:s',strtotime($assignment_details["assign_date"])) : ''; ?>">
+                                                            <?php
+                                                            if ($validation->getError('assigned_time')) {
+                                                                echo '<div class="alert alert-danger mt-2">' . $validation->getError('assigned_time') . '</div>';
+                                                            }   
+                                                            ?>
+                                                        </div>
 
                                                         <div class="col-md-12"></div>
 

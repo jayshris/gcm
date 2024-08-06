@@ -48,8 +48,7 @@
                               
                             <h6>Booking Number: <?= $booking_number ?></h6>  
                             <br/>
-                            <h6>Customer: <?= $booking_customer ?></h6>  
-
+                            <h6>Customer: <?= isset($booking_customer['party_name']) ? $booking_customer['party_name'] : '' ?></h6>  
                             <label class="col-form-label">Pickup Details<span class="text-danger">*</span></label>
 
                             <div class="col-md-3">
@@ -337,7 +336,7 @@
                               <select class="form-select" required name="booking_by" aria-label="Default select example" onchange="">
                                 <option value="">Select Employee</option>
                                 <?php foreach ($employees as $e) {
-                                  echo '<option value="' . $e['id'] . '">' . $e['first_name'] . ' ' . $e['last_name'] . '</option>';
+                                  echo '<option value="' . $e['id'] . '">' . $e['name'] . '</option>';
                                 } ?>
                               </select>
                               <?php
@@ -372,6 +371,20 @@
                                 }   
                                 ?>
                             </div>
+
+                            <div class="form-wrap col-md-12"> 
+                                <input type="radio" name="next_or_generate_link" id="next" value="next" checked required>
+                                <label for="next" style="padding-right:15px">Next</label>
+                                <input type="radio" name="next_or_generate_link" id="generate_link" value="generate_link" required>
+                                <label for="generate_link">Generate Link</label> 
+
+                                <?php
+                                if ($validation->getError('booking_type')) {
+                                    echo '<div class="alert alert-danger mt-2">' . $validation->getError('booking_type') . '</div>';
+                                }   
+                                ?>
+                            </div>
+
                             <?php } ?>
                           </div>
                           <br>

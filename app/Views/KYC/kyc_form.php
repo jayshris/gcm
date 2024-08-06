@@ -45,17 +45,17 @@
 
                                     <div class="col-md-12">
                                         <label class="col-form-label"> Registered Address <span class="text-danger">*</span></label>
-                                        <input type="text" required name="business_address" class="form-control" value="<?php echo set_value('business_address'); ?>">
+                                        <input type="text" required name="business_address" id="address_p" class="form-control" value="<?php echo set_value('business_address'); ?>">
                                     </div>
 
                                     <div class="col-md-3">
                                         <label class="col-form-label"> City <span class="text-danger">*</span> </label>
-                                        <input type="text" required name="business_city" class="form-control" value="<?php echo set_value('business_city'); ?>">
+                                        <input type="text" required name="business_city" id="city_p" class="form-control" value="<?php echo set_value('business_city'); ?>">
                                     </div>
 
                                     <div class="col-md-3">
                                         <label class="col-form-label"> State <span class="text-danger">*</span> </label>
-                                        <select class="dropdown selectopt" name="business_state">
+                                        <select class="dropdown selectopt" name="business_state" id="state_p">
                                             <option>Select</option>
                                             <?php
                                             if (isset($state)) {
@@ -70,7 +70,7 @@
                                     </div>
                                     <div class="col-md-3">
                                         <label class="col-form-label"> Postcode <span class="text-danger">*</span> </label>
-                                        <input type="number" required name="business_postcode" class="form-control" value="<?php echo set_value('business_postcode') ?>">
+                                        <input type="number" required name="business_postcode" id="zip_p" class="form-control" value="<?php echo set_value('business_postcode') ?>">
 
                                     </div>
                                     <div class="col-md-3">
@@ -143,19 +143,23 @@
                                         <input type="email" class="form-control" name="office_email" value="<?php echo set_value('office_email') ?>">
                                     </div>
 
+                                    <div class="form-wrap">
+                                        <input class="form-check-input" type="checkbox" id="copy_address">&nbsp; same as above
+                                    </div>
+
                                     <div class="col-md-12">
                                         <label class="col-form-label">Office Address <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" required name="office_address" value="<?php echo set_value('office_address') ?>">
+                                        <input type="text" class="form-control" required name="office_address" id="address" value="<?php echo set_value('office_address') ?>">
                                     </div>
 
                                     <div class="col-md-3">
                                         <label class="col-form-label">Office City <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" required name="office_city" value="<?php echo set_value('office_city') ?>">
+                                        <input type="text" class="form-control" required name="office_city" id="city" value="<?php echo set_value('office_city') ?>">
                                     </div>
 
                                     <div class="col-md-3">
                                         <label class="col-form-label">Office State <span class="text-danger">*</span></label>
-                                        <select class="form-select select2" name="office_state_id" required>
+                                        <select class="form-select" name="office_state_id" id="state" required>
                                             <option value="">Select State</option>
                                             <?php foreach ($state as $row) { ?>
                                                 <option value="<?php echo $row["state_id"]; ?>"><?php echo ucwords($row["state_name"]); ?></option>
@@ -163,9 +167,9 @@
                                         </select>
                                     </div>
 
-                                    <div class="col-md-2">
+                                    <div class="col-md-3">
                                         <label class="col-form-label">Office Postcode <span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control" name="office_postcode" required value="<?php echo set_value('office_postcode') ?>">
+                                        <input type="number" class="form-control" name="office_postcode" id="zip" required value="<?php echo set_value('office_postcode') ?>">
                                     </div>
                                 </div>
                             </div>
@@ -187,6 +191,21 @@
 
     <script>
         jQuery(document).ready(function($) {
+
+            $('#copy_address').change(function() {
+                if ($(this).is(':checked')) {
+
+                    $('#address').val($('#address_p').val());
+                    $('#city').val($('#city_p').val());
+                    $('#state').val($('#state_p').val());
+                    $('#zip').val($('#zip_p').val());
+                } else {
+                    $('#address').val('');
+                    $('#city').val('');
+                    $('#state').val('');
+                    $('#zip').val('');
+                }
+            });
 
             $("#business_type_id").on('change', function() {
                 $("#target").empty();

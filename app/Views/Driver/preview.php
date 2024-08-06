@@ -31,7 +31,7 @@
                                                         body {
                                                             margin-top: 5px;
                                                             margin-left: 10px;
-                                                            transform: scale(1);
+                                                            transform: scale(0.98);
                                                             transform-origin: 0 0;
                                                         }
                                                     }
@@ -40,16 +40,16 @@
                                                 <table class="table table-bordered">
                                                     <tbody>
                                                         <tr>
-                                                            <td colspan="3" align="center" style="background-color: #e7e7e7;">
+                                                            <td colspan="4" align="center" style="background-color: #e7e7e7;">
                                                                 <h6>Driver Details</h6>
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td width="10%">Name </td>
-                                                            <td width="35%"><?= $driver_data['driver_name'] ?></td>
-                                                            <td rowspan="5" width="55%" align="center">
-                                                                <img src="<?= base_url('public/uploads/driverDocs/') . $driver_data['profile_image1'] ?>" style="width: 150px;">&nbsp;&nbsp;
-                                                                <img src="<?= base_url('public/uploads/driverDocs/') . $driver_data['profile_image2'] ?>" style="width: 150px;">
+                                                            <td width="30%"><?= $driver_data['driver_name'] ?></td>
+                                                            <td rowspan="4" colspan="2" width="" align="center">
+                                                                <img src="<?= base_url('public/uploads/driverDocs/') . $driver_data['profile_image1'] ?>" style="height: 150px;">&nbsp;&nbsp;
+                                                                <img src="<?= base_url('public/uploads/driverDocs/') . $driver_data['profile_image2'] ?>" style="height: 150px;">
                                                                 <!-- <h6 class="text-center">Profile Images</h6> -->
                                                             </td>
                                                         </tr>
@@ -58,69 +58,76 @@
                                                             <td><?= $driver_data['foreman_name'] ?></td>
                                                         </tr>
                                                         <tr>
-                                                            <td>Driver Type </td>
-                                                            <td><?= $driver_data['driver_type'] ?></td>
-                                                        </tr>
-                                                        <tr>
                                                             <td>Mobile No. </td>
-                                                            <td><?= $driver_data['primary_phone'] ?>, <?= $driver_data['other_phone'] ?></td>
+                                                            <td><?= $driver_data['primary_phone'] ?></td>
                                                         </tr>
                                                         <tr>
-                                                            <td>Email ID</td>
-                                                            <td><?= $driver_data['email'] ?></td>
+                                                            <td>Alternate No. </td>
+                                                            <td><?= $driver_data['other_phone'] ?></td>
                                                         </tr>
+
                                                         <tr>
-                                                            <td colspan="3" align="center" style="background-color: #e7e7e7;">
+                                                            <td colspan="4" align="center" style="background-color: #e7e7e7;">
                                                                 <h6>Identification Details</h6>
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <td>DL No. </td>
                                                             <td><?= $driver_data['dl_no'] ?></td>
-                                                            <td align="center" rowspan="4">
-                                                                <img src="<?= base_url('public/uploads/driverDocs/') . $driver_data['dl_image_front'] ?>" style="width: 150px;">&nbsp;&nbsp;
-                                                                <img src="<?= base_url('public/uploads/driverDocs/') . $driver_data['dl_image_back'] ?>" style="width: 150px;">
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>DL Authority </td>
-                                                            <td><?= $driver_data['dl_authority'] ?></td>
+                                                            <td width="10%">DL Authority </td>
+                                                            <td width="40%"><?= $driver_data['dl_authority'] ?></td>
                                                         </tr>
                                                         <tr>
                                                             <td>DL Expiry </td>
-                                                            <td><?= $driver_data['dl_expiry'] ?></td>
+                                                            <td><?= date('d-m-Y', strtotime($driver_data['dl_expiry'])) ?></td>
+                                                            <td>DL DOB </td>
+                                                            <td><?= date('d-m-Y', strtotime($driver_data['dl_dob'])) ?></td>
                                                         </tr>
                                                         <tr>
-                                                            <td>Mobile No. </td>
-                                                            <td><?= $driver_data['primary_phone'] ?>, <?= $driver_data['other_phone'] ?></td>
+                                                            <td>Aadhar No. </td>
+                                                            <td><?= $driver_docs['number'] ?></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td align="center" colspan="4">
+                                                                <img src="<?= base_url('public/uploads/driverDocs/') . $driver_data['dl_image_front'] ?>" style="height: 150px;">&nbsp;&nbsp;
+                                                                <img src="<?= base_url('public/uploads/driverDocs/') . $driver_data['dl_image_back'] ?>" style="height: 150px;">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td align="center" colspan="4">
+                                                                <img src="<?= base_url('public/uploads/partyDocs/') . $driver_docs['img1'] ?>" style="height: 150px;">&nbsp;&nbsp;
+                                                                <img src="<?= base_url('public/uploads/partyDocs/') . $driver_docs['img2'] ?>" style="height: 150px;">
+                                                            </td>
                                                         </tr>
 
 
-                                                        <tr>
-                                                            <td colspan="3" align="center" style="background-color: #e7e7e7;">
+                                                        <tr class="hidethis">
+                                                            <td colspan="4" align="center" style="background-color: #e7e7e7;">
                                                                 <h6>Banking Details</h6>
                                                             </td>
                                                         </tr>
-                                                        <tr>
+                                                        <tr class="hidethis">
                                                             <td>UPI ID </td>
                                                             <td><?= $driver_data['upi_text'] ?></td>
-                                                            <td rowspan="5" align="center">
-                                                                <img src="<?= base_url('public/uploads/driverDocs/') . $driver_data['upi_id'] ?>" style="width: 150px;">
+                                                            <td rowspan="5" colspan="2" align="center">
+                                                                <img src="<?= base_url('public/uploads/driverDocs/') . $driver_data['upi_id'] ?>" style="height: 150px;">
                                                             </td>
                                                         </tr>
-                                                        <tr>
+                                                        <tr class="hidethis">
                                                             <td>Bank A/C No. </td>
                                                             <td><?= $driver_data['bank_ac'] ?></td>
                                                         </tr>
-                                                        <tr>
+                                                        <tr class="hidethis">
                                                             <td>Bank IFSC </td>
                                                             <td><?= $driver_data['bank_ifsc'] ?></td>
                                                         </tr>
-                                                        <tr>
+                                                        <tr class="hidethis">
                                                             <td>Em. Person </td>
                                                             <td><?= $driver_data['emergency_person'] != '' ? $driver_data['emergency_person'] : '' ?> <?= $driver_data['emergency_relation'] != '' ? '( ' . $driver_data['emergency_relation'] . ' )' : '' ?> </td>
                                                         </tr>
-                                                        <tr>
+                                                        <tr class="hidethis">
                                                             <td>Em. Contact</td>
                                                             <td><?= $driver_data['emergency_contact'] ?></td>
                                                         </tr>
@@ -130,7 +137,9 @@
 
                                             </div>
 
-                                            <button class="btn btn-danger" onclick="printDiv('printableArea')"><i class="fa fa-print" aria-hidden="true"></i> Print</button>
+                                            <button class="btn btn-danger" onclick="printDiv('printableArea',0)"><i class="fa fa-print" aria-hidden="true"></i> Print For Office</button>&nbsp;&nbsp;
+                                            <button class="btn btn-danger" onclick="printDiv('printableArea',1)"><i class="fa fa-print" aria-hidden="true"></i> Print For Customer</button>&nbsp;&nbsp;
+                                            <a href="<?php echo base_url($currentController); ?>" class="btn btn-warning">Back</a>
 
                                             <?php
                                             // echo '<pre>';
@@ -153,7 +162,12 @@
     <script src="<?php echo base_url(); ?>public/assets/js/common.js"></script>
 
     <script>
-        function printDiv(divId) {
+        function printDiv(divId, flag) {
+
+            if (flag) {
+                $('.hidethis').remove();
+            }
+
             var printContents = document.getElementById(divId).innerHTML;
             var originalContents = document.body.innerHTML;
 
@@ -161,7 +175,7 @@
 
             window.print();
 
-            document.body.innerHTML = originalContents;
+            window.location.reload();
         }
     </script>
 

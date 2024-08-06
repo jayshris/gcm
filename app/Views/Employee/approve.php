@@ -34,7 +34,7 @@
                                                     <div class="profile-details">
                                                         <div class="row">
 
-                                                            <div class="col-md-6">
+                                                            <div class="col-md-4">
                                                                 <div class="form-wrap">
                                                                     <label class="col-form-label">Company Name <span class="text-danger">*</span></label>
                                                                     <select class="select" id="company" name="company_name" required>
@@ -51,7 +51,7 @@
                                                                 </div>
                                                             </div>
 
-                                                            <div class="col-md-6">
+                                                            <div class="col-md-4">
                                                                 <div class="form-wrap"><label class="col-form-label">Office Location <span class="text-danger">*</span></label>
                                                                     <select class="select" id="office_location" name="office_location" required>
                                                                         <option value="">Select Location</option>
@@ -63,6 +63,19 @@
                                                                     </select><?php if ($validation->getError('office_location')) {
                                                                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('office_location') . '</div>';
                                                                                 } ?>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-md-4">
+                                                                <div class="form-wrap"><label class="col-form-label">Department <span class="text-danger">*</span></label>
+                                                                    <select class="select" id="dept_id" name="dept_id" required>
+                                                                        <option value="">Select Department</option>
+                                                                        <?php
+                                                                        foreach ($departments as $row) {
+                                                                            echo '<option value="' . $row["id"] . '" ' . ($employee_detail['dept_id'] == $row['id'] ? 'selected' : '') . '>' . $row["dept_name"] . '</option>';
+                                                                        }
+                                                                        ?>
+                                                                    </select>
                                                                 </div>
                                                             </div>
 
@@ -106,7 +119,7 @@
 
                                                             <div class="col-md-4">
                                                                 <div class="form-wrap">
-                                                                    <label class="col-form-label">Aadhaar Image - Front<span class="text-danger">*</span></label>
+                                                                    <label class="col-form-label">Aadhaar Image - Front<span class="text-danger">*</span></label><br>
                                                                     <?php if (isset($employee_detail) && $employee_detail['aadhar_img_front'] != '') { ?>
                                                                         <img src="<?= base_url('public/uploads/employeeDocs/') . $employee_detail['aadhar_img_front'] ?>" style="height: 150px;">
                                                                     <?php } ?>
@@ -120,7 +133,7 @@
 
                                                             <div class="col-md-4">
                                                                 <div class="form-wrap">
-                                                                    <label class="col-form-label">Aadhaar Image - Back<span class="text-danger"></span></label>
+                                                                    <label class="col-form-label">Aadhaar Image - Back<span class="text-danger"></span></label><br>
                                                                     <?php if (isset($employee_detail) && $employee_detail['aadhar_img_back'] != '') { ?>
                                                                         <img src="<?= base_url('public/uploads/employeeDocs/') . $employee_detail['aadhar_img_back'] ?>" style="height: 150px;">
                                                                     <?php } ?>
@@ -188,7 +201,7 @@
 
                                                             <div class="col-md-6">
                                                                 <div class="form-wrap">
-                                                                    <label class="col-form-label">Profile Image 1</label>
+                                                                    <label class="col-form-label">Profile Image 1</label><br>
                                                                     <?php if (isset($employee_detail) && $employee_detail['profile_image1'] != '') { ?>
                                                                         <img src="<?= base_url('public/uploads/employeeDocs/') . $employee_detail['profile_image1'] ?>" style="height: 150px;">
                                                                     <?php } ?>
@@ -202,7 +215,7 @@
 
                                                             <div class="col-md-6">
                                                                 <div class="form-wrap">
-                                                                    <label class="col-form-label">Profile Image 2</label>
+                                                                    <label class="col-form-label">Profile Image 2</label><br>
                                                                     <?php if (isset($employee_detail) && $employee_detail['profile_image2'] != '') { ?>
                                                                         <img src="<?= base_url('public/uploads/employeeDocs/') . $employee_detail['profile_image2'] ?>" style="height: 150px;">
                                                                     <?php } ?>
@@ -226,7 +239,7 @@
 
                                                             <div class="col-md-6">
                                                                 <div class="form-wrap">
-                                                                    <label class="col-form-label">Digital Signature</label>
+                                                                    <label class="col-form-label">Digital Signature</label><br>
                                                                     <?php if (isset($employee_detail) && $employee_detail['digital_sign'] != '') { ?>
                                                                         <img src="<?= base_url('public/uploads/employeeDocs/') . $employee_detail['digital_sign'] ?>" style="height: 150px;">
                                                                     <?php } ?>
@@ -247,7 +260,7 @@
 
                                                             <div class="col-md-6">
                                                                 <div class="form-wrap">
-                                                                    <label class="col-form-label">UPI ID Image<span class="text-danger"></span></label>
+                                                                    <label class="col-form-label">UPI ID Image<span class="text-danger"></span></label><br>
                                                                     <?php if (isset($employee_detail) && $employee_detail['upi_img'] != '') { ?>
                                                                         <img src="<?= base_url('public/uploads/employeeDocs/') . $employee_detail['upi_img'] ?>" style="height: 150px;">
                                                                     <?php } ?>

@@ -49,23 +49,34 @@ class Driver extends BaseController
 
   public function index()
   {
-    $userModel = new UserModel();
-    $this->view['driver'] = $userModel->where('usertype', 'driver')->orderBy('id', 'DESC')->paginate(10);
-    
+    $foremanModel = new ForemanModel();
+    $this->view['foremen'] = $foremanModel->select('foreman.*, party.party_name as foreman_name')
+      ->join('party', 'party.id = foreman.party_id')
+      ->orderBy('party.party_name', 'asc')
+      ->findAll();
+
+    $this->view['drivers'] = $this->DModel->select('driver.*, party.party_name as driver_name')
+      ->join('party', 'party.id = driver.party_id')
+      ->orderBy('party.party_name', 'asc')
+      ->findAll();
+
     $driverModel = new DriverModel();
     $driverModel->select('driver.*, t2.party_name, t2.status, t4.party_name as foreman_name')
       ->join('party' . ' t2', 't2.id = driver.party_id')
       ->join('foreman' . ' t3', 't3.id = driver.foreman_id')
       ->join('party' . ' t4', 't4.id = t3.party_id');
 
-    if ($this->request->getPost('status') != '') {
-      $driverModel->where('t2.status', $this->request->getPost('status'));
-    } else {
-      $driverModel->where('t2.status', '1');
-    }
 
     if ($this->request->getPost('working_status') != '') {
       $driverModel->where('driver.working_status', $this->request->getPost('working_status'));
+    }
+
+    if ($this->request->getPost('driver_id') != '') {
+      $driverModel->where('driver.id', $this->request->getPost('driver_id'));
+    }
+
+    if ($this->request->getPost('foreman_id') != '') {
+      $driverModel->where('t3.id', $this->request->getPost('foreman_id'));
     }
 
     $this->view['driver_data'] = $driverModel->orderBy('driver.id', 'DESC')->findAll();
@@ -73,7 +84,6 @@ class Driver extends BaseController
     // print_r($this->view['driver_data']);
     // die;
 
-    $this->view['pagination_link'] = $userModel->pager;
     $this->view['page_data'] = ['page_title' => view('partials/page-title', ['title' => 'Driver', 'li_1' => '123', 'li_2' => 'deals'])];
     return view('Driver/index', $this->view);
   }

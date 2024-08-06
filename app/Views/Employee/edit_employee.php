@@ -34,7 +34,7 @@
                           <div class="profile-details">
                             <div class="row">
 
-                              <div class="col-md-6">
+                              <div class="col-md-4">
                                 <div class="form-wrap">
                                   <label class="col-form-label">Company Name <span class="text-danger">*</span></label>
                                   <select class="select" id="company" name="company_name" required>
@@ -51,7 +51,7 @@
                                 </div>
                               </div>
 
-                              <div class="col-md-6">
+                              <div class="col-md-4">
                                 <div class="form-wrap"><label class="col-form-label">Office Location <span class="text-danger">*</span></label>
                                   <select class="select" id="office_location" name="office_location" required>
                                     <option value="">Select Location</option>
@@ -63,6 +63,19 @@
                                   </select><?php if ($validation->getError('office_location')) {
                                               echo '<div class="alert alert-danger mt-2">' . $validation->getError('office_location') . '</div>';
                                             } ?>
+                                </div>
+                              </div>
+
+                              <div class="col-md-4">
+                                <div class="form-wrap"><label class="col-form-label">Department <span class="text-danger">*</span></label>
+                                  <select class="select" id="dept_id" name="dept_id" required>
+                                    <option value="">Select Department</option>
+                                    <?php
+                                    foreach ($departments as $row) {
+                                      echo '<option value="' . $row["id"] . '" ' . ($employee_detail['dept_id'] == $row['id'] ? 'selected' : '') . '>' . $row["dept_name"] . '</option>';
+                                    }
+                                    ?>
+                                  </select>
                                 </div>
                               </div>
 
@@ -86,13 +99,13 @@
 
                               <div class="col-md-3">
                                 <div class="form-wrap"><label class="col-form-label">Alternate Mobile No</label>
-                                  <input class="form-control" name="alternate_mobile" type="number" title="Mobile number must be a 10-digit number" maxlength="10" oninput="validateMobile(event)" value="<?= $employee_detail['alternate_mobile'] ?>" >
+                                  <input class="form-control" name="alternate_mobile" type="number" title="Mobile number must be a 10-digit number" maxlength="10" oninput="validateMobile(event)" value="<?= $employee_detail['alternate_mobile'] ?>">
                                   <?php if ($validation->getError('alternate_mobile')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('alternate_mobile') . '</div>';
                                   } ?>
                                 </div>
                               </div>
-                              
+
                               <div class="col-md-12">
                                 <div class="form-wrap">
                                   <label class="col-form-label">Email ID<span class="text-danger"></span></label>
@@ -102,7 +115,8 @@
                                   } ?>
                                 </div>
                               </div>
-                              <br><hr><br>
+                              <br>
+                              <hr><br>
                               <div class="col-md-4">
                                 <div class="form-wrap">
                                   <label class="col-form-label">Aadhaar Card No<span class="text-danger">*</span></label>
@@ -115,11 +129,11 @@
 
                               <div class="col-md-4">
                                 <div class="form-wrap">
-                                  <label class="col-form-label">Aadhaar Image - Front<span class="text-danger">*</span></label>
+                                  <label class="col-form-label">Aadhaar Image - Front</label><br>
                                   <?php if (isset($employee_detail) && $employee_detail['aadhar_img_front'] != '') { ?>
                                     <img src="<?= base_url('public/uploads/employeeDocs/') . $employee_detail['aadhar_img_front'] ?>" style="height: 150px;">
                                   <?php } ?>
-                                  <input class="form-control" name="aadhaarfront" type="file" >
+                                  <input class="form-control" name="aadhaarfront" type="file">
                                   <p style="color:#00f"><em>(jpg,jpeg,png,pdf)</em></p>
                                   <?php if ($validation->getError('aadhaarfront')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('aadhaarfront') . '</div>';
@@ -129,7 +143,7 @@
 
                               <div class="col-md-4">
                                 <div class="form-wrap">
-                                  <label class="col-form-label">Aadhaar Image - Back</label>
+                                  <label class="col-form-label">Aadhaar Image - Back</label><br>
                                   <?php if (isset($employee_detail) && $employee_detail['aadhar_img_back'] != '') { ?>
                                     <img src="<?= base_url('public/uploads/employeeDocs/') . $employee_detail['aadhar_img_back'] ?>" style="height: 150px;">
                                   <?php } ?>
@@ -154,7 +168,7 @@
 
                               <div class="col-md-4">
                                 <div class="form-wrap">
-                                  <label class="col-form-label">Image - Front</label>
+                                  <label class="col-form-label">Image - Front</label><br>
                                   <?php if (isset($employee_detail) && $employee_detail['image_front'] != '') { ?>
                                     <img src="<?= base_url('public/uploads/employeeDocs/') . $employee_detail['image_front'] ?>" style="height: 150px;">
                                   <?php } ?>
@@ -168,11 +182,11 @@
 
                               <div class="col-md-4">
                                 <div class="form-wrap">
-                                  <label class="col-form-label">Image - Back<span class="text-danger"></span></label>
+                                  <label class="col-form-label">Image - Back</label><br>
                                   <?php if (isset($employee_detail) && $employee_detail['image_back'] != '') { ?>
                                     <img src="<?= base_url('public/uploads/employeeDocs/') . $employee_detail['image_back'] ?>" style="height: 150px;">
                                   <?php } ?>
-                                  <input class="form-control" name="image_back" type="file" >
+                                  <input class="form-control" name="image_back" type="file">
                                   <p style="color:#00f"><em>(jpg,jpeg,png,pdf)</em></p>
                                   <?php if ($validation->getError('image_back')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('image_back') . '</div>';
@@ -180,13 +194,14 @@
                                 </div>
                               </div>
                               <!-- Added 19-7-24 end -->
-                              <br><hr><br>
+                              <br>
+                              <hr><br>
                               <!-- current Address start -->
                               <div class="col-md-12">
                                 <div class="form-wrap">
                                   <label class="col-form-label">Current Address</label>
-                                  <input type="text" class="form-control" name="current_address" value="<?= $employee_detail['current_address'] ?> "/>
-                                   <?php if ($validation->getError('current_address')) {
+                                  <input type="text" class="form-control" name="current_address" value="<?= $employee_detail['current_address'] ?> " />
+                                  <?php if ($validation->getError('current_address')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('current_address') . '</div>';
                                   } ?>
                                 </div>
@@ -195,30 +210,30 @@
                                 <div class="form-wrap">
                                   <label class="col-form-label">City</label>
                                   <input class="form-control" name="current_city" type="text" value="<?= $employee_detail['current_city'] ?>">
-                                   <?php if ($validation->getError('current_city')) {
+                                  <?php if ($validation->getError('current_city')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('current_city') . '</div>';
                                   } ?>
                                 </div>
                               </div>
                               <div class="col-md-4">
                                 <div class="form-wrap">
-                                  <label class="col-form-label">State</label> 
+                                  <label class="col-form-label">State</label>
                                   <br>
-                                  <select class="dropdown" name="current_state">
+                                  <select class="form-select" name="current_state">
                                     <option>Select</option>
                                     <?php
                                     if (isset($state)) {
                                       foreach ($state as $row) { ?>
                                         <option value="<?php echo $row["state_id"] ?>" <?php
-																															if (isset($employee_detail)) {
-																																if ($employee_detail['current_state'] == $row["state_id"]) echo 'selected';
-																															} ?>><?php echo $row["state_name"] ?></option>
+                                                                                        if (isset($employee_detail)) {
+                                                                                          if ($employee_detail['current_state'] == $row["state_id"]) echo 'selected';
+                                                                                        } ?>><?php echo $row["state_name"] ?></option>
                                     <?php
                                       }
                                     }
                                     ?>
                                   </select>
-                                   <?php if ($validation->getError('current_state')) {
+                                  <?php if ($validation->getError('current_state')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('current_state') . '</div>';
                                   } ?>
                                 </div>
@@ -227,19 +242,20 @@
                                 <div class="form-wrap">
                                   <label class="col-form-label">Pincode</label>
                                   <input class="form-control" name="current_pincode" type="text" value="<?= $employee_detail['current_pincode'] ?>">
-                                   <?php if ($validation->getError('current_pincode')) {
+                                  <?php if ($validation->getError('current_pincode')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('current_pincode') . '</div>';
                                   } ?>
                                 </div>
                               </div>
                               <!-- current Address end -->
-                              <br><hr><br>
+                              <br>
+                              <hr><br>
                               <!-- permanent Address start -->
                               <div class="col-md-12">
                                 <div class="form-wrap">
                                   <label class="col-form-label">Permanent Address</label>
-                                  <input type="text" class="form-control" class="form-control" name="permanent_address" value="<?= $employee_detail['permanent_address'] ?>"/>
-                                   <?php if ($validation->getError('permanent_address')) {
+                                  <input type="text" class="form-control" class="form-control" name="permanent_address" value="<?= $employee_detail['permanent_address'] ?>" />
+                                  <?php if ($validation->getError('permanent_address')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('permanent_address') . '</div>';
                                   } ?>
                                 </div>
@@ -248,7 +264,7 @@
                                 <div class="form-wrap">
                                   <label class="col-form-label">City</label>
                                   <input class="form-control" name="permanent_city" type="text" value="<?= $employee_detail['permanent_city'] ?>">
-                                   <?php if ($validation->getError('permanent_city')) {
+                                  <?php if ($validation->getError('permanent_city')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('permanent_city') . '</div>';
                                   } ?>
                                 </div>
@@ -257,32 +273,32 @@
                                 <div class="form-wrap">
                                   <label class="col-form-label">State</label>
                                   <br>
-                                  <select class="dropdown" name="permanent_state">
-																	<option>Select</option>
-																	<?php
-																	if (isset($state)) {
-																		foreach ($state as $row) { ?>
-																			<option value="<?php echo $row["state_id"] ?>" <?php
-																															if (isset($employee_detail)) {
-																																if ($employee_detail['permanent_state'] == $row["state_id"]) echo 'selected';
-																															} ?>><?php echo $row["state_name"] ?></option>
-																	<?php
-																		}
-																	}
-																	?>
-																</select>
-																<?php
-																if ($validation->getError('permanent_state')) {
-																	echo '<div class="alert alert-danger mt-2">' . $validation->getError('permanent_state') . '</div>';
-																}
-																?>
+                                  <select class="form-select" name="permanent_state">
+                                    <option>Select</option>
+                                    <?php
+                                    if (isset($state)) {
+                                      foreach ($state as $row) { ?>
+                                        <option value="<?php echo $row["state_id"] ?>" <?php
+                                                                                        if (isset($employee_detail)) {
+                                                                                          if ($employee_detail['permanent_state'] == $row["state_id"]) echo 'selected';
+                                                                                        } ?>><?php echo $row["state_name"] ?></option>
+                                    <?php
+                                      }
+                                    }
+                                    ?>
+                                  </select>
+                                  <?php
+                                  if ($validation->getError('permanent_state')) {
+                                    echo '<div class="alert alert-danger mt-2">' . $validation->getError('permanent_state') . '</div>';
+                                  }
+                                  ?>
                                 </div>
                               </div>
                               <div class="col-md-2">
                                 <div class="form-wrap">
                                   <label class="col-form-label">Pincode</label>
                                   <input class="form-control" name="permanent_pincode" type="text" value="<?= $employee_detail['permanent_pincode'] ?>">
-                                   <?php if ($validation->getError('permanent_pincode')) {
+                                  <?php if ($validation->getError('permanent_pincode')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('permanent_pincode') . '</div>';
                                   } ?>
                                 </div>
@@ -290,14 +306,15 @@
                               <div class="col-md-3">
                                 <div class="form-wrap">
                                   <label class="col-form-label">Phone</label>
-                                  <input class="form-control" name="permanent_phone" type="text" maxlength="10"  value="<?= $employee_detail['permanent_phone'] ?>">
-                                   <?php if ($validation->getError('permanent_phone')) {
+                                  <input class="form-control" name="permanent_phone" type="text" maxlength="10" value="<?= $employee_detail['permanent_phone'] ?>">
+                                  <?php if ($validation->getError('permanent_phone')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('permanent_phone') . '</div>';
                                   } ?>
                                 </div>
                               </div>
                               <!-- permenant Address end -->
-                              <br><hr><br>
+                              <br>
+                              <hr><br>
                               <div class="col-md-6">
                                 <div class="form-wrap">
                                   <label class="col-form-label">Company Mobile No 1</label>
@@ -328,8 +345,9 @@
                                   } ?>
                                 </div>
                               </div>
-                              <br><hr><br>
-                              
+                              <br>
+                              <hr><br>
+
                               <div class="col-md-6">
                                 <div class="form-wrap">
                                   <label class="col-form-label">Emergency Contact Person</label>
@@ -373,11 +391,11 @@
 
                               <div class="col-md-6">
                                 <div class="form-wrap">
-                                  <label class="col-form-label">Profile Image 1<span class="text-danger">*</span></label>
+                                  <label class="col-form-label">Profile Image 1</label><br>
                                   <?php if (isset($employee_detail) && $employee_detail['profile_image1'] != '') { ?>
                                     <img src="<?= base_url('public/uploads/employeeDocs/') . $employee_detail['profile_image1'] ?>" style="height: 150px;">
                                   <?php } ?>
-                                  <input class="form-control" name="image1" type="file" required accept="image/*">
+                                  <input class="form-control" name="image1" type="file" accept="image/*">
                                   <p style="color:#00f"><em>(jpg,jpeg,png,pdf)</em></p>
                                   <?php if ($validation->getError('image1')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('image1') . '</div>';
@@ -387,7 +405,7 @@
 
                               <div class="col-md-6">
                                 <div class="form-wrap">
-                                  <label class="col-form-label">Profile Image 2</label>
+                                  <label class="col-form-label">Profile Image 2</label><br>
                                   <?php if (isset($employee_detail) && $employee_detail['profile_image2'] != '') { ?>
                                     <img src="<?= base_url('public/uploads/employeeDocs/') . $employee_detail['profile_image2'] ?>" style="height: 150px;">
                                   <?php } ?>
@@ -411,11 +429,11 @@
 
                               <div class="col-md-6">
                                 <div class="form-wrap">
-                                  <label class="col-form-label">Digital Signature</label>
+                                  <label class="col-form-label">Digital Signature</label><br>
                                   <?php if (isset($employee_detail) && $employee_detail['digital_sign'] != '') { ?>
                                     <img src="<?= base_url('public/uploads/employeeDocs/') . $employee_detail['digital_sign'] ?>" style="height: 150px;">
                                   <?php } ?>
-                                  <input class="form-control" name="digital_sign" type="file"  accept="image/*" value="<?= set_value('digital_sign') ?>">
+                                  <input class="form-control" name="digital_sign" type="file" accept="image/*" value="<?= set_value('digital_sign') ?>">
                                   <p style="color:#00f"><em>(jpg,jpeg,png,pdf)</em></p>
                                   <?php if ($validation->getError('digital_sign')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('digital_sign') . '</div>';
@@ -432,7 +450,7 @@
 
                               <div class="col-md-6">
                                 <div class="form-wrap">
-                                  <label class="col-form-label">UPI ID Image<span class="text-danger"></span></label>
+                                  <label class="col-form-label">UPI ID Image<span class="text-danger"></span></label><br>
                                   <?php if (isset($employee_detail) && $employee_detail['upi_img'] != '') { ?>
                                     <img src="<?= base_url('public/uploads/employeeDocs/') . $employee_detail['upi_img'] ?>" style="height: 150px;">
                                   <?php } ?>

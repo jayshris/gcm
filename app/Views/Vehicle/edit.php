@@ -64,9 +64,9 @@
                                 <select class="select" id="vendor_id" name="vendor_id">
                                   <option value="">Select</option>
                                   <?php
-                                  if (isset($party)) {
-                                    foreach ($party as $row) {
-                                      echo '<option value="' . $row["id"] . '" ' . ($row['id'] == $vehicle_data['party_id'] ? 'selected' : '') . ' >' . ucwords($row["party_name"]) . '</option>';
+                                  if (isset($vendors)) {
+                                    foreach ($vendors as $row) {
+                                      echo '<option value="' . $row["id"] . '" ' . ($row['id'] == $vehicle_data['party_id'] ? 'selected' : '') . ' >' . ucwords($row["customer_name"]) . '</option>';
                                     }
                                   }
                                   ?>
@@ -121,21 +121,26 @@
                               </div>
                             </div>
 
-                            <hr> 
+                            <hr>
                             <h6>RC DETAILS:</h6>
                             <br>
                             <br>
 
                             <div class="col-md-3">
                               <div class="form-wrap">
-                                <label class="col-form-label"> RC No <span class="text-danger">*</span> </label>
-                                <input type="text" name="rc" class="form-control" value="<?= isset($vehicle_data) ? $vehicle_data['rc_number'] : '' ?>" required>
+                                <label class="col-form-label"> RC No <span class="text-danger">*</span> <span class="text-danger" id="span_rc"></span></label>
+                                <input type="text" name="rc" id="rc_no" class="form-control" value="<?= isset($vehicle_data) ? $vehicle_data['rc_number'] : '' ?>" required>
+                                <?php
+                                if ($validation->getError('rc')) {
+                                  echo '<div class="alert alert-danger mt-2">' . $validation->getError('rc') . '</div>';
+                                }
+                                ?>
                               </div>
                             </div>
 
                             <div class="col-md-3">
                               <div class="form-wrap">
-                                <label class="col-form-label"> RC Date </label>
+                                <label class="col-form-label"> RC Date <span class="text-danger">*</span></label>
                                 <input type="date" name="rc_date" class="form-control" value="<?= isset($vehicle_data) ? $vehicle_data['rc_date'] : '' ?>">
                               </div>
                             </div>
@@ -148,26 +153,37 @@
                             </div>
 
                             <div class="col-md-3">
-                              <label class="col-form-label">Vehicle Class</label> 
-															<select class="form-select select2" name="vehicle_class_id" id="vehicle_class_id" aria-label="Default select example">
-																<option value="">Select</option> 
-                                <?php foreach(VEHICLE_CLASSES as $key=> $val){ ?>
-                                  <option value="<?= $key?>" <?= ($vehicle_data['vehicle_class_id']==$key) ? 'selected' : '' ?>><?= $val?></option>
+                              <label class="col-form-label">Vehicle Class</label>
+                              <select class="form-select select2" name="vehicle_class_id" id="vehicle_class_id" aria-label="Default select example">
+                                <option value="">Select</option>
+                                <?php foreach (VEHICLE_CLASSES as $key => $val) { ?>
+                                  <option value="<?= $key ?>" <?= ($vehicle_data['vehicle_class_id'] == $key) ? 'selected' : '' ?>><?= $val ?></option>
                                 <?php } ?>
-															</select>
+                              </select>
                             </div>
 
                             <div class="col-md-6">
                               <div class="form-wrap">
-                                <label class="col-form-label"> Chassis No <span class="text-danger">*</span> </label>
-                                <input type="text" name="chassis" class="form-control" value="<?= isset($vehicle_data) ? $vehicle_data['chassis_number'] : '' ?>" required>
+                                <label class="col-form-label"> Chassis No <span class="text-danger cm">*</span> <span class="text-danger" id="span_chassis"></span> </label>
+                                <input type="text" name="chassis" id="chassis" class="form-control" value="<?= isset($vehicle_data) ? $vehicle_data['chassis_number'] : '' ?>" required>
+                                <?php
+                                if ($validation->getError('chassis')) {
+                                  echo '<div class="alert alert-danger mt-2">' . $validation->getError('chassis') . '</div>';
+                                }
+                                ?>
                               </div>
                             </div>
 
                             <div class="col-md-6">
                               <div class="form-wrap">
-                                <label class="col-form-label"> Engine No <span class="text-danger">*</span> </label>
-                                <input type="text" name="engine" class="form-control" value="<?= isset($vehicle_data) ? $vehicle_data['engine_number'] : '' ?>" required>
+                                <label class="col-form-label"> Engine No <span class="text-danger em">*</span> <span class="text-danger" id="span_engine"></span> </label>
+                                <input type="text" name="engine" id="engine" class="form-control" value="<?= isset($vehicle_data) ? $vehicle_data['engine_number'] : '' ?>" required>
+
+                                <?php
+                                if ($validation->getError('engine')) {
+                                  echo '<div class="alert alert-danger mt-2">' . $validation->getError('engine') . '</div>';
+                                }
+                                ?>
                               </div>
                             </div>
 
@@ -214,20 +230,20 @@
                             </div>
 
                             <div class="col-md-4">
-                              <label class="col-form-label">State</label> 
-															<select class="form-select select2" name="state_id" id="state_id" <?= $vehicle_data['state_id'] ?> aria-label="Default select example">
-																<option value="">Select</option>
-																<?php foreach ($states as $o) {
-                                   $selected = ($vehicle_data['state_id']==$o['state_id']) ? 'selected': '';?>
-																  <option value="<?= $o['state_id'] ?>" <?= $selected ?>><?= $o['state_name'] ?></option>
-																<?php } ?>
-															</select>
+                              <label class="col-form-label">State</label>
+                              <select class="form-select select2" name="state_id" id="state_id" <?= $vehicle_data['state_id'] ?> aria-label="Default select example">
+                                <option value="">Select</option>
+                                <?php foreach ($states as $o) {
+                                  $selected = ($vehicle_data['state_id'] == $o['state_id']) ? 'selected' : ''; ?>
+                                  <option value="<?= $o['state_id'] ?>" <?= $selected ?>><?= $o['state_name'] ?></option>
+                                <?php } ?>
+                              </select>
                             </div>
 
                             <div class="col-md-4">
                               <div class="form-wrap">
                                 <label class="col-form-label">Pincode</label>
-                                <input type="number" name="pincode" class="form-control" value="<?= isset($vehicle_data) ? $vehicle_data['city'] : set_value('pincode') ?>">
+                                <input type="number" name="pincode" class="form-control" value="<?= isset($vehicle_data) ? $vehicle_data['pincode'] : set_value('pincode') ?>">
                               </div>
                             </div>
 
@@ -245,7 +261,7 @@
                                 <input type="date" name="inv_date" class="form-control" value="<?= isset($vehicle_data) ? $vehicle_data['invoice_date'] : '' ?>">
                               </div>
                             </div>
-                            
+
                             <div class="col-md-12">
                               <div class="form-wrap">
                                 <label class="col-form-label"> KM reading at Start</label>
@@ -312,7 +328,7 @@
                                 <?php } ?>
 
                                 <input type="file" accept="image/*" name="image4" class="form-control" title="Image less than 100 KB">
-                                <span class="text-info ">(PNG,JPEG,JPG,PDF)</span>  
+                                <span class="text-info ">(PNG,JPEG,JPG,PDF)</span>
                                 <?php
                                 if ($validation->getError('image4')) {
                                   echo '<div class="alert alert-danger mt-2">' . $validation->getError('image4') . '</div>';
@@ -338,7 +354,7 @@
                                   ?>
                                         <div class="col-md-3">
                                           <label for="fuel_types">Tyre <?= $i + 1; ?></label>
-                                          <input type="text" class="form-control" id="fuel_types" name="fuel_types[]" value="<?php echo $a[$i]; ?>" required>
+                                          <input type="text" class="form-control tyre" id="fuel_types" name="fuel_types[]" value="<?php echo $a[$i]; ?>" required>
                                         </div>
 
                                   <?php
@@ -368,7 +384,7 @@
                           </div>
                         </div>
                         <div class="submit-button">
-                          <input type="submit" name="add_vehicle" class="btn btn-primary" value="Save Changes">
+                          <input type="submit" id="submit-btn" name="add_vehicle" class="btn btn-primary" value="Save Changes">
                           <a href="./<?= $vehicle_data['id'] ?>" class="btn btn-warning">Reset</a>
                           <a href="<?php echo base_url(); ?>vehicle" class="btn btn-light">Cancel</a>
                         </div>
@@ -394,8 +410,15 @@
 
   <script>
     $(document).ready(function() {
+
       $('#vehicletype').change(function() {
         var vehicletypeId = $(this).val();
+
+        var owner = $('input[name="owner"]:checked').val();
+
+        var req = (owner == "company" ? "required" : '');
+        console.log(req);
+
         $.ajax({
           url: '<?= base_url('vehicle/getVehicletypedetails') ?>',
           method: 'POST',
@@ -416,13 +439,89 @@
               textboxContainer.append(`
                                           <div class="col-md-3">
                                               <label for="fuel_types${item[0].id}">${item[0].name}</label>
-                                              <input type="text" class="form-control" id="fuel_types${item[0].id}" name="fuel_types[]"  required>
+                                              <input type="text" class="form-control tyre" id="fuel_types${item[0].id}" name="fuel_types[]" ` + req + `>
                                           </div>
                                       `);
             });
           }
         });
       });
+
+
+
+      // rc validation
+      $("#rc_no").on('change', function() {
+        var rc_no = $(this).val();
+
+        $('#span_rc').html('');
+        $('#submit-btn').removeAttr('disabled');
+
+        if (rc_no) {
+          $.ajax({
+            type: 'POST',
+            url: '../validate_rc',
+            data: {
+              rc_no: rc_no
+            },
+            success: function(response) {
+              if (response == '1') {
+                $('#span_rc').html('RC already added !!');
+                $('#submit-btn').attr('disabled', 'disabled');
+              }
+            }
+          });
+        }
+      });
+
+      // chassis validation
+      $("#chassis").on('change', function() {
+        var chassis = $(this).val();
+
+        $('#span_chassis').html('');
+        $('#submit-btn').removeAttr('disabled');
+
+        if (rc_no) {
+          $.ajax({
+            type: 'POST',
+            url: '../validate_chassis',
+            data: {
+              chassis: chassis
+            },
+            success: function(response) {
+              if (response == '1') {
+                $('#span_chassis').html('Chassis number already added !!');
+                $('#submit-btn').attr('disabled', 'disabled');
+              }
+            }
+          });
+        }
+      });
+
+      // engine validation
+      $("#engine").on('change', function() {
+        var engine = $(this).val();
+
+        $('#span_engine').html('');
+        $('#submit-btn').removeAttr('disabled');
+
+        if (rc_no) {
+          $.ajax({
+            type: 'POST',
+            url: '../validate_engine',
+            data: {
+              engine: engine
+            },
+            success: function(response) {
+              if (response == '1') {
+                $('#span_engine').html('Engine number already added !!');
+                $('#submit-btn').attr('disabled', 'disabled');
+              }
+            }
+          });
+        }
+      });
+
+      $.radio($('input[name="owner"]:checked').val());
     });
 
 
@@ -430,10 +529,19 @@
       if (str == 'onhire') {
         $('.onhire').show();
         $('#vendor_id').attr('required', 'required');
+        $('#chassis').removeAttr('required');
+        $('#engine').removeAttr('required');
+        $('.cm').html('');
+        $('.em').html('');
+        $('.tyre').removeAttr('required');
       } else {
         $('.onhire').hide();
         $('#vendor_id').removeAttr('required');
-        $('#vendor_id').val('company');
+        $('#chassis').attr('required', 'required');
+        $('#engine').attr('required', 'required');
+        $('.cm').html('*');
+        $('.em').html('*');
+        $('.tyre').attr('required', 'required');
       }
     }
   </script>

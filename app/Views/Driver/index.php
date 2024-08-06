@@ -34,15 +34,33 @@ use App\Models\PartyModel;
                 <div class="card-body">
                   <h4>Search / Filter</h4>
                   <hr>
+
+                  <?php
+                  // print_r($driver_data);
+                  ?>
+
                   <div class="row mt-2">
 
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                       <div class="form-wrap">
-                        <label class="col-form-label">Status</label>
-                        <select class="form-select" name="status" aria-label="Default select example">
-                          <option value="">Select Status</option>
-                          <option value="1" <?= set_value('status') == 1 ? 'selected' : '' ?>>Active</option>
-                          <option value="0" <?= set_value('status') == 0 ? 'selected' : '' ?>>Inactive</option>
+                        <label class="col-form-label">Driver</label>
+                        <select class="form-select select2" name="driver_id" aria-label="Default select example">
+                          <option value="">Select Driver</option>
+                          <?php foreach ($drivers as $d) {
+                            echo '<option value="' . $d['id'] . '"' . (set_value('driver_id') == $d['id'] ? 'selected' : '') . '>' . $d['driver_name'] . '</option>';
+                          } ?>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="col-md-3">
+                      <div class="form-wrap">
+                        <label class="col-form-label">Foreman</label>
+                        <select class="form-select select2" name="foreman_id" aria-label="Default select example">
+                          <option value="">Select Foreman</option>\
+                          <?php foreach ($foremen as $f) {
+                            echo '<option value="' . $f['id'] . '"' . (set_value('foreman_id') == $f['id'] ? 'selected' : '') . '>' . $f['foreman_name'] . '</option>';
+                          } ?>
                         </select>
                       </div>
                     </div>
@@ -64,13 +82,10 @@ use App\Models\PartyModel;
                     <div class="col-md-4">
                       <button class="btn btn-info mt-4">Search</button>&nbsp;&nbsp;
                       <a href="./driver" class="btn btn-warning mt-4">Reset</a>&nbsp;&nbsp;
+                      <button id="list" type="button" class="btn btn-warning  mt-4">Assigned List</button>
                     </div>
 
-                    <div class="col-md-3 text-end mt-4">
-                      <button id="list" type="button" class="btn btn-warning">Currently Assigned List</button>
-                    </div>
-
-                    <div class="col-md-1 text-end mt-4">
+                    <div class="col-md-1">
                       <?php echo makeListActions($currentController, $Action, 0, 1); ?>
                     </div>
 
@@ -105,9 +120,7 @@ use App\Models\PartyModel;
                         <th>Foreman Name</th>
                         <th>Trip Status</th>
                         <th>Current Trip</th>
-                        <th>No. of Trips</th>
-                        <th>Status</th>
-                        <th>Wroking Status</th>
+                        <th>Working Status</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -142,8 +155,6 @@ use App\Models\PartyModel;
                             <td><?= $driver['party_name'] ?></td>
                             <td><?= $driver['dl_no'] ?></td>
                             <td><?= $driver['foreman_name'] ?></td>
-                            <td></td>
-                            <td></td>
                             <td></td>
                             <td>
                               <?php

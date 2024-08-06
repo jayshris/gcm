@@ -51,9 +51,9 @@
                                 <select class="select" id="vendor_id" name="vendor_id">
                                   <option value="">Select</option>
                                   <?php
-                                  if (isset($party)) {
-                                    foreach ($party as $row) {
-                                      echo '<option value="' . $row["id"] . '" "' . set_select('vendor_id', $row['id']) . '">' . ucwords($row["party_name"]) . '</option>';
+                                  if (isset($vendors)) {
+                                    foreach ($vendors as $row) {
+                                      echo '<option value="' . $row["id"] . '" "' . set_select('vendor_id', $row['id']) . '">' . ucwords($row["customer_name"]) . '</option>';
                                     }
                                   }
                                   ?>
@@ -90,21 +90,21 @@
                               </div>
                             </div>
 
-                            <hr> 
+                            <hr>
                             <h6>RC DETAILS:</h6>
                             <br>
                             <br>
                             <div class="col-md-3">
                               <div class="form-wrap">
-                                <label class="col-form-label"> RC No <span class="text-danger">*</span> </label>
-                                <input type="text" name="rc" class="form-control" value="<?= set_value('rc') ?>" required>
+                                <label class="col-form-label"> RC No <span class="text-danger">*</span> <span class="text-danger" id="span_rc"></span></label>
+                                <input type="text" name="rc" id="rc_no" class="form-control" value="<?= set_value('rc') ?>" required>
                               </div>
                             </div>
 
                             <div class="col-md-3">
                               <div class="form-wrap">
-                                <label class="col-form-label"> RC Date </label>
-                                <input type="date" name="rc_date" class="form-control" value="<?= set_value('rc_date') ?>">
+                                <label class="col-form-label"> RC Date <span class="text-danger">*</span></label>
+                                <input type="date" name="rc_date" class="form-control" value="<?= set_value('rc_date') ?>" required>
                               </div>
                             </div>
 
@@ -116,26 +116,26 @@
                             </div>
 
                             <div class="col-md-3">
-                              <label class="col-form-label">Vehicle Class</label> 
-															<select class="form-select select2" name="vehicle_class_id" id="vehicle_class_id" aria-label="Default select example">
-																<option value="">Select</option> 
-                                <?php foreach(VEHICLE_CLASSES as $key=> $val){ ?>
-                                  <option value="<?= $key?>"><?= $val?></option>
+                              <label class="col-form-label">Vehicle Class</label>
+                              <select class="form-select select2" name="vehicle_class_id" id="vehicle_class_id" aria-label="Default select example">
+                                <option value="">Select</option>
+                                <?php foreach (VEHICLE_CLASSES as $key => $val) { ?>
+                                  <option value="<?= $key ?>"><?= $val ?></option>
                                 <?php } ?>
-															</select>
+                              </select>
                             </div>
 
                             <div class="col-md-6">
                               <div class="form-wrap">
-                                <label class="col-form-label"> Chassis No <span class="text-danger">*</span> </label>
-                                <input type="text" name="chassis" class="form-control" value="<?= set_value('chassis') ?>" required>
+                                <label class="col-form-label"> Chassis No <span class="text-danger cm">*</span> <span class="text-danger" id="span_chassis"></span></label>
+                                <input type="text" name="chassis" id="chassis" class="form-control" value="<?= set_value('chassis') ?>" required>
                               </div>
                             </div>
 
                             <div class="col-md-6">
                               <div class="form-wrap">
-                                <label class="col-form-label"> Engine No <span class="text-danger">*</span> </label>
-                                <input type="text" name="engine" class="form-control" value="<?= set_value('engine') ?>" required>
+                                <label class="col-form-label"> Engine No <span class="text-danger em">*</span> <span class="text-danger" id="span_engine"></span></label>
+                                <input type="text" name="engine" id="engine" class="form-control" value="<?= set_value('engine') ?>" required>
                               </div>
                             </div>
 
@@ -165,7 +165,7 @@
                                 <label class="col-form-label"> Laden/Gross Weight (KG)</label>
                                 <input type="text" name="laden_wt" class="form-control" id="laden_wt" value="<?= set_value('laden_wt') ?>">
                               </div>
-                            </div>  
+                            </div>
 
                             <div class="col-md-12">
                               <div class="form-wrap">
@@ -182,13 +182,13 @@
                             </div>
 
                             <div class="col-md-4">
-                              <label class="col-form-label">State</label> 
-															<select class="form-select select2" name="state_id" id="state_id" aria-label="Default select example">
-																<option value="">Select</option>
-																<?php foreach ($states as $o) {
-																echo '<option value="' . $o['state_id'] . '">' . $o['state_name'] . '</option>';
-																} ?>
-															</select>
+                              <label class="col-form-label">State</label>
+                              <select class="form-select select2" name="state_id" id="state_id" aria-label="Default select example">
+                                <option value="">Select</option>
+                                <?php foreach ($states as $o) {
+                                  echo '<option value="' . $o['state_id'] . '">' . $o['state_name'] . '</option>';
+                                } ?>
+                              </select>
                             </div>
 
                             <div class="col-md-4">
@@ -213,7 +213,7 @@
                                 <input type="date" name="inv_date" class="form-control" value="<?= set_value('inv_date') ?>">
                               </div>
                             </div>
-                            
+
                             <div class="col-md-12">
                               <div class="form-wrap">
                                 <label class="col-form-label"> KM reading at Start </label>
@@ -276,7 +276,7 @@
                                 </label>
                                 <input type="file" accept="image/*" name="image4" class="form-control" title="Image less than 100 KB">
                                 <span class="text-info ">(PNG,JPEG,JPG,PDF)</span>
-                               <?php
+                                <?php
                                 if ($validation->getError('image4')) {
                                   echo '<div class="alert alert-danger mt-2">' . $validation->getError('image4') . '</div>';
                                 }
@@ -296,7 +296,7 @@
                           </div>
                         </div>
                         <div class="submit-button">
-                          <input type="submit" name="add_vehicle" class="btn btn-primary" value="Save Changes">
+                          <input type="submit" id="submit-btn" name="add_vehicle" class="btn btn-primary" value="Save Changes">
                           <a href="./create" class="btn btn-warning">Reset</a>
                           <a href="<?php echo base_url(); ?>vehicle" class="btn btn-light">Cancel</a>
                         </div>
@@ -324,6 +324,13 @@
     $(document).ready(function() {
       $('#vehicletype').change(function() {
         var vehicletypeId = $(this).val();
+
+        var owner = $('input[name="owner"]:checked').val();
+
+        var req = (owner == "company" ? "required" : '');
+        console.log(req);
+
+
         $.ajax({
           url: '<?= base_url('vehicle/getVehicletypedetails') ?>',
           method: 'POST',
@@ -344,22 +351,105 @@
               textboxContainer.append(`
                               <div class="col-md-3">
                                   <label class="col-form-label" for="fuel_types${item[0].id}">${item[0].name}</label>
-                                  <input type="text" class="form-control" id="fuel_types${item[0].id}" name="fuel_types[]"  required>
+                                  <input type="text" class="form-control tyre" id="fuel_types${item[0].id}" name="fuel_types[]" ` + req + `>
                               </div>
                           `);
             });
           }
         });
       });
+
+      // rc validation
+      $("#rc_no").on('change', function() {
+        var rc_no = $(this).val();
+
+        $('#span_rc').html('');
+        $('#submit-btn').removeAttr('disabled');
+
+        if (rc_no) {
+          $.ajax({
+            type: 'POST',
+            url: 'validate_rc',
+            data: {
+              rc_no: rc_no
+            },
+            success: function(response) {
+              if (response == '1') {
+                $('#span_rc').html('RC already added !!');
+                $('#submit-btn').attr('disabled', 'disabled');
+              }
+            }
+          });
+        }
+      });
+
+      // chassis validation
+      $("#chassis").on('change', function() {
+        var chassis = $(this).val();
+
+        $('#span_chassis').html('');
+        $('#submit-btn').removeAttr('disabled');
+
+        if (rc_no) {
+          $.ajax({
+            type: 'POST',
+            url: 'validate_chassis',
+            data: {
+              chassis: chassis
+            },
+            success: function(response) {
+              if (response == '1') {
+                $('#span_chassis').html('Chassis number already added !!');
+                $('#submit-btn').attr('disabled', 'disabled');
+              }
+            }
+          });
+        }
+      });
+
+      // engine validation
+      $("#engine").on('change', function() {
+        var engine = $(this).val();
+
+        $('#span_engine').html('');
+        $('#submit-btn').removeAttr('disabled');
+
+        if (rc_no) {
+          $.ajax({
+            type: 'POST',
+            url: 'validate_engine',
+            data: {
+              engine: engine
+            },
+            success: function(response) {
+              if (response == '1') {
+                $('#span_engine').html('Engine number already added !!');
+                $('#submit-btn').attr('disabled', 'disabled');
+              }
+            }
+          });
+        }
+      });
+
     });
 
     $.radio = function(str) {
       if (str == 'onhire') {
         $('.onhire').show();
         $('#vendor_id').attr('required', 'required');
+        $('#chassis').removeAttr('required');
+        $('#engine').removeAttr('required');
+        $('.cm').html('');
+        $('.em').html('');
+        $('.tyre').removeAttr('required');
       } else {
         $('.onhire').hide();
         $('#vendor_id').removeAttr('required');
+        $('#chassis').attr('required', 'required');
+        $('#engine').attr('required', 'required');
+        $('.cm').html('*');
+        $('.em').html('*');
+        $('.tyre').attr('required', 'required');
       }
     }
 

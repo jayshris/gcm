@@ -56,7 +56,9 @@ class Kyc extends BaseController
 
     public function create()
     {
-        $this->view['gen_links'] = $this->KLModel->orderBy('id', 'desc')->findAll(50);
+        $this->view['gen_links'] = $this->KLModel->select('kyc_links.*, users.first_name, users.last_name')
+            ->join('users', 'users.id = kyc_links.gen_by')
+            ->orderBy('kyc_links.id', 'desc')->findAll(50);
 
         return view('KYC/kyc_link_gen', $this->view);
     }
@@ -137,48 +139,50 @@ class Kyc extends BaseController
                     $party_id = $partyModel->getInsertID();
 
                     // save party documents
-                    foreach ($this->request->getVar('flag_id') as $flag) {
+                    $flags = ($this->request->getVar('flag_id')) ? $this->request->getVar('flag_id') : [];
+                    if (!empty($flags)) {
+                        foreach ($flags as $flag) {
 
-                        $img1 = '';
-                        if ($_FILES['img_' . $flag . '_1']['name'] != '') {
+                            $img1 = '';
+                            if ($_FILES['img_' . $flag . '_1']['name'] != '') {
 
-                            $image = $this->request->getFile('img_' . $flag . '_1');
-                            if ($image->isValid() && !$image->hasMoved()) {
-                                $newName1 = $image->getRandomName();
-                                $imgpath = 'public/uploads/partyDocs';
-                                if (!is_dir($imgpath)) {
-                                    mkdir($imgpath, 0777, true);
+                                $image = $this->request->getFile('img_' . $flag . '_1');
+                                if ($image->isValid() && !$image->hasMoved()) {
+                                    $newName1 = $image->getRandomName();
+                                    $imgpath = 'public/uploads/partyDocs';
+                                    if (!is_dir($imgpath)) {
+                                        mkdir($imgpath, 0777, true);
+                                    }
+                                    $image->move($imgpath, $newName1);
                                 }
-                                $image->move($imgpath, $newName1);
+                                $img1 = $newName1;
                             }
-                            $img1 = $newName1;
-                        }
 
-                        $img2 = '';
-                        if ($_FILES['img_' . $flag . '_2']['name'] != '') {
+                            $img2 = '';
+                            if ($_FILES['img_' . $flag . '_2']['name'] != '') {
 
-                            $image = $this->request->getFile('img_' . $flag . '_2');
-                            if ($image->isValid() && !$image->hasMoved()) {
-                                $newName2 = $image->getRandomName();
-                                $imgpath = 'public/uploads/partyDocs';
-                                if (!is_dir($imgpath)) {
-                                    mkdir($imgpath, 0777, true);
+                                $image = $this->request->getFile('img_' . $flag . '_2');
+                                if ($image->isValid() && !$image->hasMoved()) {
+                                    $newName2 = $image->getRandomName();
+                                    $imgpath = 'public/uploads/partyDocs';
+                                    if (!is_dir($imgpath)) {
+                                        mkdir($imgpath, 0777, true);
+                                    }
+                                    $image->move($imgpath, $newName2);
                                 }
-                                $image->move($imgpath, $newName2);
+                                $img2 = $newName2;
                             }
-                            $img2 = $newName2;
-                        }
 
-                        $docarr = [
-                            'party_id' => $party_id,
-                            'flag_id' => $flag,
-                            'number' => $this->request->getVar('number_' . $flag),
-                            'img1' => $img1,
-                            'img2' => $img2
-                        ];
-                        $partyDocModel->save($docarr);
+                            $docarr = [
+                                'party_id' => $party_id,
+                                'flag_id' => $flag,
+                                'number' => $this->request->getVar('number_' . $flag),
+                                'img1' => $img1,
+                                'img2' => $img2
+                            ];
+                            $partyDocModel->save($docarr);
+                        }
                     }
-
 
                     // add customer
                     $CModel->save([
@@ -396,52 +400,55 @@ class Kyc extends BaseController
 
 
                 // save party documents
-                foreach ($this->request->getVar('flag_id') as $flag) {
+                $flags = ($this->request->getVar('flag_id')) ? $this->request->getVar('flag_id') : [];
+                if (!empty($flags)) {
+                    foreach ($flags as $flag) {
 
-                    $img1 = '';
-                    if ($_FILES['img_' . $flag . '_1']['name'] != '') {
+                        $img1 = '';
+                        if ($_FILES['img_' . $flag . '_1']['name'] != '') {
 
-                        $image = $this->request->getFile('img_' . $flag . '_1');
-                        if ($image->isValid() && !$image->hasMoved()) {
-                            $newName1 = $image->getRandomName();
-                            $imgpath = 'public/uploads/partyDocs';
-                            if (!is_dir($imgpath)) {
-                                mkdir($imgpath, 0777, true);
+                            $image = $this->request->getFile('img_' . $flag . '_1');
+                            if ($image->isValid() && !$image->hasMoved()) {
+                                $newName1 = $image->getRandomName();
+                                $imgpath = 'public/uploads/partyDocs';
+                                if (!is_dir($imgpath)) {
+                                    mkdir($imgpath, 0777, true);
+                                }
+                                $image->move($imgpath, $newName1);
                             }
-                            $image->move($imgpath, $newName1);
+                            $img1 = $newName1;
+                        } else {
+                            $img1 = $PartyDocModel->where(['party_id' => $id, 'flag_id' => $flag])->first()['img1'];
                         }
-                        $img1 = $newName1;
-                    } else {
-                        $img1 = $PartyDocModel->where(['party_id' => $id, 'flag_id' => $flag])->first()['img1'];
-                    }
 
-                    $img2 = '';
-                    if ($_FILES['img_' . $flag . '_2']['name'] != '') {
+                        $img2 = '';
+                        if ($_FILES['img_' . $flag . '_2']['name'] != '') {
 
-                        $image = $this->request->getFile('img_' . $flag . '_2');
-                        if ($image->isValid() && !$image->hasMoved()) {
-                            $newName2 = $image->getRandomName();
-                            $imgpath = 'public/uploads/partyDocs';
-                            if (!is_dir($imgpath)) {
-                                mkdir($imgpath, 0777, true);
+                            $image = $this->request->getFile('img_' . $flag . '_2');
+                            if ($image->isValid() && !$image->hasMoved()) {
+                                $newName2 = $image->getRandomName();
+                                $imgpath = 'public/uploads/partyDocs';
+                                if (!is_dir($imgpath)) {
+                                    mkdir($imgpath, 0777, true);
+                                }
+                                $image->move($imgpath, $newName2);
                             }
-                            $image->move($imgpath, $newName2);
+                            $img2 = $newName2;
+                        } else {
+                            $img2 = $PartyDocModel->where(['party_id' => $id, 'flag_id' => $flag])->first()['img2'];
                         }
-                        $img2 = $newName2;
-                    } else {
-                        $img2 = $PartyDocModel->where(['party_id' => $id, 'flag_id' => $flag])->first()['img2'];
+
+                        $PartyDocModel->where('party_id', $id)->where('flag_id', $flag)->delete();
+
+                        $docarr = [
+                            'party_id' => $id,
+                            'flag_id' => $flag,
+                            'number' => $this->request->getVar('number_' . $flag),
+                            'img1' => $img1,
+                            'img2' => $img2
+                        ];
+                        $PartyDocModel->save($docarr);
                     }
-
-                    $PartyDocModel->where('party_id', $id)->where('flag_id', $flag)->delete();
-
-                    $docarr = [
-                        'party_id' => $id,
-                        'flag_id' => $flag,
-                        'number' => $this->request->getVar('number_' . $flag),
-                        'img1' => $img1,
-                        'img2' => $img2
-                    ];
-                    $PartyDocModel->save($docarr);
                 }
 
                 // update customer details

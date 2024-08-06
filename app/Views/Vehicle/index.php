@@ -95,10 +95,7 @@
                         <th>Action</th>
                         <th>Vehicle Owner</th>
                         <th>Vehicle Type</th>
-                        <th>Vehicle Model</th>
                         <th>RC No</th>
-                        <th>Chassis No</th>
-                        <th>Engine No</th>
                         <th>Status</th>
                         <th>Working Status</th>
                       </tr>
@@ -160,10 +157,7 @@
                                     <td>' . makeListActions($currentController, $Action, $row['id'], 2) . '</td>
                                     <td>' . ucwords($row["owner"]) . '</td>
                                     <td>' . ucwords($row["vehiclename"]) . '</td>
-                                    <td>' . ucwords($row["model_no"]) . '</td>
                                     <td>' . ucwords($row["rc_number"]) . '</td>
-                                    <td>' . ucwords($row["chassis_number"]) . '</td>
-                                    <td>' . ucwords($row["engine_number"]) . '</td>
                                     <td>' . $status . '</td>
                                     <td>' . $ws . '</td>
                                 </tr>';

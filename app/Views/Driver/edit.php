@@ -80,7 +80,7 @@
                                   <?php
                                   foreach ($foreman as $fm) {
                                   ?>
-                                    <option value="<?php echo $fm["party_id"] ?>" <?= $driver_data['foreman_id'] == $fm['id'] ? 'selected' : '' ?>><?php echo $fm['party_name'] ?></option>
+                                    <option value="<?php echo $fm["id"] ?>" <?= $driver_data['foreman_id'] == $fm['id'] ? 'selected' : '' ?>><?php echo $fm['party_name'] ?></option>
                                   <?php
                                   }
                                   ?>
@@ -150,10 +150,17 @@
                               </div>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                               <div class="form-wrap">
                                 <label class="col-form-label">Driving Licence Expiry Date <span class="text-danger">*</span></label>
                                 <input type="date" name="dl_expiry" min="<?= date('Y-m-d') ?>" value="<?= $driver_data['dl_expiry'] ?>" class="form-control" required>
+                              </div>
+                            </div>
+
+                            <div class="col-md-3">
+                              <div class="form-wrap">
+                                <label class="col-form-label">Driving Licence DOB <span class="text-danger">*</span></label>
+                                <input type="date" name="dl_dob" class="form-control" value="<?= $driver_data['dl_dob'] ?>" required>
                               </div>
                             </div>
 
@@ -306,10 +313,10 @@
                                       }
                                     }
                                 ?>
-                                    <input class="form-check-input" type="checkbox" name="vehicle_types[]" id="id_<?php echo $type["id"]; ?>" value="<?php echo $type["id"]; ?>" <?php if (in_array($type['id'], $vehicletypesitem)) {
-                                                                                                                                                                                    echo "checked";
-                                                                                                                                                                                  }
-                                                                                                                                                                                  ?>><label for="id_<?php echo $type["id"]; ?>" class="col-form-label" style=" margin: 0px 20px 0px 3px;">
+                                    <input class="form-check-input chk" type="checkbox" name="vehicle_types[]" id="id_<?php echo $type["id"]; ?>" value="<?php echo $type["id"]; ?>" <?php if (in_array($type['id'], $vehicletypesitem)) {
+                                                                                                                                                                                        echo "checked";
+                                                                                                                                                                                      }
+                                                                                                                                                                                      ?>><label for="id_<?php echo $type["id"]; ?>" class="col-form-label" style=" margin: 0px 20px 0px 3px;">
                                       <?php echo ucwords($type["name"]); ?></label>
                                 <?php
                                   }
@@ -325,7 +332,7 @@
                               <div class="form-wrap">
                                 <label class="col-form-label">Scheme <span class="text-danger">*</span></label>
                                 <select class="dropdown form-control" name="scheme_id" required>
-                                  <option>Select Scheme</option>
+                                  <option value="">Select Scheme</option>
                                   <?php
                                   if (isset($schemes)) {
                                     foreach ($schemes as $row) { ?>
@@ -395,6 +402,18 @@
           });
         }
       });
+
+
+      $(".chk").on('change', function() {
+        if ($('.chk:checked').length > 0) {
+          console.log('yes');
+          $('.chk').removeAttr('required');
+        } else {
+          console.log('no');
+          $('.chk').attr('required', 'required');
+        }
+      })
+
     });
   </script>
 </body>

@@ -31,8 +31,8 @@
                           </div>
 
                           <div class="profile-details">
-                            <div class="row"> 
-                              <div class="col-md-6">
+                            <div class="row">
+                              <div class="col-md-4">
                                 <div class="form-wrap">
                                   <label class="col-form-label">Company Name <span class="text-danger">*</span></label>
                                   <select class="select" id="company" name="company_name" required>
@@ -48,13 +48,26 @@
                                 </div>
                               </div>
 
-                              <div class="col-md-6">
+                              <div class="col-md-4">
                                 <div class="form-wrap"><label class="col-form-label">Office Location <span class="text-danger">*</span></label>
                                   <select class="select" id="office_location" name="office_location" required>
                                     <option value="">Select Location</option>
                                   </select><?php if ($validation->getError('office_location')) {
                                               echo '<div class="alert alert-danger mt-2">' . $validation->getError('office_location') . '</div>';
                                             } ?>
+                                </div>
+                              </div>
+
+                              <div class="col-md-4">
+                                <div class="form-wrap"><label class="col-form-label">Department <span class="text-danger">*</span></label>
+                                  <select class="select" id="dept_id" name="dept_id" required>
+                                    <option value="">Select Department</option>
+                                    <?php
+                                    foreach ($departments as $row) {
+                                      echo '<option value="' . $row["id"] . '" "' . set_select('dept_id', $row['id']) . '">' . $row["dept_name"] . '</option>';
+                                    }
+                                    ?>
+                                  </select>
                                 </div>
                               </div>
 
@@ -78,7 +91,7 @@
 
                               <div class="col-md-3">
                                 <div class="form-wrap"><label class="col-form-label">Alternate Mobile No</label>
-                                  <input class="form-control" name="alternate_mobile" type="number" title="Mobile number must be a 10-digit number" maxlength="10" oninput="validateMobile(event)" value="<?= set_value('alternate_mobile') ?>" >
+                                  <input class="form-control" name="alternate_mobile" type="number" title="Mobile number must be a 10-digit number" maxlength="10" oninput="validateMobile(event)" value="<?= set_value('alternate_mobile') ?>">
                                   <?php if ($validation->getError('alternate_mobile')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('alternate_mobile') . '</div>';
                                   } ?>
@@ -94,7 +107,8 @@
                                   } ?>
                                 </div>
                               </div>
-                              <br><hr><br>
+                              <br>
+                              <hr><br>
 
                               <div class="col-md-4">
                                 <div class="form-wrap">
@@ -133,7 +147,7 @@
                                 <div class="form-wrap">
                                   <label class="col-form-label">IT PAN Number</label>
                                   <input class="form-control" name="it_pan_card" title="IT PAN Number" value="<?= set_value('it_pan_card') ?>" style="text-transform:uppercase">
-                                   <?php if ($validation->getError('it_pan_card')) {
+                                  <?php if ($validation->getError('it_pan_card')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('it_pan_card') . '</div>';
                                   } ?>
                                 </div>
@@ -142,7 +156,7 @@
                               <div class="col-md-4">
                                 <div class="form-wrap">
                                   <label class="col-form-label">Image - Front</label>
-                                  <input class="form-control" name="image_front" type="file" >
+                                  <input class="form-control" name="image_front" type="file">
                                   <p style="color:#00f"><em>(jpg,jpeg,png,pdf)</em></p>
                                   <?php if ($validation->getError('image_front')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('image_front') . '</div>';
@@ -153,21 +167,22 @@
                               <div class="col-md-4">
                                 <div class="form-wrap">
                                   <label class="col-form-label">Image - Back<span class="text-danger"></span></label>
-                                  <input class="form-control" name="image_back" type="file" >
+                                  <input class="form-control" name="image_back" type="file">
                                   <p style="color:#00f"><em>(jpg,jpeg,png,pdf)</em></p>
                                   <?php if ($validation->getError('image_back')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('image_back') . '</div>';
                                   } ?>
                                 </div>
                               </div>
-                              <br><hr><br>
+                              <br>
+                              <hr><br>
 
                               <!-- current Address start -->
                               <div class="col-md-12">
                                 <div class="form-wrap">
                                   <label class="col-form-label">Current Address</label>
-                                  <input type="text" class="form-control" name="current_address"  value="<?= set_value('current_address') ?>" > 
-                                   <?php if ($validation->getError('current_address')) {
+                                  <input type="text" class="form-control" name="current_address" id="address" value="<?= set_value('current_address') ?>">
+                                  <?php if ($validation->getError('current_address')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('current_address') . '</div>';
                                   } ?>
                                 </div>
@@ -175,17 +190,17 @@
                               <div class="col-md-4">
                                 <div class="form-wrap">
                                   <label class="col-form-label">City</label>
-                                  <input class="form-control" name="current_city" type="text">
-                                   <?php if ($validation->getError('current_city')) {
+                                  <input class="form-control" name="current_city" id="city" type="text">
+                                  <?php if ($validation->getError('current_city')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('current_city') . '</div>';
                                   } ?>
                                 </div>
                               </div>
                               <div class="col-md-4">
                                 <div class="form-wrap">
-                                  <label class="col-form-label">State</label> 
+                                  <label class="col-form-label">State</label>
                                   <br>
-                                  <select class="dropdown" name="current_state">
+                                  <select class="form-select" name="current_state" id="state">
                                     <option>Select</option>
                                     <?php
                                     if (isset($state)) {
@@ -196,7 +211,7 @@
                                     }
                                     ?>
                                   </select>
-                                   <?php if ($validation->getError('current_state')) {
+                                  <?php if ($validation->getError('current_state')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('current_state') . '</div>';
                                   } ?>
                                 </div>
@@ -204,21 +219,26 @@
                               <div class="col-md-4">
                                 <div class="form-wrap">
                                   <label class="col-form-label">Pincode</label>
-                                  <input class="form-control" name="current_pincode" type="text">
-                                   <?php if ($validation->getError('current_pincode')) {
+                                  <input class="form-control" name="current_pincode" id="zip" type="text">
+                                  <?php if ($validation->getError('current_pincode')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('current_pincode') . '</div>';
                                   } ?>
                                 </div>
                               </div>
                               <!-- current Address end -->
-                              <br><hr><br>
+                              <br>
+                              <hr><br>
 
-                               <!-- permanent Address start -->
-                               <div class="col-md-12">
+                              <div class="form-wrap">
+                                <input class="form-check-input" type="checkbox" id="copy_address">&nbsp; same as above
+                              </div>
+
+                              <!-- permanent Address start -->
+                              <div class="col-md-12">
                                 <div class="form-wrap">
-                                  <label class="col-form-label">Permanent Address</label> 
-                                  <input type="text" class="form-control" name="permanent_address"  value="<?= set_value('permanent_address') ?>" > 
-                                   <?php if ($validation->getError('permanent_address')) {
+                                  <label class="col-form-label">Permanent Address</label>
+                                  <input type="text" class="form-control" name="permanent_address" id="address_p" value="<?= set_value('permanent_address') ?>">
+                                  <?php if ($validation->getError('permanent_address')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('permanent_address') . '</div>';
                                   } ?>
                                 </div>
@@ -226,8 +246,8 @@
                               <div class="col-md-3">
                                 <div class="form-wrap">
                                   <label class="col-form-label">City</label>
-                                  <input class="form-control" name="permanent_city" type="text">
-                                   <?php if ($validation->getError('permanent_city')) {
+                                  <input class="form-control" name="permanent_city" id="city_p" type="text">
+                                  <?php if ($validation->getError('permanent_city')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('permanent_city') . '</div>';
                                   } ?>
                                 </div>
@@ -236,29 +256,29 @@
                                 <div class="form-wrap">
                                   <label class="col-form-label">State</label>
                                   <br>
-                                  <select class="dropdown" name="permanent_state">
-																	<option>Select</option>
-																	<?php
-																	if (isset($state)) {
-																		foreach ($state as $row) { ?>
-																			<option value="<?php echo $row["state_id"] ?>"><?php echo $row["state_name"] ?></option>
-																	<?php
-																		}
-																	}
-																	?>
-																</select>
-																<?php
-																if ($validation->getError('permanent_state')) {
-																	echo '<div class="alert alert-danger mt-2">' . $validation->getError('permanent_state') . '</div>';
-																}
-																?>
+                                  <select class="form-select" name="permanent_state" id="state_p">
+                                    <option>Select</option>
+                                    <?php
+                                    if (isset($state)) {
+                                      foreach ($state as $row) { ?>
+                                        <option value="<?php echo $row["state_id"] ?>"><?php echo $row["state_name"] ?></option>
+                                    <?php
+                                      }
+                                    }
+                                    ?>
+                                  </select>
+                                  <?php
+                                  if ($validation->getError('permanent_state')) {
+                                    echo '<div class="alert alert-danger mt-2">' . $validation->getError('permanent_state') . '</div>';
+                                  }
+                                  ?>
                                 </div>
                               </div>
                               <div class="col-md-2">
                                 <div class="form-wrap">
                                   <label class="col-form-label">Pincode</label>
-                                  <input class="form-control" name="permanent_pincode" type="text">
-                                   <?php if ($validation->getError('permanent_pincode')) {
+                                  <input class="form-control" name="permanent_pincode" id="zip_p" type="text">
+                                  <?php if ($validation->getError('permanent_pincode')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('permanent_pincode') . '</div>';
                                   } ?>
                                 </div>
@@ -266,8 +286,8 @@
                               <div class="col-md-3">
                                 <div class="form-wrap">
                                   <label class="col-form-label">Phone</label>
-                                  <input class="form-control" name="permanent_phone" maxlength="10"  type="text">
-                                   <?php if ($validation->getError('permanent_phone')) {
+                                  <input class="form-control" name="permanent_phone" maxlength="10" type="text">
+                                  <?php if ($validation->getError('permanent_phone')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('permanent_phone') . '</div>';
                                   } ?>
                                 </div>
@@ -276,7 +296,8 @@
 
                               <!-- Added 19-7-24 end -->
 
-                              <br><hr><br>
+                              <br>
+                              <hr><br>
 
                               <div class="col-md-3">
                                 <div class="form-wrap">
@@ -307,8 +328,9 @@
                                   } ?>
                                 </div>
                               </div>
-                              
-                              <br><hr><br>
+
+                              <br>
+                              <hr><br>
 
                               <div class="col-md-6">
                                 <div class="form-wrap">
@@ -365,7 +387,7 @@
                               <div class="col-md-6">
                                 <div class="form-wrap">
                                   <label class="col-form-label">Profile Image 2</label>
-                                  <input class="form-control" name="image2" type="file"  accept="image/*">
+                                  <input class="form-control" name="image2" type="file" accept="image/*">
                                   <p style="color:#00f"><em>(jpg,jpeg,png,pdf)</em></p>
                                   <?php if ($validation->getError('image2')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('image2') . '</div>';
@@ -452,6 +474,23 @@
             }
           })
         })
+
+        $('#copy_address').change(function() {
+          if ($(this).is(':checked')) {
+
+            $('#address_p').val($('#address').val());
+            $('#whatsapp_p').val($('#whatsapp').val());
+            $('#city_p').val($('#city').val());
+            $('#state_p').val($('#state').val());
+            $('#zip_p').val($('#zip').val());
+          } else {
+            $('#address_p').val('');
+            $('#whatsapp_p').val('');
+            $('#city_p').val('');
+            $('#state_p').val('');
+            $('#zip_p').val('');
+          }
+        });
       })
     </script>
   </body>
