@@ -225,9 +225,11 @@
                               <label class="col-form-label">Bill To<span class="text-danger">*</span></label>
                               <select class="form-select select2" required name="bill_to" aria-label="Default select example" onchange="">
                                 <option value="">Select Cutomer</option>
-                                <?php foreach ($customers as $c) {
-                                  echo '<option value="' . $c['id'] . '">' . $c['party_name'] . '</option>';
-                                } ?>
+                                <?php 
+                                $customer_id = isset($booking_details['customer_id']) && ($booking_details['customer_id']>0) ?  $booking_details['customer_id'] : 0;
+                                foreach ($customers as $c) { ?>
+                                  <option value="<?= $c['id'] ?>" <?= ($customer_id==$c['id']) ? 'selected' : '' ?>><?= $c['party_name'] ?></option>
+                                <?php } ?>
                               </select>
                               <?php
                               if ($validation->getError('bill_to')) {

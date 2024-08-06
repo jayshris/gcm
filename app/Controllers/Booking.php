@@ -160,7 +160,7 @@ class Booking extends BaseController
                         ->join('party', 'party.id = customer.party_id')
                         ->where('b.id', $booking_id) 
                         ->first();
-
+                        $this->view['booking_details'] = $this->BModel->where('id',$booking_id)->first();
                         $this->view['booking_number'] =$booking_number;
                         $this->view['booking_type'] =$post['booking_type'];
                         $this->view['booking_id'] = $booking_id;
@@ -175,7 +175,7 @@ class Booking extends BaseController
                         ];
                         $this->BookingLinkModel->save($generate_link_data);
                         $this->session->setFlashdata('success', 'Booking link generated successfully');
-                        return $this->response->redirect(base_url('booking'));
+                        return $this->response->redirect(base_url('bookinglinks'));
                         
                     }else{
                         $this->session->setFlashdata('success', 'Booking Successfully Added');
@@ -481,7 +481,7 @@ class Booking extends BaseController
         $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
 
         $this->view['vehicle_types'] = $this->VTModel->where('status', 'Active')->findAll();
-        $this->view['employees'] = $this->user->where('usertype', 'employee')->where('status', 'active')->findall();
+        $this->view['employees'] = $this->EmployeeModel->whereIN('dept_id', [1,2])->where('status', 1)->findall();
         $this->view['states'] =  $this->SModel->orderBy('state_name', 'asc')->findAll();
 
         $this->view['customers'] = $this->CModel->select('customer.*, party.party_name')
@@ -755,14 +755,20 @@ class Booking extends BaseController
 
         //change sstatus of driver and vehicle too
 
-        if ($booking_details['status'] >= '5') {
-            $this->session->setFlashdata('danger', 'Booking Cancellation Not Allowed As Trip Has Started');
-            return $this->response->redirect(base_url('booking'));
+        if ($booking_details['status'] >= 5) {
+            if($booking_details['status'] == 14){
+                $this->session->setFlashdata('danger', 'Booking approval is already send for Cancellation');
+                return $this->response->redirect(base_url('booking'));
+            }else{
+                $this->session->setFlashdata('danger', 'Booking Cancellation Not Allowed As Trip Has Started');
+                return $this->response->redirect(base_url('booking'));
+            }
+            
         } else {
             //send notfication 
             $this->sendNotification($booking_details);
             $this->BModel->update($id, ['status' => '14']);
-            $this->session->setFlashdata('sucess', 'Approval is send for Cancellation');
+            $this->session->setFlashdata('success', 'Approval is send for Cancellation');
             return $this->response->redirect(base_url('booking'));
         }
     }
@@ -775,10 +781,33 @@ class Booking extends BaseController
         ]); 
     }
 
-    public function edit($id){
+    public function edit($id, $token = ''){
+        //Check booking link validation
+        if($token){
+            $id = base64_decode(str_replace(['-','_'], ['+','/'], $id)); 
+           // echo $decode_id;exit;
+
+             // validate token and validity
+            $link_data = $this->BookingLinkModel->where('token', $token)->first();
+            if($link_data){
+                $dateProvided = $link_data['gen_date'];
+                $dateProvidedTimestamp = strtotime($dateProvided) + (24 * 60 * 60);
+                $currentDateTimestamp = time();
+                if ($link_data['link_used'] != 0) {
+                    $this->session->setFlashdata('danger', 'Your Booking details is already submitted,  Please Contact The Administrator');
+                    return $this->response->redirect(base_url('bookinglinks'));
+                } else if ($dateProvidedTimestamp < $currentDateTimestamp) {
+                    $this->session->setFlashdata('danger', 'This Link Has Expired,  Please Contact The Administrator');
+                    return $this->response->redirect(base_url('bookinglinks'));
+                } 
+            }else {
+                $this->session->setFlashdata('danger', 'Invalid Booking Link, Please Contact The Administrator');
+                return $this->response->redirect(base_url('bookinglinks'));
+            }
+        }
         if ($this->request->getPost()) {
             $post = $this->request->getPost();
-            // echo '<pre>';print_r($post);//exit;     
+            // echo $id.$token.'<pre>';print_r($post);exit;     
             //validation for booking details
             $error = $this->validate([
                 'pickup_state_id' =>  'required',
@@ -795,8 +824,9 @@ class Booking extends BaseController
                 // echo 'error <pre>';print_r($error);exit;
                 $this->view['error']   = $this->validator;
             } else {
-                echo 'post <pre>';print_r($post);//exit;
-                $id =  $this->request->getPost('id');
+                
+                // $id =  $this->request->getPost('id');
+                // echo $id.$token.'<pre>';print_r($post);exit;     
                 $isVehicle = $this->BModel->where('id', $id)->first()['vehicle_id'] > 0 ? true : false;
                 $bookingData = [     
                     'pickup_date' => $this->request->getPost('pickup_date'),
@@ -822,24 +852,38 @@ class Booking extends BaseController
 
                 // save pickups
                 $bpdata= [ 
-                'sequence' => $this->request->getPost('pickup_seq'),
-                'city' => $this->request->getPost('pickup_city'),
-                'state' => $this->request->getPost('pickup_state_id'),
-                'pincode' => $this->request->getPost('pickup_pin'),
-                'city_id' => $this->request->getPost('pickup_city_id'),
+                    'booking_id' =>$id,
+                    'sequence' => $this->request->getPost('pickup_seq'),
+                    'city' => $this->request->getPost('pickup_city'),
+                    'state' => $this->request->getPost('pickup_state_id'),
+                    'pincode' => $this->request->getPost('pickup_pin'),
+                    'city_id' => $this->request->getPost('pickup_city_id'),
                 ]; 
-                $this->BPModel->set($bpdata)->where('booking_id', $id)->update();
-
+                //if not exist then insert otherwise update
+                $isbpdata = $this->BPModel->where('booking_id', $id)->first();
+                if(empty($isbpdata)){
+                    $this->BPModel->insert($bpdata);
+                }else{
+                    $this->BPModel->set($bpdata)->where('id', $isbpdata['id'])->update();
+                }
+                // echo $id.$token.'<pre>';print_r($bpdata);exit;     
                 // save drops 
                 $bddata = [ 
-                'sequence' => $this->request->getPost('drop_seq'),
-                'city' => $this->request->getPost('drop_city'),
-                'state' => $this->request->getPost('drop_state_id'),
-                'pincode' => $this->request->getPost('drop_pin'),
-                'city_id' => $this->request->getPost('drop_city_id'),
-                ];
-                $this->BDModel->set($bddata)->where('booking_id', $id)->update();
+                    'booking_id' =>$id,
+                    'sequence' => $this->request->getPost('drop_seq'),
+                    'city' => $this->request->getPost('drop_city'),
+                    'state' => $this->request->getPost('drop_state_id'),
+                    'pincode' => $this->request->getPost('drop_pin'),
+                    'city_id' => $this->request->getPost('drop_city_id'),
+                ]; 
                 
+                $isbddata = $this->BDModel->where('booking_id', $id)->first();
+                if(empty($isbddata)){
+                    $this->BDModel->insert($bddata);
+                }else{
+                    $this->BDModel->set($bddata)->where('id', $isbddata['id'])->update();
+                }
+
                 // save expenses
                 foreach ($this->request->getPost('expense') as $key => $val) {
                     $expense_data = [
@@ -850,10 +894,19 @@ class Booking extends BaseController
                     ]; 
                     $this->BEModel->insert($expense_data);
                 }   
-                $this->session->setFlashdata('success', 'Booking Successfully Updated'); 
-                return $this->response->redirect(base_url('booking'));
+
+                if($token){
+                     // discard link
+                     $this->BookingLinkModel->set('link_used', '1')->where('token', $token)->update();
+                     $this->session->setFlashdata('success', 'Booking Details Successfully Updated'); 
+                     return $this->response->redirect(base_url('bookinglinks'));
+                }else{
+                    $this->session->setFlashdata('success', 'Booking Successfully Updated'); 
+                    return $this->response->redirect(base_url('booking'));
+                } 
             } 
         }
+        $this->view['booking_link_token'] = $token;
         $this->view['token'] = $id;
         $this->view['booking_details'] = $this->BModel->where('id', $id)->first();
         $this->view['booking_pickups'] = $this->BPModel->where('booking_id', $id)->first();
@@ -902,22 +955,24 @@ class Booking extends BaseController
     
     function preview($id){
         $this->view['token'] = $id;
-        $this->view['booking_details'] = $this->BModel->select('bookings.*,cb.office_name,e.name booking_by_name,vt.name vehicle_type_name,v.rc_number,p.party_name bill_to_party_name,party.party_name as customer')
+        $this->view['booking_details'] = $this->BModel->select('bookings.*,cb.office_name,cb.city cb_city,e.name booking_by_name,vt.name vehicle_type_name,v.rc_number,p.party_name bill_to_party_name,party.party_name as customer')
         ->join('vehicle v', 'v.id = bookings.vehicle_id','left')
         ->join('vehicle_type vt', 'vt.id = bookings.vehicle_type_id','left')
         ->join('employee e', 'e.id = bookings.booking_by','left')
         ->join('customer_branches cb', 'cb.id = bookings.customer_branch','left')
         ->join('customer c', 'c.id = bookings.bill_to_party','left')
-        ->join('party p', 'p.id = c.party_id')
+        ->join('party p', 'p.id = c.party_id','left')
         ->join('customer cust', 'cust.id = bookings.customer_id','left')
-        ->join('party', 'party.id = cust.party_id')
+        ->join('party', 'party.id = cust.party_id','left')
         ->where('bookings.id', $id)->first();
-   
+        // echo '  <pre>';print_r($this->view['booking_details'] );exit;  
         
         $this->view['booking_pickups'] = $this->BPModel->where('booking_id', $id)->first();
         $this->view['booking_drops'] = $this->BDModel->where('booking_id', $id)->first();
-        $this->view['booking_pickups_state'] =  $this->SModel->where('state_id', $this->view['booking_pickups']['state'])->first();
-        $this->view['booking_drops_state'] =  $this->SModel->where('state_id', $this->view['booking_drops']['state'])->first(); 
+        $pickup_state = isset($this->view['booking_pickups']['state']) ? $this->view['booking_pickups']['state'] : 0;
+        $drop_state = isset($this->view['booking_drops']['state']) ? $this->view['booking_drops']['state'] : 0;
+        $this->view['booking_pickups_state'] = ($pickup_state>0) ? $this->SModel->where('state_id', $pickup_state)->first() : [];
+        $this->view['booking_drops_state'] =  ($drop_state>0) ? $this->SModel->where('state_id', $drop_state)->first() : []; 
         
         $this->view['booking_expences'] = $this->BEModel->select('eh.id eh_id,eh.*,booking_expenses.*')
         ->join('expense_heads eh','eh.id= booking_expenses.expense')
@@ -929,7 +984,7 @@ class Booking extends BaseController
       
         return view('Booking/preview', $this->view); 
     }
-
+    
     public function approval_for_cancellation($id)
     { 
         $booking_details =  $this->BModel->where('id', $id)->first();
@@ -964,9 +1019,11 @@ class Booking extends BaseController
                 ]; 
                 $this->BEModel->insert($expense_data);
             }    
-
-            $this->session->setFlashdata('success', 'Booking is approved for cancellation Successfully');
-
+            if($this->request->getPost('approval_for_cancellation')){
+                $this->session->setFlashdata('success', 'Booking is approved for cancellation Successfully');
+            }else{
+                $this->session->setFlashdata('success', 'Booking is updated');
+            }    
             return $this->response->redirect(base_url('booking'));
         }
 
@@ -976,7 +1033,7 @@ class Booking extends BaseController
         $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
 
         $this->view['vehicle_types'] = $this->VTModel->where('status', 'Active')->findAll();
-        $this->view['employees'] = $this->user->where('usertype', 'employee')->where('status', 'active')->findall();
+        $this->view['employees'] = $this->EmployeeModel->whereIN('dept_id', [1,2])->where('status', 1)->findall();
         $this->view['states'] =  $this->SModel->orderBy('state_name', 'asc')->findAll();
 
         $this->view['customers'] = $this->CModel->select('customer.*, party.party_name')

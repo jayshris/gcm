@@ -218,7 +218,7 @@
                               <select class="form-select" required name="booking_by" disabled aria-label="Default select example" onchange="">
                                 <option value="">Select Employee</option>
                                 <?php foreach ($employees as $e) {
-                                  echo '<option value="' . $e['id'] . '"  ' . ($booking_details['booking_by'] == $e['id'] ? 'selected' : '') . '>' . $e['first_name'] . ' ' . $e['last_name'] . '</option>';
+                                  echo '<option value="' . $e['id'] . '"  ' . ($booking_details['booking_by'] == $e['id'] ? 'selected' : '') . '>' . $e['name'] . '</option>';
                                 } ?>
                               </select>
                             </div>

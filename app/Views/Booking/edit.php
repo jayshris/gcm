@@ -31,8 +31,15 @@
                 <div class="card">
                   <div class="card-body">
                     <div class="settings-form">
- 
-                      <?php echo form_open_multipart(base_url().$currentController.'/'.$currentMethod.(($token>0) ? '/'.$token : ''), ['name'=>'actionForm', 'id'=>'actionForm']);?>
+                      <?php 
+                      if($booking_link_token){
+                        $encode_url_id = str_replace(['+','/','=','%'], ['-','_','',''],base64_encode($token));
+                        echo form_open_multipart(base_url().$currentController.'/'.$currentMethod.'/'.$encode_url_id.'/'.$booking_link_token, ['name'=>'actionForm', 'id'=>'actionForm']);
+                      }else{
+                        echo form_open_multipart(base_url().$currentController.'/'.$currentMethod.(($token>0) ? '/'.$token : ''), ['name'=>'actionForm', 'id'=>'actionForm']);
+                      } 
+                      
+                      ?>
                         <div class="settings-sub-header">
                           <h6>Edit Booking</h6>
                         </div>
