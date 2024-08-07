@@ -54,25 +54,54 @@
 
 	<script>
 		$.getBookingDetails = function() {
+			$("#transporter_bilti_no_span").attr('hidden','hidden');
+			$("#e_way_bill_no_span").attr('hidden','hidden');
+			$("#transporter_bilti_no").attr('readonly','readonly');
+			$("#transporter_bilti_no").removeAttr('required','required');
+			$("#e_way_bill_no").attr('readonly','readonly');
+			$("#e_way_bill_no").removeAttr('required','required');
+			$("#transporter_bilti_no").val('');
+			$("#e_way_bill_no").val('');
 			var booking_id = $('#booking_id').val();
-
-			$.ajax({
-				method: "POST",
-				url: '<?php echo base_url('loadingreceipt/getBookingDetails') ?>',
-				data: {
-					booking_id: booking_id
-				},
-				dataType: "json",
-				success: function(res) { 
-					$("#office_id").val(res.office_id).attr("selected","selected").trigger('change').attr('disabled','disabled');
-					$("#booking_date").val(res.booking_date).attr('disabled','disabled');
-					$("#vehicle_number").val(res.vehicle_id).trigger('change').attr('disabled','disabled');
-					$("#consignment_date").attr('min',res.booking_date);
-					$("#loading_station").val(res.bp_city);
-					$("#delivery_station").val(res.bp_city);
-					$("#charge_weight").val(res.guranteed_wt);
-				}
-			});
+			if(booking_id){
+				$.ajax({
+					method: "POST",
+					url: '<?php echo base_url('loadingreceipt/getBookingDetails') ?>',
+					data: {
+						booking_id: booking_id
+					},
+					dataType: "json",
+					success: function(res) { 
+						$("#office_id").val(res.office_id).attr("selected","selected").trigger('change').attr('disabled','disabled');
+						$("#booking_date").val(res.booking_date).attr('disabled','disabled');
+						$("#vehicle_number").val(res.vehicle_id);
+						$("#consignment_date").attr('min',res.booking_date);
+						$("#loading_station").val(res.bp_city);
+						$("#delivery_station").val(res.bp_city);
+						$("#charge_weight").val(res.guranteed_wt);
+						$("#customer_name").val(res.party_name);
+						// alert(res.is_lr_third_party );
+						if(res.is_lr_third_party > 0){
+							$("#transporter_bilti_no_span").removeAttr('hidden');
+							$("#e_way_bill_no_span").removeAttr('hidden');
+							$("#transporter_bilti_no").removeAttr('readonly');
+							$("#transporter_bilti_no").attr('required','required');
+							$("#e_way_bill_no").removeAttr('readonly');
+							$("#e_way_bill_no").attr('required','required');
+						} 
+					}
+				});
+			}else{
+				$("#office_id").val('').trigger('change').attr('disabled','disabled');
+				$("#booking_date").val('').attr('disabled','');
+				$("#vehicle_number").val('');
+				$("#consignment_date").attr('min','');
+				$("#loading_station").val('');
+				$("#delivery_station").val('');
+				$("#charge_weight").val('');
+				$("#customer_name").val('');
+			}
+			
 		}
 
 		$(document).ready(function() {
@@ -135,6 +164,30 @@
 			}
 		}
 		
+		$.getVehicleBookings = function() {
+			var vehicle_id = $('#vehicle_number').val();
+			
+			$.ajax({
+				method: "POST",
+				url: '<?php echo base_url('loadingreceipt/getVehicleBookings') ?>',
+				data: {
+					vehicle_id: vehicle_id
+				},
+				dataType: "json",
+				success: function(res) { 
+					console.log(res);
+					var html  ='<option value="">Select Booking</option>';
+					if(res){
+						$.each(res, function(i, item) { 
+							var selected = (i==0) ? 'selected' : '';
+							html += '<option value="'+item.id+'" "'+selected+'">'+item.booking_number+'</option>'
+						}); 
+					}
+					$('#booking_id').html(html);
+					$('#booking_id').val('').attr("selected","selected").trigger('change');   
+				}
+			});
+		}
 	</script>
 </body>
 

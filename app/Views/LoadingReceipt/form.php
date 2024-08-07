@@ -11,6 +11,21 @@
 <div class="profile-details">
     <div class="row g-3">
         <div class="col-md-4">
+            <label class="col-form-label">Vehicle Number</label> 
+            <select class="form-select select2" name="vehicle_id" id="vehicle_number" aria-label="Default select example" onchange="$.getVehicleBookings();">
+                <option value="">Select</option>
+                <?php foreach ($vehicles as $o) { ?> 
+                    <option value="<?= $o['id'] ?>"  <?= (isset($loading_receipts['vehicle_id']) && ($loading_receipts['vehicle_id'] == $o['id'])) ? 'selected' : ''?>><?= $o['rc_number'] ?></option> 
+                <?php } ?>
+            </select>
+            <?php
+            if ($validation->getError('booking_date')) {
+                echo '<div class="alert alert-danger mt-2">' . $validation->getError('booking_date') . '</div>';
+            }
+            ?>
+        </div>
+
+        <div class="col-md-4">
             <label class="col-form-label">Booking Order No<span class="text-danger">*</span></label>
             <select class="form-select select2" required name="booking_id" id="booking_id" aria-label="Default select example"  onchange="$.getBookingDetails();">
                 <option value="">Select Booking</option>
@@ -49,22 +64,7 @@
             }
             ?>
         </div>
-
-        <div class="col-md-4">
-            <label class="col-form-label">Vehicle Number<span class="text-danger">*</span></label> 
-            <select class="form-select select2" required name="vehicle_id" id="vehicle_number" aria-label="Default select example" disabled>
-                <option value="">Select</option>
-                <?php foreach ($vehicles as $o) { ?> 
-                    <option value="<?= $o['id'] ?>"  <?= (isset($loading_receipts['vehicle_id']) && ($loading_receipts['vehicle_id'] == $o['id'])) ? 'selected' : ''?>><?= $o['rc_number'] ?></option> 
-                <?php } ?>
-            </select>
-            <?php
-            if ($validation->getError('booking_date')) {
-                echo '<div class="alert alert-danger mt-2">' . $validation->getError('booking_date') . '</div>';
-            }
-            ?>
-        </div>
-
+        
         <div class="col-md-4">
             <label class="col-form-label">Loading Station<span class="text-danger">*</span></label>
             <input type="text" name="loading_station" id="loading_station" class="form-control" required value="<?= (isset($loading_receipts['loading_station'])) ?  $loading_receipts['loading_station'] : ''?>">
@@ -95,6 +95,36 @@
             ?>
         </div>   														
 
+        <div class="col-md-4">
+            <label class="col-form-label">Customer Name</label>
+            <input type="text" readonly name="customer_name" id="customer_name"  class="form-control" value="<?= (isset($loading_receipts['customer_name'])) ?  $loading_receipts['customer_name'] : ''?>">
+            <?php
+            if ($validation->getError('customer_name')) {
+                echo '<div class="alert alert-danger mt-2">' . $validation->getError('customer_name') . '</div>';
+            }
+            ?>
+        </div>   	
+
+        <div class="col-md-4">
+            <label class="col-form-label">Transporter Bilti No<span class="text-danger" <?= isset($loading_receipts['transporter_bilti_no']) && ($loading_receipts['transporter_bilti_no'] != '' ) ? '' : 'hidden' ?>  id="transporter_bilti_no_span">*</span></label>
+            <input type="number" name="transporter_bilti_no" id="transporter_bilti_no" <?= isset($loading_receipts['transporter_bilti_no']) && ($loading_receipts['transporter_bilti_no'] != '') ? 'required' : 'readonly' ?>  class="form-control" value="<?= (isset($loading_receipts['transporter_bilti_no'])) ?  $loading_receipts['transporter_bilti_no'] : ''?>">
+            <?php
+            if ($validation->getError('transporter_bilti_no')) {
+                echo '<div class="alert alert-danger mt-2">' . $validation->getError('transporter_bilti_no') . '</div>';
+            }
+            ?>
+        </div>   
+
+        <div class="col-md-4">
+            <label class="col-form-label">E-Way Bill No<span class="text-danger" <?= isset($loading_receipts['e_way_bill_number']) && ($loading_receipts['e_way_bill_number'] != '' ) ? '' : 'hidden' ?> id="e_way_bill_no_span">*</span></label>
+            <input type="number" name="e_way_bill_number" id="e_way_bill_no" <?= isset($loading_receipts['e_way_bill_number']) && ($loading_receipts['e_way_bill_number'] != '') ? 'required' : 'readonly' ?> class="form-control" value="<?= (isset($loading_receipts['e_way_bill_number'])) ?  $loading_receipts['e_way_bill_number'] : ''?>">
+            <?php
+            if ($validation->getError('e_way_bill_number')) {
+                echo '<div class="alert alert-danger mt-2">' . $validation->getError('e_way_bill_number') . '</div>';
+            }
+            ?>
+        </div>   
+
         <hr>
 
         <h6>Consignor Details:</h6>
@@ -105,7 +135,7 @@
                     <option value="">Select </option> 
                     <?php if(!empty($consignors)){ ?>
                         <?php foreach($consignors as $key => $c){ ?>
-                        <option value="<?php echo $c;?>" <?= ($selected_consignor_name == $c ? 'selected' : '') ?> consignor_id="<?php echo $key;?>"><?php echo $c;?></option>
+                        <option value="<?php echo $c;?>" <?= (isset($selected_consignor_name) && ($selected_consignor_name == $c) ? 'selected' : '') ?> consignor_id="<?php echo $key;?>"><?php echo $c;?></option>
                         <?php }?>
                     <?php } ?>
             </select>
@@ -118,7 +148,7 @@
 
         <div class="col-md-4">
             <label class="col-form-label">Branch Name<span class="text-danger" <?= isset($loading_receipts['consignor_id']) && ($loading_receipts['consignor_id'] < 1 ) ? 'hidden' : '' ?>  id="consignor_branch_span">*</span></label>
-            <select class="form-select select2" <?= isset($loading_receipts['consignor_id']) && ($loading_receipts['consignor_id'] >0) ? 'required' : 'disabled' ?> name="consignor_office_id" id="consignor_office_id" aria-label="Default select example" disabled>
+            <select class="form-select select2" <?= isset($loading_receipts['consignor_id']) && ($loading_receipts['consignor_id'] >0) ? 'required' : 'disabled' ?> name="consignor_office_id" id="consignor_office_id" aria-label="Default select example">
                 <option value="">Select Office</option>
                 <?php foreach ($offices as $o) {?> 
                 <option value="<?= $o['id'] ?>" <?= (isset($loading_receipts['consignor_office_id']) && ($loading_receipts['consignor_office_id'] == $o['id'])) ? 'selected' : ''?>><?= $o['name'] ?></option>
@@ -197,7 +227,7 @@
                     <option value="">Select </option> 
                     <?php if(!empty($consignees)){ ?>
                         <?php foreach($consignees as $key => $c){ ?>
-                        <option value="<?php echo $c;?>" <?= ($selected_consignee_name == $c ? 'selected' : '') ?> consignee_id="<?php echo $key;?>"><?php echo $c;?></option>
+                        <option value="<?php echo $c;?>" <?= ((isset($selected_consignee_name)) && ($selected_consignee_name == $c) ? 'selected' : '') ?> consignee_id="<?php echo $key;?>"><?php echo $c;?></option>
                         <?php }?>
                     <?php } ?>
             </select>
@@ -210,7 +240,7 @@
 
         <div class="col-md-4">
             <label class="col-form-label">Branch Name<span class="text-danger" <?= isset($loading_receipts['consignee_id']) && ($loading_receipts['consignee_id'] < 1 ) ? 'hidden' : '' ?>   id="consignee_branch_span">*</span></label>
-            <select class="form-select select2" <?= isset($loading_receipts['consignee_id']) && ($loading_receipts['consignee_id'] >0) ? 'required' : 'disabled' ?> name="consignee_office_id" id="consignee_office_id" aria-label="Default select example" disabled>
+            <select class="form-select select2" <?= isset($loading_receipts['consignee_id']) && ($loading_receipts['consignee_id'] >0) ? 'required' : 'disabled' ?> name="consignee_office_id" id="consignee_office_id" aria-label="Default select example">
                 <option value="">Select Office</option>
                 <?php foreach ($offices as $o) {?> 
                 <option value="<?= $o['id'] ?>" <?= (isset($loading_receipts['consignee_office_id']) && ($loading_receipts['consignee_office_id'] == $o['id'])) ? 'selected' : ''?>><?= $o['name'] ?></option>
@@ -429,16 +459,7 @@
                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('payment_terms') . '</div>';
             }
             ?>
-        </div>
-        <div class="col-md-4">
-            <label class="col-form-label">E-WAY Bill Number<span class="text-danger">*</span></label>
-            <input type="number" name="e_way_bill_number" id="e_way_bill_number" class="form-control" required value="<?= (isset($loading_receipts['e_way_bill_number'])) ?  $loading_receipts['e_way_bill_number'] : ''?>">
-            <?php
-            if ($validation->getError('e_way_bill_number')) {
-                echo '<div class="alert alert-danger mt-2">' . $validation->getError('e_way_bill_number') . '</div>';
-            }
-            ?>
-        </div>
+        </div> 
         <div class="col-md-4">
             <label class="col-form-label">E-WAY Bill Expiry Date<span class="text-danger">*</span></label>
             <input type="date" name="e_way_expiry_date" id="e_way_expiry_date" class="form-control" required value="<?= (isset($loading_receipts['e_way_expiry_date'])) ?  $loading_receipts['e_way_expiry_date'] : ''?>">
@@ -462,8 +483,8 @@
         
         <h6>Party Document Details</h6>
         <div class="col-md-4">
-            <label class="col-form-label">Invoice/BOE No.<span class="text-danger">*</span></label>
-            <input type="number" name="invoice_boe_no" id="invoice_boe_no" class="form-control" required value="<?= (isset($loading_receipts['invoice_boe_no'])) ?  $loading_receipts['invoice_boe_no'] : ''?>">
+            <label class="col-form-label">Invoice/BOE No.</label>
+            <input type="number" name="invoice_boe_no" id="invoice_boe_no" class="form-control" value="<?= (isset($loading_receipts['invoice_boe_no'])) ?  $loading_receipts['invoice_boe_no'] : ''?>">
             <?php
             if ($validation->getError('invoice_boe_no')) {
                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('invoice_boe_no') . '</div>';
@@ -471,8 +492,8 @@
             ?>
         </div>
         <div class="col-md-4">
-            <label class="col-form-label">Invoice/BOE Date<span class="text-danger">*</span></label>
-            <input type="datetime-local" name="invoice_boe_date" id="invoice_boe_date" class="form-control" required value="<?= (isset($loading_receipts['invoice_boe_date'])) ?  $loading_receipts['invoice_boe_date'] : ''?>">
+            <label class="col-form-label">Invoice/BOE Date</label>
+            <input type="datetime-local" name="invoice_boe_date" id="invoice_boe_date" class="form-control" value="<?= (isset($loading_receipts['invoice_boe_date'])) ?  $loading_receipts['invoice_boe_date'] : ''?>">
             <?php
             if ($validation->getError('invoice_boe_date')) {
                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('invoice_boe_date') . '</div>';
@@ -480,8 +501,8 @@
             ?>
         </div>
         <div class="col-md-4">
-            <label class="col-form-label">Invoice Value<span class="text-danger">*</span></label>
-            <input type="number" name="invoice_value" id="invoice_value" class="form-control" required value="<?= (isset($loading_receipts['invoice_value'])) ?  $loading_receipts['invoice_value'] : ''?>">
+            <label class="col-form-label">Invoice Value</label>
+            <input type="number" name="invoice_value" id="invoice_value" class="form-control" value="<?= (isset($loading_receipts['invoice_value'])) ?  $loading_receipts['invoice_value'] : ''?>">
             <?php
             if ($validation->getError('invoice_value')) {
                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('invoice_value') . '</div>';
@@ -493,8 +514,8 @@
         <h6>Transit Insurance</h6>
         <h6>Dispatch Details:</h6>
         <div class="col-md-4">
-            <label class="col-form-label">Reporting Date/Time<span class="text-danger">*</span></label>
-            <input type="datetime-local" name="reporting_datetime" id="reporting_datetime" class="form-control" required value="<?= (isset($loading_receipts['reporting_datetime'])) ?  $loading_receipts['reporting_datetime'] : ''?>">
+            <label class="col-form-label">Reporting Date/Time</label>
+            <input type="datetime-local" name="reporting_datetime" id="reporting_datetime" class="form-control" value="<?= (isset($loading_receipts['reporting_datetime'])) ?  $loading_receipts['reporting_datetime'] : ''?>">
             <?php
             if ($validation->getError('reporting_datetime')) {
                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('reporting_datetime') . '</div>';
@@ -502,8 +523,8 @@
             ?>
         </div>
         <div class="col-md-4">
-            <label class="col-form-label">Releasing Date/Time<span class="text-danger">*</span></label>
-            <input type="datetime-local" name="releasing_datetime" id="releasing_datetime" class="form-control" required value="<?= (isset($loading_receipts['releasing_datetime'])) ?  $loading_receipts['releasing_datetime'] : ''?>">
+            <label class="col-form-label">Releasing Date/Time</label>
+            <input type="datetime-local" name="releasing_datetime" id="releasing_datetime" class="form-control" value="<?= (isset($loading_receipts['releasing_datetime'])) ?  $loading_receipts['releasing_datetime'] : ''?>">
             <?php
             if ($validation->getError('releasing_datetime')) {
                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('releasing_datetime') . '</div>';
@@ -512,8 +533,8 @@
         </div>
         <h6>Insurance Co.:</h6>
         <div class="col-md-4">
-            <label class="col-form-label">Policy Date<span class="text-danger">*</span></label>
-            <input type="date" name="policy_date" id="policy_date" class="form-control" required value="<?= (isset($loading_receipts['policy_date'])) ?  $loading_receipts['policy_date'] : ''?>">
+            <label class="col-form-label">Policy Date</label>
+            <input type="date" name="policy_date" id="policy_date" class="form-control" value="<?= (isset($loading_receipts['policy_date'])) ?  $loading_receipts['policy_date'] : ''?>">
             <?php
             if ($validation->getError('policy_date')) {
                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('policy_date') . '</div>';
@@ -521,8 +542,8 @@
             ?>
         </div>
         <div class="col-md-4">
-            <label class="col-form-label">Policy Number<span class="text-danger">*</span></label>
-            <input type="number" name="policy_no" id="policy_no" class="form-control" required value="<?= (isset($loading_receipts['policy_no'])) ?  $loading_receipts['policy_no'] : ''?>">
+            <label class="col-form-label">Policy Number</label>
+            <input type="number" name="policy_no" id="policy_no" class="form-control" value="<?= (isset($loading_receipts['policy_no'])) ?  $loading_receipts['policy_no'] : ''?>">
             <?php
             if ($validation->getError('policy_no')) {
                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('policy_no') . '</div>';

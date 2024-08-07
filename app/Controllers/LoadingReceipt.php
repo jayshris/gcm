@@ -9,8 +9,9 @@ use App\Models\OfficeModel;
 use App\Models\ProfileModel;
 use App\Models\VehicleModel;
 use App\Models\BookingsModel; 
-use App\Controllers\BaseController;
 use App\Models\CustomersModel;
+use App\Models\PartytypeModel;
+use App\Controllers\BaseController;
 use App\Models\LoadingReceiptModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
@@ -24,6 +25,7 @@ class LoadingReceipt extends BaseController
   public $profile;
   public $PModel;
   public $CustomersModel;
+  public $PTModel;
   public function __construct()
   {
     $u = new UserModel(); 
@@ -35,6 +37,7 @@ class LoadingReceipt extends BaseController
     $this->profile = new ProfileModel();
     $this->PModel = new PartyModel();
     $this->CustomersModel = new CustomersModel();
+    $this->PTModel = new PartytypeModel();
   }
 
   public function index()
@@ -45,14 +48,23 @@ class LoadingReceipt extends BaseController
     ->orderBy('id', 'desc')->findAll();
     return view('LoadingReceipt/index', $this->view); 
   } 
-
+  
   function create(){  
     $stateModel = new StateModel();
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
     $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
-    $this->view['bookings'] = $this->BookingsModel->where('approved', '1')->findAll();
-    $this->view['vehicles'] = $this->VModel->where('status', 1)->findAll();
-    
+    $this->view['bookings'] = $this->BookingsModel->where('approved', '1')->findAll(); 
+            
+    $this->view['vehicles'] =  $this->BookingsModel->select('v.id,v.rc_number') 
+    ->join('vehicle v','bookings.vehicle_id = v.id')->orderBy('v.id', 'desc')
+    ->where('bookings.approved', '1')
+    ->groupBy('bookings.vehicle_id')
+    ->findAll();
+
+//     $db = \Config\Database::connect();  
+//     echo  $db->getLastQuery()->getQuery(); 
+// echo '<pre>vehicles';print_r($this->view['vehicles']);exit;
+
     $this->view['consignors'] = $this->CustomersModel->select('party.*')
     ->join('party', 'customer.party_id = party.id')
     ->where("FIND_IN_SET (8,customer.party_type_id)")
@@ -65,9 +77,7 @@ class LoadingReceipt extends BaseController
     ->orderBy('party.party_name')->findAll();  
     $this->view['consignees']  = array_column($this->view['consignees'],'party_name','id');
     
-//     $db = \Config\Database::connect();  
-//     echo  $db->getLastQuery()->getQuery(); 
-// echo '<pre>consignees';print_r($this->view['consignees']);exit;
+  
 
     if($this->request->getPost()){
       $error = $this->validate([
@@ -100,17 +110,9 @@ class LoadingReceipt extends BaseController
         'no_of_packages'   =>  'required', 
         'actual_weight'   =>  'required', 
         'charge_weight'   =>  'required',  
-        'payment_terms'   =>  'required', 
-        'e_way_bill_number'   =>  'required', 
+        'payment_terms'   =>  'required',   
         'e_way_expiry_date'   =>  'required', 
         'freight_charges_amount'   =>  'required', 
-        'invoice_boe_no'   =>  'required',  
-        'invoice_boe_date'   =>  'required', 
-        'invoice_value'   =>  'required', 
-        'reporting_datetime'   =>  'required', 
-        'releasing_datetime'   =>  'required',
-        'policy_date'   =>  'required', 
-        'policy_no'   =>  'required',
       ]); 
       $validation = \Config\Services::validation();
       // echo 'POst dt<pre>';print_r($this->request->getPost());
@@ -178,6 +180,8 @@ class LoadingReceipt extends BaseController
           'consignor_office_id'   =>  $this->request->getVar('consignor_office_id') ? $this->request->getVar('consignor_office_id') : '',
           'consignee_id'   =>  $this->request->getVar('consignee_id'),
           'consignee_office_id'   =>  $this->request->getVar('consignee_office_id') ? $this->request->getVar('consignee_office_id') : '',
+          'customer_name'   =>  $this->request->getVar('customer_name'),
+          'transporter_bilti_no'   =>  $this->request->getVar('transporter_bilti_no') 
         ];
 
         $this->LoadingReceiptModel->save($data); 
@@ -268,17 +272,9 @@ class LoadingReceipt extends BaseController
         'no_of_packages'   =>  'required', 
         'actual_weight'   =>  'required', 
         'charge_weight'   =>  'required',  
-        'payment_terms'   =>  'required', 
-        'e_way_bill_number'   =>  'required', 
+        'payment_terms'   =>  'required',  
         'e_way_expiry_date'   =>  'required', 
         'freight_charges_amount'   =>  'required', 
-        'invoice_boe_no'   =>  'required',  
-        'invoice_boe_date'   =>  'required', 
-        'invoice_value'   =>  'required', 
-        'reporting_datetime'   =>  'required', 
-        'releasing_datetime'   =>  'required',
-        'policy_date'   =>  'required', 
-        'policy_no'   =>  'required',
       ]); 
       $validation = \Config\Services::validation();
       // echo 'POst dt<pre>';print_r($this->request->getPost());
@@ -336,10 +332,13 @@ class LoadingReceipt extends BaseController
           'consignor_office_id'   =>  $this->request->getVar('consignor_office_id') ? $this->request->getVar('consignor_office_id') : 0,
           'consignee_id'   =>  $this->request->getVar('consignee_id'),
           'consignee_office_id'   =>  $this->request->getVar('consignee_office_id') ? $this->request->getVar('consignee_office_id') : 0,
+          'customer_name'   =>  $this->request->getVar('customer_name'),
+          'transporter_bilti_no'   =>  $this->request->getVar('transporter_bilti_no') 
         ];
 
-        $this->LoadingReceiptModel->update($id,$data); 
         // echo 'data<pre>';print_r($data);exit;
+        $this->LoadingReceiptModel->update($id,$data); 
+        
         $this->session->setFlashdata('success', 'Loading Receipt Updated Successfully');
 
         return $this->response->redirect(base_url('/loadingreceipt'));
@@ -349,10 +348,23 @@ class LoadingReceipt extends BaseController
   }
 
   function getBookingDetails(){
-    $rows =  $this->BookingsModel->select('bookings.*,bp.city bp_city,bd.city bd_city')
+    $rows =  $this->BookingsModel->select('bookings.*,bp.city bp_city,bd.city bd_city,party.party_name,c.party_type_id,bookings.customer_id')
     ->join('booking_drops bd', 'bd.booking_id = bookings.id','left')
     ->join('booking_pickups bp', 'bp.booking_id  = bookings.id','left')
-    ->where('bookings.id', $this->request->getPost('booking_id'))->first();
+    ->join('customer c', 'c.id = bookings.customer_id','left')
+    ->join('party', 'party.id = c.party_id','left')
+    ->where('bookings.id', $this->request->getPost('booking_id'))
+    ->first(); 
+    $party_type_ids = isset($rows['party_type_id']) ? explode(',',$rows['party_type_id']) : [];
+    if($party_type_ids){
+      $lr_third_party =  $this->PTModel->select('count(id) as lr_third_party_cnt')
+                        ->where('lr_third_party',1)
+                        ->whereIn('id',$party_type_ids)->first(); 
+    }
+    
+    $rows['is_lr_third_party'] = (isset($lr_third_party['lr_third_party_cnt']) && ($lr_third_party['lr_third_party_cnt'] >0)) ? 1 : 0;
+    // echo '<pre>';print_r($lr_third_party );exit;
+    
     echo json_encode($rows);exit;
   }
 
@@ -379,5 +391,14 @@ class LoadingReceipt extends BaseController
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll(); 
     // echo '<pre>';print_r($this->view['loading_receipts']);exit;
     return view('LoadingReceipt/preview', $this->view); 
+  }
+
+  function getVehicleBookings(){
+    if($this->request->getPost('vehicle_id') > 0){
+      $bookings = $this->BookingsModel->where('vehicle_id', $this->request->getPost('vehicle_id'))->where('approved', '1')->findAll();       
+    }else{
+      $bookings = $this->BookingsModel->where('approved', '1')->findAll(); 
+    }
+    echo json_encode($bookings);exit;
   }
 }
