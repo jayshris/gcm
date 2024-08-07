@@ -58,10 +58,10 @@
     });
     function checkLR(){
       var sale = $('input[name="sale"]:checked').val() 
-      $('input[name=LR]').attr("disabled",true).prop('checked', false); 
+      $('input[name=lr_first_party]').attr("disabled",true).prop('checked', false); 
       $('.lr-span').text(''); 
       if(sale==1){ 
-        $('input[name="LR"]').removeAttr('disabled');
+        $('input[name="lr_first_party"]').removeAttr('disabled');
         $('.lr-span').text('*');
       }
     }

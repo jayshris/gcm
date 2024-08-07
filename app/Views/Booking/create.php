@@ -329,7 +329,7 @@
                               <select class="form-select" name="customer_type" id="customer_type" aria-label="Default select example">
                                 <option value="">Select Type</option>
                               </select>
-                              <input type="hidden" name="LR" id="lr-txt" />
+                              <input type="hidden" name="lr_first_party" id="lr-txt" />
                               <span class="text-info" id="lr-info"></span>
                             </div>
 
