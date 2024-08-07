@@ -64,7 +64,11 @@
 			$("#e_way_bill_no").removeAttr('required','required');
 			$("#transporter_bilti_no").val('');
 			$("#e_way_bill_no").val('');
+			$('#transporter_div').attr('hidden','hidden');
+			$(".tr-req").val('');
 			var booking_id = $('#booking_id').val();
+			
+			$(".tr-req").removeAttr('required');
 			if(booking_id){
 				$.ajax({
 					method: "POST",
@@ -90,6 +94,8 @@
 							$("#transporter_bilti_no").attr('required','required');
 							$("#e_way_bill_no").removeAttr('readonly');
 							$("#e_way_bill_no").attr('required','required');
+							$('#transporter_div').removeAttr('hidden');
+							$(".tr-req").attr('required','required');
 						} 
 					}
 				});

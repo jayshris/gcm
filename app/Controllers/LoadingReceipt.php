@@ -77,7 +77,16 @@ class LoadingReceipt extends BaseController
     ->orderBy('party.party_name')->findAll();  
     $this->view['consignees']  = array_column($this->view['consignees'],'party_name','id');
     
-  
+    $party_type_ids = $this->PTModel->select("(GROUP_CONCAT(id)) party_type_ids") 
+    ->where('lr_third_party', '1') 
+    ->first(); 
+     $party_type_ids = str_replace([',',', '],'|', $party_type_ids );
+   
+    $this->view['transporters'] = $this->CustomersModel->select('party.id,party.party_name')
+        ->join('party', 'party.id = customer.party_id')
+        ->where('customer.status', '1')
+        ->where('CONCAT(",", party_type_id, ",") REGEXP ",('.$party_type_ids['party_type_ids'].'),"')
+        ->findAll();
 
     if($this->request->getPost()){
       $error = $this->validate([
@@ -181,7 +190,14 @@ class LoadingReceipt extends BaseController
           'consignee_id'   =>  $this->request->getVar('consignee_id'),
           'consignee_office_id'   =>  $this->request->getVar('consignee_office_id') ? $this->request->getVar('consignee_office_id') : '',
           'customer_name'   =>  $this->request->getVar('customer_name'),
-          'transporter_bilti_no'   =>  $this->request->getVar('transporter_bilti_no') 
+          'transporter_bilti_no'   =>  $this->request->getVar('transporter_bilti_no'),
+          'transporter_id' =>  $this->request->getVar('transporter_id'),
+          'transporter_office_id' =>  $this->request->getVar('transporter_office_id'),
+          'transporter_address' =>  $this->request->getVar('transporter_address'),
+          'transporter_city' =>  $this->request->getVar('transporter_city'),
+          'transporter_state' =>  $this->request->getVar('transporter_state'),
+          'transporter_pincode' =>  $this->request->getVar('transporter_pincode'),
+          'transporter_GSTIN' =>  $this->request->getVar('transporter_GSTIN'),
         ];
 
         $this->LoadingReceiptModel->save($data); 
@@ -241,6 +257,17 @@ class LoadingReceipt extends BaseController
             array_push($this->view['consignees'],$this->view['loading_receipts']['consignee_name']);
         }
     } 
+
+    $party_type_ids = $this->PTModel->select("(GROUP_CONCAT(id)) party_type_ids") 
+    ->where('lr_third_party', '1') 
+    ->first(); 
+     $party_type_ids = str_replace([',',', '],'|', $party_type_ids );
+   
+    $this->view['transporters'] = $this->CustomersModel->select('party.id,party.party_name')
+        ->join('party', 'party.id = customer.party_id')
+        ->where('customer.status', '1')
+        ->where('CONCAT(",", party_type_id, ",") REGEXP ",('.$party_type_ids['party_type_ids'].'),"')
+        ->findAll();
 //     echo 'consignors_list<pre>';print_r($this->view['consignees_list']);
 //     echo 'consignors<pre>';print_r($this->view['consignees']); 
 //  echo 'data<pre>';print_r($this->view['loading_receipts']); 
@@ -338,7 +365,14 @@ class LoadingReceipt extends BaseController
           'consignee_id'   =>  $this->request->getVar('consignee_id'),
           'consignee_office_id'   =>  $this->request->getVar('consignee_office_id') ? $this->request->getVar('consignee_office_id') : 0,
           'customer_name'   =>  $this->request->getVar('customer_name'),
-          'transporter_bilti_no'   =>  $this->request->getVar('transporter_bilti_no') 
+          'transporter_bilti_no'   =>  $this->request->getVar('transporter_bilti_no'),
+          'transporter_id' =>  $this->request->getVar('transporter_id'),
+          'transporter_office_id' =>  $this->request->getVar('transporter_office_id'),
+          'transporter_address' =>  $this->request->getVar('transporter_address'),
+          'transporter_city' =>  $this->request->getVar('transporter_city'),
+          'transporter_state' =>  $this->request->getVar('transporter_state'),
+          'transporter_pincode' =>  $this->request->getVar('transporter_pincode'),
+          'transporter_GSTIN' =>  $this->request->getVar('transporter_GSTIN'),
         ];
 
         // echo 'data<pre>';print_r($data);exit;

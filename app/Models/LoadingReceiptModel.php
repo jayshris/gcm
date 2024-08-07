@@ -62,7 +62,14 @@ class LoadingReceiptModel extends Model
         'consignee_id',
         'consignee_office_id',
         'customer_name',
-        'transporter_bilti_no' 
+        'transporter_bilti_no',
+        'transporter_id',
+        'transporter_office_id',
+        'transporter_address',
+        'transporter_city',
+        'transporter_state',
+        'transporter_pincode',
+        'transporter_GSTIN'
     ];
 
     protected bool $allowEmptyInserts = false;

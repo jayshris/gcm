@@ -123,10 +123,99 @@
                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('e_way_bill_number') . '</div>';
             }
             ?>
-        </div>   
-
+        </div>         
+        <div id="transporter_div" class="row g-3" <?= (isset($loading_receipts['transporter_id']) && ($loading_receipts['transporter_id'] > 0)) ? '' : 'hidden' ?>>
         <hr>
+            <h6>Transporter Details:</h6><br>
+            <div class="col-md-4">
+                <label class="col-form-label">Transporter Name<span class="text-danger">*</span></label> 
+                 <select class="form-select tr-req" name="transporter_id" id="transporter_id" aria-label="Default select example" >
+                        <option value="">Select </option> 
+                        <?php if(!empty($transporters)){ ?>
+                            <?php foreach($transporters as $key => $c){ ?>
+                            <option value="<?php echo $c['id'];?>" <?= (isset($loading_receipts['transporter_id']) && ($loading_receipts['transporter_id'] == $c['id']) ? 'selected' : '') ?>><?php echo $c['party_name'];?></option>
+                            <?php }?>
+                        <?php } ?>
+                </select>
+                <?php
+                if ($validation->getError('transporter_id')) {
+                    echo '<div class="alert alert-danger mt-2">' . $validation->getError('transporter_id') . '</div>';
+                }
+                ?>
+            </div>
 
+            <div class="col-md-4">
+                <label class="col-form-label">Branch Name<span class="text-danger">*</span></label>
+                <select class="form-select select2 tr-req"  name="transporter_office_id" id="transporter_office_id" aria-label="Default select example">
+                    <option value="">Select Office</option>
+                    <?php foreach ($offices as $o) {?> 
+                    <option value="<?= $o['id'] ?>" <?= (isset($loading_receipts['transporter_office_id']) && ($loading_receipts['transporter_office_id'] == $o['id'])) ? 'selected' : ''?>><?= $o['name'] ?></option>
+                    <?php  } ?>
+                </select>
+                <?php
+                if ($validation->getError('office_id')) {
+                    echo '<div class="alert alert-danger mt-2">' . $validation->getError('office_id') . '</div>';
+                }
+                ?>
+            </div>
+
+            <div class="col-md-12">
+                <label class="col-form-label">Address<span class="text-danger">*</span></label>
+                <input type="text" name="transporter_address" id="transporter_address" class="form-control tr-req" value="<?= (isset($loading_receipts['transporter_address'])) ?  $loading_receipts['transporter_address'] : ''?>">
+                <?php
+                if ($validation->getError('transporter_address')) {
+                    echo '<div class="alert alert-danger mt-2">' . $validation->getError('transporter_address') . '</div>';
+                }
+                ?>
+            </div>
+
+            <div class="col-md-4">
+                <label class="col-form-label">City<span class="text-danger">*</span></label>
+                <input type="text" name="transporter_city" id="transporter_city" class="form-control tr-req" value="<?= (isset($loading_receipts['transporter_city'])) ?  $loading_receipts['transporter_city'] : ''?>">
+                <?php
+                if ($validation->getError('transporter_city')) {
+                    echo '<div class="alert alert-danger mt-2">' . $validation->getError('transporter_city') . '</div>';
+                }
+                ?>
+            </div>
+
+            <div class="col-md-4">
+                <label class="col-form-label">State<span class="text-danger">*</span></label> 
+                <select class="form-select select2 tr-req" name="transporter_state" id="transporter_state" aria-label="Default select example">
+                    <option value="">Select</option>
+                    <?php foreach ($states as $o) { ?>
+                    <option value="<?= $o['state_id']?>" <?= (isset($loading_receipts['transporter_state']) && ($loading_receipts['transporter_state'] == $o['state_id'])) ? 'selected' : ''?>><?= $o['state_name'] ?></option>
+                    <?php } ?>
+                </select>
+                <?php
+                if ($validation->getError('transporter_state')) {
+                    echo '<div class="alert alert-danger mt-2">' . $validation->getError('transporter_state') . '</div>';
+                }
+                ?>
+            </div>
+
+            <div class="col-md-4">
+                <label class="col-form-label">Pincode<span class="text-danger">*</span></label>
+                <input type="number" name="transporter_pincode" id="transporter_pincode" class="form-control tr-req" value="<?= (isset($loading_receipts['transporter_pincode'])) ?  $loading_receipts['transporter_pincode'] : ''?>">
+                <?php
+                if ($validation->getError('transporter_pincode')) {
+                    echo '<div class="alert alert-danger mt-2">' . $validation->getError('transporter_pincode') . '</div>';
+                }
+                ?>
+            </div>
+
+            <div class="col-md-4">
+                <label class="col-form-label">GSTIN<span class="text-danger">*</span></label>
+                <input type="number" name="transporter_GSTIN" id="transporter_GSTIN" class="form-control tr-req" value="<?= (isset($loading_receipts['transporter_GSTIN'])) ?  $loading_receipts['transporter_GSTIN'] : ''?>">
+                <?php
+                if ($validation->getError('transporter_GSTIN')) {
+                    echo '<div class="alert alert-danger mt-2">' . $validation->getError('transporter_GSTIN') . '</div>';
+                }
+                ?>
+            </div>
+          
+        </div>
+        <hr>
         <h6>Consignor Details:</h6>
         <div class="col-md-4">
             <label class="col-form-label">Consignor Name<span class="text-danger">*</span></label> 

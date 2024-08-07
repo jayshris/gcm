@@ -57,12 +57,15 @@
 			$("#transporter_bilti_no_span").attr('hidden','hidden');
 			$("#e_way_bill_no_span").attr('hidden','hidden');
 			$("#transporter_bilti_no").attr('readonly','readonly');
-			$("#transporter_bilti_no").removeAttr('required','required');
+			$("#transporter_bilti_no").removeAttr('required');
 			$("#e_way_bill_no").attr('readonly','readonly');
-			$("#e_way_bill_no").removeAttr('required','required');
+			$("#e_way_bill_no").removeAttr('required');
 			$("#transporter_bilti_no").val('');
 			$("#e_way_bill_no").val('');
+			$('#transporter_div').attr('hidden','hidden');
 			var booking_id = $('#booking_id').val();
+			$(".tr-req").removeAttr('required');
+			$(".tr-req").val('');
 			if(booking_id){
 				$.ajax({
 					method: "POST",
@@ -88,6 +91,8 @@
 							$("#transporter_bilti_no").attr('required','required');
 							$("#e_way_bill_no").removeAttr('readonly');
 							$("#e_way_bill_no").attr('required','required');
+							$('#transporter_div').removeAttr('hidden');
+							$(".tr-req").attr('required','required');
 						} 
 					}
 				});
