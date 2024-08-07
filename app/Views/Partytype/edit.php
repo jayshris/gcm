@@ -60,11 +60,21 @@
       var sale = $('input[name="sale"]:checked').val() 
       $('input[name=lr_first_party]').attr("disabled",true).prop('checked', false); 
       $('.lr-span').text(''); 
+      $('input[name=lr_third_party]').attr("disabled",true).prop('checked', false); 
+      $('.lr-third-span').text(''); 
       if(sale==1){ 
         $('input[name="lr_first_party"]').removeAttr('disabled');
         $('.lr-span').text('*');
+        $('input[name=lr_third_party]').removeAttr('disabled');
+        $('.lr-third-span').text('*'); 
       }
     });
+    function unselectYesParty(name){
+      var nameVal = $('input[name="'+name+'"]:checked').val() 
+      if(nameVal == 1){
+        $('input[name="'+name+'"]').prop('checked', false); 
+      }      
+    }
   </script>
 </body>
 

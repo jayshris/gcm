@@ -44,7 +44,7 @@ use App\Models\UserTypePermissionModel;
               </div>
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-6">
               <label class="col-form-label mt-2"> Sale <span class="text-danger">*</span> </label><br>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" name="sale" required <?= isset($partytype_data) && $partytype_data['sale'] == '1' ? 'checked' : '' ?> id="inlineRadio1" value="1">
@@ -56,14 +56,26 @@ use App\Models\UserTypePermissionModel;
               </div>
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-6">
               <label class="col-form-label mt-2"> LR First Party<span class="text-danger lr-span"><?= isset($partytype_data) && $partytype_data['sale'] == 0 ? '' : '*' ?></span> </label><br>
               <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="lr_first_party" required <?= isset($partytype_data) && $partytype_data['lr_first_party'] == '1' ? 'checked' : '' ?> id="inlineRadioLR1" value="1" <?= isset($partytype_data) && $partytype_data['sale'] == '0' ? 'disabled' : '' ?>>
+                <input class="form-check-input" type="radio" onchange="unselectYesParty('lr_third_party')" name="lr_first_party" required <?= isset($partytype_data) && $partytype_data['lr_first_party'] == '1' ? 'checked' : '' ?> id="inlineRadioLR1" value="1" <?= isset($partytype_data) && $partytype_data['sale'] == '0' ? 'disabled' : '' ?>>
                 <label class="form-check-label" for="inlineRadioLR1">Yes</label>
               </div>
               <div class="form-check form-check-inline">
                 <input class="form-check-input" type="radio" name="lr_first_party" required <?= isset($partytype_data) && ($partytype_data['lr_first_party'] == '0' && $partytype_data['sale'] == '1') ? 'checked' : '' ?> id="inlineRadioLR2" value="0" <?= isset($partytype_data) && $partytype_data['sale'] == '0' ? 'disabled' : '' ?> >
+                <label class="form-check-label" for="inlineRadioLR2">No</label>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="col-form-label mt-2"> LR Third Party<span class="text-danger lr-third-span"><?= isset($partytype_data) && $partytype_data['sale'] == 0 ? '' : '*' ?></span> </label><br>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" onchange="unselectYesParty('lr_first_party')" name="lr_third_party" required <?= isset($partytype_data) && $partytype_data['lr_third_party'] == '1' ? 'checked' : '' ?> id="inlineRadioLR1" value="1" <?= isset($partytype_data) && $partytype_data['sale'] == '0' ? 'disabled' : '' ?>>
+                <label class="form-check-label" for="inlineRadioLR1">Yes</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="lr_third_party" required <?= isset($partytype_data) && ($partytype_data['lr_third_party'] == '0' && $partytype_data['sale'] == '1') ? 'checked' : '' ?> id="inlineRadioLR2" value="0" <?= isset($partytype_data) && $partytype_data['sale'] == '0' ? 'disabled' : '' ?> >
                 <label class="form-check-label" for="inlineRadioLR2">No</label>
               </div>
             </div>
