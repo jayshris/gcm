@@ -149,7 +149,7 @@ class Booking extends BaseController
                         'booking_by' => $this->request->getPost('booking_by'),
                         'booking_date' => $this->request->getPost('booking_date'),
                         'booking_type' => $this->request->getPost('booking_type') ? $this->request->getPost('booking_type') : '',
-                        'LR' => $this->request->getPost('LR'),
+                        'lr_first_party' => $this->request->getPost('lr_first_party'),
                     ];
                     
                     $booking_id = $this->BModel->insert($bookingData) ? $this->BModel->getInsertID() : '0';    
@@ -295,7 +295,7 @@ class Booking extends BaseController
     public function getPatyTypeDetails()
     {
         $party_type = $this->PTModel->where('id', $this->request->getPost('customer_id'))->first();
-        echo $party_type['LR'];exit;
+        echo $party_type['lr_first_party'];exit;
     }
 
     public function create_bk()
