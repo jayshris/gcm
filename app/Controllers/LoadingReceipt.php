@@ -173,7 +173,11 @@ class LoadingReceipt extends BaseController
           'releasing_datetime'   =>  $this->request->getVar('releasing_datetime'),
           'policy_date'   =>  $this->request->getVar('policy_date'),
           'policy_no'   =>  $this->request->getVar('policy_no'),
-          'added_by' => isset($_SESSION['id']) ? $_SESSION['id'] : '0'
+          'added_by' => isset($_SESSION['id']) ? $_SESSION['id'] : '0',
+          'consignor_id'   =>  $this->request->getVar('consignor_id'),
+          'consignor_office_id'   =>  $this->request->getVar('consignor_office_id') ? $this->request->getVar('consignor_office_id') : '',
+          'consignee_id'   =>  $this->request->getVar('consignee_id'),
+          'consignee_office_id'   =>  $this->request->getVar('consignee_office_id') ? $this->request->getVar('consignee_office_id') : '',
         ];
 
         $this->LoadingReceiptModel->save($data); 
@@ -197,41 +201,42 @@ class LoadingReceipt extends BaseController
     $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
     $this->view['bookings'] = $this->BookingsModel->where('approved', '1')->findAll();
     $this->view['vehicles'] = $this->VModel->where('status', 1)->findAll();
-
+   
     //consignor, consignees changes
       
-    $this->view['consignors'] = $this->CustomersModel->select('party.*')
+    $this->view['consignors_list'] = $this->CustomersModel->select('party.*')
     ->join('party', 'customer.party_id = party.id')
     ->where("FIND_IN_SET (8,customer.party_type_id)")
-    ->orderBy('party.party_name')->findAll();    
-    $this->view['consignors']  = array_column($this->view['consignors'],'party_name','id');      
+    ->orderBy('party.party_name')->findAll();          
 
-    $this->view['consignees'] = $this->CustomersModel->select('party.*')
+    $this->view['consignees_list'] = $this->CustomersModel->select('party.*')
     ->join('party', 'customer.party_id = party.id')
     ->where("FIND_IN_SET (9,customer.party_type_id)")
-    ->orderBy('party.party_name')->findAll();  
-    $this->view['consignees']  = array_column($this->view['consignees'],'party_name','id');
+    ->orderBy('party.party_name')->findAll();   
 
-    $this->view['selected_consignor_name'] = isset($this->view['loading_receipts']) ? $this->view['loading_receipts']['consignor_name'] : '';
-    $this->view['selected_consignee_name'] = isset($this->view['loading_receipts']) ? $this->view['loading_receipts']['consignee_name'] : '';
+    $this->view['selected_consignor_name'] = isset($this->view['loading_receipts']) ? $this->view['loading_receipts']['consignor_name'] : 0;
+    $this->view['selected_consignee_name'] = isset($this->view['loading_receipts']) ? $this->view['loading_receipts']['consignee_name'] : 0;
 
-    $this->view['consignor_list']  = array_column($this->view['consignors'],'party_name','id');
-    $this->view['consignees_list']  = array_column($this->view['consignees'],'party_name','id');
+    $this->view['consignors']  = array_column($this->view['consignors_list'],'party_name','id');
+    $this->view['consignees']  = array_column($this->view['consignees_list'],'party_name','id');
 
+  
     if(isset($this->view['loading_receipts']) && !empty($this->view['loading_receipts']['consignor_name'])){
-        if(!in_array($this->view['loading_receipts']['consignor_name'],$this->view['consignor_list'])){
-            array_push($this->view['consignor_list'],$this->view['loading_receipts']['consignor_name']);
+        if(!in_array($this->view['loading_receipts']['consignor_name'],$this->view['consignors'])){
+            array_push($this->view['consignors'],$this->view['loading_receipts']['consignor_name']);
         }
     } 
 
     if(isset($this->view['loading_receipts']) && !empty($this->view['loading_receipts']['consignee_name'])){
-        if(!in_array($this->view['loading_receipts']['consignee_name'],$this->view['consignees_list'])){
-            array_push($this->view['consignees_list'],$this->view['loading_receipts']['consignee_name']);
+        if(!in_array($this->view['loading_receipts']['consignee_name'],$this->view['consignees'])){
+            array_push($this->view['consignees'],$this->view['loading_receipts']['consignee_name']);
         }
     } 
+//     echo 'consignors_list<pre>';print_r($this->view['consignees_list']);
+//     echo 'consignors<pre>';print_r($this->view['consignees']); 
+//  echo 'data<pre>';print_r($this->view['loading_receipts']); 
+//    exit;
 
-
-    // echo '<pre>';print_r($this->view['loading_receipts']);exit;
     if($this->request->getPost()){
       $error = $this->validate([
         'booking_id'   =>  'required',  
@@ -327,6 +332,10 @@ class LoadingReceipt extends BaseController
           'releasing_datetime'   =>  $this->request->getVar('releasing_datetime'),
           'policy_date'   =>  $this->request->getVar('policy_date'),
           'policy_no'   =>  $this->request->getVar('policy_no'),
+          'consignor_id'   =>  $this->request->getVar('consignor_id'),
+          'consignor_office_id'   =>  $this->request->getVar('consignor_office_id') ? $this->request->getVar('consignor_office_id') : 0,
+          'consignee_id'   =>  $this->request->getVar('consignee_id'),
+          'consignee_office_id'   =>  $this->request->getVar('consignee_office_id') ? $this->request->getVar('consignee_office_id') : 0,
         ];
 
         $this->LoadingReceiptModel->update($id,$data); 

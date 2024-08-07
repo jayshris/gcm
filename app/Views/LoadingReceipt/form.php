@@ -15,7 +15,7 @@
             <select class="form-select select2" required name="booking_id" id="booking_id" aria-label="Default select example"  onchange="$.getBookingDetails();">
                 <option value="">Select Booking</option>
                 <?php foreach ($bookings as $o) { ?>
-                  <option value="<?= $o['id'] ?>" <?= (isset($loading_receipts['booking_id']) && ($loading_receipts['booking_id'] = $o['id'])) ? 'selected' : ''?> ><?= $o['booking_number'] ?></option> 
+                  <option value="<?= $o['id'] ?>" <?= (isset($loading_receipts['booking_id']) && ($loading_receipts['booking_id'] == $o['id'])) ? 'selected' : ''?> ><?= $o['booking_number'] ?></option> 
                 <?php } ?>
             </select>
             <?php
@@ -30,7 +30,7 @@
             <select class="form-select select2" required name="office_id" id="office_id" aria-label="Default select example" disabled>
                 <option value="">Select Office</option>
                 <?php foreach ($offices as $o) {?> 
-                <option value="<?= $o['id'] ?>" <?= (isset($loading_receipts['office_id']) && ($loading_receipts['office_id'] = $o['id'])) ? 'selected' : ''?>><?= $o['name'] ?></option>
+                <option value="<?= $o['id'] ?>" <?= (isset($loading_receipts['office_id']) && ($loading_receipts['office_id'] == $o['id'])) ? 'selected' : ''?>><?= $o['name'] ?></option>
                 <?php  } ?>
             </select>
             <?php
@@ -55,7 +55,7 @@
             <select class="form-select select2" required name="vehicle_id" id="vehicle_number" aria-label="Default select example" disabled>
                 <option value="">Select</option>
                 <?php foreach ($vehicles as $o) { ?> 
-                    <option value="<?= $o['id'] ?>"  <?= (isset($loading_receipts['vehicle_id']) && ($loading_receipts['vehicle_id'] = $o['id'])) ? 'selected' : ''?>><?= $o['rc_number'] ?></option> 
+                    <option value="<?= $o['id'] ?>"  <?= (isset($loading_receipts['vehicle_id']) && ($loading_receipts['vehicle_id'] == $o['id'])) ? 'selected' : ''?>><?= $o['rc_number'] ?></option> 
                 <?php } ?>
             </select>
             <?php
@@ -101,17 +101,32 @@
         <div class="col-md-4">
             <label class="col-form-label">Consignor Name<span class="text-danger">*</span></label> 
             <input type="hidden"  name="consignor_id" id="consignor_id" class="form-control" value="<?= isset($loading_receipts['consignor_id']) ? $loading_receipts['consignor_id'] : '' ?>">   
-            <select class="form-select" name="consignor_name" id="consignor_name" aria-label="Default select example" required  onchange="changeIdIpt(this,$(this).find(':selected').attr('consignor_id'),'consignor_id')" >
+            <select class="form-select" name="consignor_name" id="consignor_name" aria-label="Default select example" required  onchange="changeIdIpt(this,$(this).find(':selected').attr('consignor_id'),'consignor_id')">
                     <option value="">Select </option> 
                     <?php if(!empty($consignors)){ ?>
                         <?php foreach($consignors as $key => $c){ ?>
-                        <option value="<?php echo $c;?>" consignor_id="<?php echo $key;?>"><?php echo $c;?></option>
+                        <option value="<?php echo $c;?>" <?= ($selected_consignor_name == $c ? 'selected' : '') ?> consignor_id="<?php echo $key;?>"><?php echo $c;?></option>
                         <?php }?>
                     <?php } ?>
             </select>
             <?php
             if ($validation->getError('consignor_name')) {
                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('consignor_name') . '</div>';
+            }
+            ?>
+        </div>
+
+        <div class="col-md-4">
+            <label class="col-form-label">Branch Name<span class="text-danger" <?= isset($loading_receipts['consignor_id']) && ($loading_receipts['consignor_id'] < 1 ) ? 'hidden' : '' ?>  id="consignor_branch_span">*</span></label>
+            <select class="form-select select2" <?= isset($loading_receipts['consignor_id']) && ($loading_receipts['consignor_id'] >0) ? 'required' : 'disabled' ?> name="consignor_office_id" id="consignor_office_id" aria-label="Default select example" disabled>
+                <option value="">Select Office</option>
+                <?php foreach ($offices as $o) {?> 
+                <option value="<?= $o['id'] ?>" <?= (isset($loading_receipts['consignor_office_id']) && ($loading_receipts['consignor_office_id'] == $o['id'])) ? 'selected' : ''?>><?= $o['name'] ?></option>
+                <?php  } ?>
+            </select>
+            <?php
+            if ($validation->getError('office_id')) {
+                echo '<div class="alert alert-danger mt-2">' . $validation->getError('office_id') . '</div>';
             }
             ?>
         </div>
@@ -141,7 +156,7 @@
             <select class="form-select select2" required name="consignor_state" id="consignor_state" aria-label="Default select example">
                 <option value="">Select</option>
                 <?php foreach ($states as $o) { ?>
-                  <option value="<?= $o['state_id']?>" <?= (isset($loading_receipts['consignor_state']) && ($loading_receipts['consignor_state'] = $o['state_id'])) ? 'selected' : ''?>><?= $o['state_name'] ?></option>
+                  <option value="<?= $o['state_id']?>" <?= (isset($loading_receipts['consignor_state']) && ($loading_receipts['consignor_state'] == $o['state_id'])) ? 'selected' : ''?>><?= $o['state_name'] ?></option>
                 <?php } ?>
             </select>
             <?php
@@ -182,13 +197,28 @@
                     <option value="">Select </option> 
                     <?php if(!empty($consignees)){ ?>
                         <?php foreach($consignees as $key => $c){ ?>
-                        <option value="<?php echo $c;?>" consignee_id="<?php echo $key;?>"><?php echo $c;?></option>
+                        <option value="<?php echo $c;?>" <?= ($selected_consignee_name == $c ? 'selected' : '') ?> consignee_id="<?php echo $key;?>"><?php echo $c;?></option>
                         <?php }?>
                     <?php } ?>
             </select>
             <?php
             if ($validation->getError('consignee_name')) {
                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('consignee_name') . '</div>';
+            }
+            ?>
+        </div>
+
+        <div class="col-md-4">
+            <label class="col-form-label">Branch Name<span class="text-danger" <?= isset($loading_receipts['consignee_id']) && ($loading_receipts['consignee_id'] < 1 ) ? 'hidden' : '' ?>   id="consignee_branch_span">*</span></label>
+            <select class="form-select select2" <?= isset($loading_receipts['consignee_id']) && ($loading_receipts['consignee_id'] >0) ? 'required' : 'disabled' ?> name="consignee_office_id" id="consignee_office_id" aria-label="Default select example" disabled>
+                <option value="">Select Office</option>
+                <?php foreach ($offices as $o) {?> 
+                <option value="<?= $o['id'] ?>" <?= (isset($loading_receipts['consignee_office_id']) && ($loading_receipts['consignee_office_id'] == $o['id'])) ? 'selected' : ''?>><?= $o['name'] ?></option>
+                <?php  } ?>
+            </select>
+            <?php
+            if ($validation->getError('office_id')) {
+                echo '<div class="alert alert-danger mt-2">' . $validation->getError('office_id') . '</div>';
             }
             ?>
         </div>
@@ -218,7 +248,7 @@
             <select class="form-select select2" required name="consignee_state" id="consignee_state" aria-label="Default select example">
                 <option value="">Select</option>
                 <?php foreach ($states as $o) { ?> 
-                 <option value="<?= $o['state_id'] ?>" <?= (isset($loading_receipts['consignee_state']) && ($loading_receipts['consignee_state'] = $o['state_id'])) ? 'selected' : ''?> ><?= $o['state_name'] ?></option> 
+                 <option value="<?= $o['state_id'] ?>" <?= (isset($loading_receipts['consignee_state']) && ($loading_receipts['consignee_state'] == $o['state_id'])) ? 'selected' : ''?> ><?= $o['state_name'] ?></option> 
                 <?php } ?>
             </select>
             <?php
@@ -276,7 +306,7 @@
             <select class="form-select select2" required name="place_of_delivery_state" id="place_of_delivery_state" aria-label="Default select example">
                 <option value="">Select</option>
                 <?php foreach ($states as $o) { ?> 
-                 <option value="<?= $o['state_id'] ?>" <?= (isset($loading_receipts['place_of_delivery_state']) && ($loading_receipts['place_of_delivery_state'] = $o['state_id'])) ? 'selected' : ''?> ><?= $o['state_name'] ?></option> 
+                 <option value="<?= $o['state_id'] ?>" <?= (isset($loading_receipts['place_of_delivery_state']) && ($loading_receipts['place_of_delivery_state'] == $o['state_id'])) ? 'selected' : ''?> ><?= $o['state_name'] ?></option> 
                 <?php } ?>
             </select>
             <?php
@@ -324,7 +354,7 @@
             <select class="form-select select2" required name="place_of_dispatch_state" id="place_of_dispatch_state" aria-label="Default select example">
                 <option value="">Select</option>
                 <?php foreach ($states as $o) { ?> 
-                 <option value="<?= $o['state_id'] ?>" <?= (isset($loading_receipts['place_of_dispatch_state']) && ($loading_receipts['place_of_dispatch_state'] = $o['state_id'])) ? 'selected' : ''?> ><?= $o['state_name'] ?></option> 
+                 <option value="<?= $o['state_id'] ?>" <?= (isset($loading_receipts['place_of_dispatch_state']) && ($loading_receipts['place_of_dispatch_state'] == $o['state_id'])) ? 'selected' : ''?> ><?= $o['state_name'] ?></option> 
                 <?php } ?>
             </select> 
             <?php

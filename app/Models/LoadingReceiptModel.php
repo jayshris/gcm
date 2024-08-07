@@ -57,6 +57,10 @@ class LoadingReceiptModel extends Model
         'releasing_datetime',
         'policy_date', 
         'policy_no',
+        'consignor_id',
+        'consignor_office_id',
+        'consignee_id',
+        'consignee_office_id'
     ];
 
     protected bool $allowEmptyInserts = false;

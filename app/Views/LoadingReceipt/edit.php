@@ -85,12 +85,16 @@
 				tags: true
 			}); 
 		}); 
-		$("#consignor_name").val($('#selected_consignor_name').val()).trigger('change');
-		$("#consignee_name").val($('#selected_consignee_name').val()).trigger('change'); 
+		// $("#consignor_name").val($('#selected_consignor_name').val()).trigger('change');
+		// $("#consignee_name").val($('#selected_consignee_name').val()).trigger('change'); 
 
 		function changeIdIpt(thisv,party_id,id,key = 'consignor'){   
 			$('#'+id).val( (party_id) > 0 ? party_id : 0) ;
-
+			var party_id = (party_id) > 0 ? party_id : 0; 
+			var pre = 'place_of_delivery';
+			if(key == 'consignor'){
+				pre = 'place_of_dispatch';
+			} 
 			if(party_id>0){
 				$.ajax({
 				method: "POST",
@@ -100,12 +104,7 @@
 				},
 				dataType: "json",
 				success: function(res) { 
-					// alert(res.state_id); 
-						var pre = 'place_of_delivery';
-						if(key == 'consignor'){
-							pre = 'place_of_dispatch';
-						}
-						// alert($("#"+key+"_state").val());
+					// alert(res.state_id);  
 						$("#"+key+"_state").val(res.state_id).attr("selected","selected").trigger('change');  
 						$("#"+pre+"_state").val(res.state_id).attr("selected","selected").trigger('change');  
 						$("#"+key+"_address").val(res.business_address);
@@ -118,8 +117,28 @@
 						$("#"+pre+"_pincode").val(res.postcode);
 					}
 				});
+				
+				$("#"+key+"_branch_span").removeAttr('hidden');
+				$("#"+key+"_office_id").removeAttr('disabled');
+				$("#"+key+"_office_id").attr('required','required');
+			}else{
+				$("#"+key+"_state").val('').attr("selected","selected").trigger('change');  
+				$("#"+pre+"_state").val('').attr("selected","selected").trigger('change');  
+				$("#"+key+"_address").val('');
+				$("#"+pre+"_address").val('');
+
+				$("#"+key+"_city").val('');
+				$("#"+pre+"_city").val('');
+
+				$("#"+key+"_pincode").val('');
+				$("#"+pre+"_pincode").val('');
+				
+				$("#"+key+"_branch_span").attr('hidden','hidden');
+				$("#"+key+"_office_id").attr('disabled','disabled');
+				$("#"+key+"_office_id").removeAttr('required');
 			}
 		}
+		
 
 	</script>
 </body>
