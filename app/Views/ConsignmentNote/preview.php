@@ -117,7 +117,7 @@
                                                         <span class="s6 td-sub">
                                                         Subject to Delhi Jurisdiction         
                                                         </span>
-                                                        <span class="s7">CONSIGNMENT NOTE</span> Official Use Only
+                                                        <span class="s7">CONSIGNMENT NOTE</span>
                                                     </p>
                                                 </td>
                                             </tr>
