@@ -105,6 +105,7 @@
                         <th>From City</th>
                         <th>Drop City</th>
                         <th>Status</th>
+                        <th>Loading Receipt</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -134,7 +135,7 @@
                             </div>
 
                           </td> -->
-                          <td><?= makeListActions($currentController, $Action, $b['id'], 2) ?></td>
+                          <td><?= makeListActions($currentController, $Action, $b['id'], 2, false, $b) ?></td>
                           <td><?= $b['booking_number'] ?></td>
                           <td><?= $b['party_name'] ?></td>
                           <td><?= $b['rc_number'] != '' ? $b['rc_number'] : '<span class="text-danger">Not Assigned</span>' ?></td>
@@ -142,7 +143,7 @@
                           <td><?= isset($from['city']) ? $from['city'] : '' ?></td>
                           <td><?= isset($to['city']) ? $to['city'] : '' ?></td>
                           <td><span class="badge badge-pill <?= $b['status_bg'] ?>"><?= $b['status_name'] ?></span></td>
-
+                          <td><span class="badge badge-pill <?= (isset($b['lr_id']) && ($b['lr_id'] >0) ? 'bg-success' : 'bg-danger') ?>"> <?= (isset($b['lr_id']) && ($b['lr_id'] >0) ? 'Generated' : 'Not Generated') ?></span></td>        
                           </td>
                         </tr>
                       <?php } ?>

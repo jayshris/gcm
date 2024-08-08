@@ -58,7 +58,7 @@ define('ROLE_MODULE', TABLE_PRE . 'role_modules' . TABLE_SUF);
 define('USER', TABLE_PRE . 'users' . TABLE_SUF);
 define('USER_MODULE', TABLE_PRE . 'user_modules' . TABLE_SUF);
 
-function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $dropdown=false)
+function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $dropdown=false, $row=[])
 {
 	$menu = '';
 	if (!empty($actions)) {
@@ -87,8 +87,21 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 						$menu .= anchor(PANEL . $module . '/' . $secLink . '/' . $token, '<i class="' . $cssClass . '"></i> ' . ucfirst($secName), ['class' => 'dropdown-item', 'onclick' => $confirm]);
 					}
 					else{
-						$menu .= anchor(PANEL . $module . '/' . $secLink . '/' . $token, '<i class="'.$cssClass.'" data-bs-toggle="tooltip" aria-label="'.$cssClass.'" data-bs-original-title="'.ucfirst($secName).'"></i> ', ['class' => 'btn btn-icon btn-outline-primary rounded-pill', 'onclick' => $confirm, 'title'=>ucfirst($secName)]);
-						$menu .= ' &nbsp; ';
+						$makeButton = 1;
+						if($module=='booking'){
+							if($secLink=='approve' && $row['approved']==1)	$makeButton = 0;
+							//if($secLink=='assign_vehicle' && $row['vehicle_id']>0)	$makeButton = 0;
+
+							if($secLink=='assign_vehicle' && $row['approved']==0)	$makeButton = 0;
+
+							if($secLink=='cancel' && ($row['status']==14 || $row['status']>=5))	$makeButton = 0;
+
+							if($secLink=='approval_for_cancellation' && $row['status']!=14)	$makeButton = 0;
+						}
+						if($makeButton==1){
+							$menu .= anchor(PANEL . $module . '/' . $secLink . '/' . $token, '<i class="'.$cssClass.'" data-bs-toggle="tooltip" aria-label="'.$cssClass.'" data-bs-original-title="'.ucfirst($secName).'"></i> ', ['class' => 'btn btn-icon btn-outline-primary rounded-pill', 'onclick' => $confirm, 'title'=>ucfirst($secName)]);
+							$menu .= ' &nbsp; ';
+						}
 					}
 				}
 			}

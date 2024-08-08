@@ -92,11 +92,12 @@ class Booking extends BaseController
 
     public function index()
     { 
-        $this->BModel->select('bookings.*, party.party_name, vehicle.rc_number, IF(bookings.status = 0, "Created", booking_status.status_name) as status_name,IF(bookings.status = 0, "bg-success", booking_status.status_bg) as status_bg')
+        $this->BModel->select('bookings.*, party.party_name, vehicle.rc_number, IF(bookings.status = 0, "Created", booking_status.status_name) as status_name,IF(bookings.status = 0, "bg-success", booking_status.status_bg) as status_bg,lr.id as lr_id')
             ->join('customer', 'customer.id = bookings.customer_id')
             ->join('party', 'party.id = customer.party_id')
             ->join('vehicle', 'vehicle.id = bookings.vehicle_id', 'left')
-            ->join('booking_status', 'booking_status.id = bookings.status', 'left');
+            ->join('booking_status', 'booking_status.id = bookings.status', 'left')
+            ->join('loading_receipts lr', 'bookings.id = lr.booking_id', 'left');
 
         if ($this->request->getPost('status') != '') {
             $this->BModel->where('bookings.status', $this->request->getPost('status'));
@@ -429,7 +430,8 @@ class Booking extends BaseController
                 'discount' => $this->request->getPost('discount'),
                 'bill_to_party' => $this->request->getPost('bill_to'),
                 'remarks' => $this->request->getPost('remarks'),
-                'status' => $isVehicle ? '3' : '2',
+                // 'status' => $isVehicle ? '3' : '2',
+                'status' => 2,
                 'approved_by' => $this->added_by,
                 'approved_ip' => $this->added_ip,
                 'approved_date' => date('Y-m-d h:i:s'),
