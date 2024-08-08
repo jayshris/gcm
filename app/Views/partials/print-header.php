@@ -1,4 +1,4 @@
-<div class="page-wrapper print-header" style="display: none;">
+<div class="page-wrapper print-header"  style="display: none;">
       <div class="content"> 
         <div class="row"> 
           <div  class="prdheader col-md-12 col-sm-12">

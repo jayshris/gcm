@@ -25,7 +25,7 @@
             <div class="page-header">
               <div class="row align-items-center">
                 <div class="col-8">
-                  <h4 class="page-title">Consignment Note For Office Use</h4>
+                  <h4 class="page-title">Consignment Note</h4>
                 </div>
                 <div class="col-4 text-end">
                   <div class="head-icons">
