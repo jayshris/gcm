@@ -217,6 +217,11 @@ class LoadingReceipt extends BaseController
   function edit($id){  
     $stateModel = new StateModel();
     $this->view['loading_receipts'] = $this->LoadingReceiptModel->where(['id' => $id])->first();
+    
+    if($this->view['loading_receipts']['approved'] ==1){
+      $this->session->setFlashdata('danger', 'Loading Receipt can not be allow to update because of LR is approved.'); 
+      return $this->response->redirect(base_url('/loadingreceipt'));
+    }
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
     $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
     $this->view['bookings'] = $this->BookingsModel->where('approved', '1')->findAll();
@@ -439,5 +444,176 @@ class LoadingReceipt extends BaseController
       $bookings = $this->BookingsModel->where('approved', '1')->findAll(); 
     }
     echo json_encode($bookings);exit;
+  }
+
+  function approve($id){
+    $stateModel = new StateModel();
+    $this->view['loading_receipts'] = $this->LoadingReceiptModel->where(['id' => $id])->first();
+    $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
+    $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
+    $this->view['bookings'] = $this->BookingsModel->where('approved', '1')->findAll();
+    
+    $this->view['vehicles'] =  $this->BookingsModel->select('v.id,v.rc_number') 
+    ->join('vehicle v','bookings.vehicle_id = v.id')->orderBy('v.id', 'desc')
+    ->where('bookings.approved', '1')
+    ->groupBy('bookings.vehicle_id')
+    ->findAll();
+   
+    //consignor, consignees changes
+      
+    $this->view['consignors_list'] = $this->CustomersModel->select('party.*')
+    ->join('party', 'customer.party_id = party.id')
+    ->where("FIND_IN_SET (8,customer.party_type_id)")
+    ->orderBy('party.party_name')->findAll();          
+
+    $this->view['consignees_list'] = $this->CustomersModel->select('party.*')
+    ->join('party', 'customer.party_id = party.id')
+    ->where("FIND_IN_SET (9,customer.party_type_id)")
+    ->orderBy('party.party_name')->findAll();   
+
+    $this->view['selected_consignor_name'] = isset($this->view['loading_receipts']) ? $this->view['loading_receipts']['consignor_name'] : 0;
+    $this->view['selected_consignee_name'] = isset($this->view['loading_receipts']) ? $this->view['loading_receipts']['consignee_name'] : 0;
+
+    $this->view['consignors']  = array_column($this->view['consignors_list'],'party_name','id');
+    $this->view['consignees']  = array_column($this->view['consignees_list'],'party_name','id');
+  
+    if(isset($this->view['loading_receipts']) && !empty($this->view['loading_receipts']['consignor_name'])){
+        if(!in_array($this->view['loading_receipts']['consignor_name'],$this->view['consignors'])){
+            array_push($this->view['consignors'],$this->view['loading_receipts']['consignor_name']);
+        }
+    } 
+
+    if(isset($this->view['loading_receipts']) && !empty($this->view['loading_receipts']['consignee_name'])){
+        if(!in_array($this->view['loading_receipts']['consignee_name'],$this->view['consignees'])){
+            array_push($this->view['consignees'],$this->view['loading_receipts']['consignee_name']);
+        }
+    } 
+
+    $party_type_ids = $this->PTModel->select("(GROUP_CONCAT(id)) party_type_ids") 
+    ->where('lr_third_party', '1') 
+    ->first(); 
+     $party_type_ids = str_replace([',',', '],'|', $party_type_ids );
+   
+    $this->view['transporters'] = $this->CustomersModel->select('party.id,party.party_name')
+        ->join('party', 'party.id = customer.party_id')
+        ->where('customer.status', '1')
+        ->where('CONCAT(",", party_type_id, ",") REGEXP ",('.$party_type_ids['party_type_ids'].'),"')
+        ->findAll(); 
+
+    if($this->request->getPost()){
+      $error = $this->validate([
+        'booking_id'   =>  'required',  
+        'loading_station'   =>  'required', 
+        'delivery_station'   =>  'required', 
+        'consignment_date'   =>  'required', 
+        'consignor_name'   =>  'required', 
+        'consignor_address'   =>  'required', 
+        'consignor_city'   =>  'required', 
+        'consignor_state'   =>  'required', 
+        'consignor_pincode'   =>  'required', 
+        'consignor_GSTIN'   =>  'required',  
+        'consignee_name'   =>  'required', 
+        'consignee_address'   =>  'required',  
+        'consignee_city'   =>  'required', 
+        'consignee_state'   =>  'required', 
+        'consignee_pincode'   =>  'required', 
+        'consignee_GSTIN'   =>  'required',  
+        'place_of_delivery_address'   =>  'required',  
+        'place_of_delivery_city'   =>  'required', 
+        'place_of_delivery_state'   =>  'required', 
+        'place_of_delivery_pincode'   =>  'required', 
+        'place_of_dispatch_address'   =>  'required',  
+        'place_of_dispatch_city'   =>  'required', 
+        'place_of_dispatch_state'   =>  'required', 
+        'place_of_dispatch_pincode'   =>  'required', 
+        'particulars'   =>  'required',  
+        'hsn_code'   =>  'required', 
+        'no_of_packages'   =>  'required', 
+        'actual_weight'   =>  'required', 
+        'charge_weight'   =>  'required',  
+        'payment_terms'   =>  'required',  
+        'e_way_expiry_date'   =>  'required', 
+        'freight_charges_amount'   =>  'required', 
+      ]); 
+      $validation = \Config\Services::validation();
+      // echo 'POst dt<pre>';print_r($this->request->getPost());
+      // echo 'getErrors<pre>';print_r($validation->getErrors());//exit;
+
+      if (!$error) {
+        $this->view['error']   = $this->validator;
+      } else {
+        $booking = $this->BookingsModel->where('id', $this->request->getVar('booking_id'))->first();
+        $data = [ 
+          'booking_id'   =>  $this->request->getVar('booking_id'), 
+          'office_id'   =>  $booking['office_id'],
+          'booking_date'   => $booking['booking_date'],
+          'vehicle_id'   =>  $booking['vehicle_id'],
+          'loading_station'   =>  $this->request->getVar('loading_station'),
+          'delivery_station'   =>  $this->request->getVar('delivery_station'),
+          'consignment_date'   =>  $this->request->getVar('consignment_date'),
+          'consignor_name'   =>  $this->request->getVar('consignor_name'),
+          'consignor_address'   =>  $this->request->getVar('consignor_address'),
+          'consignor_city'   =>  $this->request->getVar('consignor_city'),
+          'consignor_state'   =>  $this->request->getVar('consignor_state'),
+          'consignor_pincode'   =>  $this->request->getVar('consignor_pincode'),
+          'consignor_GSTIN'   =>  $this->request->getVar('consignor_GSTIN'),
+          'consignee_name'   =>  $this->request->getVar('consignee_name'),
+          'consignee_address'   =>  $this->request->getVar('consignee_address'), 
+          'consignee_city'   =>  $this->request->getVar('consignee_city'),
+          'consignee_state'   =>  $this->request->getVar('consignee_state'),
+          'consignee_pincode'   =>  $this->request->getVar('consignee_pincode'),
+          'consignee_GSTIN'   =>  $this->request->getVar('consignee_GSTIN'),
+          'place_of_delivery_address'   =>  $this->request->getVar('place_of_delivery_address'),
+          'place_of_delivery_city'   =>  $this->request->getVar('place_of_delivery_city'),
+          'place_of_delivery_state'   =>  $this->request->getVar('place_of_delivery_state'),
+          'place_of_delivery_pincode'   =>  $this->request->getVar('place_of_delivery_pincode'),
+          'place_of_dispatch_address'   =>  $this->request->getVar('place_of_dispatch_address'), 
+          'place_of_dispatch_city'   =>  $this->request->getVar('place_of_dispatch_city'),
+          'place_of_dispatch_state'   =>  $this->request->getVar('place_of_dispatch_state'),
+          'place_of_dispatch_pincode'   =>  $this->request->getVar('place_of_dispatch_pincode'),
+          'particulars'   =>  $this->request->getVar('particulars'), 
+          'hsn_code'   =>  $this->request->getVar('hsn_code'),
+          'no_of_packages'   =>  $this->request->getVar('no_of_packages'),
+          'actual_weight'   =>  $this->request->getVar('actual_weight'),
+          'charge_weight'   =>  $this->request->getVar('charge_weight'), 
+          'payment_terms'   =>  $this->request->getVar('payment_terms'),
+          'e_way_bill_number'   =>  $this->request->getVar('e_way_bill_number'),
+          'e_way_expiry_date'   =>  $this->request->getVar('e_way_expiry_date'),
+          'freight_charges_amount'   =>  $this->request->getVar('freight_charges_amount'),
+          'invoice_boe_no'   =>  $this->request->getVar('invoice_boe_no'), 
+          'invoice_boe_date'   =>  $this->request->getVar('invoice_boe_date'),
+          'invoice_value'   =>  $this->request->getVar('invoice_value'),
+          'reporting_datetime'   =>  $this->request->getVar('reporting_datetime'),
+          'releasing_datetime'   =>  $this->request->getVar('releasing_datetime'),
+          'policy_date'   =>  $this->request->getVar('policy_date'),
+          'policy_no'   =>  $this->request->getVar('policy_no'),
+          'consignor_id'   =>  $this->request->getVar('consignor_id'),
+          'consignor_office_id'   =>  $this->request->getVar('consignor_office_id') ? $this->request->getVar('consignor_office_id') : 0,
+          'consignee_id'   =>  $this->request->getVar('consignee_id'),
+          'consignee_office_id'   =>  $this->request->getVar('consignee_office_id') ? $this->request->getVar('consignee_office_id') : 0,
+          'customer_name'   =>  $this->request->getVar('customer_name'),
+          'transporter_bilti_no'   =>  $this->request->getVar('transporter_bilti_no'),
+          'transporter_id' =>  $this->request->getVar('transporter_id'),
+          'transporter_office_id' =>  $this->request->getVar('transporter_office_id'),
+          'transporter_address' =>  $this->request->getVar('transporter_address'),
+          'transporter_city' =>  $this->request->getVar('transporter_city'),
+          'transporter_state' =>  $this->request->getVar('transporter_state'),
+          'transporter_pincode' =>  $this->request->getVar('transporter_pincode'),
+          'transporter_GSTIN' =>  $this->request->getVar('transporter_GSTIN'),
+          'approved' => ($this->request->getVar('approved')) ? $this->request->getVar('approved') : 0,
+        ];
+
+        // echo 'data<pre>';print_r($data);exit;
+        $this->LoadingReceiptModel->update($id,$data); 
+        $msg = 'Loading Receipt Updated Successfully';
+        if($this->request->getVar('approved')){
+          $msg = 'Loading Receipt Approved Successfully';
+        }
+        $this->session->setFlashdata('success', $msg);
+
+        return $this->response->redirect(base_url('/loadingreceipt'));
+      }
+    }
+    return view('LoadingReceipt/approve', $this->view); 
   }
 }

@@ -98,7 +98,14 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 
 							if($secLink=='approval_for_cancellation' && $row['status']!=14)	$makeButton = 0;
 
-							if($secLink=='unassign_vehicle' && ($row['is_vehicle_assigned'] != 1))	$makeButton = 0;
+							if($secLink=='unassign_vehicle' && ($row['is_vehicle_assigned'] != 1))	$makeButton = 0; 
+							
+						}
+
+						if($module=='loadingreceipt'){
+							if($secLink=='approve' && $row['approved']==1)	$makeButton = 0;
+
+							if($secLink=='edit' && $row['approved']==1)	$makeButton = 0;
 						}
 						if($makeButton==1){
 							$menu .= anchor(PANEL . $module . '/' . $secLink . '/' . $token, '<i class="'.$cssClass.'" data-bs-toggle="tooltip" aria-label="'.$cssClass.'" data-bs-original-title="'.ucfirst($secName).'"></i> ', ['class' => 'btn btn-icon btn-outline-primary rounded-pill', 'onclick' => $confirm, 'title'=>ucfirst($secName)]);

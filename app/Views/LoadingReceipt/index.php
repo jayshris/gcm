@@ -79,7 +79,7 @@
 											?>
 											<tr>
 												<td><?= $i++; ?>.</td> 
-												<td><?= makeListActions($currentController, $Action, $b['id'], 2) ?></td>
+												<td><?= makeListActions($currentController, $Action, $b['id'], 2, false, $b) ?></td>
 												<td><?= $b['consignment_no'] ?></td>
 												<td><?= $b['booking_number'] ?></td>
 												<td><?= $b['branch_name'] ?></td>

@@ -639,6 +639,16 @@
             }
             ?>
         </div>
+
+        <?php if($currentMethod == 'approve'){ ?> 
+        <div class="col-md-12 mb-3">
+            <input type="checkbox" id="approved" class="form-check-input" name="approved" value="1"  > 
+            <label class="form-check-label" for="approve"> Approve</label>
+            <br/>
+            <span class="text-info">Loading Receipt can not be allow to update after approve.</span>
+        </div>  
+        <?php } ?>
+
     </div>
     <br>
 </div> 
