@@ -327,3 +327,9 @@
 .bobn{
     border-bottom: none !important;
 }
+.flr p.rl{
+    float: right !important;
+}
+.pdl6{
+    padding-left: 6px;
+}
