@@ -78,7 +78,12 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 				$secName  = isset($act->section_name) ? $act->section_name : '';
 				$secLink  = strtolower(str_replace(' ', '_', $secName));
 				$cssClass = isset($act->section_icon) ? $act->section_icon : '';
-				$confirm  = ($act->alert_msg == '1') ? "return confirm('Are you sure want to delete this record?')" : '';
+				if($module=='booking'){
+					$confirm  = ($act->alert_msg == '1') ? "return confirm('Are you sure want to cancel this record?')" : '';
+				}else{
+					$confirm  = ($act->alert_msg == '1') ? "return confirm('Are you sure want to delete this record?')" : '';
+				}
+				
 
 				if ($pos == 1) {
 					$menu .= '<li>' . anchor(PANEL . $module . '/' . $secLink, '<i class="' . $cssClass . '"></i> &nbsp;' . ucfirst($secName), ['class' => 'btn btn-primary']) . '</li>';
