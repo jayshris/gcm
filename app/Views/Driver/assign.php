@@ -77,25 +77,15 @@
                                                             </div>
                                                         <?php  } ?>
 
-                                                        <div class="col-md-2">
+                                                        <div class="col-md-3">
                                                             <label class="col-form-label">Assigned Date<span class="text-danger">*</span></label>
-                                                            <input type="date" required name="assigned_date" min="<?= date('Y-m-d') ?>" value="<?= isset($assignment_details["assign_date"])  && (strtotime($assignment_details["assign_date"]) > 0) ? date('Y-m-d',strtotime($assignment_details["assign_date"])) : ''; ?>" class="form-control">
+                                                            <input type="datetime-local" required name="assigned_date" min="<?= date('Y-m-d H:i') ?>" value="<?= isset($assignment_details["assign_date"])  && (strtotime($assignment_details["assign_date"]) > 0) ? date('Y-m-d H:i',strtotime($assignment_details["assign_date"])) : ''; ?>" class="form-control">
                                                             <?php
                                                             if ($validation->getError('assigned_date')) {
                                                                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('assigned_date') . '</div>';
                                                             }   
                                                             ?>
-                                                        </div>
-
-                                                        <div class="col-md-2">
-                                                            <label class="col-form-label">Assigned Time<span class="text-danger">*</span></label>
-                                                            <input type="time" required name="assigned_time" class="form-control" value="<?= isset($assignment_details["assign_date"])  && (strtotime($assignment_details["assign_date"]) > 0) ? date('H:i:s',strtotime($assignment_details["assign_date"])) : ''; ?>">
-                                                            <?php
-                                                            if ($validation->getError('assigned_time')) {
-                                                                echo '<div class="alert alert-danger mt-2">' . $validation->getError('assigned_time') . '</div>';
-                                                            }   
-                                                            ?>
-                                                        </div>
+                                                        </div> 
 
                                                         <div class="col-md-12"></div>
 

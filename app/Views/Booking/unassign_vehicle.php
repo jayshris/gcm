@@ -36,10 +36,11 @@
                       // print_r($booking_details);
                       // print_r($offices);
                       ?>
-                      <form method="post" enctype="multipart/form-data" action="<?php echo base_url('booking/assign_vehicle/' . $booking_details['id']); ?>">
+                      <?php echo form_open_multipart(base_url().$currentController.'/'.$currentMethod. '/'.$booking_details['id'], ['name'=>'actionForm', 'id'=>'actionForm']);?>
+                      <!-- <form method="post" enctype="multipart/form-data" action="<?php //echo base_url('booking/assign_vehicle/' . $booking_details['id']); ?>"> -->
 
                         <div class="settings-sub-header">
-                          <h6>Assign Vehicle To Booking</h6>
+                          <h6>Unassign Vehicle To Booking</h6>
                         </div>
                         <div class="profile-details">
                           <div class="row g-3"> 
@@ -145,17 +146,17 @@
                             <div class="col-md-12"></div> 
                             
                             <div class="col-md-6">
-                              <label class="col-form-label">Assign Datetime<span class="text-danger">*</span></label>
-                              <input type="datetime-local" required name="assign_date" min="<?= date('Y-m-d H:i',strtotime($booking_details['booking_date'])) ?>" value="<?= isset($booking_vehicle['assign_date']) ? $booking_vehicle['assign_date'] : date('Y-m-d H:i') ?>" class="form-control">
+                              <label class="col-form-label">Unassign Date<span class="text-danger">*</span></label> 
+                              <input type="datetime-local" required name="unassign_date" min="<?= date('Y-m-d H:i',strtotime($booking_vehicle['assign_date'])) ?>" value="<?= date('Y-m-d H:i') ?>" class="form-control">
                               <?php
-                              if ($validation->getError('assign_date')) {
-                                  echo '<div class="alert alert-danger mt-2">' . $validation->getError('assign_date') . '</div>';
+                              if ($validation->getError('unassign_date')) {
+                                  echo '<div class="alert alert-danger mt-2">' . $validation->getError('unassign_date') . '</div>';
                               }   
                               ?>
                             </div>
                             <div class="col-md-6">
                               <label class="col-form-label">Vehicle Location</label>
-                              <input type="text" name="vehicle_location" value="<?= isset($booking_vehicle['vehicle_location']) ? $booking_vehicle['vehicle_location'] : '' ?>" class="form-control">
+                              <input type="text" name="vehicle_location" class="form-control">
                               <?php
                               if ($validation->getError('vehicle_location')) {
                                   echo '<div class="alert alert-danger mt-2">' . $validation->getError('vehicle_location') . '</div>';
@@ -165,7 +166,7 @@
 
                             <div class="col-md-6">
                               <label class="col-form-label">Vehicle Type<span class="text-danger">*</span></label>
-                              <select class="form-select" name="vehicle_type" id="vehicle_type" aria-label="Default select example" onchange="$.getVehicles();">
+                              <select class="form-select" disabled name="vehicle_type" id="vehicle_type" aria-label="Default select example" onchange="$.getVehicles();">
                                 <option value="">Select Vehicle Type</option>
                                 <?php foreach ($vehicle_types as $vt) {
                                   echo '<option value="' . $vt['id'] . '"  ' . ($booking_details['vehicle_type_id'] == $vt['id'] ? 'selected' : '') . '>' . $vt['name'] . '</option>';
@@ -175,7 +176,7 @@
 
                             <div class="col-md-6">
                               <label class="col-form-label">Vehicle Number<span class="text-danger">*</span></label>
-                              <select class="form-select select2" name="vehicle_rc" id="vehicle_rc" aria-label="Default select example" required  onchange="$.getBookingVehicleDetails();">
+                              <select class="form-select select2" disabled name="vehicle_rc" id="vehicle_rc" aria-label="Default select example" required  onchange="$.getBookingVehicleDetails();">
                                 <option value="">Select Vehicle</option>
                                 <?php foreach ($vehicle_rcs as $rc) {
                                   echo '<option value="' . $rc['id'] . '" ' . ($booking_details['vehicle_id'] == $rc['id'] ? 'selected' : '') . '>' . $rc['rc_number'] . ' - ' . $rc['party_name'] . '</option>';

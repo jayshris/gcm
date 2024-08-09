@@ -514,7 +514,7 @@ class Driver extends BaseController
       $result = $this->DVAModel->where('driver_id', $id)->where('unassign_date', '')->first();
 
       if ($result) {
-        $this->VModel->update($result['vehicle_id'], ['working_status' => '1']);
+        $this->VModel->update($result['vehicle_id'], ['is_driver_assigned' => '0']);
         $this->DVAModel->update($result['id'], ['unassign_date' => date('Y-m-d h:i:s'), 'unassigned_by' => $this->added_by]);
       }
 
@@ -524,19 +524,20 @@ class Driver extends BaseController
         'vehicle_location' => $this->request->getPost('location'),
         'vehicle_fuel_status' => $this->request->getPost('fuel'),
         'vehicle_km_reading' => $this->request->getPost('km'),
-        'assigned_by' => $this->added_by
+        'assigned_by' => $this->added_by,
+        'assign_date' => $this->request->getPost('assign_date'),
       ];
       $this->DVAModel->insert($arr);
       $this->session->setFlashdata('success', 'Vehicle assigned to driver');
 
       // change driver and vehicle status
-      $this->VModel->update($this->request->getPost('vehicle_id'), ['working_status' => '2']);
+      $this->VModel->update($this->request->getPost('vehicle_id'), ['is_driver_assigned' => '1']);
 
       return $this->response->redirect(base_url('driver'));
     } else {
 
       $this->view['token'] = $id;
-      $this->view['free_vehicles'] = $this->VModel->where('working_status', '1')->findAll();
+      $this->view['free_vehicles'] = $this->VModel->where('is_driver_assigned', '0')->findAll();
       $this->view['vehicles'] = $this->VModel->findAll();
       $this->view['driver_detail'] = $this->DModel->select('driver.*, party.party_name')->join('party', 'party.id = driver.party_id')->where('driver.id', $id)->first();
       $this->view['assignment_details'] = $this->DVAModel->where('driver_id', $id)->where('unassign_date', '')->first();
@@ -551,7 +552,7 @@ class Driver extends BaseController
 
     if ($link) {
       $this->DVAModel->update($link['id'], ['unassign_date' =>  date("Y-m-d h:i:sa"), 'unassigned_by' => $this->added_by]);
-      $this->VModel->update($link['vehicle_id'], ['working_status' => '1']);
+      $this->VModel->update($link['vehicle_id'], ['is_driver_assigned' => 0]);
 
       $this->session->setFlashdata('success', 'Vehicle Unassigned From Driver');
     } else $this->session->setFlashdata('success', 'No Vehicle Assigned');

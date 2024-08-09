@@ -350,7 +350,7 @@
 
                             <div class="col-md-2">
                               <label class="col-form-label">Booking Date<span class="text-danger">*</span></label>
-                              <input type="date" required name="booking_date" min="<?= date('Y-m-d', strtotime('-30 days')) ?>" value="<?= date('Y-m-d') ?>" class="form-control">
+                              <input type="date" required name="booking_date" value="<?= date('Y-m-d') ?>" class="form-control">
                               <?php
                               if ($validation->getError('booking_date')) {
                                   echo '<div class="alert alert-danger mt-2">' . $validation->getError('booking_date') . '</div>';
