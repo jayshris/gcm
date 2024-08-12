@@ -53,11 +53,11 @@ class LoadingReceipt extends BaseController
     $stateModel = new StateModel();
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
     $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
-    $this->view['bookings'] = $this->BookingsModel->where('approved', '1')->findAll(); 
+    $this->view['bookings'] = $this->BookingsModel->where(['approved'=> '1','is_vehicle_assigned' => 1])->findAll(); 
             
     $this->view['vehicles'] =  $this->BookingsModel->select('v.id,v.rc_number') 
     ->join('vehicle v','bookings.vehicle_id = v.id')->orderBy('v.id', 'desc')
-    ->where('bookings.approved', '1')
+    ->where(['bookings.approved'=> '1','bookings.is_vehicle_assigned' => 1])
     ->groupBy('bookings.vehicle_id')
     ->findAll();
 
@@ -224,11 +224,11 @@ class LoadingReceipt extends BaseController
     }
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
     $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
-    $this->view['bookings'] = $this->BookingsModel->where('approved', '1')->findAll();
+    $this->view['bookings'] = $this->BookingsModel->where(['approved'=> '1','is_vehicle_assigned' => 1])->findAll();
     // $this->view['vehicles'] = $this->VModel->where('status', 1)->findAll();
     $this->view['vehicles'] =  $this->BookingsModel->select('v.id,v.rc_number') 
     ->join('vehicle v','bookings.vehicle_id = v.id')->orderBy('v.id', 'desc')
-    ->where('bookings.approved', '1')
+    ->where(['bookings.approved'=> '1','bookings.is_vehicle_assigned' => 1])
     ->groupBy('bookings.vehicle_id')
     ->findAll();
    
@@ -439,9 +439,9 @@ class LoadingReceipt extends BaseController
 
   function getVehicleBookings(){
     if($this->request->getPost('vehicle_id') > 0){
-      $bookings = $this->BookingsModel->where('vehicle_id', $this->request->getPost('vehicle_id'))->where('approved', '1')->findAll();       
+      $bookings = $this->BookingsModel->where('vehicle_id', $this->request->getPost('vehicle_id'))->where(['approved'=> '1','is_vehicle_assigned' => 1])->findAll();       
     }else{
-      $bookings = $this->BookingsModel->where('approved', '1')->findAll(); 
+      $bookings = $this->BookingsModel->where(['approved'=> '1','is_vehicle_assigned' => 1])->findAll(); 
     }
     echo json_encode($bookings);exit;
   }
@@ -451,11 +451,11 @@ class LoadingReceipt extends BaseController
     $this->view['loading_receipts'] = $this->LoadingReceiptModel->where(['id' => $id])->first();
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
     $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
-    $this->view['bookings'] = $this->BookingsModel->where('approved', '1')->findAll();
+    $this->view['bookings'] = $this->BookingsModel->where(['approved'=> '1','is_vehicle_assigned' => 1])->findAll();
     
     $this->view['vehicles'] =  $this->BookingsModel->select('v.id,v.rc_number') 
     ->join('vehicle v','bookings.vehicle_id = v.id')->orderBy('v.id', 'desc')
-    ->where('bookings.approved', '1')
+    ->where(['bookings.approved'=> '1','bookings.is_vehicle_assigned' => 1])
     ->groupBy('bookings.vehicle_id')
     ->findAll();
    

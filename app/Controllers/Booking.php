@@ -2,28 +2,29 @@
 
 namespace App\Controllers;
 
-use App\Models\CityModel;
-use App\Models\UserModel;
-use App\Models\PartyModel;
-use App\Models\StateModel;
-use App\Models\OfficeModel;
-use App\Models\ProfileModel;
-use App\Models\VehicleModel;
-use App\Models\BookingsModel;
-use App\Models\EmployeeModel;
-use App\Models\CustomersModel;
-use App\Models\PartytypeModel;
-use App\Models\BookingLinkModel;
-use App\Models\ExpenseHeadModel;
-use App\Models\VehicleTypeModel;
-use App\Models\BookingDropsModel;
-use App\Models\NotificationModel;
-use App\Models\BookingStatusModel;
 use App\Controllers\BaseController;
-use App\Models\BookingPickupsModel;
-use App\Models\CustomerBranchModel;
+use App\Models\BookingDropsModel;
 use App\Models\BookingExpensesModel;
+use App\Models\BookingLinkModel;
+use App\Models\BookingPickupsModel;
+use App\Models\BookingsModel;
+use App\Models\BookingStatusModel;
 use App\Models\BookingVehicleLogModel;
+use App\Models\CityModel;
+use App\Models\CustomerBranchModel;
+use App\Models\CustomersModel;
+use App\Models\EmployeeModel;
+use App\Models\ExpenseHeadModel;
+use App\Models\LoadingReceiptModel;
+use App\Models\NotificationModel;
+use App\Models\OfficeModel;
+use App\Models\PartyModel;
+use App\Models\PartytypeModel;
+use App\Models\ProfileModel;
+use App\Models\StateModel;
+use App\Models\UserModel;
+use App\Models\VehicleModel;
+use App\Models\VehicleTypeModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class Booking extends BaseController
@@ -56,6 +57,7 @@ class Booking extends BaseController
     public $EmployeeModel;
     public $BookingLinkModel;
     public $NModel;
+    public $LoadingReceiptModel;
     public function __construct()
     {
         $this->session = \Config\Services::session();
@@ -88,6 +90,7 @@ class Booking extends BaseController
         $this->EmployeeModel = new EmployeeModel();
         $this->BookingLinkModel = new BookingLinkModel();
         $this->NModel = new NotificationModel();
+        $this->LoadingReceiptModel = new LoadingReceiptModel();
     }
 
     public function index()
@@ -780,7 +783,7 @@ class Booking extends BaseController
                 return $this->response->redirect(base_url('booking'));
             }
             
-        } else {
+        } else {   
             //send notfication 
             $this->sendNotification($booking_details);
             $this->BModel->update($id, ['status' => '14']);
@@ -842,8 +845,7 @@ class Booking extends BaseController
             } else {
                 
                 // $id =  $this->request->getPost('id');
-                // echo $id.$token.'<pre>';print_r($post);exit;     
-                $isVehicle = $this->BModel->where('id', $id)->first()['vehicle_id'] > 0 ? true : false;
+                // echo $id.$token.'<pre>';print_r($post);exit;      
                 $bookingData = [     
                     'pickup_date' => $this->request->getPost('pickup_date'),
                     'drop_date' => $this->request->getPost('drop_date'),
@@ -856,7 +858,7 @@ class Booking extends BaseController
                     'discount' => $this->request->getPost('discount'),
                     'bill_to_party' => $this->request->getPost('bill_to'),
                     'remarks' => $this->request->getPost('remarks'),
-                    'status' => $isVehicle ? '3' : '2',
+                    'status' => 1,
                     'added_by' => $this->added_by,
                     'added_ip' => $this->added_ip
                 ];//echo __LINE__.'<pre>';print_r($bookingData);die;
@@ -1019,6 +1021,9 @@ class Booking extends BaseController
             if($this->request->getPost('approval_for_cancellation')){
                 $data['status'] = $this->request->getPost('approval_for_cancellation'); 
             }
+            if($this->request->getPost('approval_for_cancellation') == 15){
+                $data['is_vehicle_assigned'] = 0; 
+            } 
             // echo '<pre>';print_r( $data);exit; 
             $this->BModel->update($id,$data);
 
@@ -1036,6 +1041,22 @@ class Booking extends BaseController
                 $this->BEModel->insert($expense_data);
             }    
             if($this->request->getPost('approval_for_cancellation') == 15){
+                 //Change vehile status not assigned and vehicle log as unassign vehicle
+                $result = $this->BVLModel->where('booking_id', $id)->where('unassign_date IS NULL')->first();
+                if ($result) {
+                    //update old vehicle status  
+                    $this->VModel->update($result['vehicle_id'], [ 
+                        'working_status' => '1'
+                    ]); 
+                    $this->BVLModel->update($result['id'], ['unassign_date' =>date('Y-m-d H:i:s'), 'unassigned_by' => $this->added_by]);
+                }  
+                
+                //update LR as cancel
+                $lrresult = $this->LoadingReceiptModel->where('booking_id', $id)->first();
+                if( $lrresult){
+                    $this->LoadingReceiptModel->set(['status' => 2])->where('booking_id', $id)->update();
+                }
+ 
                 $this->session->setFlashdata('success', 'Booking is approved for cancellation Successfully');
             }else if($this->request->getPost('approval_for_cancellation') == 2){
                 $this->session->setFlashdata('success', 'Revert to approve Successfully');

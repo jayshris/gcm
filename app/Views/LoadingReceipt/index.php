@@ -70,12 +70,16 @@
 											<th>Booking Number</th>
 											<th>Branch Name</th>
 											<th>Booking Date</th> 
+											<th>Status</th> 
 										</tr>
 										</thead>
 										<tbody>
 											<?php
 											$i = 1;
 											foreach ($loading_receipts as $b) {
+												$status = 'Inactive';
+												if($b['status'] == 1) $status ='Active' ;
+												if($b['status'] == 2) $status ='Canceled' ;
 											?>
 											<tr>
 												<td><?= $i++; ?>.</td> 
@@ -84,6 +88,7 @@
 												<td><?= $b['booking_number'] ?></td>
 												<td><?= $b['branch_name'] ?></td>
 												<td><?= date('d M Y', strtotime($b['booking_date'])) ?></td> 
+												<td><span class="badge badge-pill <?= $b['status'] != 1 ? 'bg-danger' : 'bg-success' ?>"> <?= $status ?></span></td>
 											</td>
 											</tr>
 										<?php } ?>

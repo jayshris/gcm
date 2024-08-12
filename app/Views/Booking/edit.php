@@ -96,7 +96,7 @@
 
                             <div class="col-md-3">
                                 <label class="col-form-label">Pickup Date <span class="text-danger">*</span></label>
-                                <input type="date" required name="pickup_date" id="pickup_date" onchange="$.setDrop();" class="form-control" value="<?= isset($booking_details['pickup_date']) ? $booking_details['pickup_date'] : '' ?>">
+                                <input type="date" required name="pickup_date" id="pickup_date" onchange="$.setDrop();" min="<?= $booking_details['booking_date'] ?>" class="form-control" value="<?= isset($booking_details['pickup_date']) ? $booking_details['pickup_date'] : '' ?>">
                                 <?php
                                 if ($validation->getError('pickup_date')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('pickup_date') . '</div>';
@@ -149,7 +149,7 @@
  
                             <div class="col-md-3">
                                 <label class="col-form-label">Drop Date</label>
-                                <input type="date" name="drop_date" id="drop_date" class="form-control" value="<?= isset($booking_details['drop_date']) ? $booking_details['drop_date'] : '' ?>" >
+                                <input type="date" name="drop_date" id="drop_date" min="<?= $booking_details['pickup_date'] ?>" class="form-control" value="<?= isset($booking_details['drop_date']) ? $booking_details['drop_date'] : '' ?>" >
                                 <?php if ($validation->getError('drop_date')) {
                                   echo '<div class="alert alert-danger mt-2">' . $validation->getError('drop_date') . '</div>';
                                 }   
