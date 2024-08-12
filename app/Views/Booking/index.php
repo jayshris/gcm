@@ -143,7 +143,20 @@
                           <td><?= isset($from['city']) ? $from['city'] : '' ?></td>
                           <td><?= isset($to['city']) ? $to['city'] : '' ?></td>
                           <td><span class="badge badge-pill <?= $b['status_bg'] ?>"><?= $b['status_name'] ?></span></td>
-                          <td><span class="badge badge-pill <?= (isset($b['lr_id']) && ($b['lr_id'] >0) ? 'bg-success' : 'bg-danger') ?>"> <?= (isset($b['lr_id']) && ($b['lr_id'] >0) ? 'Generated' : 'Not Generated') ?></span></td>        
+                          <?php 
+                              $status = 'Not Generated';$lr_flag = 0;
+                              if(isset($b['lr_Status']) && ($b['lr_Status'] >0) ){
+                                $status = 'Generated';
+                                $lr_flag = 1;
+                              }
+                              if(isset($b['lr_approved']) && ($b['lr_approved'] >0) ){
+                                $status = 'Approved';
+                                $lr_flag = 1;
+                              }
+                            ?>
+                          <td><span class="badge badge-pill <?= ($lr_flag >0 ? 'bg-success' : 'bg-danger') ?>">                            
+                             <?= $status ?></span>
+                          </td>        
                           </td>
                         </tr>
                       <?php } ?>

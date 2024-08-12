@@ -98,7 +98,7 @@ class Booking extends BaseController
         $this->BModel->select('bookings.*, party.party_name, vehicle.rc_number, 
           IF(bookings.status = 0, "Created", booking_status.status_name) as status_name,
           IF(bookings.status = 0, "bg-success", booking_status.status_bg) as status_bg,
-          lr.id as lr_id')
+          lr.id as lr_id,lr.status lr_Status,lr.approved lr_approved')
             ->join('customer', 'customer.id = bookings.customer_id', 'left')
             ->join('party', 'party.id = customer.party_id', 'left')
             ->join('vehicle', 'vehicle.id = bookings.vehicle_id', 'left')

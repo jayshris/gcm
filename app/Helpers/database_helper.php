@@ -92,14 +92,36 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 					}
 					else{
 						$makeButton = 1;
-						if($module=='booking'){
-							if($secLink=='preview' && ($row['status']==0))	$makeButton = 0;
+						if($module=='booking'){ 
+							//if status is in 0, 1, 2, 3 then only show
 							if($secLink=='edit' && ($row['status']>=3))	$makeButton = 0;
-							if($secLink=='approve' && ($row['approved']==1 || $row['status']==0 || $row['status']==14 || $row['status']==15 ))	$makeButton = 0;
-							if($secLink=='assign_vehicle' && ($row['is_vehicle_assigned']==1 || $row['status']==0 || $row['status']==14 || $row['status']==15))	$makeButton = 0;
+							//if status less than equal to 5 then only show
 							if($secLink=='cancel' && ($row['status']==14 || $row['status']>=5))	$makeButton = 0;
+							//if status is waiting for approval then only show
+							if($secLink=='approve' && ($row['status'] != 1 ))	$makeButton = 0;
+							//if status is not Waiting for Approval or approved and not assign vehicle then only show
+							if($secLink=='assign_vehicle' && ($row['is_vehicle_assigned']==1 || !in_array($row['status'],[1,2])))	$makeButton = 0;
+							//if status is 1 and assign vehicle or status 3  then only show
+							if($secLink=='unassign_vehicle' && ($row['is_vehicle_assigned'] != 1 || $row['lr_approved'] == 1 ||  !in_array($row['status'],[1,3,4,6])))	$makeButton = 0;
+							//if status is Approval for Cancellation then only show
 							if($secLink=='approval_for_cancellation' && $row['status']!=14)	$makeButton = 0;
-							if($secLink=='unassign_vehicle' && ($row['is_vehicle_assigned'] != 1 || $row['status']==14 || $row['status']==15))	$makeButton = 0;
+							 
+							// if($secLink=='edit' && ($row['status']>=3))	$makeButton = 0;
+							// if($secLink=='approve' && ($row['approved']==1  || $row['status']==0 || $row['status']==14 || $row['status']==15 ))	$makeButton = 0;
+							// if($secLink=='assign_vehicle' && ($row['is_vehicle_assigned']==1 || $row['status']==0 || $row['status']==14 || $row['status']==15))	$makeButton = 0;
+							// if($secLink=='cancel' && ($row['status']==14 || $row['status']>=5))	$makeButton = 0;
+							// if($secLink=='approval_for_cancellation' && $row['status']!=14)	$makeButton = 0;
+							// if($secLink=='unassign_vehicle' && ($row['is_vehicle_assigned'] != 1 || $row['status']==14 || $row['status']==15))	$makeButton = 0;
+							 
+							/** all permissions for view 
+							 * 0 created: edit, cancel
+							 * 1 Waiting for Approval: edit, cancel, approve, assign /uassign
+							 * 2 Approved: edit, cancel, assign or unassign
+							 * 3. Ready for Trip:edit, cancel, unassign lr generate or nto
+							 * 4. Approval for Cancellation, Approve Cancellation
+							 */
+							//if not approve not assign vehicle
+							// if assign status is 3
 						}
 						if($module=='loadingreceipt'){
 							if($secLink=='approve' && ($row['approved']==1 || $row['status'] != 1))	$makeButton = 0;
