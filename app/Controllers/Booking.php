@@ -93,8 +93,8 @@ class Booking extends BaseController
     public function index()
     { 
         $this->BModel->select('bookings.*, party.party_name, vehicle.rc_number, IF(bookings.status = 0, "Created", booking_status.status_name) as status_name,IF(bookings.status = 0, "bg-success", booking_status.status_bg) as status_bg,lr.id as lr_id')
-            ->join('customer', 'customer.id = bookings.customer_id')
-            ->join('party', 'party.id = customer.party_id')
+            ->join('customer', 'customer.id = bookings.customer_id', 'left')
+            ->join('party', 'party.id = customer.party_id', 'left')
             ->join('vehicle', 'vehicle.id = bookings.vehicle_id', 'left')
             ->join('booking_status', 'booking_status.id = bookings.status', 'left')
             ->join('loading_receipts lr', 'bookings.id = lr.booking_id', 'left');
@@ -103,7 +103,7 @@ class Booking extends BaseController
             $this->BModel->where('bookings.status', $this->request->getPost('status'));
         }
 
-        $this->view['bookings'] = $this->BModel->orderBy('bookings.id', 'desc')->groupBy('lr.booking_id')->findAll();
+        $this->view['bookings'] = $this->BModel->orderBy('bookings.id', 'desc')->groupBy('bookings.id')->findAll();
 
         $this->view['statuses'] = $this->BSModel->findAll();
         $this->view['pickup'] = $this->BPModel;
@@ -1031,8 +1031,10 @@ class Booking extends BaseController
                 ]; 
                 $this->BEModel->insert($expense_data);
             }    
-            if($this->request->getPost('approval_for_cancellation')){
+            if($this->request->getPost('approval_for_cancellation') == 15){
                 $this->session->setFlashdata('success', 'Booking is approved for cancellation Successfully');
+            }else if($this->request->getPost('approval_for_cancellation') == 2){
+                $this->session->setFlashdata('success', 'Revert to approve Successfully');
             }else{
                 $this->session->setFlashdata('success', 'Booking is updated');
             }    

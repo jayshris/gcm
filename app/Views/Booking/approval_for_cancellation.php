@@ -348,10 +348,15 @@
                               <input type="text" name="remarks" disabled class="form-control" value="<?= $booking_details['remarks'] ?>">
                             </div>
 
-                            <div class="col-md-12 mb-3">
-                              <input type="checkbox" id="approve" class="form-check-input" name="approval_for_cancellation" value="15" style="height: 25px; width:25px;"> <label for="approve"> Approve for cancellation</label>
+                            <div class="col-md-3">
+                              <input type="radio" id="approve" checked class="form-check-input" name="approval_for_cancellation" value="15" style="height: 20px; width:20px;">
+                               <label for="approve" style="padding-top: 3px;"> Approve for cancellation</label>
                             </div>
 
+                            <div class="col-md-3">
+                              <input type="radio" id="revert_to_approve" class="form-check-input" name="approval_for_cancellation" value="2" style="height: 20px; width:20px;"> 
+                              <label for="revert_to_approve"  style="padding-top: 3px;"> Revert To Approve</label>
+                            </div>
 
                           </div>
                           <br>
