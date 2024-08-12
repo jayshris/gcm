@@ -92,7 +92,10 @@ class Booking extends BaseController
 
     public function index()
     { 
-        $this->BModel->select('bookings.*, party.party_name, vehicle.rc_number, IF(bookings.status = 0, "Created", booking_status.status_name) as status_name,IF(bookings.status = 0, "bg-success", booking_status.status_bg) as status_bg,lr.id as lr_id')
+        $this->BModel->select('bookings.*, party.party_name, vehicle.rc_number, 
+          IF(bookings.status = 0, "Created", booking_status.status_name) as status_name,
+          IF(bookings.status = 0, "bg-success", booking_status.status_bg) as status_bg,
+          lr.id as lr_id')
             ->join('customer', 'customer.id = bookings.customer_id', 'left')
             ->join('party', 'party.id = customer.party_id', 'left')
             ->join('vehicle', 'vehicle.id = bookings.vehicle_id', 'left')
@@ -652,7 +655,8 @@ class Booking extends BaseController
     }
 
     public function assign_vehicle($id)
-    { 
+    {
+   
         //for booking data
         $this->view['booking_details'] = $this->BModel->where('id', $id)->first();
         
@@ -686,58 +690,58 @@ class Booking extends BaseController
         // $this->view['vehicle_rcs'] =  $this->VModel->where('vehicle_type_id', $this->view['booking_details']['vehicle_type_id'] )->where('status', '1')->where('working_status', '1')->findAll();
        
         $this->view['expense_heads'] =  $this->ExpenseHeadModel->orderBy('head_name', 'asc')->findAll();
+        
+       //get last log i.e unassign_date = ''
+       $this->view['booking_vehicle'] = $this->BVLModel->where('booking_id', $id)->where('unassign_date IS NULL')->first();
+    //   echo '<pre>';print_r($this->view['booking_vehicle']);exit;
+       if ($this->request->getPost()) {
+        $current_booking = $this->BModel->select('status,booking_type,vehicle_id')->where('id',$id)->first();
+        
+        //IF ON VEHICLE ASSIGNED, BOOKING STATUS IS APPROVED (2) IT WILL CHANGE TO READY FOR TRIP (3)
+        $booking_status = 3;
 
-        //get last log i.e unassign_date = ''
-        $this->view['booking_vehicle'] = $this->BVLModel->where('booking_id', $id)->where('unassign_date', '')->first();
-
-        if ($this->request->getPost()) {
-            $current_booking = $this->BModel->select('status,booking_type,vehicle_id')->where('id',$id)->first();
-            
-            //IF ON VEHICLE ASSIGNED, BOOKING STATUS IS APPROVED (2) IT WILL CHANGE TO READY FOR TRIP (3)
-            $booking_status = 3;
-
-            // IF ON VEHICLE ASSIGNED, BOOKING STATUS IS GREATER THAN APPROVED (2) THEN IT WILL CHANGE TO 1
-            if($current_booking['status'] > 2){
-                $booking_status = 1;
-            }
-
-            if(($current_booking['status']==2) && ($current_booking['booking_type'] == 'PTL')){
-                $booking_status = 1;
-            }
-
-            $this->BModel->update($id, [
-                'vehicle_id' => $this->request->getPost('vehicle_rc'),
-                'vehicle_type_id' => $this->request->getPost('vehicle_type'),
-                'status' => $booking_status,
-                'is_vehicle_assigned' => 1
-            ]);
-            //if already assign vehicle to booking then change vehile status not assigned and vehicle log as unassign vehicle
-            $result = $this->BVLModel->where('booking_id', $id)->where('unassign_date', '')->first();
-            if ($result) {
-                //update old vehicle status  
-                $this->VModel->update($result['vehicle_id'], [ 
-                    'working_status' => '1'
-                ]); 
-                $this->BVLModel->update($result['id'], ['unassign_date' => date('Y-m-d h:i:s'), 'unassigned_by' => $this->added_by]);
-            }
-
-            $this->BVLModel->insert([
-                'booking_id' => $id,
-                'vehicle_id' => $this->request->getPost('vehicle_rc'),
-                'assign_by' => $this->added_by,
-                'assign_date' => $this->request->getPost('assign_date'),
-                'vehicle_location' => $this->request->getPost('vehicle_location'),
-            ]);
-
-            //update vevhicl status assigned as 2
-            $this->VModel->update($this->request->getPost('vehicle_rc'), [ 
-                'working_status' => '2'
-            ]); 
-
-            $this->session->setFlashdata('success', 'Vehicle Assigned To Booking');
-
-            return $this->response->redirect(base_url('booking'));
+        // IF ON VEHICLE ASSIGNED, BOOKING STATUS IS GREATER THAN APPROVED (2) THEN IT WILL CHANGE TO 1
+        if($current_booking['status'] > 2){
+            $booking_status = 1;
         }
+
+        if(($current_booking['status']==2) && ($current_booking['booking_type'] == 'PTL')){
+            $booking_status = 1;
+        }
+
+        $this->BModel->update($id, [
+            'vehicle_id' => $this->request->getPost('vehicle_rc'),
+            'vehicle_type_id' => $this->request->getPost('vehicle_type'),
+            'status' => $booking_status,
+            'is_vehicle_assigned' => 1
+        ]);
+        //if already assign vehicle to booking then change vehile status not assigned and vehicle log as unassign vehicle
+        $result = $this->BVLModel->where('booking_id', $id)->where('unassign_date IS NULL')->first();
+        if ($result) {
+            //update old vehicle status  
+            $this->VModel->update($result['vehicle_id'], [ 
+                'working_status' => '1'
+            ]); 
+            $this->BVLModel->update($result['id'], ['unassign_date' => date('Y-m-d h:i:s'), 'unassigned_by' => $this->added_by]);
+        }
+
+        $this->BVLModel->insert([
+            'booking_id' => $id,
+            'vehicle_id' => $this->request->getPost('vehicle_rc'),
+            'assign_by' => $this->added_by,
+            'assign_date' => $this->request->getPost('assign_date'),
+            'vehicle_location' => $this->request->getPost('vehicle_location'),
+        ]);
+
+        //update vevhicl status assigned as 2
+        $this->VModel->update($this->request->getPost('vehicle_rc'), [ 
+            'working_status' => '2'
+        ]); 
+
+        $this->session->setFlashdata('success', 'Vehicle Assigned To Booking');
+
+        return $this->response->redirect(base_url('booking'));
+    }
 
         return view('Booking/vehicle', $this->view);
     }
@@ -1121,7 +1125,7 @@ class Booking extends BaseController
          
         $this->view['expense_heads'] =  $this->ExpenseHeadModel->orderBy('head_name', 'asc')->findAll();
         //get last log i.e unassign_date = ''
-        $this->view['booking_vehicle'] = $this->BVLModel->where('booking_id', $id)->where('unassign_date', '')->first();
+        $this->view['booking_vehicle'] = $this->BVLModel->where('booking_id', $id)->where('unassign_date IS NULL')->first();
         // echo '<pre>';print_r($this->view['booking_vehicle']);exit;
         if ($this->request->getPost()) {
             $current_booking = $this->BModel->select('status,booking_type,vehicle_id')->where('id',$id)->first();
@@ -1140,7 +1144,7 @@ class Booking extends BaseController
             ]);
 
             //Change vehile status not assigned and vehicle log as unassign vehicle
-            $result = $this->BVLModel->where('booking_id', $id)->where('unassign_date', '')->first();
+            $result = $this->BVLModel->where('booking_id', $id)->where('unassign_date IS NULL')->first();
             if ($result) {
                 //update old vehicle status  
                 $this->VModel->update($result['vehicle_id'], [ 

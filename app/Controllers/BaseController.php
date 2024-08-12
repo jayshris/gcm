@@ -56,11 +56,11 @@ abstract class BaseController extends Controller
 
         // Preload any models, libraries, etc, here.
 
-        // E.g.: $this->session = \Config\Services::session();  
-        
+        // E.g.: $this->session = \Config\Services::session();
+
         $permission = new Permission();
         $this->view = $permission->HeaderMenuItems();//echo __LINE__.'<pre>';print_r($this->view);die;
-
+        
         $NModel = new NotificationModel();
         $user_id = isset($_SESSION['id']) ? $_SESSION['id'] : '0';
         $this->view['notifications'] =  $NModel->where(['status'=>0,'user_id'=>$user_id,'is_deleted'=>0])->orderBy('id', 'desc')->findAll(); 

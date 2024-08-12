@@ -37,7 +37,7 @@ class User extends BaseController
                         return $this->response->redirect(site_url('/dashboard'));
                 } else {
                         $userModel = new UserModel();
-                        $this->view['user_data'] = $userModel->orderBy('id', 'DESC')->paginate(10);
+                        $this->view['user_data'] = $userModel->orderBy('id', 'DESC')->paginate(1000);
                         $this->view['pagination_link'] = $userModel->pager;
                         $this->view['page_data'] = [
                                 'page_title' => view('partials/page-title', ['title' => 'Company', 'li_1' => '123', 'li_2' => 'deals'])

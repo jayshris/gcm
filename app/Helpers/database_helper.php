@@ -83,7 +83,6 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 				}else{
 					$confirm  = ($act->alert_msg == '1') ? "return confirm('Are you sure want to delete this record?')" : '';
 				}
-				
 
 				if ($pos == 1) {
 					$menu .= '<li>' . anchor(PANEL . $module . '/' . $secLink, '<i class="' . $cssClass . '"></i> &nbsp;' . ucfirst($secName), ['class' => 'btn btn-primary']) . '</li>';
@@ -95,21 +94,13 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 						$makeButton = 1;
 						if($module=='booking'){
 							if($secLink=='approve' && $row['approved']==1)	$makeButton = 0;
-							//if($secLink=='assign_vehicle' && $row['vehicle_id']>0)	$makeButton = 0;
-
-							if($secLink=='assign_vehicle' && $row['approved']==0)	$makeButton = 0;
-
+							if($secLink=='assign_vehicle' && $row['is_vehicle_assigned']==1)	$makeButton = 0;
 							if($secLink=='cancel' && ($row['status']==14 || $row['status']>=5))	$makeButton = 0;
-
 							if($secLink=='approval_for_cancellation' && $row['status']!=14)	$makeButton = 0;
-
-							if($secLink=='unassign_vehicle' && ($row['is_vehicle_assigned'] != 1))	$makeButton = 0; 
-							
+							if($secLink=='unassign_vehicle' && ($row['is_vehicle_assigned'] != 1))	$makeButton = 0;
 						}
-
 						if($module=='loadingreceipt'){
 							if($secLink=='approve' && $row['approved']==1)	$makeButton = 0;
-
 							if($secLink=='edit' && $row['approved']==1)	$makeButton = 0;
 						}
 						if($makeButton==1){
