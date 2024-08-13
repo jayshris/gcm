@@ -153,6 +153,10 @@
                                 $status = 'Approved';
                                 $lr_flag = 1;
                               }
+                              if(isset($b['lr_Status']) && ($b['lr_Status'] ==2) ){
+                                $status = 'Cancelled';
+                                $lr_flag = 0;
+                              }
                             ?>
                           <td><span class="badge badge-pill <?= ($lr_flag >0 ? 'bg-success' : 'bg-danger') ?>">                            
                              <?= $status ?></span>
