@@ -87,7 +87,7 @@
 
                             <div class="col-md-3">
                                 <label class="col-form-label">Pickup Date <span class="text-danger">*</span></label>
-                                <input type="date" required name="pickup_date" id="pickup_date"  min="<?= $booking_details['booking_date'] ?>" onchange="$.setDrop();" class="form-control">
+                                <input type="date" required name="pickup_date" id="pickup_date" min="<?= $booking_details['booking_date'] ?>" onchange="$.setDrop();" class="form-control">
                                 <?php
                                 if ($validation->getError('pickup_date')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('pickup_date') . '</div>';
