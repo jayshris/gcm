@@ -349,7 +349,7 @@
                             </div>
 
                             <div class="col-md-12 mb-3">
-                              <input type="checkbox" id="approve" checked class="form-check-input" name="approve" value="1" style="height: 25px; width:25px;"> <label for="approve"> Approve</label>
+                              <input type="checkbox" id="approve" class="form-check-input" checked name="approve" value="1" style="height: 25px; width:25px;"> <label for="approve"> Approve</label>
                             </div>
 
 
