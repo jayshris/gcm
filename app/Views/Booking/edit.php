@@ -174,7 +174,7 @@
 
                             <div class="col-md-3">
                               <label class="col-form-label">Rate (Rs) <span class="text-danger">*</span> <span id="rate_msg"></span></label>
-                              <input type="number" name="rate" id="rate" onchange="$.calculation()" class="form-control" required value="<?= isset($booking_details['rate']) ? $booking_details['rate'] : '' ?>">
+                              <input type="number" step="0.01"  name="rate" id="rate" onchange="$.calculation()" class="form-control" required value="<?= isset($booking_details['rate']) ? $booking_details['rate'] : '' ?>">
                               <?php
                               if ($validation->getError('rate')) {
                                   echo '<div class="alert alert-danger mt-2">' . $validation->getError('rate') . '</div>';

@@ -79,7 +79,7 @@
 
                                                         <div class="col-md-3">
                                                             <label class="col-form-label">Assigned Date<span class="text-danger">*</span></label>
-                                                            <input type="datetime-local" required name="assigned_date" min="<?= date('Y-m-d H:i') ?>" value="<?= isset($assignment_details["assign_date"])  && (strtotime($assignment_details["assign_date"]) > 0) ? date('Y-m-d H:i',strtotime($assignment_details["assign_date"])) : ''; ?>" class="form-control">
+                                                            <input type="datetime-local" required name="assigned_date" value="<?= isset($assignment_details["assign_date"])  && (strtotime($assignment_details["assign_date"]) > 0) ? date('Y-m-d H:i',strtotime($assignment_details["assign_date"])) : ''; ?>" class="form-control">
                                                             <?php
                                                             if ($validation->getError('assigned_date')) {
                                                                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('assigned_date') . '</div>';
