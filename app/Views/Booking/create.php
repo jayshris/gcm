@@ -198,7 +198,7 @@
 
                             <div class="col-md-3">
                               <label class="col-form-label">Guaranteed / Charged Weight <span class="text-danger" id="guranteed_wt_span"></span></label>
-                              <input type="number" name="guranteed_wt" id="guranteed_wt" onchange="$.calculation()" class="form-control">
+                              <input type="number" name="guranteed_wt" id="guranteed_wt" onchange="$.calculation()" value="<?= isset($booking_vehicle_details['charge_wt']) ? $booking_vehicle_details['charge_wt'] : ''; ?>" class="form-control">
                             </div>
 
                             <div class="col-md-2">

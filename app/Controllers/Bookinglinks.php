@@ -226,6 +226,7 @@ class Bookinglinks extends BaseController
         $this->view['booking_link_token'] = $token;
         $this->view['token'] = $id;
         $this->view['booking_details'] = $this->BModel->where('id', $id)->first();
+        $this->view['booking_vehicle_details'] = $this->VModel->where('id',$this->view['booking_details']['vehicle_id'])->first();
         $this->view['booking_pickups'] = $this->BPModel->where('booking_id', $id)->first();
         $this->view['booking_drops'] = $this->BDModel->where('booking_id', $id)->first();
         $this->view['booking_expences'] = $this->BEModel->where('booking_id', $id)->findAll();  
