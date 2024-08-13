@@ -35,15 +35,28 @@
               <div class="col-xl-12 col-lg-12">
                 <!-- Settings Info -->
                 <div class="card">
-                  <div class="card-body">
+                  <div class="card-body">                   
                     <div class="settings-form">
-
-
                       <form method="post" enctype="multipart/form-data" action="<?= isset($branch_detail) ? base_url('customerbranch/edit/' . $branch_detail['id']) : base_url('customerbranch/create') ?>">
 
                         <div class="settings-sub-header">
                           <h6><?= isset($branch_detail) ? 'Edit' : 'Add' ?> Customer Branch</h6>
                         </div>
+                        <div class="row">
+                          <div class="col-md-12 col-sm-12 mb-3">
+                            <?php
+                            $session = \Config\Services::session();
+
+                            if ($session->getFlashdata('success')) {
+                              echo '<div class="alert alert-success">' . $session->getFlashdata("success") . '</div>';
+                            }
+
+                            if ($session->getFlashdata('danger')) {
+                              echo '<div class="alert alert-danger">' . $session->getFlashdata("danger") . '</div>';
+                            }
+                            ?>
+                          </div>
+                        </div> 
                         <div class="profile-details">
                           <div class="row g-3">
 
@@ -61,14 +74,11 @@
 
                             <div class="col-md-6">
                               <label class="col-form-label">Office Name<span class="text-danger">*</span></label>
-                              <select class="form-select select2" required name="office_name">
+                              <select class="form-select select2" required name="office_name" id="office_id">
                                 <option value="">Select Office Name</option>
-                                <option value="Head Office" <?= isset($branch_detail) && $branch_detail['office_name'] == "Head Office" ? "selected" : "" ?>>Head Office</option>
-                                <option value="Warehouse" <?= isset($branch_detail) && $branch_detail['office_name'] == "Warehouse" ? "selected" : "" ?>>Warehouse</option>
-                                <option value="Parking" <?= isset($branch_detail) && $branch_detail['office_name'] == "Parking" ? "selected" : "" ?>>Parking</option>
-                                <option value="Branch 1" <?= isset($branch_detail) && $branch_detail['office_name'] == "Branch 1" ? "selected" : "" ?>>Branch 1</option>
-                                <option value="Branch 2" <?= isset($branch_detail) && $branch_detail['office_name'] == "Branch 2" ? "selected" : "" ?>>Branch 2</option>
-                                <option value="Branch 3" <?= isset($branch_detail) && $branch_detail['office_name'] == "Branch 3" ? "selected" : "" ?>>Branch 3</option>
+                                <?php if($offices) { foreach ($offices as $c) {
+                                  echo '<option value="' . $c['name'] . '" ' . (isset($branch_detail) && $branch_detail['office_name'] == $c['name'] ? 'selected' : '') . '>' . $c['name'] . '</option>';
+                                }} ?> 
                               </select>
                             </div>
 
@@ -226,7 +236,12 @@
       $.delete = function(index) {
         $('.del' + index).remove();
       }
+
+      $("#office_id").select2({
+        tags: true
+      }); 
     });
+ 
   </script>
 
 </body>
