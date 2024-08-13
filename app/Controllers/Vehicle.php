@@ -185,6 +185,7 @@ class Vehicle extends BaseController
         'seating'  =>  $this->request->getVar('seating'),
         'unladen_wt'  =>  $this->request->getVar('unladen_wt'),
         'laden_wt'  =>  $this->request->getVar('laden_wt'),
+        'charge_wt'  =>  $this->request->getVar('charge_wt'),
         'km_reading_start'  =>  $this->request->getVar('km'),
         'image1'  =>  $image_name1,
         'image2'  =>  $image_name2,
@@ -264,22 +265,14 @@ class Vehicle extends BaseController
       $id = $this->request->getVar('id');
 
       $this->view['vehicle_data'] = $this->vehicleModel->select('vehicle.*, GROUP_CONCAT(vehicle_tyre_details_map.tyre_serial_text) as tyre_serial_text, vehicle_type.name as vehiclename,vehicle_model.model_no as model_no')
-
         ->join('vehicle_tyre_details_map', 'vehicle_tyre_details_map.vehicle_id = vehicle.id', 'left')
-
         ->join('vehicle_type', 'vehicle_type.id = vehicle.vehicle_type_id', 'left')
-
         ->join('vehicle_model', 'vehicle_model.id = vehicle.model_number_id', 'left')
-
         ->where('vehicle.deleted_at', NULL)
         ->where('vehicle_tyre_details_map.deleted_at', NULL)
-
         ->where('vehicle.id', $id)
-
         ->groupBy('vehicle.id')
-
         ->first();
-
 
       $this->vehicleModel->update($id, [
         'owner'  =>  $this->request->getVar('owner'),
@@ -297,6 +290,7 @@ class Vehicle extends BaseController
         'seating'  =>  $this->request->getVar('seating'),
         'unladen_wt'  =>  $this->request->getVar('unladen_wt'),
         'laden_wt'  =>  $this->request->getVar('laden_wt'),
+        'charge_wt'  =>  $this->request->getVar('charge_wt'),
         'km_reading_start'  =>  $this->request->getVar('km'),
         'status'                  =>  $this->request->getVar('active') == 1 ? '1' : '0',
         'approved'                =>  $this->request->getVar('approve'),
@@ -454,7 +448,6 @@ class Vehicle extends BaseController
       return view('Vehicle/details', $this->view);
     }
   }
-
 
   public function getVehicletypedetails()
   {

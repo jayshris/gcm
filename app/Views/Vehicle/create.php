@@ -139,14 +139,14 @@
                               </div>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                               <div class="form-wrap">
                                 <label class="col-form-label"> Colour</label>
                                 <input type="text" name="colour" class="form-control" value="<?= set_value('colour') ?>">
                               </div>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                               <div class="form-wrap">
                                 <label class="col-form-label"> Seating / Standing </label>
                                 <input type="text" name="seating" class="form-control" value="<?= set_value('seating') ?>">
@@ -164,6 +164,13 @@
                               <div class="form-wrap">
                                 <label class="col-form-label"> Laden/Gross Weight (KG)</label>
                                 <input type="text" name="laden_wt" class="form-control" id="laden_wt" value="<?= set_value('laden_wt') ?>">
+                              </div>
+                            </div>
+
+                            <div class="col-md-2">
+                              <div class="form-wrap">
+                                <label class="col-form-label"> Charge Weight (KG) <span class="text-danger">*</span></label>
+                                <input type="text" name="charge_wt" class="form-control" id="charge_wt" value="<?= set_value('charge_wt') ?>" required>
                               </div>
                             </div>
 

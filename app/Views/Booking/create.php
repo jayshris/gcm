@@ -533,9 +533,10 @@
 
       $.ajax({
         method: "POST",
-        url: '<?php echo base_url('booking/getVehicles') ?>',
+        url: '<?php echo base_url('booking/getUnassignVehicles') ?>',
         data: {
-          vehicle_type: vehicle_type
+          vehicle_type: vehicle_type,
+          booking_id:0
         },
         success: function(response) {
           $('#vehicle_rc').html(response);

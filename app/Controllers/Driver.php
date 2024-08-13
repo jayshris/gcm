@@ -79,7 +79,7 @@ class Driver extends BaseController
       $driverModel->where('t3.id', $this->request->getPost('foreman_id'));
     }
 
-    $this->view['driver_data'] = $driverModel->orderBy('driver.id', 'DESC')->findAll();
+    $this->view['driver_data'] = $driverModel->orderBy('t2.party_name', 'asc')->findAll();
     $this->view['DVAModel'] = $this->DVAModel;
     // print_r($this->view['driver_data']);
     // die;
@@ -514,7 +514,7 @@ class Driver extends BaseController
       $result = $this->DVAModel->where('driver_id', $id)->where('unassign_date', '')->first();
 
       if ($result) {
-        $this->VModel->update($result['vehicle_id'], ['is_driver_assigned' =>0]);
+        $this->VModel->update($result['vehicle_id'], ['is_driver_assigned' => 0]);
         $this->DVAModel->update($result['id'], ['unassign_date' => date('Y-m-d h:i:s'), 'unassigned_by' => $this->added_by]);
       }
       // echo '<pre>';print_r($this->request->getPost());exit;
@@ -532,7 +532,7 @@ class Driver extends BaseController
 
       // change driver and vehicle status
       $this->VModel->update($this->request->getPost('vehicle_id'), ['is_driver_assigned' => '1']);
-
+      $this->DModel->update($id,['working_status' => 2]);
       return $this->response->redirect(base_url('driver'));
     } else {
 

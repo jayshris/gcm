@@ -46,7 +46,7 @@ class Customers extends BaseController
         } else {
 
             $this->view['party_types'] = $this->PTModel->where('status', 'Active')->findAll();
-            $this->view['parties'] = $this->PModel->where('approved', '1')->findAll();
+            $this->view['parties'] = $this->PModel->where('approved', '1')->orderBy('party_name', 'asc')->findAll();
 
             if ($this->request->getPost('party_type_id') > 0) {
                 $this->CModel->where('party_type_id', $this->request->getPost('party_type_id'));
@@ -62,6 +62,7 @@ class Customers extends BaseController
             $this->view['customers'] = $this->CModel->select('customer.*, party.party_name')
                 ->join('party', 'party.id = customer.party_id')
                 ->where('party.created_by !=', '')
+                ->orderBy('party.party_name', 'asc')
                 ->findAll();
 
             return view('Customers/index', $this->view);

@@ -349,7 +349,7 @@
                             </div>
 
                             <div class="col-md-12 mb-3">
-                              <input type="checkbox" id="approve" class="form-check-input" name="approve" value="1" style="height: 25px; width:25px;"> <label for="approve"> Approve</label>
+                              <input type="checkbox" id="approve" checked class="form-check-input" name="approve" value="1" style="height: 25px; width:25px;"> <label for="approve"> Approve</label>
                             </div>
 
 
@@ -386,6 +386,7 @@
   <script>
     $(document).ready(function() {
       $.getPartyType(); 
+      $.getVehicles(); 
     });
 
 
@@ -464,9 +465,10 @@
 
       $.ajax({
         method: "POST",
-        url: '<?php echo base_url('booking/getVehicles') ?>',
+        url: '<?php echo base_url('booking/getUnassignVehicles') ?>',
         data: {
-          vehicle_type: vehicle_type
+          vehicle_type: vehicle_type,
+          booking_id:<?= $booking_details['id'] ?>
         },
         success: function(response) {
           $('#vehicle_rc').html(response);
