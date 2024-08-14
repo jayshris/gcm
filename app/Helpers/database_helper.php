@@ -105,7 +105,11 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 							if($secLink=='unassign_vehicle' && ($row['is_vehicle_assigned'] != 1 || $row['lr_approved'] == 1 ||  !in_array($row['status'],[0,1,2,3,4,6])))	$makeButton = 0;
 							//if status is Approval for Cancellation then only show
 							if($secLink=='approval_for_cancellation' && $row['status']!=14)	$makeButton = 0;
-							 
+							//if status is 6 means kanta parchi uploaded then only show 
+							if($secLink=='upload_pod' && $row['status']!=6)	$makeButton = 0;
+							//if status is 10 means kanta parchi uploaded then only show 
+							if($secLink=='trip_end' && $row['status']!= 10)	$makeButton = 0;
+
 							// if($secLink=='edit' && ($row['status']>=3))	$makeButton = 0;
 							// if($secLink=='approve' && ($row['approved']==1  || $row['status']==0 || $row['status']==14 || $row['status']==15 ))	$makeButton = 0;
 							// if($secLink=='assign_vehicle' && ($row['is_vehicle_assigned']==1 || $row['status']==0 || $row['status']==14 || $row['status']==15))	$makeButton = 0;

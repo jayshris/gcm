@@ -23,6 +23,7 @@ use App\Controllers\BaseController;
 use App\Models\BookingPickupsModel;
 use App\Models\CustomerBranchModel;
 use App\Models\BookingExpensesModel;
+use App\Models\BookingUploadedPodModel;
 use App\Models\BookingVehicleLogModel;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\LoadingReceiptModel;
@@ -58,6 +59,7 @@ class Booking extends BaseController
     public $BookingLinkModel;
     public $NModel;
     public $LoadingReceiptModel;
+    public $BUPModel;
     public function __construct()
     {
         $this->session = \Config\Services::session();
@@ -91,6 +93,7 @@ class Booking extends BaseController
         $this->BookingLinkModel = new BookingLinkModel();
         $this->NModel = new NotificationModel();
         $this->LoadingReceiptModel = new LoadingReceiptModel();
+        $this->BUPModel = new BookingUploadedPodModel();
     }
 
     public function index()
@@ -1199,5 +1202,114 @@ class Booking extends BaseController
         }
 
         return view('Booking/unassign_vehicle', $this->view);
+    }
+
+    function upload_pod($booking_id){
+        $this->view['token'] = $booking_id;
+        if ($this->request->getPost()) {            
+            $error = $this->validate([
+                'pod_date' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'The pod date field is required'
+                    ],
+                ],
+                'received_by' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'The received by field is required' 
+                    ],
+                ],
+                'upload_doc' => [
+                    'rules' => 'uploaded[upload_doc]|mime_in[upload_doc,image/png,image/PNG,image/jpg,image/jpeg,image/JPEG,application/pdf]',
+                    'errors' => [
+                        'mime_in' => 'Image must be in jpeg/png/pdf format' 
+                    ]
+                ]
+            ]);
+
+            if (!$error) { 
+                $this->view['error'] = $this->validator; 
+            } else {
+                $result = $this->BUPModel->where('booking_id', $booking_id)->where('status',1)->first();
+                // echo '$result<pre>';print_r($result);exit;
+                if($result){ 
+                    $this->BUPModel->update($result['id'], [ 
+                        'status' => 0
+                    ]);
+                } 
+
+                $image = $this->request->getFile('upload_doc');
+             
+                $image_name = '';
+                if (isset($image)) {
+                    if ($image->isValid() && !$image->hasMoved()) {
+                        $image_name = $image->getRandomName();
+                        $imgpath = 'public/uploads/booking_pods';
+                        if (!is_dir($imgpath)) {
+                            mkdir($imgpath, 0777, true);
+                        }
+                        $image->move($imgpath, $image_name);
+                    }
+                } 
+                // echo $image_name.'<pre>';print_r($this->request->getFile('upload_doc'));
+                // exit;
+                $this->BUPModel->save([
+                    'booking_id' => $booking_id,
+                    'upload_doc' => $image_name,
+                    'received_by' => $this->request->getPost('received_by'),
+                    'pod_date' => $this->request->getPost('pod_date'),
+                    'created_by' => $this->added_by
+                ]);
+
+                //update booking status 10 - uploaded 
+                $this->BModel->update($booking_id, [ 
+                    'status' => 10,
+                    'is_vehicle_assigned' => 0
+                ]);
+        
+                // free vehicles
+                $this->free_vehivle($booking_id);
+
+                $this->session->setFlashdata('success', 'Uploaded pod Successfully');
+                return $this->response->redirect(base_url('booking'));  
+            }            
+                    
+        }
+        return view('Booking/upload_pod', $this->view);
+    }
+
+    function free_vehivle($id){
+        //Change vehile status not assigned and vehicle log as unassign vehicle
+        $result = $this->BVLModel->where('booking_id', $id)->where('unassign_date IS NULL')->first();
+        if ($result) {
+            //update old vehicle status  
+            $this->VModel->update($result['vehicle_id'], [ 
+                'working_status' => '1'
+            ]); 
+            $this->BVLModel->update($result['id'], ['unassign_date' =>date('Y-m-d'), 'unassigned_by' => $this->added_by]);
+        } 
+    }
+
+    function trip_end($id){
+        //Change vehile status not assigned and vehicle log as unassign vehicle
+        $this->view['data'] = $this->BUPModel->where('booking_id', $id)->where('status',1)->first();
+
+        if ($this->request->getPost()) {
+            $result = $this->BUPModel->where('booking_id', $id)->where('status',1)->first();
+            if($result){ 
+                $this->BModel->update($result['id'], [ 
+                    'status' => 2
+                ]);
+            } 
+            $this->BModel->update($id, [ 
+                'status' => 11,
+                'is_vehicle_assigned' => 0
+            ]);
+
+            $this->session->setFlashdata('success', 'Trip end Successfully');
+            return $this->response->redirect(base_url('booking'));  
+        }
+        return view('Booking/trip_end', $this->view);
     }
 }
