@@ -12,6 +12,7 @@ use App\Models\BookingsModel;
 use App\Models\CustomersModel;
 use App\Models\PartytypeModel;
 use App\Controllers\BaseController;
+use App\Models\CustomerBranchModel;
 use App\Models\LoadingReceiptModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
@@ -26,6 +27,7 @@ class LoadingReceipt extends BaseController
   public $PModel;
   public $CustomersModel;
   public $PTModel;
+  public $CustomerBranchModel;
   public function __construct()
   {
     $u = new UserModel(); 
@@ -38,6 +40,7 @@ class LoadingReceipt extends BaseController
     $this->PModel = new PartyModel();
     $this->CustomersModel = new CustomersModel();
     $this->PTModel = new PartytypeModel();
+    $this->CustomerBranchModel = new CustomerBranchModel();
   }
 
   public function index()
@@ -59,24 +62,25 @@ class LoadingReceipt extends BaseController
     ->join('vehicle v','bookings.vehicle_id = v.id')->orderBy('v.id', 'desc')
     ->where(['bookings.approved'=> '1','bookings.is_vehicle_assigned' => 1])
     ->groupBy('bookings.vehicle_id')
-    ->findAll();
+    ->findAll(); 
 
-//     $db = \Config\Database::connect();  
-//     echo  $db->getLastQuery()->getQuery(); 
-// echo '<pre>vehicles';print_r($this->view['vehicles']);exit;
-
-    $this->view['consignors'] = $this->CustomersModel->select('party.*')
+    $this->view['consignors'] = $this->CustomersModel->select('party.party_name,customer.id,customer.party_type_id ')
     ->join('party', 'customer.party_id = party.id')
     ->where("FIND_IN_SET (8,customer.party_type_id)")
-    ->orderBy('party.party_name')->findAll();    
-    $this->view['consignors']  = array_column($this->view['consignors'],'party_name','id');      
+    ->orderBy('party.party_name')->findAll();
+    
+//         $db = \Config\Database::connect();  
+//     echo  $db->getLastQuery()->getQuery(); 
+// echo '<pre>consignors';print_r($this->view['consignors']);exit;
 
-    $this->view['consignees'] = $this->CustomersModel->select('party.*')
+    $this->view['consignors']  = array_column($this->view['consignors'],'party_name','id');      
+    
+    $this->view['consignees'] = $this->CustomersModel->select('party.party_name,customer.id ')
     ->join('party', 'customer.party_id = party.id')
     ->where("FIND_IN_SET (9,customer.party_type_id)")
     ->orderBy('party.party_name')->findAll();  
     $this->view['consignees']  = array_column($this->view['consignees'],'party_name','id');
-    
+    // echo '<pre>';print_r( $this->view['consignees'] );exit;
     $party_type_ids = $this->PTModel->select("(GROUP_CONCAT(id)) party_type_ids") 
     ->where('lr_third_party', '1') 
     ->first(); 
@@ -186,9 +190,9 @@ class LoadingReceipt extends BaseController
           'policy_no'   =>  $this->request->getVar('policy_no'),
           'added_by' => isset($_SESSION['id']) ? $_SESSION['id'] : '0',
           'consignor_id'   =>  $this->request->getVar('consignor_id'),
-          'consignor_office_id'   =>  $this->request->getVar('consignor_office_id') ? $this->request->getVar('consignor_office_id') : '',
+          'consignor_office'   =>  $this->request->getVar('consignor_office_id') ? $this->request->getVar('consignor_office_id') : '',
           'consignee_id'   =>  $this->request->getVar('consignee_id'),
-          'consignee_office_id'   =>  $this->request->getVar('consignee_office_id') ? $this->request->getVar('consignee_office_id') : '',
+          'consignee_office'   =>  $this->request->getVar('consignee_office_id') ? $this->request->getVar('consignee_office_id') : '',
           'customer_name'   =>  $this->request->getVar('customer_name'),
           'transporter_bilti_no'   =>  $this->request->getVar('transporter_bilti_no'),
           'transporter_id' =>  $this->request->getVar('transporter_id'),
@@ -210,8 +214,17 @@ class LoadingReceipt extends BaseController
     return view('LoadingReceipt/create', $this->view); 
   }
 
-  function getPartyDetails(){
-    $rows =  $this->PModel->where('id', $this->request->getPost('party_id'))->first();
+  function getCustomerBranches(){
+    $rows =  $this->CustomerBranchModel->where([
+      'customer_id'=> $this->request->getPost('customer_id')
+      ])->findAll();
+    echo json_encode($rows);exit;
+  }
+  function getPartyDetails(){ 
+    $rows =  $this->CustomerBranchModel->where([
+      'customer_id'=>$this->request->getPost('party_id'),
+      'office_name'=>$this->request->getPost('branch_id')
+      ])->first();  
     echo json_encode($rows);exit;
   }
   function edit($id){  
@@ -234,12 +247,12 @@ class LoadingReceipt extends BaseController
    
     //consignor, consignees changes
       
-    $this->view['consignors_list'] = $this->CustomersModel->select('party.*')
+    $this->view['consignors_list'] = $this->CustomersModel->select('party.party_name,customer.id')
     ->join('party', 'customer.party_id = party.id')
     ->where("FIND_IN_SET (8,customer.party_type_id)")
     ->orderBy('party.party_name')->findAll();          
 
-    $this->view['consignees_list'] = $this->CustomersModel->select('party.*')
+    $this->view['consignees_list'] = $this->CustomersModel->select('party.party_name,customer.id')
     ->join('party', 'customer.party_id = party.id')
     ->where("FIND_IN_SET (9,customer.party_type_id)")
     ->orderBy('party.party_name')->findAll();   
@@ -277,7 +290,19 @@ class LoadingReceipt extends BaseController
 //     echo 'consignors<pre>';print_r($this->view['consignees']); 
 //  echo 'data<pre>';print_r($this->view['loading_receipts']); 
 //    exit;
-
+    $this->view['consignor_branches'] = [];
+    if($this->view['loading_receipts']['consignor_id'] > 0 ){
+      $this->view['consignor_branches']=  $this->CustomerBranchModel->where([
+        'customer_id'=> $this->view['loading_receipts']['consignor_id']
+        ])->findAll(); 
+    }
+    $this->view['consignee_branches'] = [];
+    if($this->view['loading_receipts']['consignee_id'] > 0 ){
+      $this->view['consignee_branches']=  $this->CustomerBranchModel->where([
+        'customer_id'=> $this->view['loading_receipts']['consignee_id']
+        ])->findAll(); 
+    }
+    
     if($this->request->getPost()){
       $error = $this->validate([
         'booking_id'   =>  'required',  
@@ -366,9 +391,9 @@ class LoadingReceipt extends BaseController
           'policy_date'   =>  $this->request->getVar('policy_date'),
           'policy_no'   =>  $this->request->getVar('policy_no'),
           'consignor_id'   =>  $this->request->getVar('consignor_id'),
-          'consignor_office_id'   =>  $this->request->getVar('consignor_office_id') ? $this->request->getVar('consignor_office_id') : 0,
+          'consignor_office'   =>  $this->request->getVar('consignor_office_id') ? $this->request->getVar('consignor_office_id') : 0,
           'consignee_id'   =>  $this->request->getVar('consignee_id'),
-          'consignee_office_id'   =>  $this->request->getVar('consignee_office_id') ? $this->request->getVar('consignee_office_id') : 0,
+          'consignee_office'   =>  $this->request->getVar('consignee_office_id') ? $this->request->getVar('consignee_office_id') : 0,
           'customer_name'   =>  $this->request->getVar('customer_name'),
           'transporter_bilti_no'   =>  $this->request->getVar('transporter_bilti_no'),
           'transporter_id' =>  $this->request->getVar('transporter_id'),
@@ -588,9 +613,9 @@ class LoadingReceipt extends BaseController
           'policy_date'   =>  $this->request->getVar('policy_date'),
           'policy_no'   =>  $this->request->getVar('policy_no'),
           'consignor_id'   =>  $this->request->getVar('consignor_id'),
-          'consignor_office_id'   =>  $this->request->getVar('consignor_office_id') ? $this->request->getVar('consignor_office_id') : 0,
+          'consignor_office'   =>  $this->request->getVar('consignor_office_id') ? $this->request->getVar('consignor_office_id') : 0,
           'consignee_id'   =>  $this->request->getVar('consignee_id'),
-          'consignee_office_id'   =>  $this->request->getVar('consignee_office_id') ? $this->request->getVar('consignee_office_id') : 0,
+          'consignee_office'   =>  $this->request->getVar('consignee_office_id') ? $this->request->getVar('consignee_office_id') : 0,
           'customer_name'   =>  $this->request->getVar('customer_name'),
           'transporter_bilti_no'   =>  $this->request->getVar('transporter_bilti_no'),
           'transporter_id' =>  $this->request->getVar('transporter_id'),

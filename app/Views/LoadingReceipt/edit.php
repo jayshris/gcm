@@ -118,42 +118,40 @@
 			}); 
 			 $("#consignee_name").select2({
 				tags: true
-			}); 
- 
+			});  
 		}); 
-		function changeIdIpt(thisv,party_id,id,key = 'consignor'){   
-			$('#'+id).val( (party_id) > 0 ? party_id : 0) ;
+		function changeIdIpt(branch_id,party_id,id,key = 'consignor'){   
+			// $('#'+id).val( (party_id) > 0 ? party_id : 0) ;
 			var party_id = (party_id) > 0 ? party_id : 0; 
 			var pre = 'place_of_delivery';
 			if(key == 'consignor'){
 				pre = 'place_of_dispatch';
-			} 
-			if(party_id>0){
+			}  
+			if((party_id>0) && (branch_id !='') && (branch_id !='null')){
 				$.ajax({
 				method: "POST",
 				url: '<?php echo base_url('loadingreceipt/getPartyDetails') ?>',
 				data: {
-					party_id: party_id
+					party_id: party_id,
+					branch_id:branch_id
 				},
 				dataType: "json",
-				success: function(res) { 
-					// alert(res.state_id);  
+				success: function(res) {  
 						$("#"+key+"_state").val(res.state_id).attr("selected","selected").trigger('change');  
 						$("#"+pre+"_state").val(res.state_id).attr("selected","selected").trigger('change');  
-						$("#"+key+"_address").val(res.business_address);
-						$("#"+pre+"_address").val(res.business_address);
+						$("#"+key+"_address").val(res.address);
+						$("#"+pre+"_address").val(res.address);
 
 						$("#"+key+"_city").val(res.city);
 						$("#"+pre+"_city").val(res.city);
 
-						$("#"+key+"_pincode").val(res.postcode);
-						$("#"+pre+"_pincode").val(res.postcode);
+						$("#"+key+"_pincode").val(res.pincode);
+						$("#"+pre+"_pincode").val(res.pincode);
+
+						$("#"+key+"_GSTIN").val(res.gst); 
 					}
 				});
 				
-				$("#"+key+"_branch_span").removeAttr('hidden');
-				$("#"+key+"_office_id").removeAttr('disabled');
-				$("#"+key+"_office_id").attr('required','required');
 			}else{
 				$("#"+key+"_state").val('').attr("selected","selected").trigger('change');  
 				$("#"+pre+"_state").val('').attr("selected","selected").trigger('change');  
@@ -164,11 +162,8 @@
 				$("#"+pre+"_city").val('');
 
 				$("#"+key+"_pincode").val('');
-				$("#"+pre+"_pincode").val('');
+				$("#"+pre+"_pincode").val(''); 
 				
-				$("#"+key+"_branch_span").attr('hidden','hidden');
-				$("#"+key+"_office_id").attr('disabled','disabled');
-				$("#"+key+"_office_id").removeAttr('required');
 			}
 		}
 		
@@ -195,6 +190,40 @@
 					$('#booking_id').val('').attr("selected","selected").trigger('change');   
 				}
 			});
+		}
+
+		function customerBranches(customer_id,customer_type){  
+			$("#"+customer_type+"_office_id").attr('disabled','disabled');
+			$("#"+customer_type+"_office_id").removeAttr('required');
+			$('#'+customer_type+'_office_id').val('').attr("selected","selected").trigger('change');
+			$("#"+customer_type+"_branch_span").attr('hidden','hidden');
+			if(customer_id > 0 ){
+				$('#'+customer_type+'_id').val(customer_id); 
+				$.ajax({
+					method: "POST",
+					url: '<?php echo base_url('loadingreceipt/getCustomerBranches') ?>',
+					data: {
+						customer_id: customer_id  
+					},
+					dataType: "json",
+					success: function(res) { 
+						console.log(res);
+						var html  ='<option value="">Select Ofiice</option>';
+						if(res){
+							$.each(res, function(i, item) { 
+								var selected = (i==0) ? 'selected' : '';
+								html += '<option value="'+item.office_name+'" "'+selected+'">'+item.office_name+'</option>'
+							}); 
+							$("#"+customer_type+"_office_id").removeAttr('disabled');
+							$("#"+customer_type+"_office_id").attr('required','required');
+						} 
+						$('#'+customer_type+'_office_id').html(html);
+						$('#'+customer_type+'_office_id').val('').attr("selected","selected").trigger('change');  
+						$("#"+customer_type+"_branch_span").removeAttr('hidden');
+					}
+				});
+			}
+			
 		}
 	</script>
 </body>

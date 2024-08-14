@@ -220,7 +220,7 @@
         <div class="col-md-4">
             <label class="col-form-label">Consignor Name<span class="text-danger">*</span></label> 
             <input type="hidden"  name="consignor_id" id="consignor_id" class="form-control" value="<?= isset($loading_receipts['consignor_id']) ? $loading_receipts['consignor_id'] : '' ?>">   
-            <select class="form-select" name="consignor_name" id="consignor_name" aria-label="Default select example" required  onchange="changeIdIpt(this,$(this).find(':selected').attr('consignor_id'),'consignor_id')">
+            <select class="form-select" name="consignor_name" id="consignor_name" aria-label="Default select example" required onchange="customerBranches( $(this).find(':selected').attr('consignor_id'),'consignor')">
                     <option value="">Select </option> 
                     <?php if(!empty($consignors)){ ?>
                         <?php foreach($consignors as $key => $c){ ?>
@@ -236,12 +236,12 @@
         </div>
 
         <div class="col-md-4">
-            <label class="col-form-label">Branch Name<span class="text-danger" <?= isset($loading_receipts['consignor_id']) && ($loading_receipts['consignor_id'] < 1 ) ? 'hidden' : '' ?>  id="consignor_branch_span">*</span></label>
-            <select class="form-select select2" <?= isset($loading_receipts['consignor_id']) && ($loading_receipts['consignor_id'] >0) ? 'required' : 'disabled' ?> name="consignor_office_id" id="consignor_office_id" aria-label="Default select example">
-                <option value="">Select Office</option>
-                <?php foreach ($offices as $o) {?> 
-                <option value="<?= $o['id'] ?>" <?= (isset($loading_receipts['consignor_office_id']) && ($loading_receipts['consignor_office_id'] == $o['id'])) ? 'selected' : ''?>><?= $o['name'] ?></option>
-                <?php  } ?>
+            <label class="col-form-label">Branch Name<span class="text-danger"  <?= isset($loading_receipts['consignor_id']) && ($loading_receipts['consignor_id'] >0 ) ? '' : 'hidden' ?>  id="consignor_branch_span">*</span></label>
+            <select class="form-select select2" <?= isset($loading_receipts['consignor_id']) && ($loading_receipts['consignor_id'] >0) ? 'required' : 'disabled' ?> name="consignor_office_id" id="consignor_office_id" aria-label="Default select example"  onchange="changeIdIpt($(this).val(),$('#consignor_id').val(),'consignor_id')"  >
+                <option value="">Select Office</option> 
+                <?php if(isset($consignor_branches)) { foreach ($consignor_branches as $o) {?> 
+                <option value="<?= $o['office_name'] ?>" <?= (isset($loading_receipts['consignor_office']) && ($loading_receipts['consignor_office'] == $o['office_name'])) ? 'selected' : ''?>><?= $o['office_name'] ?></option>
+                <?php  }} ?>
             </select>
             <?php
             if ($validation->getError('office_id')) {
@@ -312,7 +312,7 @@
         <div class="col-md-4">
             <label class="col-form-label">Consignee Name<span class="text-danger">*</span></label>
             <input type="hidden"  name="consignee_id" id="consignee_id" class="form-control" value="<?= isset($loading_receipts['consignor_id']) ? $loading_receipts['consignor_id'] : '' ?>">   
-            <select class="form-select" name="consignee_name" id="consignee_name" aria-label="Default select example" required onchange="changeIdIpt(this,$(this).find(':selected').attr('consignee_id'),'consignee_id','consignee')" >
+            <select class="form-select" name="consignee_name" id="consignee_name" aria-label="Default select example" required onchange="customerBranches( $(this).find(':selected').attr('consignee_id'),'consignee')">
                     <option value="">Select </option> 
                     <?php if(!empty($consignees)){ ?>
                         <?php foreach($consignees as $key => $c){ ?>
@@ -328,12 +328,12 @@
         </div>
 
         <div class="col-md-4">
-            <label class="col-form-label">Branch Name<span class="text-danger" <?= isset($loading_receipts['consignee_id']) && ($loading_receipts['consignee_id'] < 1 ) ? 'hidden' : '' ?>   id="consignee_branch_span">*</span></label>
-            <select class="form-select select2" <?= isset($loading_receipts['consignee_id']) && ($loading_receipts['consignee_id'] >0) ? 'required' : 'disabled' ?> name="consignee_office_id" id="consignee_office_id" aria-label="Default select example">
+            <label class="col-form-label">Branch Name<span class="text-danger" <?= isset($loading_receipts['consignee_id']) && ($loading_receipts['consignee_id'] >0 ) ? '' : 'hidden' ?>   id="consignee_branch_span">*</span></label>
+            <select class="form-select select2" <?= isset($loading_receipts['consignee_id']) && ($loading_receipts['consignee_id'] >0) ? 'required' : 'disabled' ?> name="consignee_office_id" id="consignee_office_id" aria-label="Default select example"  onchange="changeIdIpt($(this).val(),$('#consignee_id').val(),'consignee_id','consignee')" >
                 <option value="">Select Office</option>
-                <?php foreach ($offices as $o) {?> 
-                <option value="<?= $o['id'] ?>" <?= (isset($loading_receipts['consignee_office_id']) && ($loading_receipts['consignee_office_id'] == $o['id'])) ? 'selected' : ''?>><?= $o['name'] ?></option>
-                <?php  } ?>
+                <?php if(isset($consignee_branches)) { foreach ($consignee_branches as $o) {?> 
+                <option value="<?= $o['office_name'] ?>" <?= (isset($loading_receipts['consignee_office']) && ($loading_receipts['consignee_office'] == $o['office_name'])) ? 'selected' : ''?>><?= $o['office_name'] ?></option>
+                <?php  }} ?>
             </select>
             <?php
             if ($validation->getError('office_id')) {
