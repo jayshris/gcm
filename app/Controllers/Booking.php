@@ -1298,13 +1298,8 @@ class Booking extends BaseController
 
                 //update booking status 10 - uploaded 
                 $this->BModel->update($booking_id, [ 
-                    'status' => 10,
-                    'is_vehicle_assigned' => 0,
-                    'vehicle_id' => 0
-                ]);
-        
-                // free vehicles
-                $this->free_vehivle($booking_id);
+                    'status' => 10 
+                ]); 
 
                 $this->session->setFlashdata('success', 'Uploaded pod Successfully');
                 return $this->response->redirect(base_url('booking'));  
@@ -1343,10 +1338,18 @@ class Booking extends BaseController
             } else { 
                 //update booking status 10 - upload again pod
                 $status =6;
+                $booking_data['status'] = $status;
                 $msg =  'Trip end not approved verification';$alert = 'danger';
                 if($this->request->getPost('trip_end_approved') && $this->request->getPost('trip_end_approved')  == 1){
                     //update booking status 11 - trip end 
                     $status =11;
+ 
+                    $booking_data['status'] = $status;
+                    $booking_data['is_vehicle_assigned'] = 0;
+                    $booking_data['vehicle_id'] = 0; 
+        
+                    // free vehicles
+                    $this->free_vehivle($booking_id);
 
                     $result = $this->BUPModel->where('booking_id', $booking_id)->where('status',1)->first();
                     // echo '$result<pre>';print_r($result);exit;
@@ -1359,9 +1362,7 @@ class Booking extends BaseController
                     $msg =  'Trip end approved verification successfully';$alert = 'success';
                 }
                 
-                $this->BModel->update($booking_id, [ 
-                    'status' => $status
-                ]);        
+                $this->BModel->update($booking_id, $booking_data);        
 
                 $this->session->setFlashdata($alert ,$msg);
                 return $this->response->redirect(base_url('booking'));  
