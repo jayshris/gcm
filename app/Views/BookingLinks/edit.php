@@ -382,7 +382,7 @@
         $('.not_to_bill').each(function() {
           notbilltotal += parseFloat($(this).val());
         });
-        $('#discount').val(notbilltotal);
+        $('#discount').val(notbilltotal.toFixed(2));
 
       if (rate > 0) {
 
@@ -403,12 +403,12 @@
           freight = rate + billtotal;
         }
 
-        $('#freight').val(freight);
+        $('#freight').val(freight.toFixed(2));
 
-        var advance = $('#advance').val();
-        var discount = $('#discount').val();
-
-        $('#balance').val(freight - advance - discount);
+        var advance = ($('#advance').val());
+        var discount = ($('#discount').val());
+        var balance = (freight - advance - discount).toFixed(2);
+        $('#balance').val(balance);
 
 
         console.log(rate_type, rate);
