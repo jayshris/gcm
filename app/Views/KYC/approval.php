@@ -193,12 +193,14 @@
 
                                                 <div class="col-md-12">
                                                     <label class="col-form-label">Office Address <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" required name="office_address" value="<?php echo isset($customer_details['address']) ? $customer_details['address'] : ''; ?>">
+                                                    <input type="text" class="form-control" required name="office_address" value="<?php echo isset($reg_address_office['address']) ? $reg_address_office['address'] : ''; ?>">
+
+                                                    <input type="hidden" name="office_address_id" value="<?= isset($reg_address_office) ? $reg_address_office['id'] : '' ?>">
                                                 </div>
 
                                                 <div class="col-md-3">
                                                     <label class="col-form-label">Office City <span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" required name="office_city" value="<?php echo isset($customer_details['city']) ? $customer_details['city'] : ''; ?>">
+                                                    <input type="text" class="form-control" required name="office_city" value="<?php echo isset($reg_address_office['city']) ? $reg_address_office['city'] : ''; ?>">
                                                 </div>
 
                                                 <div class="col-md-3">
@@ -206,14 +208,19 @@
                                                     <select class="form-select select2" name="office_state_id" required>
                                                         <option value="">Select State</option>
                                                         <?php foreach ($state as $row) { ?>
-                                                            <option value="<?php echo $row["state_id"]; ?>" <?php echo (isset($customer_details['state_id']) && $customer_details['state_id'] == $row['state_id']) ? 'selected' : '' ?>><?php echo ucwords($row["state_name"]); ?></option>
+                                                            <option value="<?php echo $row["state_id"]; ?>" <?php echo (isset($reg_address_office['state']) && $reg_address_office['state'] == $row['state_id']) ? 'selected' : '' ?>><?php echo ucwords($row["state_name"]); ?></option>
                                                         <?php } ?>
                                                     </select>
                                                 </div>
 
                                                 <div class="col-md-2">
                                                     <label class="col-form-label">Office Postcode <span class="text-danger">*</span></label>
-                                                    <input type="number" class="form-control" name="office_postcode" required value="<?php echo isset($customer_details['pincode']) ? $customer_details['pincode'] : ''; ?>">
+                                                    <input type="number" class="form-control" name="office_postcode" required value="<?php echo isset($reg_address_office['zip']) ? $reg_address_office['zip'] : ''; ?>">
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label class="col-form-label">Effective From <span class="text-danger">*</span></label>
+                                                    <input type="date" class="form-control" name="effective_from" required value="<?php echo isset($reg_address_office['effective_from']) ? $reg_address_office['effective_from'] : ''; ?>" max="<?= date('Y-m-d') ?>">
                                                 </div>
 
                                                 <div class="col-md-12 mb-3">

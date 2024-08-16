@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Models\BranchAddress;
 use CodeIgniter\HTTP\ResponseInterface;
 
 use App\Models\UserModel;
@@ -16,6 +17,7 @@ use App\Models\CustomerBranchModel;
 use App\Models\CustomerBranchPersonModel;
 use App\Models\CustomersModel;
 use App\Models\KycLinksModel;
+use App\Models\OfficeMasterModel;
 use App\Models\PartyDocumentsModel;
 use App\Models\PartyTypePartyModel;
 
@@ -24,6 +26,8 @@ class Kyc extends BaseController
     public $_access;
     public $session;
     public $KLModel;
+    public $BAModel;
+    public $officeModel;
 
     public function __construct()
     {
@@ -34,6 +38,8 @@ class Kyc extends BaseController
         $this->session = \Config\Services::session();
 
         $this->KLModel = new KycLinksModel();
+        $this->BAModel = new BranchAddress();
+        $this->officeModel = new OfficeMasterModel();
     }
 
     public function index()
@@ -112,6 +118,8 @@ class Kyc extends BaseController
 
                 $businesstypeModel = new BusinessTypeModel();
                 $this->view['businesstype'] = $businesstypeModel->orderBy('company_structure_name', 'ASC')->findAll();
+
+                $this->view['offices'] = $this->officeModel->select('name')->where('status', 1)->orderBy('name', 'ASC')->findAll();
 
                 $flagsmodel = new FlagsModel();
                 $this->view['flags'] = $flagsmodel->where('status', 'Active')->orderBy('id')->findAll();
@@ -207,6 +215,20 @@ class Kyc extends BaseController
                         'pincode' => $this->request->getPost('office_postcode')
                     ]);
                     $branch_id = $CBModel->getInsertID();
+
+                    //save branch address if found
+                    if ($this->request->getPost('office_address') != '') {
+
+                        $this->BAModel->save([
+                            'branch_id' => $branch_id,
+                            'address' => $this->request->getPost('office_address'),
+                            'city' => $this->request->getPost('office_city'),
+                            'state' => $this->request->getPost('office_state_id'),
+                            'zip' => $this->request->getPost('office_postcode'),
+                            'effective_from' => $this->request->getPost('effective_from'),
+                        ]);
+                    }
+
 
                     // add customer branch person
                     $arr = [
@@ -370,8 +392,13 @@ class Kyc extends BaseController
                 ->where('party_id', $id)
                 ->where('business_type_flags.business_type_id', $this->view['pc_data']['business_type_id'])
                 ->groupBy('party_documents.flag_id')
-                ->findAll(); //echo '<pre>'.$PartyDocModel->getLastQuery();die;
+                ->findAll();
 
+            $this->view['reg_address_office'] = $this->BAModel->where('branch_id', $this->view['customer_details']['id'])->orderBy('id', 'desc')->first();
+
+            // echo '<pre>';
+            // print_r($this->view['reg_address_office']);
+            // die;
 
             if ($this->request->getPost()) {
 
@@ -474,11 +501,6 @@ class Kyc extends BaseController
                 $CustomerBranchModel->where('customer_id', $customer_id)->set([
                     'office_name' => $this->request->getPost('office_name'),
                     'gst' => $this->request->getPost('office_gst'),
-                    'address' => $this->request->getPost('office_address'),
-                    'city' => $this->request->getPost('office_city'),
-                    'state_id' => $this->request->getPost('office_state_id'),
-                    'country' => $this->request->getPost('country'),
-                    'pincode' => $this->request->getPost('office_postcode'),
                     'status' => $this->request->getPost('approve'),
                     'added_by' => isset($_SESSION['id']) ? $_SESSION['id'] : '0',
                     'added_ip' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '',
@@ -488,6 +510,20 @@ class Kyc extends BaseController
                 ])->update();
 
                 $customer_branch_id = $CustomerBranchModel->where('customer_id', $customer_id)->first()['id'];
+
+                //========================================
+                if ($this->request->getPost('office_address_id') != '') {
+
+                    $this->BAModel->update($this->request->getPost('office_address_id'), [
+                        'address' => $this->request->getPost('office_address'),
+                        'city' => $this->request->getPost('office_city'),
+                        'state' => $this->request->getPost('office_state_id'),
+                        'country' => $this->request->getPost('country'),
+                        'zip' => $this->request->getPost('office_postcode'),
+                        'effective_from' => $this->request->getPost('effective_from'),
+                        'created_by' => isset($_SESSION['id']) ? $_SESSION['id'] : '0'
+                    ]);
+                }
 
                 $CustomerBranchPersonModel->where('branch_id', $customer_branch_id)->delete();
 

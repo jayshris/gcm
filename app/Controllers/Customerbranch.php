@@ -4,12 +4,13 @@ namespace App\Controllers;
 
 use App\Models\UserModel;
 use App\Models\StateModel;
-use App\Models\OfficeModel;
 use App\Models\CustomersModel;
 use App\Controllers\BaseController;
+use App\Models\BranchAddress;
 use App\Models\CustomerBranchModel;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\CustomerBranchPersonModel;
+use App\Models\OfficeMasterModel;
 
 class Customerbranch extends BaseController
 {
@@ -22,6 +23,7 @@ class Customerbranch extends BaseController
     public $SModel;
     public $CBModel;
     public $CBPModel;
+    public $BAModel;
     public $officeModel;
     public function __construct()
     {
@@ -30,6 +32,7 @@ class Customerbranch extends BaseController
         $this->CModel = new CustomersModel();
         $this->SModel = new StateModel();
         $this->CBModel = new CustomerBranchModel();
+        $this->BAModel = new BranchAddress();
         $this->CBPModel = new CustomerBranchPersonModel();
 
         $user = new UserModel();
@@ -37,7 +40,7 @@ class Customerbranch extends BaseController
 
         $this->added_by = isset($_SESSION['id']) ? $_SESSION['id'] : '0';
         $this->added_ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
-        $this->officeModel = new OfficeModel();
+        $this->officeModel = new OfficeMasterModel();
     }
 
     public function index()
@@ -68,15 +71,20 @@ class Customerbranch extends BaseController
             ->join('party', 'party.id = customer.party_id')
             ->findAll();
         $this->view['state'] = $this->SModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
-        
-        $this->view['offices'] = $this->officeModel->where('status',1)->orderBy('name', 'ASC')->findAll();
+
+        $this->view['offices'] = $this->officeModel->where('status', 1)->orderBy('name', 'ASC')->findAll();
         if ($this->access === 'false') {
             $this->session->setFlashdata('error', 'You are not permitted to access this page');
             return $this->response->redirect(base_url('/dashboard'));
         } else {
             if ($this->request->getPost()) {
+
+                // echo '<pre>';
+                // var_dump($this->request->getPost());
+                // die;
+
                 $isExistCustomerBranch = $this->checkDuplicateCB($this->request->getPost());
-                if($isExistCustomerBranch){
+                if ($isExistCustomerBranch) {
                     $this->session->setFlashdata('danger', 'Customer branch already exist!');
                     return $this->response->redirect(base_url('customerbranch/create'));
                 }
@@ -84,15 +92,25 @@ class Customerbranch extends BaseController
                     'customer_id' => $this->request->getPost('party_id'),
                     'office_name' => $this->request->getPost('office_name'),
                     'gst' => $this->request->getPost('gst'),
-                    'address' => $this->request->getPost('address'),
-                    'city' => $this->request->getPost('city'),
-                    'state_id' => $this->request->getPost('state_id'),
-                    'country' => $this->request->getPost('country'),
-                    'pincode' => $this->request->getPost('pin'),
                     'added_by' => $this->added_by,
                     'added_ip' => $this->added_ip
                 ]);
                 $branch_id = $this->CBModel->getInsertID();
+
+                //save branch address if found
+                if ($this->request->getPost('address') != '') {
+
+                    $this->BAModel->save([
+                        'branch_id' => $branch_id,
+                        'address' => $this->request->getPost('address'),
+                        'city' => $this->request->getPost('city'),
+                        'state' => $this->request->getPost('state_id'),
+                        'country' => $this->request->getPost('country'),
+                        'zip' => $this->request->getPost('pin'),
+                        'effective_from' => $this->request->getPost('effective_from'),
+                        'created_by' => $this->added_by
+                    ]);
+                }
 
                 foreach ($this->request->getPost('contact_person') as $key => $val) {
                     $arr = [
@@ -113,21 +131,23 @@ class Customerbranch extends BaseController
         }
     }
 
-    function checkDuplicateCB($post,$id =0 ){
+    function checkDuplicateCB($post, $id = 0)
+    {
         $where['customer_id'] = $post['party_id'];
         $where['office_name'] = trim($post['office_name']);
         $this->CBModel->where($where);
-        if($id > 0){
-            $this->CBModel->where('id !=',$id); 
+        if ($id > 0) {
+            $this->CBModel->where('id !=', $id);
         }
-       return $this->CBModel->where($where)->first(); 
-           
+        return $this->CBModel->where($where)->first();
     }
+
     public function edit($id)
     {
         $this->view['customers'] = $this->CModel->select('customer.*, party.party_name')
             ->join('party', 'party.id = customer.party_id')
             ->findAll();
+
         $this->view['state'] = $this->SModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
 
         $this->view['branch_detail'] = $this->CBModel->select('customer_branches.*, customer.phone, party.party_name')
@@ -137,9 +157,13 @@ class Customerbranch extends BaseController
             ->first();
 
         $this->view['branch_persons'] = $this->CBPModel->where('branch_id', $id)->findAll();
-        $this->view['offices'] = $this->officeModel->select('name')->where('status',1)->orderBy('name', 'ASC')->findAll(); 
-        //custom brach push in office name list if not exist
-        if(!in_array($this->view['branch_detail']['office_name'], array_column($this->view['offices'],  'name'))){
+
+        $this->view['offices'] = $this->officeModel->select('name')->where('status', 1)->orderBy('name', 'ASC')->findAll();
+
+        $this->view['reg_address'] = $this->BAModel->where('branch_id', $id)->orderBy('id', 'desc')->first();
+
+        //custom branch push in office name list if not exist
+        if (!in_array($this->view['branch_detail']['office_name'], array_column($this->view['offices'],  'name'))) {
             array_push($this->view['offices'], ['name' => $this->view['branch_detail']['office_name']]);
         }
         // echo  '<pre>';print_r( $this->view['offices']); exit;
@@ -148,10 +172,10 @@ class Customerbranch extends BaseController
             return $this->response->redirect(base_url('/dashboard'));
         } else {
             if ($this->request->getPost()) {
-                $isExistCustomerBranch = $this->checkDuplicateCB($this->request->getPost(),$id);
-                if($isExistCustomerBranch){
+                $isExistCustomerBranch = $this->checkDuplicateCB($this->request->getPost(), $id);
+                if ($isExistCustomerBranch) {
                     $this->session->setFlashdata('danger', 'Customer branch already exist!');
-                    return $this->response->redirect(base_url('customerbranch/edit/'.$id));
+                    return $this->response->redirect(base_url('customerbranch/edit/' . $id));
                 }
                 $this->CBModel->update($id, [
                     'customer_id' => $this->request->getPost('party_id'),
@@ -167,6 +191,20 @@ class Customerbranch extends BaseController
                     'modify_ip' => $this->added_ip,
                     'modify_by' => $this->added_by,
                 ]);
+
+                
+                if ($this->request->getPost('address_id') != '') {
+
+                    $this->BAModel->update($this->request->getPost('address_id'), [
+                        'address' => $this->request->getPost('address'),
+                        'city' => $this->request->getPost('city'),
+                        'state' => $this->request->getPost('state_id'),
+                        'country' => $this->request->getPost('country'),
+                        'zip' => $this->request->getPost('pin'),
+                        'effective_from' => $this->request->getPost('effective_from'),
+                        'created_by' => $this->added_by
+                    ]);
+                }
 
                 $this->CBPModel->where('branch_id', $id)->delete();
 
