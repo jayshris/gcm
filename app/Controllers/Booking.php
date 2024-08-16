@@ -1295,12 +1295,13 @@ class Booking extends BaseController
     }
 
     function trip_end($booking_id){ 
-        if ($this->request->getPost()) {            
+        if ($this->request->getPost()) {     
+            // echo '$result<pre>';print_r($this->request->getPost());//exit;       
             $error = $this->validate([
                 'trip_end_approved' => [
                     'rules' => 'required',
                     'errors' => [
-                        'required' => 'The trip end approved  field is required'
+                        'required' => 'The trip end approved field is required'
                     ],
                 ]
             ]);
@@ -1308,7 +1309,9 @@ class Booking extends BaseController
             if (!$error) { 
                 $this->view['error'] = $this->validator; 
             } else { 
-                $status =10;
+                //update booking status 10 - upload again pod
+                $status =6;
+                $msg =  'Trip end not approved verification';$alert = 'danger';
                 if($this->request->getPost('trip_end_approved') && $this->request->getPost('trip_end_approved')  == 1){
                     //update booking status 11 - trip end 
                     $status =11;
@@ -1321,18 +1324,19 @@ class Booking extends BaseController
                             'status' => 2
                         ]);
                     }
+                    $msg =  'Trip end approved verification successfully';$alert = 'success';
                 }
                 
                 $this->BModel->update($booking_id, [ 
                     'status' => $status
                 ]);        
 
-                $this->session->setFlashdata('success', 'Uploaded pod Successfully');
+                $this->session->setFlashdata($alert ,$msg);
                 return $this->response->redirect(base_url('booking'));  
             }           
         }
         $this->view['token'] = $booking_id;
-        $this->view['pod_data'] = $this->BUPModel->where('booking_id', $booking_id)->where('status',1)->first();
-        return view('Booking/trip_end', $this->view);
+        $this->view['pod_data'] = $this->BUPModel->where('booking_id', $booking_id)->where('status',1)->first();        
+        return view('Booking/trip_end_verification', $this->view);
     }
 }
