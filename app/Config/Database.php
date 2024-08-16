@@ -29,7 +29,7 @@ class Database extends Config
         'hostname'     => 'localhost',
         'username'     => 'root',
         'password'     => '',
-        'database'     => 'gaegroup_gcmLive_db',
+        'database'     => 'aubadetech_gcmgrop_dev',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
         'pConnect'     => false,
@@ -199,4 +199,3 @@ class Database extends Config
         }
     }
 }
-

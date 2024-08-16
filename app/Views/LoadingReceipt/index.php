@@ -70,7 +70,7 @@
 											<th>Booking Number</th>
 											<th>Branch Name</th>
 											<th>Booking Date</th> 
-											<th>Status</th> 
+											<th>Status</th>
 										</tr>
 										</thead>
 										<tbody>

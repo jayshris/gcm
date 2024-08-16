@@ -92,7 +92,7 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 					}
 					else{
 						$makeButton = 1;
-						if($module=='booking'){ 
+						if($module=='booking'){
 							//if status is in 0, 1, 2, 3 then only show
 							if($secLink=='edit' && ($row['status']>=3))	$makeButton = 0;
 							//if status less than equal to 5 then only show
@@ -109,23 +109,6 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 							if($secLink=='upload_pod' && $row['status']!=6)	$makeButton = 0;
 							//if status is 10 means kanta parchi uploaded then only show 
 							if($secLink=='trip_end' && $row['status']!= 10)	$makeButton = 0;
-
-							// if($secLink=='edit' && ($row['status']>=3))	$makeButton = 0;
-							// if($secLink=='approve' && ($row['approved']==1  || $row['status']==0 || $row['status']==14 || $row['status']==15 ))	$makeButton = 0;
-							// if($secLink=='assign_vehicle' && ($row['is_vehicle_assigned']==1 || $row['status']==0 || $row['status']==14 || $row['status']==15))	$makeButton = 0;
-							// if($secLink=='cancel' && ($row['status']==14 || $row['status']>=5))	$makeButton = 0;
-							// if($secLink=='approval_for_cancellation' && $row['status']!=14)	$makeButton = 0;
-							// if($secLink=='unassign_vehicle' && ($row['is_vehicle_assigned'] != 1 || $row['status']==14 || $row['status']==15))	$makeButton = 0;
-							 
-							/** all permissions for view 
-							 * 0 created: edit, cancel
-							 * 1 Waiting for Approval: edit, cancel, approve, assign /uassign
-							 * 2 Approved: edit, cancel, assign or unassign
-							 * 3. Ready for Trip:edit, cancel, unassign lr generate or nto
-							 * 4. Approval for Cancellation, Approve Cancellation
-							 */
-							//if not approve not assign vehicle
-							// if assign status is 3
 						}
 						if($module=='loadingreceipt'){
 							if($secLink=='approve' && ($row['approved']==1 || $row['status'] != 1))	$makeButton = 0;

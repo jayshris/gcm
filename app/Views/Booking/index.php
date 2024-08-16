@@ -148,7 +148,7 @@
                               if(isset($b['lr_Status']) && ($b['lr_Status'] >0) ){
                                 $status = 'Generated';
                                 $lr_flag = 1;
-                              }
+                              } 
                               if(isset($b['lr_approved']) && ($b['lr_approved'] >0) ){
                                 $status = 'Approved';
                                 $lr_flag = 1;
@@ -160,7 +160,7 @@
                             ?>
                           <td><span class="badge badge-pill <?= ($lr_flag >0 ? 'bg-success' : 'bg-danger') ?>">                            
                              <?= $status ?></span>
-                          </td>        
+                          </td>  
                           </td>
                         </tr>
                       <?php } ?>

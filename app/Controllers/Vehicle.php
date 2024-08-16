@@ -449,6 +449,7 @@ class Vehicle extends BaseController
     }
   }
 
+
   public function getVehicletypedetails()
   {
 

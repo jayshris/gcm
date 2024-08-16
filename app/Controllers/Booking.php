@@ -23,11 +23,10 @@ use App\Controllers\BaseController;
 use App\Models\BookingPickupsModel;
 use App\Models\CustomerBranchModel;
 use App\Models\BookingExpensesModel;
-use App\Models\BookingUploadedPodModel;
 use App\Models\BookingVehicleLogModel;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\LoadingReceiptModel;
-
+use App\Models\BookingUploadedPodModel;
 class Booking extends BaseController
 {
     public $session;
@@ -1045,6 +1044,7 @@ class Booking extends BaseController
             }
             if($this->request->getPost('approval_for_cancellation') == 15){
                 $data['is_vehicle_assigned'] = 0; 
+                $data['vehicle_id'] = 0; 
             } 
             // echo '<pre>';print_r( $data);exit; 
             $this->BModel->update($id,$data);
@@ -1183,7 +1183,8 @@ class Booking extends BaseController
                 // 'vehicle_id' => $this->request->getPost('vehicle_rc'),
                 // 'vehicle_type_id' => $this->request->getPost('vehicle_type'),
                 'status' => $booking_status,
-                'is_vehicle_assigned' => 0
+                'is_vehicle_assigned' => 0,
+                'vehicle_id' => 0
             ]);
 
             //Change vehile status not assigned and vehicle log as unassign vehicle
@@ -1204,6 +1205,7 @@ class Booking extends BaseController
         return view('Booking/unassign_vehicle', $this->view);
     }
 
+    
     function upload_pod($booking_id){
         $this->view['token'] = $booking_id;
         if ($this->request->getPost()) {            
@@ -1265,6 +1267,7 @@ class Booking extends BaseController
                 //update booking status 10 - uploaded 
                 $this->BModel->update($booking_id, [ 
                     'status' => 10,
+                    'vehicle_id' => 0,
                     'is_vehicle_assigned' => 0
                 ]);
         
@@ -1291,25 +1294,45 @@ class Booking extends BaseController
         } 
     }
 
-    function trip_end($id){
-        //Change vehile status not assigned and vehicle log as unassign vehicle
-        $this->view['data'] = $this->BUPModel->where('booking_id', $id)->where('status',1)->first();
-
-        if ($this->request->getPost()) {
-            $result = $this->BUPModel->where('booking_id', $id)->where('status',1)->first();
-            if($result){ 
-                $this->BModel->update($result['id'], [ 
-                    'status' => 2
-                ]);
-            } 
-            $this->BModel->update($id, [ 
-                'status' => 11,
-                'is_vehicle_assigned' => 0
+    function trip_end($booking_id){ 
+        if ($this->request->getPost()) {            
+            $error = $this->validate([
+                'trip_end_approved' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'The trip end approved  field is required'
+                    ],
+                ]
             ]);
 
-            $this->session->setFlashdata('success', 'Trip end Successfully');
-            return $this->response->redirect(base_url('booking'));  
+            if (!$error) { 
+                $this->view['error'] = $this->validator; 
+            } else { 
+                $status =10;
+                if($this->request->getPost('trip_end_approved') && $this->request->getPost('trip_end_approved')  == 1){
+                    //update booking status 11 - trip end 
+                    $status =11;
+
+                    $result = $this->BUPModel->where('booking_id', $booking_id)->where('status',1)->first();
+                    // echo '$result<pre>';print_r($result);exit;
+                    if($result){ 
+                        //update pod as approved
+                        $this->BUPModel->update($result['id'], [ 
+                            'status' => 2
+                        ]);
+                    }
+                }
+                
+                $this->BModel->update($booking_id, [ 
+                    'status' => $status
+                ]);        
+
+                $this->session->setFlashdata('success', 'Uploaded pod Successfully');
+                return $this->response->redirect(base_url('booking'));  
+            }           
         }
+        $this->view['token'] = $booking_id;
+        $this->view['pod_data'] = $this->BUPModel->where('booking_id', $booking_id)->where('status',1)->first();
         return view('Booking/trip_end', $this->view);
     }
 }

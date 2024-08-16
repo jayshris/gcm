@@ -6,7 +6,7 @@ use App\Controllers\BaseController;
 use App\Models\AccountsModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
-class Accounts extends BaseController
+class Accountsmaster extends BaseController
 {
     public $session;
     public $added_by;
@@ -40,9 +40,6 @@ class Accounts extends BaseController
     public function create()
     {
         if ($this->request->getPost()) {
-            // echo '<pre>';
-            // print_r($this->request->getPost());
-            // die;
 
             $this->AModel->insert([
                 'ac_name' => $this->request->getPost('ac_name'),
@@ -54,7 +51,7 @@ class Accounts extends BaseController
             ]);
 
             $this->session->setFlashdata('success', 'Account Successfully Added');
-            return $this->response->redirect(base_url('accounts'));
+            return $this->response->redirect(base_url('accountsmaster'));
         }
 
         return view('Accounts/action', $this->view);
@@ -67,9 +64,6 @@ class Accounts extends BaseController
         $this->view['ac_details'] = $this->AModel->where('id', $id)->first();
 
         if ($this->request->getPost()) {
-            // echo '<pre>';
-            // print_r($this->request->getPost());
-            // die;
 
             $this->AModel->update($id, [
                 'ac_name' => $this->request->getPost('ac_name'),
@@ -82,7 +76,7 @@ class Accounts extends BaseController
             ]);
 
             $this->session->setFlashdata('success', 'Account Successfully Updated');
-            return $this->response->redirect(base_url('accounts'));
+            return $this->response->redirect(base_url('accountsmaster'));
         }
 
         return view('Accounts/action', $this->view);
@@ -92,6 +86,6 @@ class Accounts extends BaseController
     {
         $this->AModel->delete($id);
         $this->session->setFlashdata('success', 'Account Deleted Successfully');
-        return $this->response->redirect(base_url('accounts'));
+        return $this->response->redirect(base_url('accountsmaster'));
     }
 }
