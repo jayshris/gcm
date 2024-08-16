@@ -573,16 +573,18 @@ class Booking extends BaseController
     public function getCustomerType()
     {
         $customer = $this->CModel->where('id', $this->request->getPost('customer_id'))->first();
-
+        $current_booking = $this->BModel->select('id,customer_type')->where('id',$this->request->getPost('booking_id'))->first();
+        $customer_type = isset($current_booking['customer_type']) ? $current_booking['customer_type'] : 0;
         $html = '';
 
         if ($customer) {
             $customer_party_type = explode(',', $customer['party_type_id']);
 
             $rows = $this->PTModel->whereIn('id', $customer_party_type)->where('sale', '1')->findAll();
-            if (count($rows) > 0) {
+            if (count($rows) > 0) { 
                 foreach ($rows as $row) {
-                    $html .= '<option value="' . $row['id'] . '">' . $row['name'] . '</option>';
+                    $selected = ($customer_type == $row['id']) ? 'selected' : '';
+                    $html .= '<option value="' . $row['id'] . '" '.$selected.'>' . $row['name'] . '</option>';
                 }
             }
         }
@@ -592,11 +594,15 @@ class Booking extends BaseController
 
     public function getCustomerBranch()
     {
+        $current_booking = $this->BModel->select('id,customer_branch')->where('id',$this->request->getPost('booking_id'))->first();
+        $customer_branch = isset($current_booking['customer_branch']) ? $current_booking['customer_branch'] : 0;
+        // echo '$customer_branch '.$customer_branch;exit;
         $html = '';
         $rows = $this->CBModel->where('customer_id', $this->request->getPost('customer_id'))->findAll();
         if (count($rows) > 0) {
             foreach ($rows as $row) {
-                $html .= '<option value="' . $row['id'] . '">' . $row['office_name'] . '</option>';
+                $selected = ($customer_branch == $row['id']) ? 'selected' : '';
+                $html .= '<option value="' . $row['id'] . '" '.$selected .'>' . $row['office_name'] . '</option>';
             }
         }
         return $html;
@@ -1001,6 +1007,10 @@ class Booking extends BaseController
         // echo  $db->getLastQuery()->getQuery(); 
         // echo '  <pre>';print_r($this->view['customers'] );exit; 
         $this->view['expense_heads'] =  $this->ExpenseHeadModel->orderBy('head_name', 'asc')->findAll();
+        $this->view['offices'] = $this->OModel->where('status', '1')->findAll(); 
+        $this->view['vehicle_types'] = $this->VTModel->where('status', 'Active')->findAll();
+        $this->view['employees'] = $this->EmployeeModel->whereIN('dept_id', [1,2])->where('status', 1)->findall(); 
+        $this->view['vehicle_rcs'] = [];
         return view('Booking/edit', $this->view); 
     }
     

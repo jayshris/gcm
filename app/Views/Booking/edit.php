@@ -48,6 +48,99 @@
                             <input type="hidden" name="id" value="<?= $token ?>"/>
                             <input type="hidden" name="pickup_seq" value="1" class="form-control">
                             <input type="hidden" name="drop_seq" value="1" class="form-control">
+
+                            <!-- Added booking details -->
+                            <div class="col-md-3">
+                              <label class="col-form-label">Booking For</label>
+                              <select class="form-select select2" disabled name="booking_for" id="booking_for" aria-label="Default select example">
+                                <option value="">Select Material</option>
+                                <option value="1" <?= $booking_details['booking_for'] == '1' ? 'selected' : '' ?>>Material 1</option>
+                                <option value="2" <?= $booking_details['booking_for'] == '2' ? 'selected' : '' ?>>Material 2</option>
+                                <option value="3" <?= $booking_details['booking_for'] == '3' ? 'selected' : '' ?>>Material 3</option>
+                                <option value="4" <?= $booking_details['booking_for'] == '4' ? 'selected' : '' ?>>Material 4</option>
+                              </select> 
+                            </div>
+
+                            <div class="col-md-3">
+                              <label class="col-form-label">Branch Name<span class="text-danger">*</span></label>
+                              <select class="form-select select2" disabled name="office_id" id="office_id" aria-label="Default select example">
+                                <option value="">Select Office</option>
+                                <?php foreach ($offices as $o) {
+                                  echo '<option value="' . $o['id'] . '"  ' . ($booking_details['office_id'] == $o['id'] ? 'selected' : '') . '>' . $o['name'] . '</option>';
+                                } ?>
+                              </select> 
+                            </div>
+
+                            <div class="col-md-3">
+                              <label class="col-form-label">Vehicle Type<span class="text-danger">*</span></label>
+                              <select class="form-select " disabled name="vehicle_type" id="vehicle_type" aria-label="Default select example" onchange="$.getVehicles();">
+                                <option value="">Select Vehicle Type</option>
+                                <?php foreach ($vehicle_types as $vt) {
+                                  echo '<option value="' . $vt['id'] . '"  ' . ($booking_details['vehicle_type_id'] == $vt['id'] ? 'selected' : '') . '>' . $vt['name'] . '</option>';
+                                } ?>
+                              </select> 
+                            </div>
+
+                            <div class="col-md-3">
+                              <label class="col-form-label">Vehicle RC</label>
+                              <select class="form-select select2" disabled name="vehicle_rc" id="vehicle_rc" aria-label="Default select example">
+                                <option value="">Select Type</option>
+                                <?php foreach ($vehicle_rcs as $rc) {
+                                  echo '<option value="' . $rc['id'] . '" ' . ($booking_details['vehicle_id'] == $rc['id'] ? 'selected' : '') . '>' . $rc['rc_number'] . '</option>';
+                                } ?>
+                              </select>
+                            </div>
+
+                            <div class="col-md-4">
+                              <label class="col-form-label">Customer Name<span class="text-danger">*</span></label>
+                              <select class="form-select select2" disabled name="customer_id" id="customer_id" aria-label="Default select example" onchange="$.getPartyType();">
+                                <option value="">Select Customer</option>
+                                <?php foreach ($customers as $c) {
+                                  echo '<option value="' . $c['id'] . '" ' . ($booking_details['customer_id'] == $c['id'] ? 'selected' : '') . '>' . $c['party_name'] . '</option>';
+                                } ?>
+                              </select> 
+                            </div>
+
+                            <div class="col-md-3">
+                              <label class="col-form-label">Customer Branch<span class="text-danger">*</span></label>
+                              <select class="form-select" name="customer_branch" disabled id="customer_branch" aria-label="Default select example">
+                                <option value="">Select Branch</option>
+                              </select>  
+                            </div>
+
+                            <div class="col-md-3">
+                              <label class="col-form-label">Customer Type</label>
+                              <select class="form-select" disabled name="customer_type" id="customer_type" aria-label="Default select example">
+                                <option value="">Select Type</option>
+                              </select> 
+                            </div>
+
+                            <div class="col-md-3">
+                              <label class="col-form-label">Booking By<span class="text-danger">*</span></label>
+                              <select class="form-select" disabled name="booking_by" aria-label="Default select example" onchange="">
+                                <option value="">Select Employee</option>
+                                <?php foreach ($employees as $e) {
+                                  echo '<option value="' . $e['id'] . '"  ' . ($booking_details['booking_by'] == $e['id'] ? 'selected' : '') . '>' . $e['name'] . '</option>';
+                                } ?>
+                              </select> 
+                            </div>
+
+                            <div class="col-md-2">
+                              <label class="col-form-label">Booking Date<span class="text-danger">*</span></label>
+                              <input type="date" readonly name="booking_date" value="<?= $booking_details['booking_date'] ?>"  class="form-control"> 
+                            </div>
+
+                            <div class="form-wrap col-md-12"> 
+                                <label class="col-form-label" style="padding-right: 10px;">
+                                    Booking Type<span class="text-danger">*</span>
+                                </label>
+                                <input type="radio" name="booking_type" id="FTL" value="FTL" <?= $booking_details['booking_type'] == 'FTL' ? 'checked' : '' ?> disabled >
+                                <label for="FTL" style="padding-right:15px">FTL</label>
+                                <input type="radio" name="booking_type" id="PTL" value="PTL" <?= $booking_details['booking_type'] == 'PTL' ? 'checked' : '' ?> disabled >
+                                <label for="PTL">PTL</label>  
+                            </div>
+                            <!-- Added booking details -->
+
                             <div class="col-md-12"></div>
                              
                             <label class="col-form-label">Pickup Details<span class="text-danger">*</span></label>
@@ -323,6 +416,11 @@
 
   <?= $this->include('partials/vendor-scripts') ?>
   <script>
+     $(document).ready(function() {
+      $.getPartyType(); 
+      $.getVehicles(); 
+    });
+
     $.addPickup = function() {
       var tot = $('#pickup_table').children('tbody').children('tr').length;
 
@@ -383,7 +481,8 @@
         method: "POST",
         url: '<?php echo base_url('booking/getCustomerType') ?>',
         data: {
-          customer_id: customer_id
+          customer_id: customer_id,
+          booking_id:<?= $booking_details['id'] ?>
         },
         success: function(response) {
           $('#customer_type').html(response);
@@ -394,7 +493,8 @@
         method: "POST",
         url: '<?php echo base_url('booking/getCustomerBranch') ?>',
         data: {
-          customer_id: customer_id
+          customer_id: customer_id,
+          booking_id:<?= $booking_details['id'] ?>
         },
         success: function(response) {
           if (response != '') {
@@ -415,16 +515,16 @@
 
       $.ajax({
         method: "POST",
-        url: '<?php echo base_url('booking/getVehicles') ?>',
+        url: '<?php echo base_url('booking/getUnassignVehicles') ?>',
         data: {
-          vehicle_type: vehicle_type
+          vehicle_type: vehicle_type,
+          booking_id:<?= $booking_details['id'] ?>
         },
         success: function(response) {
           $('#vehicle_rc').html(response);
         }
       });
     }
-
     $.setDrop = function() {
       var pickup_date = $('#pickup_date').val();
       console.log(pickup_date);
@@ -487,9 +587,10 @@
 
         $('#freight').val(freight.toFixed(2));
 
-        var advance = parseFloat($('#advance').val());
-        var discount = parseFloat($('#discount').val());
+        var advance = ($('#advance').val());
+        var discount = ($('#discount').val());
         var balance = (freight - advance - discount).toFixed(2);
+        //alert(freight +' - '+ advance  +' - '+ discount +' - '+balance);
         $('#balance').val(balance);
 
 
