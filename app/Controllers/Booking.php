@@ -415,14 +415,21 @@ class Booking extends BaseController
     { 
         if ($this->request->getPost()) {
 
-            $isVehicle = $this->BModel->where('id', $id)->first()['vehicle_id'] > 0 ? true : false;
-
-            // echo '<pre>';
-            // print_r($this->request->getPost());
-            // print_r($isVehicle);
-            // die;
-
-            $booking_status = ($this->request->getPost('approve')) ? 2 : 1;
+            // $isVehicle = $this->BModel->where('id', $id)->first()['vehicle_id'] > 0 ? true : false;
+             // update Drops, Pickups and delete Expences 
+             $booking_details =  $this->BModel->where('id', $id)->first(); 
+             // echo '<pre>';
+             // print_r($this->request->getPost());
+             // print_r($isVehicle);
+             // die;
+ 
+             //if status is waitng for approval and vehicle assign then status is ready for trip
+             if($booking_details['status'] == 1 && $booking_details['vehicle_id'] > 0 ){
+                 $booking_status = 3;
+             }else{
+                 $booking_status = ($this->request->getPost('approve')) ? 2 : 1;
+             }
+ 
             // update booking
             $this->BModel->update($id, [
                 'booking_for' => $this->request->getPost('booking_for'),
@@ -749,6 +756,11 @@ class Booking extends BaseController
             }
 
             if(($current_booking['status']==2) && ($current_booking['booking_type'] == 'PTL')){
+                $booking_status = 1;
+            }
+
+             //if booking status is one then after assign vehicle it remain same
+             if($current_booking['status'] ==1){
                 $booking_status = 1;
             }
         } 
@@ -1175,9 +1187,19 @@ class Booking extends BaseController
             //update vevhicle status unassigned as 1
             $this->VModel->update($current_booking['vehicle_id'], [ 
                 'working_status' => '1'
-            ]); 
+            ]);  
+            
+            $booking_status = 2; 
 
-            $booking_status = 2;
+            //if current booking status is waiting for approval then after unassign the status remains same
+            if($current_booking['status'] == 1){
+                $booking_status = 1;
+            }
+
+            //if current status is > than 3 then status is paused 8
+            if($current_booking['status'] > 3){
+                $booking_status = 8;
+            } 
 
             $this->BModel->update($id, [
                 // 'vehicle_id' => $this->request->getPost('vehicle_rc'),
@@ -1267,8 +1289,8 @@ class Booking extends BaseController
                 //update booking status 10 - uploaded 
                 $this->BModel->update($booking_id, [ 
                     'status' => 10,
-                    'vehicle_id' => 0,
-                    'is_vehicle_assigned' => 0
+                    'is_vehicle_assigned' => 0,
+                    'vehicle_id' => 0
                 ]);
         
                 // free vehicles
