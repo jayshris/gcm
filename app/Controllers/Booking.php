@@ -644,7 +644,7 @@ class Booking extends BaseController
         
         // $db = \Config\Database::connect();  
         // echo  $db->getLastQuery()->getQuery(); 
-        // echo '<pre>';print_r($unassigned_vehicles);//exit;
+        // echo 'unassigned_vehicles <pre>';print_r($unassigned_vehicles);//exit;
         
         if(isset($current_booking['booking_type']) && ($current_booking['booking_type'] == 'PTL')){
             //get assigned vehicles(working_status=2) but assigned booking type PTL
@@ -670,7 +670,7 @@ class Booking extends BaseController
                 $rows = array_intersect_key($rows, $temp);
             }
             
-            // echo '  <pre>';print_r($assigned_vehicles);
+            // echo ' assigned_vehicles  <pre>';print_r($assigned_vehicles);
         }else{
             $rows = $unassigned_vehicles; 
         } 

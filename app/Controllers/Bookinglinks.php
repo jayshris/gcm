@@ -268,6 +268,10 @@ class Bookinglinks extends BaseController
         // echo  $db->getLastQuery()->getQuery(); 
         // echo '  <pre>';print_r($this->view['customers'] );exit; 
         $this->view['expense_heads'] =  $this->ExpenseHeadModel->orderBy('head_name', 'asc')->findAll();
+        $this->view['offices'] = $this->OModel->where('status', '1')->findAll(); 
+        $this->view['vehicle_types'] = $this->VTModel->where('status', 'Active')->findAll();
+        $this->view['employees'] = $this->EmployeeModel->whereIN('dept_id', [1,2])->where('status', 1)->findall(); 
+        $this->view['vehicle_rcs'] = [];
         return view('BookingLinks/edit', $this->view); 
     }
 

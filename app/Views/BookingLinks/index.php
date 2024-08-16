@@ -58,7 +58,11 @@
                                                 ?>
                                                 <tr>
                                                     <td><?= $i++ ?>.</td>
-                                                    <td><?= base_url('bookinglinks/edit/').$encode_url_id  .'/'. $l['token'] ?></td> 
+                                                    <td> 
+                                                        <input type="hidden" id="myInput"  style="width: 100%;" value="<?= base_url('bookinglinks/edit/').$encode_url_id  .'/'. $l['token'] ?> ">
+                                                        <?= base_url('bookinglinks/edit/').$encode_url_id  .'/'. $l['token'] ?> &nbsp;
+                                                        <button class="btn btn-warning" onclick="myFunction()"><i class="fa fa-clone" aria-hidden="true" title="Copy link"></i></button>
+                                                    </td> 
                                                     <td><?= date('d-m-Y h:i:s a', strtotime($l['gen_date'])) ?></td>
                                                     <td>
                                                         <?php
@@ -106,21 +110,7 @@
 
 
     <?= $this->include('partials/vendor-scripts') ?>
-    <script> 
-        function myFunction() {
-            // Get the text field
-            var copyText = document.getElementById("myInput");
-
-            // Select the text field
-            copyText.select();
-            copyText.setSelectionRange(0, 99999); // For mobile devices
-
-            // Copy the text inside the text field
-            navigator.clipboard.writeText(copyText.value);
-
-            // Alert the copied text
-            alert("Link Copied : " + copyText.value);
-        }
+    <script>  
 
         // datatable init
         if ($('#linkTable').length > 0) {
@@ -144,6 +134,21 @@
                     $('.dataTables_length').appendTo('.datatable-length');
                 }
             });
+        }
+
+        function myFunction() {
+            // Get the text field
+            var copyText = document.getElementById("myInput");
+
+            // Select the text field
+            copyText.select();
+            // copyText.setSelectionRange(0, 99999); // For mobile devices
+
+            // Copy the text inside the text field
+            navigator.clipboard.writeText(copyText.value);
+
+            // Alert the copied text
+            alert("Link Copied : " + copyText.value);
         }
     </script>
 </body>
