@@ -111,23 +111,13 @@
 
                             <div class="col-md-6 col-sm-6">
                                 <label class="col-form-label"><b>Booking Date: </b></label>
-                                <label class="col-form-label"><?= isset($booking_details['booking_date']) && !empty(strtotime($booking_details['booking_date']) > 0) ? date('d/m/Y',strtotime($booking_details['booking_date'])) : '-' ?></label>
+                                <label class="col-form-label"><?= isset($booking_details['booking_date']) && !empty(strtotime($booking_details['booking_date']) > 0) ? date('d-m-Y',strtotime($booking_details['booking_date'])) : '-' ?></label>
                             </div> 
                             
                             <div class="col-md-6 col-sm-6">
                                 <label class="col-form-label"><b>Booking By: </b></label>
                                 <label class="col-form-label"><?= isset($booking_details['booking_by_name']) && !empty($booking_details['booking_by_name']) ? $booking_details['booking_by_name'] : '-' ?></label>
-                            </div> 
-
-                            <div class="col-md-6 col-sm-6">
-                                <label class="col-form-label"><b>Vehicle Type: </b></label>
-                                <label class="col-form-label"><?= isset($booking_details['vehicle_type_name']) && !empty($booking_details['vehicle_type_name']) ? $booking_details['vehicle_type_name'] : '-' ?></label>
-                            </div> 
-
-                            <div class="col-md-6 col-sm-6">
-                                <label class="col-form-label"><b>Vehicle RC: </b></label>
-                                <label class="col-form-label"><?= isset($booking_details['rc_number']) && !empty($booking_details['rc_number']) ? $booking_details['rc_number'] : '-' ?></label>
-                            </div> 
+                            </div>   
                             
                             <div class="col-md-6 col-sm-6">
                                 <label class="col-form-label"><b>Booking For: </b></label>
@@ -138,6 +128,26 @@
                                   <?= isset($booking_details['booking_for']) && $booking_details['booking_for'] == '4' ? 'Material 4' : '' ?>
                                 </label>
                             </div> 
+
+                            <div class="col-md-6 col-sm-6">
+                                <label class="col-form-label"><b>Vehicle RC: </b></label>
+                                <label class="col-form-label"><?= isset($booking_details['rc_number']) && !empty($booking_details['rc_number']) ? $booking_details['rc_number'] : '-' ?></label>
+                            </div> 
+
+                            <div class="col-md-6 col-sm-6">
+                              <label class="col-form-label"><b>Bill To: </b></label>
+                              <label class="col-form-label"><?= isset($booking_details['bill_to_party_name']) && !empty($booking_details['bill_to_party_name']) ? $booking_details['bill_to_party_name'] : '-' ?></label>                                
+                            </div>
+
+                            <div class="col-md-6 col-sm-6">
+                                <label class="col-form-label"><b>Driver Name: </b></label>
+                                <label class="col-form-label"><?= isset($driver['driver_name']) && !empty($driver['driver_name']) ? $driver['driver_name'] : '-' ?></label>
+                            </div> 
+
+                            <div class="col-md-6 col-sm-6">
+                                <label class="col-form-label"><b>Driver Phone No.: </b></label>
+                                <label class="col-form-label"><?= isset($driver['primary_phone']) && !empty($driver['primary_phone']) ? $driver['primary_phone'] : '-' ?></label>
+                            </div>
 
                             <hr/>
   
@@ -162,7 +172,7 @@
  
                             <div class="col-md-3 col-sm-3">
                                 <label class="col-form-label"><b>Pickup Date: </b> </label><br/>
-                                <label class="col-form-label"><?= isset($booking_details['pickup_date']) && (strtotime($booking_details['pickup_date']) > 0) ? date('d/m/Y',strtotime($booking_details['pickup_date'])) : '-' ?></label>
+                                <label class="col-form-label"><?= isset($booking_details['pickup_date']) && (strtotime($booking_details['pickup_date']) > 0) ? date('d-m-Y',strtotime($booking_details['pickup_date'])) : '-' ?></label>
                             </div>
 
                             <hr/>
@@ -188,36 +198,52 @@
  
                             <div class="col-md-3 col-sm-3">
                                 <label class="col-form-label"><b>Drop Date: </b> </label><br/>
-                                <label class="col-form-label"><?= isset($booking_details['drop_date']) && (strtotime($booking_details['drop_date']) > 0) ? date('d/m/Y',strtotime($booking_details['drop_date'])) : '-' ?></label>
+                                <label class="col-form-label"><?= isset($booking_details['drop_date']) && (strtotime($booking_details['drop_date']) > 0) ? date('d-m-Y',strtotime($booking_details['drop_date'])) : '-' ?></label>
                             </div>
 
                             <hr/>
-
+                            <?php  $guranteed_wt = isset($booking_details['guranteed_wt']) && !empty($booking_details['guranteed_wt']) ? $booking_details['guranteed_wt'].'kg' : '' ?>
+                            <?php if($guranteed_wt) { ?>
                             <div class="col-md-6 col-sm-6">
                               <label class="col-form-label"><b>Guaranteed / Charged Weight: </b></label>
-                              <label class="col-form-label"><?= isset($booking_details['guranteed_wt']) && !empty($booking_details['guranteed_wt']) ? $booking_details['guranteed_wt'].'kg' : '-' ?></label> 
+                              <label class="col-form-label"><?=  $guranteed_wt; ?></label> 
                             </div>
-
+                            <?php } ?>    
+                            
+                            <?php  $freight = isset($booking_details['freight']) && !empty($booking_details['freight']) ? 'Rs '.$booking_details['freight'] : ''; ?>
+                            <?php if($freight) { ?>
                             <div class="col-md-6 col-sm-6">
                               <label class="col-form-label"><b>Total Freight: </b></label>
-                              <label class="col-form-label"><?= isset($booking_details['freight']) && !empty($booking_details['freight']) ? 'Rs '.$booking_details['freight'] : '-' ?></label> 
+                              <label class="col-form-label"><?= $freight ?></label> 
                             </div>
+                            <?php } ?>  
 
+                            <?php  $advance = isset($booking_details['advance']) && !empty($booking_details['advance']) ? 'Rs '.$booking_details['advance'] : ''; ?>
+                            <?php if($advance) { ?>
                             <div class="col-md-6 col-sm-6">
                               <label class="col-form-label"><b>Advance: </b></label>
-                              <label class="col-form-label"><?= isset($booking_details['advance']) && !empty($booking_details['advance']) ? 'Rs '.$booking_details['advance'] : '-' ?></label> 
+                              <label class="col-form-label"><?= $advance ?></label> 
                             </div>
+                            <?php } ?>  
 
+                            <?php  $discount = isset($booking_details['discount']) && !empty($booking_details['discount']) ? 'Rs '.$booking_details['discount'] : ''; ?>
+                            <?php if($discount) { ?>
                             <div class="col-md-6 col-sm-6">
                               <label class="col-form-label"><b>Discount: </b></label>
-                              <label class="col-form-label"><?= isset($booking_details['discount']) && !empty($booking_details['discount']) ? 'Rs '.$booking_details['discount'] : '-' ?></label> 
+                              <label class="col-form-label"><?= $discount ?></label> 
                             </div>
+                            <?php } ?> 
 
+                            <?php  $balance = isset($booking_details['balance']) && !empty($booking_details['balance']) ? 'Rs '.$booking_details['balance'] : ''; ?>
+                            <?php if($balance) { ?>
                             <div class="col-md-6 col-sm-6">
                               <label class="col-form-label"><b>Balance: </b></label>
-                              <label class="col-form-label"><?= isset($booking_details['balance']) && !empty($booking_details['balance']) ? 'Rs '.$booking_details['balance'] : '-' ?></label> 
+                              <label class="col-form-label"><?= $balance  ?></label> 
                             </div> 
+                            <?php } ?> 
+
                             <hr/>
+                            <?php if(isset($booking_expences) && !empty($booking_expences)){?>
                             <div class="col-md-12 col-sm-12">
                               <h6>Expense: </h6>
                             </div>
@@ -228,9 +254,8 @@
                                   <tr class="noprint">
                                     <td>Head</td>
                                     <td>Value</td>
-                                  </tr>  
+                                  </tr>   
                                   <?php
-                                  if(isset($booking_expences) && !empty($booking_expences)){
                                   $i = 1;
                                   foreach ($booking_expences as $be) {
                                   ?>
@@ -244,21 +269,13 @@
                                     </tr>
                                   <?php
                                     $i++;
-                                  }}else{ ?>
-                                    <tr>
-                                      <td colspan="2" style="text-align: center;">Expense not found</td>
-                                    </tr>
-                                    <?php } ?>
-
+                                  } ?> 
                                 </tbody>
                               </table>
                             </div>
                             <div class="col-md-12 col-sm-12"></div>
-                            <div class="col-md-8 col-sm-8">
-                              <label class="col-form-label"><b>Bill To: </b></label>
-                              <label class="col-form-label"><?= isset($booking_details['bill_to_party_name']) && !empty($booking_details['bill_to_party_name']) ? $booking_details['bill_to_party_name'] : '-' ?></label>                                
-                            </div>
-
+                            <?php } ?>
+                           
                             <div class="col-md-4 col-sm-4">
                               <label class="col-form-label"><b>Remarks: </b></label>
                               <label class="col-form-label"><?= isset($booking_details['remarks']) && !empty($booking_details['remarks']) ? $booking_details['remarks'] : '-' ?></label>          

@@ -27,6 +27,8 @@ use App\Models\BookingVehicleLogModel;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\LoadingReceiptModel;
 use App\Models\BookingUploadedPodModel;
+use App\Models\DriverModel;
+
 class Booking extends BaseController
 {
     public $session;
@@ -59,6 +61,7 @@ class Booking extends BaseController
     public $NModel;
     public $LoadingReceiptModel;
     public $BUPModel;
+    public $DModel;
     public function __construct()
     {
         $this->session = \Config\Services::session();
@@ -93,6 +96,7 @@ class Booking extends BaseController
         $this->NModel = new NotificationModel();
         $this->LoadingReceiptModel = new LoadingReceiptModel();
         $this->BUPModel = new BookingUploadedPodModel();
+        $this->DModel = new DriverModel();
     }
 
     public function index()
@@ -1016,7 +1020,7 @@ class Booking extends BaseController
     
     function preview($id){
         $this->view['token'] = $id;
-        $this->view['booking_details'] = $this->BModel->select('bookings.*,cb.office_name,cb.city cb_city,e.name booking_by_name,vt.name vehicle_type_name,v.rc_number,p.party_name bill_to_party_name,party.party_name as customer')
+        $this->view['booking_details'] = $this->BModel->select('bookings.*,cb.office_name,cb.city cb_city,e.name booking_by_name,vt.name vehicle_type_name,v.rc_number,p.party_name bill_to_party_name,party.party_name as customer,v.id v_id')
         ->join('vehicle v', 'v.id = bookings.vehicle_id','left')
         ->join('vehicle_type vt', 'vt.id = bookings.vehicle_type_id','left')
         ->join('employee e', 'e.id = bookings.booking_by','left')
@@ -1039,9 +1043,19 @@ class Booking extends BaseController
         ->join('expense_heads eh','eh.id= booking_expenses.expense')
         ->where('booking_expenses.booking_id', $id)->findAll();   
 
+        $this->view['driver'] = [];
+        $vehicle_id = isset($this->view['booking_details']['v_id']) && ($this->view['booking_details']['v_id'] > 0) ? $this->view['booking_details']['v_id'] : 0;
+        if($vehicle_id > 0 ){
+            $this->view['driver'] = $this->DModel->select('driver.id, party.party_name as driver_name,party.primary_phone')
+            ->join('driver_vehicle_map dvp', 'driver.id = dvp.driver_id')
+            ->join('party', 'party.id = driver.party_id')
+            ->where('dvp.vehicle_id',$vehicle_id) 
+            ->first();
+        }
+
         // $db = \Config\Database::connect();  
         // echo  $db->getLastQuery()->getQuery(); 
-        // echo '  <pre>';print_r($this->view['booking_expences'] );exit; 
+        // echo '  <pre>';print_r($this->view['driver']);exit; 
       
         return view('Booking/preview', $this->view); 
     }
