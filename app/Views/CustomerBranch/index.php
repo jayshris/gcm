@@ -100,8 +100,8 @@
                       <tr>
                         <th>#</th>
                         <th>Action</th>
-                        <th>Branch Name</th>
                         <th>Customer Name</th>
+                        <th>Branch Name</th>
                         <th>Phone</th>
                         <th>Added</th>
                         <th>Updated</th>
@@ -115,8 +115,8 @@
                         <tr>
                           <td><?= $i++; ?>.</td>
                           <td><?= makeListActions($currentController, $Action, $b['id'], 2) ?></td>
-                          <td><?= $b['office_name'] ?></td>
                           <td><?= $b['party_name'] ?></td>
+                          <td><?= $b['office_name'] ?></td>
                           <td><?= $b['phone'] ?></td>
                           <td><?= date('d M Y', strtotime($b['added_date'])) ?></td>
                           <td><?= $b['modify_date'] != '' ? date('d M Y', strtotime($b['modify_date'])) : '' ?></td>

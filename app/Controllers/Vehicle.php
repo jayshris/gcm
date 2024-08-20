@@ -62,6 +62,18 @@ class Vehicle extends BaseController
         ->join('vehicle_model', 'vehicle_model.id = vehicle.model_number_id', 'left')
         ->where('vehicle.deleted_at', NULL);
 
+      if ($this->request->getPost('owner') != "") {
+        $this->vehicleModel->where('vehicle.owner', $this->request->getPost('owner'));
+      }
+
+      if ($this->request->getPost('type') != "") {
+        $this->vehicleModel->where('vehicle.vehicle_type_id', $this->request->getPost('type'));
+      }
+
+      if ($this->request->getPost('rc_number') != "") {
+        $this->vehicleModel->where('vehicle.rc_number', $this->request->getPost('rc_number'));
+      }
+
       if ($this->request->getPost('status') != "") {
         $this->vehicleModel->where('vehicle.status', $this->request->getPost('status'));
       } else {
@@ -76,6 +88,8 @@ class Vehicle extends BaseController
       $this->view['vehicle_data'] = $this->vehicleModel->groupBy('vehicle.id')
         ->orderBy('vehicle.id', 'DESC')
         ->findAll();
+
+      $this->view['vehicle_types'] = $this->vehicletypeModel->where('status', 'Active')->orderBy('name')->findAll();
 
       return view('Vehicle/index', $this->view);
     }

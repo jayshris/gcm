@@ -6,7 +6,7 @@ use App\Models\UserModel;
 use App\Models\StateModel;
 use App\Models\CustomersModel;
 use App\Controllers\BaseController;
-use App\Models\BranchAddress;
+use App\Models\BranchAddressModel;
 use App\Models\CustomerBranchModel;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\CustomerBranchPersonModel;
@@ -32,7 +32,7 @@ class Customerbranch extends BaseController
         $this->CModel = new CustomersModel();
         $this->SModel = new StateModel();
         $this->CBModel = new CustomerBranchModel();
-        $this->BAModel = new BranchAddress();
+        $this->BAModel = new BranchAddressModel();
         $this->CBPModel = new CustomerBranchPersonModel();
 
         $user = new UserModel();
@@ -59,6 +59,7 @@ class Customerbranch extends BaseController
                 ->join('customer', 'customer.id = customer_branches.customer_id')
                 ->join('party', 'party.id = customer.party_id')
                 ->where('party.created_by!=', '')
+                ->orderBy('party.party_name', 'asc')
                 ->findAll();
 
             return view('Customerbranch/index', $this->view);
@@ -192,7 +193,7 @@ class Customerbranch extends BaseController
                     'modify_by' => $this->added_by,
                 ]);
 
-                
+
                 if ($this->request->getPost('address_id') != '') {
 
                     $this->BAModel->update($this->request->getPost('address_id'), [

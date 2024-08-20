@@ -26,11 +26,54 @@
             <form method="post" enctype="multipart/form-data" action="<?php echo base_url('vehicle'); ?>">
               <div class="card main-card">
                 <div class="card-body">
-                  <h4>Search / Filter</h4>
+                  <div class="row">
+                    <div class="col-md-8">
+                      <h4>Search / Filter</h4>
+                    </div>
+                    <div class="col-md-4 text-end"><?php echo makeListActions($currentController, $Action, 0, 1); ?></div>
+                  </div>
+
                   <hr>
                   <div class="row mt-2">
 
+                    <div class="col-md-2">
+                      <div class="form-wrap">
+                        <label class="col-form-label">Owner</label>
+                        <select class="form-select" name="owner" aria-label="Default select example">
+                          <option value="">Select Owner</option>
+                          <option value="company" <?= set_value('owner') == 'company' ? 'selected' : '' ?>>Company</option>
+                          <option value="onhire" <?= set_value('owner') == 'onhire' ? 'selected' : '' ?>>On-Hire</option>
+                        </select>
+                      </div>
+                    </div>
 
+                    <div class="col-md-2">
+                      <div class="form-wrap">
+                        <label class="col-form-label">Type</label>
+                        <select class="form-select" name="type" aria-label="Default select example">
+                          <option value="">Select Type</option>
+                          <?php
+                          foreach ($vehicle_types as $row) {
+                            echo '<option value="' . $row["id"] . '" "' . set_select('type', $row['id']) . '">' . ucwords($row["name"]) . '</option>';
+                          }
+                          ?>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="col-md-2">
+                      <div class="form-wrap">
+                        <label class="col-form-label">RC Number</label>
+                        <select class="form-select select2" name="rc_number" aria-label="Default select example">
+                          <option value="">Select RC</option>
+                          <?php
+                          foreach ($vehicle_data as $row) {
+                            echo '<option value="' . $row["rc_number"] . '" "' . set_select('rc_number', $row['id']) . '">' . ucwords($row["rc_number"]) . '</option>';
+                          }
+                          ?>
+                        </select>
+                      </div>
+                    </div>
 
                     <div class="col-md-2">
                       <div class="form-wrap">
@@ -59,13 +102,9 @@
                       </div>
                     </div>
 
-                    <div class="col-md-6">
-                      <button class="btn btn-info mt-4">Search</button>&nbsp;&nbsp;
-                      <a href="./vehicle" class="btn btn-warning mt-4">Reset</a>&nbsp;&nbsp;
-                    </div>
-
-                    <div class="col-md-2 text-end mt-4">
-                      <?php echo makeListActions($currentController, $Action, 0, 1); ?>
+                    <div class="col-md-2 mt-4">
+                      <button class="btn btn-info">Search</button>&nbsp;&nbsp;
+                      <a href="./vehicle" class="btn btn-warning">Reset</a>&nbsp;&nbsp;
                     </div>
 
                   </div>
@@ -92,6 +131,7 @@
                   <table class="table" id="vehicle-table">
                     <thead class="thead-light">
                       <tr>
+                        <th>#</th>
                         <th>Action</th>
                         <th>Vehicle Owner</th>
                         <th>Vehicle Type</th>
@@ -103,7 +143,7 @@
                     <tbody>
                       <?php
                       if ($vehicle_data) {
-
+                        $i = 1;
                         foreach ($vehicle_data as $row) {
                           if ($row['status']) {
                             $status = '<span class="badge badge-pill bg-success">Active</span>';
@@ -154,6 +194,7 @@
                           }
                           echo '
                                 <tr>
+                                    <td>' . $i++ . '.</td>
                                     <td>' . makeListActions($currentController, $Action, $row['id'], 2) . '</td>
                                     <td>' . ucwords($row["owner"]) . '</td>
                                     <td>' . ucwords($row["vehiclename"]) . '</td>

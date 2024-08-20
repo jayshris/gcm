@@ -45,10 +45,9 @@ class LoadingReceipt extends BaseController
 
   public function index()
   {   
-    $this->view['loading_receipts'] = $this->LoadingReceiptModel->select('loading_receipts.*,b.booking_number,o.name branch_name,v.rc_number')
+    $this->view['loading_receipts'] = $this->LoadingReceiptModel->select('loading_receipts.*,b.booking_number,o.name branch_name')
     ->join('bookings b','loading_receipts.booking_id = b.id')
     ->join('office o','loading_receipts.office_id = o.id')
-    ->join('vehicle v','loading_receipts.vehicle_id = v.id','left')
     ->orderBy('id', 'desc')->findAll();
     return view('LoadingReceipt/index', $this->view); 
   } 

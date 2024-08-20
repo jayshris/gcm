@@ -5,8 +5,10 @@
 	<?= $this->include('partials/head-css') ?>
 </head>
 <body>
+	<!-- Main Wrapper -->
 	<div class="main-wrapper">
 		<?= $this->include('partials/menu') ?>
+		<!-- Page Wrapper -->
 		<div class="page-wrapper">
 			<div class="content">
 				<div class="row">
@@ -22,31 +24,37 @@
 						?>
 						<div class="row">
 							<div class="col-xl-12 col-lg-12">
+								<!-- Settings Info -->
 								<div class="card">
 									<div class="card-body">
 										<div class="settings-form">
 											<?php echo form_open_multipart(base_url().$currentController.'/'.$currentMethod.(($token>0) ? '/'.$token : ''), ['name'=>'actionForm', 'id'=>'actionForm']);?>
 											<div class="settings-sub-header">
-												<h3>Add Loading Receipt</h3>
+												<h4>Add Loading Receipt</h4>
 											</div>
 											<?= $this->include('LoadingReceipt/form.php') ?>    
 										</div>
 									</div>
 								</div>
+								<!-- /Settings Info -->
+
 							</div>
 						</div>
+
 					</div>
 				</div>
 			</div>
 		</div>
+		<!-- /Page Wrapper -->
+
 	</div>
+	<!-- /Main Wrapper -->
 
 	<?= $this->include('partials/vendor-scripts') ?>
+
 	<script>
 		$.getBookingDetails = function() {
-			$("#transporter_bilti_no_div").attr('hidden','hidden');
 			$("#transporter_bilti_no_span").attr('hidden','hidden');
-			$("#e_way_bill_no_div").attr('hidden','hidden');
 			$("#e_way_bill_no_span").attr('hidden','hidden');
 			$("#transporter_bilti_no").attr('readonly','readonly');
 			$("#transporter_bilti_no").removeAttr('required');
@@ -75,10 +83,9 @@
 						$("#delivery_station").val(res.bp_city);
 						$("#charge_weight").val(res.guranteed_wt);
 						$("#customer_name").val(res.party_name);
+						// alert(res.is_lr_third_party );
 						if(res.is_lr_third_party > 0){
-							$("#transporter_bilti_no_div").removeAttr('hidden');
 							$("#transporter_bilti_no_span").removeAttr('hidden');
-							$("#e_way_bill_no_div").removeAttr('hidden');
 							$("#e_way_bill_no_span").removeAttr('hidden');
 							$("#transporter_bilti_no").removeAttr('readonly');
 							$("#transporter_bilti_no").attr('required','required');
@@ -98,7 +105,8 @@
 				$("#delivery_station").val('');
 				$("#charge_weight").val('');
 				$("#customer_name").val('');
-			}			
+			}
+			
 		}
 
 		$(document).ready(function() {
@@ -107,16 +115,16 @@
 			}); 
 			 $("#consignee_name").select2({
 				tags: true
-			});  
+			}); 
+ 
 		}); 
-
 		function changeIdIpt(branch_id,party_id,id,key = 'consignor'){   
+			// $('#'+id).val( (party_id) > 0 ? party_id : 0) ;
 			var party_id = (party_id) > 0 ? party_id : 0; 
 			var pre = 'place_of_delivery';
 			if(key == 'consignor'){
 				pre = 'place_of_dispatch';
 			} 
-			$("#"+key+"_GSTIN").val('');
 			if((party_id>0) && (branch_id !='')){
 				$.ajax({
 				method: "POST",
@@ -126,7 +134,8 @@
 					branch_id:branch_id
 				},
 				dataType: "json",
-				success: function(res) {
+				success: function(res) { 
+					// alert(res.state_id);  
 						$("#"+key+"_state").val(res.state_id).attr("selected","selected").trigger('change');  
 						$("#"+pre+"_state").val(res.state_id).attr("selected","selected").trigger('change');  
 						$("#"+key+"_address").val(res.address);
@@ -138,7 +147,6 @@
 						$("#"+key+"_pincode").val(res.pincode);
 						$("#"+pre+"_pincode").val(res.pincode);
 
-						//$("#consignor_GSTIN").val(res.gst); 
 						$("#"+key+"_GSTIN").val(res.gst); 
 					}
 				}); 

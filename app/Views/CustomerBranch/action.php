@@ -35,7 +35,7 @@
               <div class="col-xl-12 col-lg-12">
                 <!-- Settings Info -->
                 <div class="card">
-                  <div class="card-body">                   
+                  <div class="card-body">
                     <div class="settings-form">
                       <form method="post" enctype="multipart/form-data" action="<?= isset($branch_detail) ? base_url('customerbranch/edit/' . $branch_detail['id']) : base_url('customerbranch/create') ?>">
 
@@ -56,7 +56,7 @@
                             }
                             ?>
                           </div>
-                        </div> 
+                        </div>
                         <div class="profile-details">
                           <div class="row g-3">
 
@@ -76,9 +76,11 @@
                               <label class="col-form-label">Office Name<span class="text-danger">*</span></label>
                               <select class="form-select select2" required name="office_name" id="office_id">
                                 <option value="">Select Office Name</option>
-                                <?php if($offices) { foreach ($offices as $c) {
-                                  echo '<option value="' . $c['name'] . '" ' . (isset($branch_detail) && $branch_detail['office_name'] == $c['name'] ? 'selected' : '') . '>' . $c['name'] . '</option>';
-                                }} ?> 
+                                <?php if ($offices) {
+                                  foreach ($offices as $c) {
+                                    echo '<option value="' . $c['name'] . '" ' . (isset($branch_detail) && $branch_detail['office_name'] == $c['name'] ? 'selected' : '') . '>' . $c['name'] . '</option>';
+                                  }
+                                } ?>
                               </select>
                             </div>
 
@@ -146,12 +148,14 @@
 
                             <div class="col-md-6">
                               <label class="col-form-label">Address</label>
-                              <input type="text" class="form-control" name="address" value="<?= isset($branch_detail) ? $branch_detail['address'] : '' ?>">
+                              <input type="text" class="form-control" name="address" value="<?= isset($reg_address) ? $reg_address['address'] : '' ?>">
+
+                              <input type="hidden" name="address_id" value="<?= isset($reg_address) ? $reg_address['id'] : '' ?>">
                             </div>
 
                             <div class="col-md-3">
                               <label class="col-form-label">City</label>
-                              <input type="text" class="form-control" name="city" value="<?= isset($branch_detail) ? $branch_detail['city'] : '' ?>">
+                              <input type="text" class="form-control" name="city" value="<?= isset($reg_address) ? $reg_address['city'] : '' ?>">
                             </div>
 
                             <div class="col-md-3">
@@ -159,19 +163,24 @@
                               <select class="form-select select2" name="state_id">
                                 <option value="">Select State</option>
                                 <?php foreach ($state as $row) { ?>
-                                  <option value="<?php echo $row["state_id"]; ?>" <?= isset($branch_detail) && $branch_detail['state_id'] == $row["state_id"] ? 'selected' : '' ?>><?php echo ucwords($row["state_name"]); ?></option>
+                                  <option value="<?php echo $row["state_id"]; ?>" <?= isset($reg_address) && $reg_address['state'] == $row["state_id"] ? 'selected' : '' ?>><?php echo ucwords($row["state_name"]); ?></option>
                                 <?php } ?>
                               </select>
                             </div>
 
                             <div class="col-md-3">
                               <label class="col-form-label">Country</label>
-                              <input type="text" class="form-control" name="country" value="<?= isset($branch_detail) ? $branch_detail['phone'] : '' ?>">
+                              <input type="text" class="form-control" name="country" value="<?= isset($reg_address) ? $reg_address['country'] : '' ?>">
                             </div>
 
                             <div class="col-md-2">
                               <label class="col-form-label">Pin Code</label>
-                              <input type="text" class="form-control" name="pin" value="<?= isset($branch_detail) ? $branch_detail['pincode'] : '' ?>">
+                              <input type="text" class="form-control" name="pin" value="<?= isset($reg_address) ? $reg_address['zip'] : '' ?>">
+                            </div>
+
+                            <div class="col-md-2">
+                              <label class="col-form-label">Effective From </label>
+                              <input type="date" class="form-control" name="effective_from" max="<?= date('Y-m-d') ?>" value="<?= isset($reg_address) ? $reg_address['effective_from'] : '' ?>" <?= isset($reg_address) && $reg_address['effective_from'] != '' ? 'readonly' : '' ?>>
                             </div>
 
                             <?php if (isset($branch_detail)) { ?>
@@ -239,9 +248,8 @@
 
       $("#office_id").select2({
         tags: true
-      }); 
+      });
     });
- 
   </script>
 
 </body>

@@ -110,13 +110,14 @@
 
                                     <div class="col-md-6">
                                         <label class="col-form-label">Office Name<span class="text-danger">*</span></label>
-                                        <select class="form-select select2" required name="office_name" id="office_name">
+                                        <select class="form-select select2" required name="office_name">
                                             <option value="">Select Office Name</option>
-                                            <?php if ($offices) {
-                                                foreach ($offices as $c) {
-                                                    echo '<option value="' . $c['name'] . '">' . $c['name'] . '</option>';
-                                                }
-                                            } ?>
+                                            <option value="Head Office">Head Office</option>
+                                            <option value="Warehouse">Warehouse</option>
+                                            <option value="Parking">Parking</option>
+                                            <option value="Branch 1">Branch 1</option>
+                                            <option value="Branch 2">Branch 2</option>
+                                            <option value="Branch 3">Branch 3</option>
                                         </select>
                                     </div>
 
@@ -170,11 +171,6 @@
                                         <label class="col-form-label">Office Postcode <span class="text-danger">*</span></label>
                                         <input type="number" class="form-control" name="office_postcode" id="zip" required value="<?php echo set_value('office_postcode') ?>">
                                     </div>
-
-                                    <div class="col-md-2">
-                                        <label class="col-form-label">Effective From <span class="text-danger">*</span></label>
-                                        <input type="date" class="form-control" name="effective_from" required value="<?php echo set_value('effective_from') ?>" max="<?= date('Y-m-d') ?>">
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -195,10 +191,6 @@
 
     <script>
         jQuery(document).ready(function($) {
-
-            $("#office_name").select2({
-                tags: true
-            });
 
             $('#copy_address').change(function() {
                 if ($(this).is(':checked')) {

@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Models\BranchAddress;
+use App\Models\BranchAddressModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 use App\Models\UserModel;
@@ -38,7 +38,7 @@ class Kyc extends BaseController
         $this->session = \Config\Services::session();
 
         $this->KLModel = new KycLinksModel();
-        $this->BAModel = new BranchAddress();
+        $this->BAModel = new BranchAddressModel();
         $this->officeModel = new OfficeMasterModel();
     }
 
@@ -545,4 +545,31 @@ class Kyc extends BaseController
             return view('KYC/approval', $this->view);
         }
     }
+
+    // public function demo()
+    // {
+    //     $branchModel = new CustomerBranchModel();
+
+    //     echo '<pre>';
+
+    //     $branches = $branchModel->findAll();
+
+    //     // print_r($branches);
+
+    //     foreach ($branches as $branch) {
+
+
+    //         $arr = [
+    //             'branch_id' => $branch['id'],
+    //             'address' => $branch['address'],
+    //             'city' => $branch['city'],
+    //             'state' => $branch['state_id'],
+    //             'country' => $branch['country'],
+    //             'zip' => $branch['pincode'],
+    //             'effective_from' => date('Y-m-01')
+    //         ];
+    //         echo  $this->BAModel->save($arr);
+    //         print_r($arr);
+    //     }
+    // }
 }

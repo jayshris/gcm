@@ -532,7 +532,7 @@ class Driver extends BaseController
 
       // change driver and vehicle status
       $this->VModel->update($this->request->getPost('vehicle_id'), ['is_driver_assigned' => '1']);
-      $this->DModel->update($id,['working_status' => 2]);
+      $this->DModel->update($id, ['working_status' => 2]);
       return $this->response->redirect(base_url('driver'));
     } else {
 
@@ -553,6 +553,7 @@ class Driver extends BaseController
     if ($link) {
       $this->DVAModel->update($link['id'], ['unassign_date' =>  date("Y-m-d h:i:sa"), 'unassigned_by' => $this->added_by]);
       $this->VModel->update($link['vehicle_id'], ['is_driver_assigned' => '0']);
+      $this->DModel->update($id, ['working_status' => 1]);
 
       $this->session->setFlashdata('success', 'Vehicle Unassigned From Driver');
     } else $this->session->setFlashdata('success', 'No Vehicle Assigned');

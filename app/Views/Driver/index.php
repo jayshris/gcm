@@ -32,7 +32,12 @@ use App\Models\PartyModel;
             <form method="post" enctype="multipart/form-data" action="<?php echo base_url('driver'); ?>">
               <div class="card main-card">
                 <div class="card-body">
-                  <h4>Search / Filter</h4>
+                  <div class="row">
+                    <div class="col-md-8">
+                      <h4>Search / Filter</h4>
+                    </div>
+                    <div class="col-md-4 text-end"><?php echo makeListActions($currentController, $Action, 0, 1); ?></div>
+                  </div>
                   <hr>
 
                   <?php
@@ -85,10 +90,6 @@ use App\Models\PartyModel;
                       <button id="list" type="button" class="btn btn-warning  mt-4">Assigned List</button>
                     </div>
 
-                    <div class="col-md-1">
-                      <?php echo makeListActions($currentController, $Action, 0, 1); ?>
-                    </div>
-
                   </div>
 
                   <div class="col-md-12">
@@ -128,6 +129,8 @@ use App\Models\PartyModel;
                       if ($driver_data) {
                         foreach ($driver_data as $driver) {
 
+                          // var_dump(makeListActions($currentController, $Action, $driver['id'], 2, false, $driver));
+
                           //working status
                           $ws = '';
                           switch ($driver['working_status']) {
@@ -151,7 +154,7 @@ use App\Models\PartyModel;
                           }
                       ?>
                           <tr>
-                            <td><?= makeListActions($currentController, $Action, $driver['id'], 2) ?></td>
+                            <td><?= makeListActions($currentController, $Action, $driver['id'], 2, false, $driver); ?></td>
                             <td><?= $driver['party_name'] ?></td>
                             <td><?= $driver['dl_no'] ?></td>
                             <td><?= $driver['foreman_name'] ?></td>

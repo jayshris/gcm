@@ -28,7 +28,6 @@ use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\LoadingReceiptModel;
 use App\Models\BookingUploadedPodModel;
 use App\Models\DriverModel;
-
 class Booking extends BaseController
 {
     public $session;
@@ -1043,6 +1042,7 @@ class Booking extends BaseController
         ->join('expense_heads eh','eh.id= booking_expenses.expense')
         ->where('booking_expenses.booking_id', $id)->findAll();   
 
+        
         $this->view['driver'] = [];
         $vehicle_id = isset($this->view['booking_details']['v_id']) && ($this->view['booking_details']['v_id'] > 0) ? $this->view['booking_details']['v_id'] : 0;
         if($vehicle_id > 0 ){
@@ -1055,7 +1055,7 @@ class Booking extends BaseController
 
         // $db = \Config\Database::connect();  
         // echo  $db->getLastQuery()->getQuery(); 
-        // echo '  <pre>';print_r($this->view['driver']);exit; 
+        // echo '  <pre>';print_r($this->view['driver'] );exit; 
       
         return view('Booking/preview', $this->view); 
     }
