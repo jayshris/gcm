@@ -23,6 +23,8 @@ use App\Controllers\BaseController;
 use App\Models\BookingPickupsModel;
 use App\Models\CustomerBranchModel;
 use App\Models\BookingExpensesModel;
+use App\Models\BookingTransactionModel;
+use App\Models\BookingUploadedKantaParchiModel;
 use App\Models\BookingVehicleLogModel;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\LoadingReceiptModel;
@@ -61,6 +63,8 @@ class Booking extends BaseController
     public $LoadingReceiptModel;
     public $BUPModel;
     public $DModel;
+    public $BookingTransactionModel;
+    public $BookingUploadedKantaParchiModel;
     public function __construct()
     {
         $this->session = \Config\Services::session();
@@ -96,6 +100,8 @@ class Booking extends BaseController
         $this->LoadingReceiptModel = new LoadingReceiptModel();
         $this->BUPModel = new BookingUploadedPodModel();
         $this->DModel = new DriverModel();
+        $this->BookingTransactionModel = new BookingTransactionModel();
+        $this->BookingUploadedKantaParchiModel = new BookingUploadedKantaParchiModel();
     }
 
     public function index()
@@ -164,10 +170,13 @@ class Booking extends BaseController
                         'lr_first_party' => $this->request->getPost('lr_first_party'),
                     ];
                     
-                    $booking_id = $this->BModel->insert($bookingData) ? $this->BModel->getInsertID() : '0';    
+                    $booking_id = $this->BModel->insert($bookingData) ? $this->BModel->getInsertID() : '0';   
                     //assign vehicle
                     if($this->request->getPost('vehicle_type') > 0  && $this->request->getPost('vehicle_rc') > 0){
                         $this->assignVehicleBooking($booking_id,$this->request->getPost(),0);   
+                    }else{
+                        //update booking status 
+                        $this->update_booking_status($booking_id,0);
                     }
 
                     if(isset($post['next_or_generate_link']) && ($post['next_or_generate_link'] == 'next')){
@@ -238,7 +247,8 @@ class Booking extends BaseController
                     ];//echo __LINE__.'<pre>';print_r($bookingData);die;
 
                     $this->BModel->update($booking_id,$bookingPTLData);
-                    
+                     //update booking status 
+                     $this->update_booking_status($booking_id,1);
                     // save pickups 
                     $this->BPModel->insert([
                         'booking_id' => $booking_id,
@@ -459,11 +469,14 @@ class Booking extends BaseController
                 'approved_ip' => $this->added_ip,
                 'approved_date' => date('Y-m-d h:i:s'),
                 'approved' => $this->request->getPost('approve'),
-            ]);
-            
+            ]); 
+
             //assign vehicle
             if($this->request->getPost('vehicle_type') > 0  && $this->request->getPost('vehicle_rc') > 0){
                 $this->assignVehicleBooking($id,$this->request->getPost(),$booking_status);   
+            }else{ 
+                //update booking status 
+                $this->update_booking_status($id,$booking_status); 
             }
             // update Drops, Pickups and delete Expences 
             $this->BEModel->where('booking_id', $id)->delete();
@@ -780,6 +793,9 @@ class Booking extends BaseController
             'status' => $booking_status,
             'is_vehicle_assigned' => 1
         ]);
+        //update booking status 
+        $this->update_booking_status($id,$booking_status);
+
         //if already assign vehicle to booking then change vehile status not assigned and vehicle log as unassign vehicle
         $result = $this->BVLModel->where('booking_id', $id)->where('unassign_date IS NULL')->first();
         //  echo '<pre>';print_r($result);exit;
@@ -828,6 +844,8 @@ class Booking extends BaseController
             //send notfication 
             $this->sendNotification($booking_details);
             $this->BModel->update($id, ['status' => '14']);
+             //update booking status 
+            $this->update_booking_status($id,14);
             $this->session->setFlashdata('success', 'Approval is send for Cancellation');
             return $this->response->redirect(base_url('booking'));
         }
@@ -898,14 +916,13 @@ class Booking extends BaseController
                     'balance' => $this->request->getPost('balance'),
                     'discount' => $this->request->getPost('discount'),
                     'bill_to_party' => $this->request->getPost('bill_to'),
-                    'remarks' => $this->request->getPost('remarks'),
-                    'status' => 1,
+                    'remarks' => $this->request->getPost('remarks'), 
                     'added_by' => $this->added_by,
                     'added_ip' => $this->added_ip
                 ];//echo __LINE__.'<pre>';print_r($bookingData);die;
 
-                $this->BModel->update($id,$bookingData);
-                
+                $this->BModel->update($id,$bookingData); 
+
                 // update Drops, Pickups and delete Expences 
                 $this->BEModel->where('booking_id', $id)->delete();
 
@@ -1077,6 +1094,8 @@ class Booking extends BaseController
             $data['discount'] = $this->request->getPost('discount');
             if($this->request->getPost('approval_for_cancellation')){
                 $data['status'] = $this->request->getPost('approval_for_cancellation'); 
+                //update booking status 
+                $this->update_booking_status($id,14);
             }
             if($this->request->getPost('approval_for_cancellation') == 15){
                 $data['is_vehicle_assigned'] = 0; 
@@ -1084,6 +1103,7 @@ class Booking extends BaseController
             } 
             // echo '<pre>';print_r( $data);exit; 
             $this->BModel->update($id,$data);
+ 
 
             // update Drops, Pickups and delete Expences 
             $this->BEModel->where('booking_id', $id)->delete();  
@@ -1233,6 +1253,9 @@ class Booking extends BaseController
                 'vehicle_id' => 0
             ]);
 
+            //update booking status 
+            $this->update_booking_status($id,$booking_status);
+
             //Change vehile status not assigned and vehicle log as unassign vehicle
             $result = $this->BVLModel->where('booking_id', $id)->where('unassign_date IS NULL')->first();
             if ($result) {
@@ -1314,6 +1337,8 @@ class Booking extends BaseController
                 $this->BModel->update($booking_id, [ 
                     'status' => 10 
                 ]); 
+                //update booking status 
+                $this->update_booking_status($booking_id,10);
 
                 $this->session->setFlashdata('success', 'Uploaded pod Successfully');
                 return $this->response->redirect(base_url('booking'));  
@@ -1377,6 +1402,8 @@ class Booking extends BaseController
                 }
                 
                 $this->BModel->update($booking_id, $booking_data);        
+                //update booking status 
+                $this->update_booking_status($booking_id,$status);
 
                 $this->session->setFlashdata($alert ,$msg);
                 return $this->response->redirect(base_url('booking'));  
@@ -1385,5 +1412,112 @@ class Booking extends BaseController
         $this->view['token'] = $booking_id;
         $this->view['pod_data'] = $this->BUPModel->where('booking_id', $booking_id)->where('status',1)->first();        
         return view('Booking/trip_end_verification', $this->view);
+    }
+
+    function trip_start($id){
+        $this->BModel->update($id, ['status' => '4']);
+        //update booking status 
+        $this->update_booking_status($id,4);
+        $this->session->setFlashdata('success', 'Trip is started');
+        return $this->response->redirect(base_url('booking'));
+    }
+
+    function loading_done($id){
+        if ($this->request->getPost()) {          
+            $error = $this->validate([
+                'loading_date_time' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'The loading date time field is required'
+                    ],
+                ]
+            ]);
+
+            if (!$error) { 
+                $this->view['error'] = $this->validator; 
+            } else {  
+                $booking_data['status'] = 5; 
+                $booking_data['loading_date_time'] = $this->request->getPost('loading_date_time'); 
+                $this->BModel->update($id, $booking_data);      
+                
+                //update booking status 
+                $this->update_booking_status($id,5);
+
+                $this->session->setFlashdata('success',"Loading done successfully");
+                return $this->response->redirect(base_url('booking'));  
+            }           
+        }
+        $this->view['token'] = $id;
+        return view('Booking/loading_done', $this->view);
+    }
+
+    function kanta_parchi_uploaded($id){
+        if ($this->request->getPost()) {          
+            $error = $this->validate([ 
+                'kanta_parchi' => [
+                    'rules' => 'uploaded[kanta_parchi]|mime_in[kanta_parchi,image/png,image/PNG,image/jpg,image/jpeg,image/JPEG,application/pdf]',
+                    'errors' => [
+                        'mime_in' => 'Image must be in jpeg/png/pdf format' 
+                    ]
+                ],
+                'kanta_parchi_datetime' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'The kanta parchi datetime field is required'
+                    ],
+                ],
+                'actual_weight' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'The actual weight field is required'
+                    ],
+                ]
+            ]);
+
+            if (!$error) { 
+                $this->view['error'] = $this->validator; 
+            } else {  
+                //upload kanta parchi 
+                $image = $this->request->getFile('kanta_parchi'); 
+                $image_name = '';
+                if (isset($image)) {
+                    if ($image->isValid() && !$image->hasMoved()) {
+                        $image_name = $image->getRandomName();
+                        $imgpath = 'public/uploads/kanta_parchies';
+                        if (!is_dir($imgpath)) {
+                            mkdir($imgpath, 0777, true);
+                        }
+                        $image->move($imgpath, $image_name);
+                    }
+                } 
+                $booking_status_id = 6;
+                $booking_data['booking_id'] = $id; 
+                $booking_data['created_by'] = $this->added_by;
+                $booking_data['status'] = $booking_status_id; 
+                $booking_data['actual_weight'] = $this->request->getPost('actual_weight'); 
+                $booking_data['kanta_parchi_datetime'] = $this->request->getPost('kanta_parchi_datetime');
+                $booking_data['kanta_parchi'] = $image_name;
+                $this->BModel->update($id, ['status' => $booking_status_id]);  
+
+                //update booking status 
+                $this->update_booking_status($id,$booking_status_id);
+
+                $this->BookingUploadedKantaParchiModel->insert($booking_data);      
+                //update booking status 
+                $this->update_booking_status($id,$booking_status_id);
+                $this->session->setFlashdata('success',"Kanta parchi is uploaded successfully");
+                return $this->response->redirect(base_url('booking'));  
+            }           
+        }
+        $this->view['token'] = $id;
+        return view('Booking/kanta_parchi', $this->view);
+    }
+
+    //update booking status 
+    function update_booking_status($booking_id,$booking_status_id){ 
+        $data['booking_id'] = $booking_id;
+        $data['booking_status_id'] = $booking_status_id;
+        $data['created_by'] = $this->added_by;
+        $this->BookingTransactionModel->insert($data);  
     }
 }

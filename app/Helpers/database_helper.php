@@ -78,8 +78,10 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 				$secName  = isset($act->section_name) ? $act->section_name : '';
 				$secLink  = strtolower(str_replace(' ', '_', $secName));
 				$cssClass = isset($act->section_icon) ? $act->section_icon : '';
-				if ($module == 'booking') {
+				if ($module == 'booking' && $secLink == 'cancel') {
 					$confirm  = ($act->alert_msg == '1') ? "return confirm('Are you sure want to cancel this record?')" : '';
+				} if ($module == 'booking' && $secLink == 'trip_start') {
+					$confirm  = ($act->alert_msg == '1') ? "return confirm('Are you sure want to start trip?')" : '';
 				} else {
 					$confirm  = ($act->alert_msg == '1') ? "return confirm('Are you sure want to delete this record?')" : '';
 				}
@@ -108,6 +110,12 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 							if ($secLink == 'upload_pod' && $row['status'] != 6)	$makeButton = 0;
 							//if status is 10 means kanta parchi uploaded then only show 
 							if ($secLink == 'trip_end' && $row['status'] != 10)	$makeButton = 0;
+							//if status is 3 means ready for trip then only show 
+							if ($secLink == 'trip_start' && $row['status'] != 3)	$makeButton = 0;
+							//if status is 4 means Trip Start then only show 
+							if ($secLink == 'loading_done' && $row['status'] != 4)	$makeButton = 0;
+							//if status is 5 means loading_done then only show 
+							if ($secLink == 'kanta_parchi_uploaded' && $row['status'] != 5)	$makeButton = 0;
 						}
 
 						if ($module == 'driver') {

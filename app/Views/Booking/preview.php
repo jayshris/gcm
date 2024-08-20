@@ -111,7 +111,7 @@
 
                             <div class="col-md-6 col-sm-6">
                                 <label class="col-form-label"><b>Booking Date: </b></label>
-                                <label class="col-form-label"><?= isset($booking_details['booking_date']) && !empty(strtotime($booking_details['booking_date']) > 0) ? date('d-m-Y',strtotime($booking_details['booking_date'])) : '-' ?></label>
+                                <label class="col-form-label"><?= isset($booking_details['booking_date']) && !empty(strtotime($booking_details['booking_date']) > 0) ? date('d-F-Y',strtotime($booking_details['booking_date'])) : '-' ?></label>
                             </div> 
                             
                             <div class="col-md-6 col-sm-6">
@@ -172,7 +172,7 @@
  
                             <div class="col-md-3 col-sm-3">
                                 <label class="col-form-label"><b>Pickup Date: </b> </label><br/>
-                                <label class="col-form-label"><?= isset($booking_details['pickup_date']) && (strtotime($booking_details['pickup_date']) > 0) ? date('d-m-Y',strtotime($booking_details['pickup_date'])) : '-' ?></label>
+                                <label class="col-form-label"><?= isset($booking_details['pickup_date']) && (strtotime($booking_details['pickup_date']) > 0) ? date('d-F-Y',strtotime($booking_details['pickup_date'])) : '-' ?></label>
                             </div>
 
                             <hr/>
@@ -198,7 +198,7 @@
  
                             <div class="col-md-3 col-sm-3">
                                 <label class="col-form-label"><b>Drop Date: </b> </label><br/>
-                                <label class="col-form-label"><?= isset($booking_details['drop_date']) && (strtotime($booking_details['drop_date']) > 0) ? date('d-m-Y',strtotime($booking_details['drop_date'])) : '-' ?></label>
+                                <label class="col-form-label"><?= isset($booking_details['drop_date']) && (strtotime($booking_details['drop_date']) > 0) ? date('d-F-Y',strtotime($booking_details['drop_date'])) : '-' ?></label>
                             </div>
 
                             <hr/>
