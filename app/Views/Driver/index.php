@@ -114,7 +114,7 @@ use App\Models\PartyModel;
                 <div class="table-responsive custom-table">
                   <table class="table" id="driver-table">
                     <thead class="thead-light">
-                      <tr>
+                    <tr>
                         <th>Action</th>
                         <th>Driver Name</th>
                         <th>Driver Ph. No.</th>

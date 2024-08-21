@@ -76,7 +76,6 @@ class Driver extends BaseController
     ->join('bookings  b', 'b.id = bvl.booking_id','left')
     ->where('bvl.unassign_date is NULL'); 
 
-
     if ($this->request->getPost('working_status') != '') {
       $driverModel->where('driver.working_status', $this->request->getPost('working_status'));
     }
@@ -90,10 +89,6 @@ class Driver extends BaseController
     }
 
     $this->view['driver_data'] = $driverModel->orderBy('t2.party_name', 'asc')->findAll();
-    //    $db = \Config\Database::connect();  
-    // echo  $db->getLastQuery()->getQuery(); 
-    //  echo '  <pre>';print_r($this->view['driver_data'] );exit; 
-
     $this->view['DVAModel'] = $this->DVAModel;
     // print_r($this->view['driver_data']);
     // die;
