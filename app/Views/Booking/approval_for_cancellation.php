@@ -393,6 +393,7 @@
   <script>
     $(document).ready(function() {
       $.getPartyType(); 
+      $.getVehicles(); 
     });
 
 
@@ -471,9 +472,10 @@
 
       $.ajax({
         method: "POST",
-        url: '<?php echo base_url('booking/getVehicles') ?>',
+        url: '<?php echo base_url('booking/getUnassignVehicles') ?>',
         data: {
-          vehicle_type: vehicle_type
+          vehicle_type: vehicle_type,
+          booking_id:<?= $booking_details['id'] ?>
         },
         success: function(response) {
           $('#vehicle_rc').html(response);

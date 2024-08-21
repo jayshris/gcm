@@ -12,7 +12,7 @@ class BookingTransactionModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['booking_id','booking_status_id','created_by'];
+    protected $allowedFields    = ['booking_id','booking_status_id','created_by','vehicle_id','driver_id'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

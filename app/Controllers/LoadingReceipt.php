@@ -1,16 +1,16 @@
 <?php
-
 namespace App\Controllers;
 
 use App\Models\UserModel;
+use App\Models\PartytypeModel;
 use App\Models\PartyModel;
+use App\Models\PartyDocumentsModel;
 use App\Models\StateModel;
 use App\Models\OfficeModel;
 use App\Models\ProfileModel;
 use App\Models\VehicleModel;
 use App\Models\BookingsModel; 
 use App\Models\CustomersModel;
-use App\Models\PartytypeModel;
 use App\Controllers\BaseController;
 use App\Models\CustomerBranchModel;
 use App\Models\LoadingReceiptModel;
@@ -28,6 +28,7 @@ class LoadingReceipt extends BaseController
   public $CustomersModel;
   public $PTModel;
   public $CustomerBranchModel;
+
   public function __construct()
   {
     $u = new UserModel(); 
@@ -68,10 +69,6 @@ class LoadingReceipt extends BaseController
     ->join('party', 'customer.party_id = party.id')
     ->where("FIND_IN_SET (8,customer.party_type_id)")
     ->orderBy('party.party_name')->findAll();
-    
-//         $db = \Config\Database::connect();  
-//     echo  $db->getLastQuery()->getQuery(); 
-// echo '<pre>consignors';print_r($this->view['consignors']);exit;
 
     $this->view['consignors']  = array_column($this->view['consignors'],'party_name','id');      
     
@@ -220,6 +217,7 @@ class LoadingReceipt extends BaseController
       ])->findAll();
     echo json_encode($rows);exit;
   }
+
   function getPartyDetails(){ 
     $rows =  $this->CustomerBranchModel->where([
       'customer_id'=>$this->request->getPost('party_id'),
@@ -227,6 +225,15 @@ class LoadingReceipt extends BaseController
       ])->first();  
     echo json_encode($rows);exit;
   }
+
+  function getPartyInfo(){
+    $partyDocModel = new PartyDocumentsModel();
+    $party =  $this->PModel->where(['id'=>$this->request->getPost('party_id')])->first();
+    $gstn =  $partyDocModel->select('number as gst')->where(['party_id'=>$this->request->getPost('party_id'), 'flag_id'=>'3'])->first();
+    $rows = (object) array_merge((array) $party, (array) $gstn);
+    echo json_encode($rows);exit;
+  }
+
   function edit($id){  
     $stateModel = new StateModel();
     $this->view['loading_receipts'] = $this->LoadingReceiptModel->where(['id' => $id])->first();
@@ -286,10 +293,7 @@ class LoadingReceipt extends BaseController
         ->where('customer.status', '1')
         ->where('CONCAT(",", party_type_id, ",") REGEXP ",('.$party_type_ids['party_type_ids'].'),"')
         ->findAll();
-//     echo 'consignors_list<pre>';print_r($this->view['consignees_list']);
-//     echo 'consignors<pre>';print_r($this->view['consignees']); 
-//  echo 'data<pre>';print_r($this->view['loading_receipts']); 
-//    exit;
+        
     $this->view['consignor_branches'] = [];
     if($this->view['loading_receipts']['consignor_id'] > 0 ){
       $this->view['consignor_branches']=  $this->CustomerBranchModel->where([

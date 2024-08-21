@@ -66,15 +66,16 @@ class Driver extends BaseController
     //   ->join('foreman' . ' t3', 't3.id = driver.foreman_id')
     //   ->join('party' . ' t4', 't4.id = t3.party_id');
 
-    $driverModel->select('driver.*, t2.party_name,t2.primary_phone, t2.status, t4.party_name as foreman_name,v.rc_number,b.booking_number,dvm.unassign_date')
+    $query = "(SELECT COUNT(bt.id) FROM booking_transactions bt WHERE booking_status_id = 11 and vehicle_id = v.id and driver_id =driver.id) total_completed_trips";
+    $driverModel->select('driver.*, t2.party_name,t2.primary_phone, t2.status, t4.party_name as foreman_name,v.rc_number,b.booking_number,dvm.unassign_date, '.$query.'')
     ->join('party' . ' t2', 't2.id = driver.party_id')
     ->join('foreman' . ' t3', 't3.id = driver.foreman_id')
     ->join('party' . ' t4', 't4.id = t3.party_id')
     ->join('driver_vehicle_map  dvm', 'driver.id = dvm.driver_id and dvm.unassign_date = ""','left')
     ->join('vehicle  v', 'v.id = dvm.vehicle_id','left')
     ->join('booking_vehicle_logs  bvl', 'v.id = bvl.vehicle_id','left')
-    ->join('bookings  b', 'b.id = bvl.booking_id','left')
-    ->where('bvl.unassign_date is NULL'); 
+    ->join('bookings  b', 'b.id = bvl.booking_id','left');
+    // ->where('bvl.unassign_date is NULL'); 
 
     if ($this->request->getPost('working_status') != '') {
       $driverModel->where('driver.working_status', $this->request->getPost('working_status'));
@@ -87,10 +88,10 @@ class Driver extends BaseController
     if ($this->request->getPost('foreman_id') != '') {
       $driverModel->where('t3.id', $this->request->getPost('foreman_id'));
     }
-
+     $driverModel->groupBy('driver.id');
     $this->view['driver_data'] = $driverModel->orderBy('t2.party_name', 'asc')->findAll();
     $this->view['DVAModel'] = $this->DVAModel;
-    // print_r($this->view['driver_data']);
+    // echo '<pre>';print_r($this->view['driver_data']);exit;
     // die;
 
     $this->view['page_data'] = ['page_title' => view('partials/page-title', ['title' => 'Driver', 'li_1' => '123', 'li_2' => 'deals'])];

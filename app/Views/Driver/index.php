@@ -160,7 +160,7 @@ use App\Models\PartyModel;
                             <td><?= $driver['primary_phone'] ?></td>
                             <td><?= $driver['rc_number'] ?></td>
                             <td><?= $driver['foreman_name'] ?></td>
-                            <td></td>
+                            <td><?= isset($driver['total_completed_trips']) && ($driver['total_completed_trips']> 0) ? $driver['total_completed_trips'] : '0' ?></td>
                             <td><?= isset($driver['booking_number']) ? $driver['booking_number'] : '-' ?></td>
                             <!-- <td>
                               <?php 

@@ -761,7 +761,9 @@ class Booking extends BaseController
         ->join('booking_drops bd', 'b.id = bd.booking_id','left')
         ->join('states bdstates', 'bd.state = bdstates.state_id','left')
         ->where('b.id !=', $this->request->getPost('booking_id'))
+        ->where('booking_vehicle_logs.unassign_date is NULL')
         ->where('booking_vehicle_logs.vehicle_id', $this->request->getPost('vehicle_id'))
+        ->groupBy('b.id')
         ->findAll();
         echo json_encode($bookings);exit;
     }
@@ -793,8 +795,6 @@ class Booking extends BaseController
             'status' => $booking_status,
             'is_vehicle_assigned' => 1
         ]);
-        //update booking status 
-        $this->update_booking_status($id,$booking_status);
 
         //if already assign vehicle to booking then change vehile status not assigned and vehicle log as unassign vehicle
         $result = $this->BVLModel->where('booking_id', $id)->where('unassign_date IS NULL')->first();
@@ -815,10 +815,15 @@ class Booking extends BaseController
             'vehicle_location' => isset($post['vehicle_location']) ? $post['vehicle_location'] : '',
         ]);
 
-        //update vevhicl status assigned as 2
-        return $this->VModel->update($post['vehicle_rc'], [ 
+        $result= $this->VModel->update($post['vehicle_rc'], [ 
             'working_status' => '2'
         ]); 
+
+         //update booking status 
+         $this->update_booking_status($id,$booking_status);
+
+        //update vevhicl status assigned as 2
+        return  $result;
 
     }
     
@@ -1093,17 +1098,14 @@ class Booking extends BaseController
             $data['balance'] = $this->request->getPost('balance');
             $data['discount'] = $this->request->getPost('discount');
             if($this->request->getPost('approval_for_cancellation')){
-                $data['status'] = $this->request->getPost('approval_for_cancellation'); 
-                //update booking status 
-                $this->update_booking_status($id,14);
+                $data['status'] = $this->request->getPost('approval_for_cancellation');                 
             }
             if($this->request->getPost('approval_for_cancellation') == 15){
                 $data['is_vehicle_assigned'] = 0; 
                 $data['vehicle_id'] = 0; 
             } 
             // echo '<pre>';print_r( $data);exit; 
-            $this->BModel->update($id,$data);
- 
+            $this->BModel->update($id,$data); 
 
             // update Drops, Pickups and delete Expences 
             $this->BEModel->where('booking_id', $id)->delete();  
@@ -1141,6 +1143,11 @@ class Booking extends BaseController
             }else{
                 $this->session->setFlashdata('success', 'Booking is updated');
             }    
+            //update booking status 
+            if($this->request->getPost('approval_for_cancellation')){
+                $this->update_booking_status($id,$this->request->getPost('approval_for_cancellation'));            
+            }
+            
             return $this->response->redirect(base_url('booking'));
         }
 
@@ -1251,10 +1258,7 @@ class Booking extends BaseController
                 'status' => $booking_status,
                 'is_vehicle_assigned' => 0,
                 'vehicle_id' => 0
-            ]);
-
-            //update booking status 
-            $this->update_booking_status($id,$booking_status);
+            ]);           
 
             //Change vehile status not assigned and vehicle log as unassign vehicle
             $result = $this->BVLModel->where('booking_id', $id)->where('unassign_date IS NULL')->first();
@@ -1265,6 +1269,9 @@ class Booking extends BaseController
                 ]); 
                 $this->BVLModel->update($result['id'], ['unassign_date' =>$this->request->getPost('unassign_date'), 'unassigned_by' => $this->added_by]);
             }
+
+            //update booking status 
+            $this->update_booking_status($id,$booking_status);
 
             $this->session->setFlashdata('success', 'Vehicle is Unassigned To Booking');
 
@@ -1375,9 +1382,12 @@ class Booking extends BaseController
             if (!$error) { 
                 $this->view['error'] = $this->validator; 
             } else { 
-                //update booking status 10 - upload again pod
+                //update booking status 6 - upload again pod
                 $status =6;
                 $booking_data['status'] = $status;
+                $booking_details =  $this->BModel->where('id', $booking_id)->first();
+                //get assigned vehicle_id and driver id
+                $driver_assigned_vehicle = $this->getDriverAssignedVehicle($booking_id);
                 $msg =  'Trip end not approved verification';$alert = 'danger';
                 if($this->request->getPost('trip_end_approved') && $this->request->getPost('trip_end_approved')  == 1){
                     //update booking status 11 - trip end 
@@ -1403,7 +1413,12 @@ class Booking extends BaseController
                 
                 $this->BModel->update($booking_id, $booking_data);        
                 //update booking status 
-                $this->update_booking_status($booking_id,$status);
+                $v_id= 0;$d_id= 0;
+                if($this->request->getPost('trip_end_approved') && $this->request->getPost('trip_end_approved')  == 1){
+                    $v_id = $booking_details['vehicle_id'];
+                    $d_id= isset($driver_assigned_vehicle['d_id']) && ($driver_assigned_vehicle['d_id'] > 0) ? $driver_assigned_vehicle['d_id'] : 0;
+                }
+                $this->update_booking_status($booking_id,$status,$v_id,$d_id);
 
                 $this->session->setFlashdata($alert ,$msg);
                 return $this->response->redirect(base_url('booking'));  
@@ -1499,9 +1514,6 @@ class Booking extends BaseController
                 $booking_data['kanta_parchi'] = $image_name;
                 $this->BModel->update($id, ['status' => $booking_status_id]);  
 
-                //update booking status 
-                $this->update_booking_status($id,$booking_status_id);
-
                 $this->BookingUploadedKantaParchiModel->insert($booking_data);      
                 //update booking status 
                 $this->update_booking_status($id,$booking_status_id);
@@ -1513,11 +1525,43 @@ class Booking extends BaseController
         return view('Booking/kanta_parchi', $this->view);
     }
 
+    function getDriverAssignedVehicle($booking_id){
+        return $this->BModel->select(' bookings.id b_id, v.id v_id,dvm.id dvm_id,d.id d_id, p.party_name')
+            ->join('vehicle v', 'bookings.vehicle_id = v.id')
+            ->join(' (
+                SELECT    MAX(id) max_id,vehicle_id
+                FROM      driver_vehicle_map 
+                GROUP BY  vehicle_id
+            ) dvm_max','dvm_max.vehicle_id = v.id')
+            ->join('driver_vehicle_map dvm', 'dvm.id = dvm_max.max_id')
+            ->join('driver d', 'dvm.driver_id = d.id')
+            ->join('party p', 'p.id = d.party_id','left')
+            ->where('bookings.id',$booking_id)
+            ->first(); 
+    }
     //update booking status 
-    function update_booking_status($booking_id,$booking_status_id){ 
+    function update_booking_status($booking_id,$booking_status_id,$vehicle_id = 0,$driver_id = 0){ 
+        $booking_details =  $this->BModel->where('id', $booking_id)->first(); 
+        //get driver details if vehicle is assigned
+        $d_id= 0;
+        if($booking_details['vehicle_id'] >0){
+            //get assigned vehicle_id and driver id
+            $driver_assigned_vehicle = $this->getDriverAssignedVehicle($booking_id);
+            $d_id= isset($driver_assigned_vehicle['d_id']) && ($driver_assigned_vehicle['d_id'] > 0) ? $driver_assigned_vehicle['d_id'] : 0;
+        }
+        
+        // $db = \Config\Database::connect();  
+        // echo  $db->getLastQuery()->getQuery(); 
+       
+
         $data['booking_id'] = $booking_id;
         $data['booking_status_id'] = $booking_status_id;
         $data['created_by'] = $this->added_by;
+        $data['vehicle_id'] = ($vehicle_id > 0) ? $vehicle_id : $booking_details['vehicle_id'];
+        $data['driver_id'] = ($driver_id > 0 ) ? $driver_id : $d_id;
+       
+        // echo '  <pre>';print_r($driver_assigned_vehicle);//exit;
+        // echo '  <pre>';print_r($data);exit;
         $this->BookingTransactionModel->insert($data);  
     }
 }
