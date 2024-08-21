@@ -104,9 +104,9 @@
                                                         </a>
                                                     </p> 
                                                     <p class="sub-headerpr">
-                                                        <span>PAN NO - AAICG9037G</span> <br/>
+                                                        <span>PAN NO - AAICG9037G</span>  &nbsp;
                                                         <span>GSTIN - 07AAICG9037G1ZF</span> <br/>
-                                                        <span>CIN - U63030DL2021PTC378353</span> <br/>
+                                                        <span>CIN - U63030DL2021PTC378353</span>  &nbsp;
                                                         <span>MSME - UDYAM-DL-06-0016237</span>
                                                     </p>
                                                 </td>
@@ -405,9 +405,9 @@ Limited is not held responsible for any Damage or loss due to natural disaster o
                                                         </a>
                                                     </p> 
                                                     <p class="sub-headerpr">
-                                                        <span>PAN NO - AAICG9037G</span> <br/>
+                                                        <span>PAN NO - AAICG9037G</span> &nbsp;
                                                         <span>GSTIN - 07AAICG9037G1ZF</span> <br/>
-                                                        <span>CIN - U63030DL2021PTC378353</span> <br/>
+                                                        <span>CIN - U63030DL2021PTC378353</span>  &nbsp;
                                                         <span>MSME - UDYAM-DL-06-0016237</span>
                                                     </p>
                                                 </td>

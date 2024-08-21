@@ -36,7 +36,7 @@
 
                                                     <div class="col-md-4">
                                                         <label class="col-form-label">Booking Date: </label>
-                                                        <label class="col-form-label"><?= date('d M Y',strtotime($loading_receipts['booking_date'])) ?></label> 
+                                                        <label class="col-form-label"><?= (strtotime($loading_receipts['booking_date']) > 0 ) ?  date('d M Y',strtotime($loading_receipts['booking_date'])) : '-' ?></label> 
                                                     </div>
 
                                                     <div class="col-md-4">
@@ -56,7 +56,7 @@
 
                                                     <div class="col-md-4">
                                                         <label class="col-form-label">Consignment Date: </label>
-                                                        <label class="col-form-label"><?= date('d M Y',strtotime($loading_receipts['consignment_date'])) ?></label> 
+                                                        <label class="col-form-label"><?= (strtotime($loading_receipts['consignment_date']) > 0 ) ? date('d M Y',strtotime($loading_receipts['consignment_date'])) : '-' ?></label> 
                                                     </div>   														
 
                                                     <hr>
@@ -204,7 +204,7 @@
                                                     </div>
                                                     <div class="col-md-4">
                                                         <label class="col-form-label">E-WAY Bill Expiry Date: </label> 
-                                                        <label class="col-form-label"><?= date('d M Y',strtotime($loading_receipts['e_way_expiry_date'])) ?></label> 
+                                                        <label class="col-form-label"><?= (strtotime($loading_receipts['e_way_expiry_date']) > 0 ) ? date('d M Y',strtotime($loading_receipts['e_way_expiry_date'])) : '-' ?></label> 
                                                     </div>
                                                     <div class="col-md-4">
                                                         <label class="col-form-label">Freight Charges Amount: </label>
@@ -220,7 +220,7 @@
                                                     </div>
                                                     <div class="col-md-4">
                                                         <label class="col-form-label">Invoice/BOE Date: </label>
-                                                        <label class="col-form-label"><?= $loading_receipts['invoice_boe_date'] ?></label>
+                                                        <label class="col-form-label"><?= strtotime($loading_receipts['invoice_boe_date'] > 0) ? date('d M Y',strtotime($loading_receipts['invoice_boe_date'])) : '-' ?></label>
                                                     </div>
                                                     <div class="col-md-4">
                                                         <label class="col-form-label">Invoice Value: </label>
@@ -232,16 +232,16 @@
                                                     <h6>Dispatch Details:</h6>
                                                     <div class="col-md-4">
                                                         <label class="col-form-label">Reporting Date/Time: </label>
-                                                        <label class="col-form-label"><?= $loading_receipts['reporting_datetime'] ?></label>
+                                                        <label class="col-form-label"><?= strtotime($loading_receipts['reporting_datetime'] > 0) ? date('d M Y',strtotime($loading_receipts['reporting_datetime'])) : '-' ?></label>
                                                     </div>
                                                     <div class="col-md-4">
                                                         <label class="col-form-label">Releasing Date/Time: </label>
-                                                        <label class="col-form-label"><?= $loading_receipts['releasing_datetime'] ?></label>
+                                                        <label class="col-form-label"><?= strtotime($loading_receipts['releasing_datetime'] > 0) ? date('d M Y',strtotime($loading_receipts['releasing_datetime'])) : '-' ?></label>
                                                     </div>
                                                     <h6>Insurance Co.:</h6>
                                                     <div class="col-md-4">
                                                         <label class="col-form-label">Policy Date: </label> 
-                                                        <label class="col-form-label"><?= date('d M Y',strtotime($loading_receipts['policy_date'])) ?></label>
+                                                        <label class="col-form-label"><?= (strtotime($loading_receipts['policy_date']) > 0 ) ? date('d M Y',strtotime($loading_receipts['policy_date'])) : '-' ?></label>
                                                     </div>
                                                     <div class="col-md-4">
                                                         <label class="col-form-label">Policy Number: </label>
