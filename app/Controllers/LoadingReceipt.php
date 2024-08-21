@@ -226,7 +226,10 @@ class LoadingReceipt extends BaseController
 
   function getPartyInfo(){
     $partyDocModel = new PartyDocumentsModel();
-    $party =  $this->PModel->where(['id'=>$this->request->getPost('party_id')])->first();
+
+    $party =  $this->PModel->select('party.*')
+    ->join('customer c','c.party_id = party.id')
+    ->where(['c.id'=>$this->request->getPost('party_id')])->first();
     $gstn =  $partyDocModel->select('number as gst')->where(['party_id'=>$this->request->getPost('party_id'), 'flag_id'=>'3'])->first();
     $rows = (object) array_merge((array) $party, (array) $gstn);
     echo json_encode($rows);exit;

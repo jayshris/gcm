@@ -111,13 +111,13 @@
 		}); 
 
 		function changeIdIpt(branch_id,party_id,id,key = 'consignor'){
-			return true;
+			// return true;
 			var party_id = (party_id) > 0 ? party_id : 0; 
-			var pre = 'place_of_delivery';
+			var pre = 'place_of_dispatch';
 			if(key == 'consignor'){
-				pre = 'place_of_dispatch';
+				pre = 'place_of_delivery';
 			} 
-			$("#"+key+"_GSTIN").val('');
+			// $("#"+key+"_GSTIN").val('');
 			if((party_id>0) && (branch_id !='')){
 				$.ajax({
 				method: "POST",
@@ -128,32 +128,32 @@
 				},
 				dataType: "json",
 				success: function(res) {
-						$("#"+key+"_state").val(res.state_id).attr("selected","selected").trigger('change');  
+						// $("#"+key+"_state").val(res.state_id).attr("selected","selected").trigger('change');  
 						$("#"+pre+"_state").val(res.state_id).attr("selected","selected").trigger('change');  
-						$("#"+key+"_address").val(res.address);
+						// $("#"+key+"_address").val(res.address);
 						$("#"+pre+"_address").val(res.address);
 
-						$("#"+key+"_city").val(res.city);
+						// $("#"+key+"_city").val(res.city);
 						$("#"+pre+"_city").val(res.city);
 
-						$("#"+key+"_pincode").val(res.pincode);
+						// $("#"+key+"_pincode").val(res.pincode);
 						$("#"+pre+"_pincode").val(res.pincode);
 
 						//$("#consignor_GSTIN").val(res.gst); 
-						$("#"+key+"_GSTIN").val(res.gst); 
+						// $("#"+key+"_GSTIN").val(res.gst); 
 					}
 				}); 
 				
 			}else{
-				$("#"+key+"_state").val('').attr("selected","selected").trigger('change');  
+				// $("#"+key+"_state").val('').attr("selected","selected").trigger('change');  
 				$("#"+pre+"_state").val('').attr("selected","selected").trigger('change');  
-				$("#"+key+"_address").val('');
+				// $("#"+key+"_address").val('');
 				$("#"+pre+"_address").val('');
 
-				$("#"+key+"_city").val('');
+				// $("#"+key+"_city").val('');
 				$("#"+pre+"_city").val('');
 
-				$("#"+key+"_pincode").val('');
+				// $("#"+key+"_pincode").val('');
 				$("#"+pre+"_pincode").val('');
 				 
 			}
@@ -225,13 +225,13 @@
 			} 
 			
 			$("#"+key+"_state").val('').attr("selected","selected").trigger('change');  
-			$("#"+pre+"_state").val('').attr("selected","selected").trigger('change');  
+			// $("#"+pre+"_state").val('').attr("selected","selected").trigger('change');  
 			$("#"+key+"_address").val('');
-			$("#"+pre+"_address").val('');
+			// $("#"+pre+"_address").val('');
 			$("#"+key+"_city").val('');
-			$("#"+pre+"_city").val('');
+			// $("#"+pre+"_city").val('');
 			$("#"+key+"_pincode").val('');
-			$("#"+pre+"_pincode").val('');
+			// $("#"+pre+"_pincode").val('');
 			$("#"+key+"_GSTIN").val('');
 			$("#"+pre+"_name").val('');
 
@@ -245,13 +245,13 @@
 				dataType: "json",
 				success: function(res) {console.log(res);
 						$("#"+key+"_state").val(res.state_id).attr("selected","selected").trigger('change');  
-						$("#"+pre+"_state").val(res.state_id).attr("selected","selected").trigger('change');  
+						// $("#"+pre+"_state").val(res.state_id).attr("selected","selected").trigger('change');  
 						$("#"+key+"_address").val(res.business_address);
-						$("#"+pre+"_address").val(res.business_address);
+						// $("#"+pre+"_address").val(res.business_address);
 						$("#"+key+"_city").val(res.city);
-						$("#"+pre+"_city").val(res.city);
+						// $("#"+pre+"_city").val(res.city);
 						$("#"+key+"_pincode").val(res.postcode);
-						$("#"+pre+"_pincode").val(res.postcode);
+						// $("#"+pre+"_pincode").val(res.postcode);
 						$("#"+key+"_GSTIN").val(res.gst);
 						$("#"+pre+"_name").val(res.party_name); 
 					}

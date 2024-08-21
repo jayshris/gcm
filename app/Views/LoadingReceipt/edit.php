@@ -120,14 +120,14 @@
 				tags: true
 			});  
 		}); 
-		function changeIdIpt(branch_id,party_id,id,key = 'consignor'){   
-			// $('#'+id).val( (party_id) > 0 ? party_id : 0) ;
+		function changeIdIpt(branch_id,party_id,id,key = 'consignor'){
+			// return true;
 			var party_id = (party_id) > 0 ? party_id : 0; 
-			var pre = 'place_of_delivery';
+			var pre = 'place_of_dispatch';
 			if(key == 'consignor'){
-				pre = 'place_of_dispatch';
+				pre = 'place_of_delivery';
 			}  
-			if((party_id>0) && (branch_id !='') && (branch_id !='null')){
+			if((party_id>0) && (branch_id !='')){
 				$.ajax({
 				method: "POST",
 				url: '<?php echo base_url('loadingreceipt/getPartyDetails') ?>',
@@ -136,34 +136,18 @@
 					branch_id:branch_id
 				},
 				dataType: "json",
-				success: function(res) {  
-						$("#"+key+"_state").val(res.state_id).attr("selected","selected").trigger('change');  
+				success: function(res) { 
 						$("#"+pre+"_state").val(res.state_id).attr("selected","selected").trigger('change');  
-						$("#"+key+"_address").val(res.address);
 						$("#"+pre+"_address").val(res.address);
-
-						$("#"+key+"_city").val(res.city);
 						$("#"+pre+"_city").val(res.city);
-
-						$("#"+key+"_pincode").val(res.pincode);
 						$("#"+pre+"_pincode").val(res.pincode);
-
-						$("#"+key+"_GSTIN").val(res.gst); 
 					}
-				});
-				
+				}); 
 			}else{
-				$("#"+key+"_state").val('').attr("selected","selected").trigger('change');  
 				$("#"+pre+"_state").val('').attr("selected","selected").trigger('change');  
-				$("#"+key+"_address").val('');
 				$("#"+pre+"_address").val('');
-
-				$("#"+key+"_city").val('');
 				$("#"+pre+"_city").val('');
-
-				$("#"+key+"_pincode").val('');
-				$("#"+pre+"_pincode").val(''); 
-				
+				$("#"+pre+"_pincode").val('');
 			}
 		}
 		
@@ -223,7 +207,40 @@
 					}
 				});
 			}
+			partyInfo(customer_id, customer_type);
+		}
+
+		function partyInfo(party_id=0, key = 'consignor'){   
+			var pre = 'place_of_delivery';
+			if(key == 'consignee'){
+				pre = 'place_of_dispatch';
+			} 
 			
+			$("#"+key+"_state").val('').attr("selected","selected").trigger('change');  
+			$("#"+key+"_address").val('');
+			$("#"+key+"_city").val('');
+			$("#"+key+"_pincode").val('');
+			$("#"+key+"_GSTIN").val('');
+			$("#"+pre+"_name").val('');
+
+			if(party_id>0){
+				$.ajax({
+				method: "POST",
+				url: '<?php echo base_url('loadingreceipt/getPartyInfo') ?>',
+				data: {
+					party_id: party_id
+				},
+				dataType: "json",
+				success: function(res) {console.log(res);
+						$("#"+key+"_state").val(res.state_id).attr("selected","selected").trigger('change');   
+						$("#"+key+"_address").val(res.business_address);
+						$("#"+key+"_city").val(res.city);
+						$("#"+key+"_pincode").val(res.postcode);
+						$("#"+key+"_GSTIN").val(res.gst);
+						$("#"+pre+"_name").val(res.party_name); 
+					}
+				});
+			}
 		}
 	</script>
 </body>
