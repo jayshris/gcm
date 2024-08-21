@@ -43,7 +43,7 @@ class Party extends BaseController
       } else {
         $partyModel->where('status', '1');
       }
-      $this->view['party_data'] = $partyModel->where('created_by !=', '')->orderBy('id', 'DESC')->findAll();
+      $this->view['party_data'] = $partyModel->where('created_by !=', '')->orderBy('party_name')->findAll();
 
       return view('Party/index', $this->view);
     }
