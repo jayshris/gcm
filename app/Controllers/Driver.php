@@ -61,10 +61,20 @@ class Driver extends BaseController
       ->findAll();
 
     $driverModel = new DriverModel();
-    $driverModel->select('driver.*, t2.party_name, t2.status, t4.party_name as foreman_name')
-      ->join('party' . ' t2', 't2.id = driver.party_id')
-      ->join('foreman' . ' t3', 't3.id = driver.foreman_id')
-      ->join('party' . ' t4', 't4.id = t3.party_id');
+    // $driverModel->select('driver.*, t2.party_name, t2.status, t4.party_name as foreman_name')
+    //   ->join('party' . ' t2', 't2.id = driver.party_id')
+    //   ->join('foreman' . ' t3', 't3.id = driver.foreman_id')
+    //   ->join('party' . ' t4', 't4.id = t3.party_id');
+
+    $driverModel->select('driver.*, t2.party_name,t2.primary_phone, t2.status, t4.party_name as foreman_name,v.rc_number,b.booking_number,dvm.unassign_date')
+    ->join('party' . ' t2', 't2.id = driver.party_id')
+    ->join('foreman' . ' t3', 't3.id = driver.foreman_id')
+    ->join('party' . ' t4', 't4.id = t3.party_id')
+    ->join('driver_vehicle_map  dvm', 'driver.id = dvm.driver_id and dvm.unassign_date = ""','left')
+    ->join('vehicle  v', 'v.id = dvm.vehicle_id','left')
+    ->join('booking_vehicle_logs  bvl', 'v.id = bvl.vehicle_id','left')
+    ->join('bookings  b', 'b.id = bvl.booking_id','left')
+    ->where('bvl.unassign_date is NULL'); 
 
 
     if ($this->request->getPost('working_status') != '') {
@@ -80,6 +90,10 @@ class Driver extends BaseController
     }
 
     $this->view['driver_data'] = $driverModel->orderBy('t2.party_name', 'asc')->findAll();
+    //    $db = \Config\Database::connect();  
+    // echo  $db->getLastQuery()->getQuery(); 
+    //  echo '  <pre>';print_r($this->view['driver_data'] );exit; 
+
     $this->view['DVAModel'] = $this->DVAModel;
     // print_r($this->view['driver_data']);
     // die;

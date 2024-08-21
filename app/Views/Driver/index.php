@@ -117,9 +117,10 @@ use App\Models\PartyModel;
                       <tr>
                         <th>Action</th>
                         <th>Driver Name</th>
-                        <th>DL No.</th>
+                        <th>Driver Ph. No.</th>
+                        <th>Vehicle No.</th>
                         <th>Foreman Name</th>
-                        <th>Trip Status</th>
+                        <th>No. of trip</th>
                         <th>Current Trip</th>
                         <th>Working Status</th>
                       </tr>
@@ -156,18 +157,20 @@ use App\Models\PartyModel;
                           <tr>
                             <td><?= makeListActions($currentController, $Action, $driver['id'], 2, false, $driver); ?></td>
                             <td><?= $driver['party_name'] ?></td>
-                            <td><?= $driver['dl_no'] ?></td>
+                            <td><?= $driver['primary_phone'] ?></td>
+                            <td><?= $driver['rc_number'] ?></td>
                             <td><?= $driver['foreman_name'] ?></td>
                             <td></td>
-                            <td>
-                              <?php
-                              if ($driver['status'] == 'Inactive') {
-                                echo '<span class="badge badge-pill bg-danger">Inactive</span>';
-                              } else {
-                                echo '<span class="badge badge-pill bg-success">Active</span>';
-                              }
+                            <td><?= isset($driver['booking_number']) ? $driver['booking_number'] : '-' ?></td>
+                            <!-- <td>
+                              <?php 
+                              // if ($driver['status'] == 'Inactive') {
+                              //   echo '<span class="badge badge-pill bg-danger">Inactive</span>';
+                              // } else {
+                              //   echo '<span class="badge badge-pill bg-success">Active</span>';
+                              // }
                               ?>
-                            </td>
+                            </td> -->
                             <td><?= $ws ?></td>
                           </tr>
 
