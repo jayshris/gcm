@@ -191,11 +191,64 @@
   </div>
   <!-- /Main Wrapper -->
 
+<!-- modal  -->
+<div class="modal fade" id="gcmModal" tabindex="-1" aria-labelledby="gcmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <?php echo form_open_multipart('', ['name'=>'actionForm', 'id' => 'bookigStatusUpdate']); ?> 
+        <div class="modal-header">
+          <h5 class="modal-title" id="gcmModalLabel"></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+           <div class="col-md-12">
+              <label class="col-form-label">Start Date : <span class="text-danger">*</span></label>
+              <input type="datetime-local" required name="status_date"  id="status_date" value="<?= date('Y-m-d H:i');?>" max="<?= date('Y-m-d H:i');?>" class="form-control">
+              <input type="hidden" id="confirmMsg" />
+          </div> 
+        </div>
+        <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Start Trip</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  
+
   <!-- scripts link  -->
   <?= $this->include('partials/vendor-scripts') ?>
 
   <!-- page specific scripts  -->
   <script>
+    $('form#bookigStatusUpdate').submit(function() {
+      return confirm(($('#confirmMsg').val()).trim()); 
+    });
+    $(document).ready(function() {
+      $('.action_link').on('click', function() {
+         var id = $(this).attr('token');
+         var title = $(this).attr('title');
+         var msg = $(this).attr('msg');
+         var secLink = $(this).attr('secLink');
+          $.ajax({
+              type: 'GET',
+              url: '<?= base_url($currentController.'/getBookingDetails/') ?>'+id,
+              dataType:'json',
+              success: function(data) {
+                console.log(data);
+                if(data){
+                  $('#status_date').attr('min',data.booking_date+' 00:00');
+                }
+                $('#gcmModalLabel').html(title);
+                $('#confirmMsg').val(msg);
+                $('form#bookigStatusUpdate').attr('action','<?= base_url($currentController.'/') ?>'+secLink+'/'+id)
+                $('#gcmModal').modal('show'); 
+              }
+          });
+      });
+    }); 
+
     function delete_data(id) {
       if (confirm("Are you sure you want to remove this product category ?")) {
         window.location.href = "<?php echo base_url('product-categories-delete/'); ?>" + id;

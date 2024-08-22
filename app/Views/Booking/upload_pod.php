@@ -36,6 +36,7 @@
                                                                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('upload_doc') . '</div>';
                                                             }   
                                                             ?>
+                                                            <span class="text-info" id="lr-info">JPEG,PNG,PDF</span>
                                                         </div>
 
                                                         <div class="col-md-3">
@@ -45,7 +46,7 @@
 
                                                         <div class="col-md-3">
                                                             <label class="col-form-label">POD Date<span class="text-danger">*</span></label>
-                                                            <input type="date" required name="pod_date" value="<?= date('Y-m-d') ?>" class="form-control">
+                                                            <input type="date" required name="pod_date" min="<?= date('Y-m-d',strtotime($booking_details['booking_date'])) ?>" value="<?= date('Y-m-d');?>" max="<?= date('Y-m-d');?>"  class="form-control">
                                                             <?php
                                                             if ($validation->getError('pod_date')) {
                                                                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('pod_date') . '</div>';

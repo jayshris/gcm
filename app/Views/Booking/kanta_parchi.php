@@ -41,7 +41,7 @@
 
                                                         <div class="col-md-3">
                                                             <label class="col-form-label">Upload Date<span class="text-danger">*</span></label>
-                                                            <input type="datetime-local"  name="kanta_parchi_datetime" value="<?= date('Y-m-d H:i')?>" class="form-control" required/>                                                            
+                                                            <input type="datetime-local"  name="kanta_parchi_datetime" min="<?=((strtotime($booking_details['loading_date_time'])) > 0) ? date('Y-m-d H:i',strtotime($booking_details['loading_date_time'])) : '' ?>" value="<?= date('Y-m-d H:i');?>" max="<?= date('Y-m-d H:i');?>"  class="form-control" required/>                                                            
                                                             <?php
                                                             if ($validation->getError('kanta_parchi_datetime')) {
                                                                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('kanta_parchi_datetime') . '</div>';

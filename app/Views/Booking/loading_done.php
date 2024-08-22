@@ -24,14 +24,14 @@
                                         <div class="settings-form">
                                            <?php echo form_open_multipart(base_url().$currentController.'/'.$currentMethod.(($token>0) ? '/'.$token : ''), ['name'=>'actionForm', 'id'=>'actionForm']);?>
                                                 <div class="settings-sub-header">
-                                                    <h6>Trip Start</h6>
+                                                    <h6>Loading Done</h6>
                                                 </div>
                                                 <div class="profile-details">
                                                     <div class="row mb-3 g-3"> 
                                                        
-                                                        <div class="col-md-3">
+                                                        <div class="col-md-6">
                                                             <label class="col-form-label">Loading Date<span class="text-danger">*</span></label>
-                                                            <input type="datetime-local"  name="loading_date_time" class="form-control" required/>                                                            
+                                                            <input type="datetime-local"  name="loading_date_time" min="<?= date('Y-m-d H:i',strtotime($booking_details['booking_date'])) ?>" value="<?= date('Y-m-d H:i');?>" max="<?= date('Y-m-d H:i');?>"  class="form-control" required/>                                                            
                                                             <?php
                                                             if ($validation->getError('loading_date_time')) {
                                                                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('loading_date_time') . '</div>';
@@ -39,6 +39,16 @@
                                                             ?>  
                                                         </div>  
                                                         
+                                                        <div class="col-md-6">
+                                                            <label class="col-form-label">Loading Doc</label>
+                                                            <input type="file" name="loading_doc" class="form-control" accept=".png, .jpg, .jpeg,.pdf">
+                                                            <?php
+                                                            if ($validation->getError('loading_doc')) {
+                                                                echo '<div class="alert alert-danger mt-2">' . $validation->getError('loading_doc') . '</div>';
+                                                            }   
+                                                            ?>
+                                                            <span class="text-info" id="lr-info">JPEG,PNG,PDF</span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="submit-button mt-3">

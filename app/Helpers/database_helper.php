@@ -78,12 +78,10 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 				$secName  = isset($act->section_name) ? $act->section_name : '';
 				$secLink  = strtolower(str_replace(' ', '_', $secName));
 				$cssClass = isset($act->section_icon) ? $act->section_icon : '';
-				if ($module == 'booking' && $secLink == 'cancel') {
-					$confirm  = ($act->alert_msg == '1') ? "return confirm('Are you sure want to cancel this record?')" : '';
-				} if ($module == 'booking' && $secLink == 'trip_start') {
-					$confirm  = ($act->alert_msg == '1') ? "return confirm('Are you sure want to start trip?')" : '';
-				} else {
-					$confirm  = ($act->alert_msg == '1') ? "return confirm('Are you sure want to delete this record?')" : '';
+				if ($module == 'booking' && ($secLink == 'cancel' || $secLink == 'trip_start')) {
+				 	$confirm  = ''; 
+				}  else {
+					 $confirm  = ($act->alert_msg == '1') ? "return confirm('Are you sure want to delete this record?')" : '';
 				}
 
 				if ($pos == 1) {
@@ -128,8 +126,23 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 							if ($secLink == 'edit' && ($row['approved'] == 1 || $row['status'] != 1))	$makeButton = 0;
 						}
 						if ($makeButton == 1) {
-							$menu .= anchor(PANEL . $module . '/' . $secLink . '/' . $token, '<i class="' . $cssClass . '" data-bs-toggle="tooltip" aria-label="' . $cssClass . '" data-bs-original-title="' . ucfirst($secName) . '"></i> ', ['class' => 'btn btn-icon btn-outline-primary rounded-pill', 'onclick' => $confirm, 'title' => ucfirst($secName)]);
+							if ($module == 'booking' && ($secLink == 'trip_start' || $secLink == 'cancel')) {		
+								switch($secLink){
+									case "trip_start":
+										$msg = "Are you sure want to start trip?";
+										break;
+									  case "cancel":
+										$msg = "Are you sure want to cancel trip?";
+										break;
+									  default:
+									  $msg = "Are you sure want to delete?";
+								}	 
+								$menu .= '<a href="#" class="action_link btn btn-icon btn-outline-primary rounded-pill" token="'.$token.'" msg="'.$msg.'" secLink="' . $secLink . '"  title="'.ucfirst($secName).'"><i class="' . $cssClass . '" data-bs-toggle="tooltip" aria-label="' . $cssClass . '" data-bs-original-title="' . ucfirst($secName) . '"></i></a>';
+							} else{
+								$menu .= anchor(PANEL . $module . '/' . $secLink . '/' . $token, '<i class="' . $cssClass . '" data-bs-toggle="tooltip" aria-label="' . $cssClass . '" data-bs-original-title="' . ucfirst($secName) . '"></i> ', ['class' => 'btn btn-icon btn-outline-primary rounded-pill', 'onclick' => $confirm, 'title' => ucfirst($secName)]);
+							}
 							$menu .= ' &nbsp; ';
+							
 						}
 					}
 				}
