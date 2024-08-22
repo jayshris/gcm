@@ -909,8 +909,8 @@ class Booking extends BaseController
             } else {
                 
                 // $id =  $this->request->getPost('id');
-                // echo $id.$token.'<pre>';print_r($post);exit;   
-                $booking_details =  $this->BModel->where('id', $id)->first();
+                // echo $id.$token.'<pre>';print_r($post);exit;  
+                $booking_details =  $this->BModel->where('id', $id)->first(); 
                 $bookingData = [     
                     'pickup_date' => $this->request->getPost('pickup_date'),
                     'drop_date' => $this->request->getPost('drop_date'),
@@ -926,6 +926,7 @@ class Booking extends BaseController
                     'added_by' => $this->added_by,
                     'added_ip' => $this->added_ip
                 ];//echo __LINE__.'<pre>';print_r($bookingData);die;
+
                 //update status only when booking status is created i.e 0 
                 if($booking_details['status'] == 0){
                     $bookingData['status'] = 1;
@@ -933,9 +934,8 @@ class Booking extends BaseController
                     $this->update_booking_status($id,$bookingData['status']);
 
                 }
-                $this->BModel->update($id,$bookingData); 
 
-                //  echo '<pre>';print_r($bookingData);exit;   
+                $this->BModel->update($id,$bookingData); 
 
                 // update Drops, Pickups and delete Expences 
                 $this->BEModel->where('booking_id', $id)->delete();
