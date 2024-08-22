@@ -57,13 +57,23 @@ class LoadingReceipt extends BaseController
     $stateModel = new StateModel();
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
     $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
-    $this->view['bookings'] = $this->BookingsModel->where(['approved'=> '1','is_vehicle_assigned' => 1])->findAll(); 
-            
+    $this->view['bookings'] = $this->BookingsModel    
+                              ->where(['approved'=> '1','is_vehicle_assigned' => 1])
+                              ->where('NOT EXISTS (SELECT 1 
+                                            FROM   loading_receipts
+                                            WHERE  loading_receipts.booking_id = bookings.id)')
+                              ->findAll(); 
+                                      
     $this->view['vehicles'] =  $this->BookingsModel->select('v.id,v.rc_number') 
     ->join('vehicle v','bookings.vehicle_id = v.id')->orderBy('v.id', 'desc')
     ->where(['bookings.approved'=> '1','bookings.is_vehicle_assigned' => 1])
+    ->where('NOT EXISTS (SELECT 1  FROM   loading_receipts
+                                            WHERE  loading_receipts.booking_id = bookings.id)')
     ->groupBy('bookings.vehicle_id')
     ->findAll(); 
+    // $db = \Config\Database::connect();  
+    //     echo  $db->getLastQuery()->getQuery(); 
+            //  echo '  <pre>';print_r($this->view['bookings']);exit; 
 
     $this->view['consignors'] = $this->CustomersModel->select('party.party_name,customer.id,customer.party_type_id ')
     ->join('party', 'customer.party_id = party.id')
@@ -98,29 +108,19 @@ class LoadingReceipt extends BaseController
         'consignor_name'   =>  'required', 
         'consignor_address'   =>  'required', 
         'consignor_city'   =>  'required', 
-        'consignor_state'   =>  'required', 
-        'consignor_pincode'   =>  'required', 
+        'consignor_state'   =>  'required',  
         'consignee_name'   =>  'required', 
         'consignee_address'   =>  'required',  
         'consignee_city'   =>  'required', 
         'consignee_state'   =>  'required', 
-        'consignee_pincode'   =>  'required',
         'place_of_delivery_address'   =>  'required',  
         'place_of_delivery_city'   =>  'required', 
         'place_of_delivery_state'   =>  'required', 
-        'place_of_delivery_pincode'   =>  'required', 
         'place_of_dispatch_address'   =>  'required',  
         'place_of_dispatch_city'   =>  'required', 
         'place_of_dispatch_state'   =>  'required', 
-        'place_of_dispatch_pincode'   =>  'required', 
-        'particulars'   =>  'required',  
-        'hsn_code'   =>  'required', 
-        'no_of_packages'   =>  'required', 
-        'actual_weight'   =>  'required', 
-        'charge_weight'   =>  'required',  
-        'payment_terms'   =>  'required',   
-        'e_way_expiry_date'   =>  'required', 
-        'freight_charges_amount'   =>  'required', 
+        'place_of_delivery_name'   =>   'required', 
+        'place_of_dispatch_name'   =>   'required',  
       ]); 
       $validation = \Config\Services::validation();
       // echo 'POst dt<pre>';print_r($this->request->getPost());
@@ -162,11 +162,13 @@ class LoadingReceipt extends BaseController
           'place_of_delivery_address'   =>  $this->request->getVar('place_of_delivery_address'),
           'place_of_delivery_city'   =>  $this->request->getVar('place_of_delivery_city'),
           'place_of_delivery_state'   =>  $this->request->getVar('place_of_delivery_state'),
+          'place_of_delivery_name'   =>  $this->request->getVar('place_of_delivery_name'),
           'place_of_delivery_pincode'   =>  $this->request->getVar('place_of_delivery_pincode'),
           'place_of_dispatch_address'   =>  $this->request->getVar('place_of_dispatch_address'), 
           'place_of_dispatch_city'   =>  $this->request->getVar('place_of_dispatch_city'),
           'place_of_dispatch_state'   =>  $this->request->getVar('place_of_dispatch_state'),
           'place_of_dispatch_pincode'   =>  $this->request->getVar('place_of_dispatch_pincode'),
+          'place_of_dispatch_name'   =>  $this->request->getVar('place_of_dispatch_name'),
           'particulars'   =>  $this->request->getVar('particulars'), 
           'hsn_code'   =>  $this->request->getVar('hsn_code'),
           'no_of_packages'   =>  $this->request->getVar('no_of_packages'),
@@ -318,28 +320,18 @@ class LoadingReceipt extends BaseController
         'consignor_address'   =>  'required', 
         'consignor_city'   =>  'required', 
         'consignor_state'   =>  'required', 
-        'consignor_pincode'   =>  'required', 
         'consignee_name'   =>  'required', 
         'consignee_address'   =>  'required',  
         'consignee_city'   =>  'required', 
         'consignee_state'   =>  'required', 
-        'consignee_pincode'   =>  'required', 
         'place_of_delivery_address'   =>  'required',  
         'place_of_delivery_city'   =>  'required', 
-        'place_of_delivery_state'   =>  'required', 
-        'place_of_delivery_pincode'   =>  'required', 
+        'place_of_delivery_state'   =>  'required',  
         'place_of_dispatch_address'   =>  'required',  
         'place_of_dispatch_city'   =>  'required', 
-        'place_of_dispatch_state'   =>  'required', 
-        'place_of_dispatch_pincode'   =>  'required', 
-        'particulars'   =>  'required',  
-        'hsn_code'   =>  'required', 
-        'no_of_packages'   =>  'required', 
-        'actual_weight'   =>  'required', 
-        'charge_weight'   =>  'required',  
-        'payment_terms'   =>  'required',  
-        'e_way_expiry_date'   =>  'required', 
-        'freight_charges_amount'   =>  'required', 
+        'place_of_dispatch_state'   =>  'required',  
+        'place_of_delivery_name'   =>   'required', 
+        'place_of_dispatch_name'   =>   'required', 
       ]); 
       $validation = \Config\Services::validation();
       // echo 'POst dt<pre>';print_r($this->request->getPost());
@@ -377,6 +369,8 @@ class LoadingReceipt extends BaseController
           'place_of_dispatch_city'   =>  $this->request->getVar('place_of_dispatch_city'),
           'place_of_dispatch_state'   =>  $this->request->getVar('place_of_dispatch_state'),
           'place_of_dispatch_pincode'   =>  $this->request->getVar('place_of_dispatch_pincode'),
+          'place_of_delivery_name'   =>  $this->request->getVar('place_of_delivery_name'),
+          'place_of_dispatch_name'   =>  $this->request->getVar('place_of_dispatch_name'),
           'particulars'   =>  $this->request->getVar('particulars'), 
           'hsn_code'   =>  $this->request->getVar('hsn_code'),
           'no_of_packages'   =>  $this->request->getVar('no_of_packages'),
@@ -538,28 +532,18 @@ class LoadingReceipt extends BaseController
         'consignor_address'   =>  'required', 
         'consignor_city'   =>  'required', 
         'consignor_state'   =>  'required', 
-        'consignor_pincode'   =>  'required', 
         'consignee_name'   =>  'required', 
         'consignee_address'   =>  'required',  
         'consignee_city'   =>  'required', 
         'consignee_state'   =>  'required', 
-        'consignee_pincode'   =>  'required',
         'place_of_delivery_address'   =>  'required',  
         'place_of_delivery_city'   =>  'required', 
-        'place_of_delivery_state'   =>  'required', 
-        'place_of_delivery_pincode'   =>  'required', 
+        'place_of_delivery_state'   =>  'required',  
         'place_of_dispatch_address'   =>  'required',  
         'place_of_dispatch_city'   =>  'required', 
         'place_of_dispatch_state'   =>  'required', 
-        'place_of_dispatch_pincode'   =>  'required', 
-        'particulars'   =>  'required',  
-        'hsn_code'   =>  'required', 
-        'no_of_packages'   =>  'required', 
-        'actual_weight'   =>  'required', 
-        'charge_weight'   =>  'required',  
-        'payment_terms'   =>  'required',  
-        'e_way_expiry_date'   =>  'required', 
-        'freight_charges_amount'   =>  'required', 
+        'place_of_delivery_name'   =>  'required', 
+        'place_of_dispatch_name'   =>  'required', 
       ]); 
       $validation = \Config\Services::validation();
       // echo 'POst dt<pre>';print_r($this->request->getPost());
@@ -597,6 +581,8 @@ class LoadingReceipt extends BaseController
           'place_of_dispatch_city'   =>  $this->request->getVar('place_of_dispatch_city'),
           'place_of_dispatch_state'   =>  $this->request->getVar('place_of_dispatch_state'),
           'place_of_dispatch_pincode'   =>  $this->request->getVar('place_of_dispatch_pincode'),
+          'place_of_delivery_name'   =>  $this->request->getVar('place_of_delivery_name'),
+          'place_of_dispatch_name'   =>  $this->request->getVar('place_of_dispatch_name'),
           'particulars'   =>  $this->request->getVar('particulars'), 
           'hsn_code'   =>  $this->request->getVar('hsn_code'),
           'no_of_packages'   =>  $this->request->getVar('no_of_packages'),

@@ -71,7 +71,9 @@ class LoadingReceiptModel extends Model
         'transporter_pincode',
         'transporter_GSTIN',
         'approved',
-        'status'
+        'status',
+        'place_of_delivery_name',
+        'place_of_dispatch_name'
     ];
 
     protected bool $allowEmptyInserts = false;

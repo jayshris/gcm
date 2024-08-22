@@ -484,10 +484,9 @@
                         <div class="col-md-12">
                             <?php 
                             $label = 'Address';
-                            echo '<label class="col-form-label">'.$label.' <span class="text-danger">*</span></label>';
-                            echo form_input(['name'=>'consignor_address','id'=>'consignor_address','value'=>set_value('consignor_address', (isset($loading_receipts['consignor_address']) ? $loading_receipts['consignor_address'] : '')),'class'=>'form-control '.(($validation->getError('consignor_address')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off', 'required'=>'required']);
-                            echo ($validation->getError('consignor_address')) ? '<div class="invalid-feedback">'.$validation->getError('consignor_address').'</div>' : '';
-                            ?>
+                            echo '<label class="col-form-label">'.$label.' <span class="text-danger">*</span></label>'; ?>
+                             <input type="text" name="consignor_address" id="consignor_address" class="form-control <?= (($validation->getError('consignor_address')) ? 'is-invalid' : '') ?>" required value="<?= set_value('consignor_address', (isset($loading_receipts['consignor_address']) ? $loading_receipts['consignor_address'] : '')) ?>"  placeholder='<?=  $label?>'  autocomplete='off'>
+                          <?php echo ($validation->getError('consignor_address')) ? '<div class="invalid-feedback">'.$validation->getError('consignor_address').'</div>' : ''; ?>
                         </div>
 
                         <div class="col-md-4">
@@ -517,8 +516,8 @@
                         <div class="col-md-4">
                             <?php 
                             $label = 'Pincode';
-                            echo '<label class="col-form-label">'.$label.' <span class="text-danger">*</span></label>';
-                            echo form_input(['name'=>'consignor_pincode','id'=>'consignor_pincode','value'=>set_value('consignor_pincode', (isset($loading_receipts['consignor_pincode']) ? $loading_receipts['consignor_pincode'] : '')),'class'=>'form-control '.(($validation->getError('consignor_pincode')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');", 'required'=>'required']);
+                            echo '<label class="col-form-label">'.$label.'</label>';
+                            echo form_input(['name'=>'consignor_pincode','id'=>'consignor_pincode','value'=>set_value('consignor_pincode', (isset($loading_receipts['consignor_pincode']) ? $loading_receipts['consignor_pincode'] : '')),'class'=>'form-control '.(($validation->getError('consignor_pincode')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');"]);
                             echo ($validation->getError('consignor_pincode')) ? '<div class="invalid-feedback">'.$validation->getError('consignor_pincode').'</div>' : '';
                             ?>
                         </div>
@@ -605,8 +604,8 @@
                         <div class="col-md-4">
                             <?php 
                             $label = 'Pincode';
-                            echo '<label class="col-form-label">'.$label.' <span class="text-danger">*</span></label>';
-                            echo form_input(['name'=>'place_of_delivery_pincode','id'=>'place_of_delivery_pincode','value'=>set_value('place_of_delivery_pincode', (isset($loading_receipts['place_of_delivery_pincode']) ? $loading_receipts['place_of_delivery_pincode'] : '')),'class'=>'form-control '.(($validation->getError('place_of_delivery_pincode')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');", 'required'=>'required']);
+                            echo '<label class="col-form-label">'.$label.'</label>';
+                            echo form_input(['name'=>'place_of_delivery_pincode','id'=>'place_of_delivery_pincode','value'=>set_value('place_of_delivery_pincode', (isset($loading_receipts['place_of_delivery_pincode']) ? $loading_receipts['place_of_delivery_pincode'] : '')),'class'=>'form-control '.(($validation->getError('place_of_delivery_pincode')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');"]);
                             echo ($validation->getError('place_of_delivery_pincode')) ? '<div class="invalid-feedback">'.$validation->getError('place_of_delivery_pincode').'</div>' : '';
                             ?>
                         </div>
@@ -693,8 +692,8 @@
                         <div class="col-md-4">
                             <?php 
                             $label = 'Pincode';
-                            echo '<label class="col-form-label">'.$label.' <span class="text-danger">*</span></label>';
-                            echo form_input(['name'=>'consignee_pincode','id'=>'consignee_pincode','value'=>set_value('consignee_pincode', (isset($loading_receipts['consignee_pincode']) ? $loading_receipts['consignee_pincode'] : '')),'class'=>'form-control '.(($validation->getError('consignee_pincode')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');", 'required'=>'required']);
+                            echo '<label class="col-form-label">'.$label.' </label>';
+                            echo form_input(['name'=>'consignee_pincode','id'=>'consignee_pincode','value'=>set_value('consignee_pincode', (isset($loading_receipts['consignee_pincode']) ? $loading_receipts['consignee_pincode'] : '')),'class'=>'form-control '.(($validation->getError('consignee_pincode')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');"]);
                             echo ($validation->getError('consignee_pincode')) ? '<div class="invalid-feedback">'.$validation->getError('consignee_pincode').'</div>' : '';
                             ?>
                         </div>
@@ -781,8 +780,8 @@
                         <div class="col-md-4">
                             <?php 
                             $label = 'Pincode';
-                            echo '<label class="col-form-label">'.$label.' <span class="text-danger">*</span></label>';
-                            echo form_input(['name'=>'place_of_dispatch_pincode','id'=>'place_of_dispatch_pincode','value'=>set_value('place_of_dispatch_pincode', (isset($loading_receipts['place_of_dispatch_pincode']) ? $loading_receipts['place_of_dispatch_pincode'] : '')),'class'=>'form-control '.(($validation->getError('place_of_dispatch_pincode')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');", 'required'=>'required']);
+                            echo '<label class="col-form-label">'.$label.' </label>';
+                            echo form_input(['name'=>'place_of_dispatch_pincode','id'=>'place_of_dispatch_pincode','value'=>set_value('place_of_dispatch_pincode', (isset($loading_receipts['place_of_dispatch_pincode']) ? $loading_receipts['place_of_dispatch_pincode'] : '')),'class'=>'form-control '.(($validation->getError('place_of_dispatch_pincode')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');",]);
                             echo ($validation->getError('place_of_dispatch_pincode')) ? '<div class="invalid-feedback">'.$validation->getError('place_of_dispatch_pincode').'</div>' : '';
                             ?>
                         </div>
@@ -803,8 +802,8 @@
                         <div class="col-md-4">
                             <?php 
                             $label = 'Particulars';
-                            echo '<label class="col-form-label">'.$label.' <span class="text-danger">*</span></label>';
-                            echo form_input(['name'=>'particulars','id'=>'particulars','value'=>set_value('particulars', (isset($loading_receipts['particulars']) ? $loading_receipts['particulars'] : '')),'class'=>'form-control '.(($validation->getError('particulars')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'required'=>'required']);
+                            echo '<label class="col-form-label">'.$label.' </label>';
+                            echo form_input(['name'=>'particulars','id'=>'particulars','value'=>set_value('particulars', (isset($loading_receipts['particulars']) ? $loading_receipts['particulars'] : '')),'class'=>'form-control '.(($validation->getError('particulars')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off']);
                             echo ($validation->getError('particulars')) ? '<div class="invalid-feedback">'.$validation->getError('particulars').'</div>' : '';
                             ?>
                         </div>
@@ -812,8 +811,8 @@
                         <div class="col-md-4">
                             <?php 
                             $label = 'HSN Code';
-                            echo '<label class="col-form-label">'.$label.' <span class="text-danger">*</span></label>';
-                            echo form_input(['name'=>'hsn_code','id'=>'hsn_code','value'=>set_value('hsn_code', (isset($loading_receipts['hsn_code']) ? $loading_receipts['hsn_code'] : '')),'class'=>'form-control '.(($validation->getError('hsn_code')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9.]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');", 'required'=>'required']);
+                            echo '<label class="col-form-label">'.$label.' </label>';
+                            echo form_input(['name'=>'hsn_code','id'=>'hsn_code','value'=>set_value('hsn_code', (isset($loading_receipts['hsn_code']) ? $loading_receipts['hsn_code'] : '')),'class'=>'form-control '.(($validation->getError('hsn_code')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9.]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');"]);
                             echo ($validation->getError('hsn_code')) ? '<div class="invalid-feedback">'.$validation->getError('hsn_code').'</div>' : '';
                             ?>
                         </div>
@@ -821,8 +820,8 @@
                         <div class="col-md-4">
                             <?php 
                             $label = 'No. of Packages';
-                            echo '<label class="col-form-label">'.$label.' <span class="text-danger">*</span></label>';
-                            echo form_input(['name'=>'no_of_packages','id'=>'no_of_packages','value'=>set_value('no_of_packages', (isset($loading_receipts['no_of_packages']) ? $loading_receipts['no_of_packages'] : '')),'class'=>'form-control '.(($validation->getError('no_of_packages')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'required'=>'required']);
+                            echo '<label class="col-form-label">'.$label.' </label>';
+                            echo form_input(['name'=>'no_of_packages','id'=>'no_of_packages','value'=>set_value('no_of_packages', (isset($loading_receipts['no_of_packages']) ? $loading_receipts['no_of_packages'] : '')),'class'=>'form-control '.(($validation->getError('no_of_packages')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off']);
                             echo ($validation->getError('no_of_packages')) ? '<div class="invalid-feedback">'.$validation->getError('no_of_packages').'</div>' : '';
                             ?>
                         </div>
@@ -830,8 +829,8 @@
                         <div class="col-md-4">
                             <?php 
                             $label = 'Actual Weight';
-                            echo '<label class="col-form-label">'.$label.' <span class="text-danger">*</span></label>';
-                            echo form_input(['name'=>'actual_weight','id'=>'actual_weight','value'=>set_value('actual_weight', (isset($loading_receipts['actual_weight']) ? $loading_receipts['actual_weight'] : '')),'class'=>'form-control '.(($validation->getError('actual_weight')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9.]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');", 'required'=>'required']);
+                            echo '<label class="col-form-label">'.$label.' </label>';
+                            echo form_input(['name'=>'actual_weight','id'=>'actual_weight','value'=>set_value('actual_weight', (isset($loading_receipts['actual_weight']) ? $loading_receipts['actual_weight'] : '')),'class'=>'form-control '.(($validation->getError('actual_weight')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9.]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');"]);
                             echo ($validation->getError('actual_weight')) ? '<div class="invalid-feedback">'.$validation->getError('actual_weight').'</div>' : '';
                             ?>
                         </div>
@@ -839,8 +838,8 @@
                         <div class="col-md-4">
                             <?php 
                             $label = 'Charge Weight';
-                            echo '<label class="col-form-label">'.$label.' <span class="text-danger">*</span></label>';
-                            echo form_input(['name'=>'charge_weight','id'=>'charge_weight','value'=>set_value('charge_weight', (isset($loading_receipts['charge_weight']) ? $loading_receipts['charge_weight'] : '')),'class'=>'form-control '.(($validation->getError('charge_weight')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9.]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');", 'required'=>'required']);
+                            echo '<label class="col-form-label">'.$label.' </label>';
+                            echo form_input(['name'=>'charge_weight','id'=>'charge_weight','value'=>set_value('charge_weight', (isset($loading_receipts['charge_weight']) ? $loading_receipts['charge_weight'] : '')),'class'=>'form-control '.(($validation->getError('charge_weight')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9.]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');"]);
                             echo ($validation->getError('charge_weight')) ? '<div class="invalid-feedback">'.$validation->getError('charge_weight').'</div>' : '';
                             ?>
                         </div>
@@ -848,8 +847,8 @@
                         <div class="col-md-4">
                             <?php 
                             $label = 'Payment Terms';
-                            echo '<label class="col-form-label">'.$label.' <span class="text-danger">*</span></label>';
-                            echo form_input(['name'=>'payment_terms','id'=>'payment_terms','value'=>set_value('payment_terms', (isset($loading_receipts['payment_terms']) ? $loading_receipts['payment_terms'] : '')),'class'=>'form-control '.(($validation->getError('payment_terms')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'required'=>'required']);
+                            echo '<label class="col-form-label">'.$label.' </label>';
+                            echo form_input(['name'=>'payment_terms','id'=>'payment_terms','value'=>set_value('payment_terms', (isset($loading_receipts['payment_terms']) ? $loading_receipts['payment_terms'] : '')),'class'=>'form-control '.(($validation->getError('payment_terms')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off']);
                             echo ($validation->getError('payment_terms')) ? '<div class="invalid-feedback">'.$validation->getError('payment_terms').'</div>' : '';
                             ?>
                         </div>
@@ -857,15 +856,15 @@
                         <div class="col-md-4">
                             <?php 
                             $label = 'E-Way Bill No';
-                            echo '<label class="col-form-label">'.$label.' <span class="text-danger">*</span></label>';
-                            echo form_input(['name'=>'e_way_bill_number','id'=>'e_way_bill_number','value'=>set_value('e_way_bill_number', (isset($loading_receipts['e_way_bill_number']) ? $loading_receipts['e_way_bill_number'] : '')),'class'=>'form-control '.(($validation->getError('e_way_bill_number')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off', 'required'=>'required']);
+                            echo '<label class="col-form-label">'.$label.' </label>';
+                            echo form_input(['name'=>'e_way_bill_number','id'=>'e_way_bill_number','value'=>set_value('e_way_bill_number', (isset($loading_receipts['e_way_bill_number']) ? $loading_receipts['e_way_bill_number'] : '')),'class'=>'form-control '.(($validation->getError('e_way_bill_number')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off']);
                             echo ($validation->getError('e_way_bill_number')) ? '<div class="invalid-feedback">'.$validation->getError('e_way_bill_number').'</div>' : '';
                             ?>
                         </div>
 
                         <div class="col-md-4">
-                            <label class="col-form-label">E-WAY Bill Expiry Date<span class="text-danger">*</span></label>
-                            <input type="date" name="e_way_expiry_date" id="e_way_expiry_date" class="form-control" required value="<?= (isset($loading_receipts['e_way_expiry_date'])) ?  $loading_receipts['e_way_expiry_date'] : ''?>">
+                            <label class="col-form-label">E-WAY Bill Expiry Date</label>
+                            <input type="date" name="e_way_expiry_date" id="e_way_expiry_date" class="form-control" value="<?= (isset($loading_receipts['e_way_expiry_date'])) ?  $loading_receipts['e_way_expiry_date'] : ''?>">
                             <?php
                             if ($validation->getError('e_way_expiry_date')) {
                                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('e_way_expiry_date') . '</div>';
@@ -876,8 +875,8 @@
                         <div class="col-md-4">
                             <?php 
                             $label = 'Freight Charges Amount';
-                            echo '<label class="col-form-label">'.$label.' <span class="text-danger">*</span></label>';
-                            echo form_input(['name'=>'freight_charges_amount','id'=>'freight_charges_amount','value'=>set_value('freight_charges_amount', (isset($loading_receipts['freight_charges_amount']) ? $loading_receipts['freight_charges_amount'] : '')),'class'=>'form-control '.(($validation->getError('freight_charges_amount')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9.]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');", 'required'=>'required']);
+                            echo '<label class="col-form-label">'.$label.' </label>';
+                            echo form_input(['name'=>'freight_charges_amount','id'=>'freight_charges_amount','value'=>set_value('freight_charges_amount', (isset($loading_receipts['freight_charges_amount']) ? $loading_receipts['freight_charges_amount'] : '')),'class'=>'form-control '.(($validation->getError('freight_charges_amount')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9.]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');"]);
                             echo ($validation->getError('freight_charges_amount')) ? '<div class="invalid-feedback">'.$validation->getError('freight_charges_amount').'</div>' : '';
                             ?>
                         </div>
