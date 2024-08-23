@@ -65,8 +65,8 @@
                                                                                 } ?>
                                                                 </div>
                                                             </div>
-<!-- 
-                                                            <div class="col-md-4">
+
+                                                            <!-- <div class="col-md-4">
                                                                 <div class="form-wrap"><label class="col-form-label">Department <span class="text-danger">*</span></label>
                                                                     <select class="select" id="dept_id" name="dept_id" required>
                                                                         <option value="">Select Department</option>
@@ -230,7 +230,7 @@
                                                             <div class="col-md-6">
                                                                 <div class="form-wrap">
                                                                     <label class="col-form-label">Joining Date<span class="text-danger">*</span></label>
-                                                                    <input class="form-control" name="joiningdate" type="date" value="<?= $employee_detail['joining_date'] ?>" required>
+                                                                    <input class="form-control" name="joiningdate" id="joiningdate" type="date" value="<?= $employee_detail['joining_date'] ?>" required>
                                                                     <?php if ($validation->getError('joiningdate')) {
                                                                         echo '<div class="alert alert-danger mt-2">' . $validation->getError('joiningdate') . '</div>';
                                                                     } ?>
@@ -240,7 +240,7 @@
                                                             <div class="col-md-6">
                                                                 <div class="form-wrap">
                                                                 <label class="col-form-label">Releaveing Date<span class="text-danger">*</span></label>
-                                                                <input class="form-control" name="releaveing_date" type="date" value="<?= $employee_detail['releaveing_date'] ?>" <?= set_value('releaveing_date') ?>required>
+                                                                <input class="form-control" name="releaveing_date" id="releaveing_date" type="date" value="<?= $employee_detail['releaveing_date'] ?>" <?= set_value('releaveing_date') ?>required>
                                                                 <?php if ($validation->getError('releaveing_date')) {
                                                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('releaveing_date') . '</div>';
                                                                 } ?>
@@ -311,6 +311,14 @@
 
         <script>
             $(document).ready(function() {
+                $('#joiningdate').change(function() { 
+                    $('#releaveing_date').attr('min',$('#joiningdate').val() );
+                });
+
+                $('#releaveing_date').change(function() {
+                    $('#joiningdate').attr('max',$('#releaveing_date').val() );
+                });
+                
                 $("#company").change(function() {
                     var o = $(this).val();
                     $.ajax({
