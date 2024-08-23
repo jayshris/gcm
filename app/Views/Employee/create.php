@@ -58,18 +58,18 @@
                                 </div>
                               </div>
 
-                              <div class="col-md-4">
+                              <!-- <div class="col-md-4">
                                 <div class="form-wrap"><label class="col-form-label">Department <span class="text-danger">*</span></label>
                                   <select class="select" id="dept_id" name="dept_id" required>
                                     <option value="">Select Department</option>
                                     <?php
-                                    foreach ($departments as $row) {
-                                      echo '<option value="' . $row["id"] . '" "' . set_select('dept_id', $row['id']) . '">' . $row["dept_name"] . '</option>';
-                                    }
+                                    // foreach ($departments as $row) {
+                                    //   echo '<option value="' . $row["id"] . '" "' . set_select('dept_id', $row['id']) . '">' . $row["dept_name"] . '</option>';
+                                    // }
                                     ?>
                                   </select>
                                 </div>
-                              </div>
+                              </div> -->
 
                               <div class="col-md-6">
                                 <div class="form-wrap"><label class="col-form-label">Employee Name <span class="text-danger">*</span></label>
@@ -401,6 +401,16 @@
                                   <input class="form-control" name="joiningdate" type="date" <?= set_value('joiningdate') ?>required>
                                   <?php if ($validation->getError('joiningdate')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('joiningdate') . '</div>';
+                                  } ?>
+                                </div>
+                              </div>
+
+                              <div class="col-md-6">
+                                <div class="form-wrap">
+                                  <label class="col-form-label">Releaveing Date<span class="text-danger">*</span></label>
+                                  <input class="form-control" name="releaveing_date" type="date" <?= set_value('releaveing_date') ?>required>
+                                  <?php if ($validation->getError('releaveing_date')) {
+                                    echo '<div class="alert alert-danger mt-2">' . $validation->getError('releaveing_date') . '</div>';
                                   } ?>
                                 </div>
                               </div>

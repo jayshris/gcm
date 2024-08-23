@@ -8,8 +8,10 @@ use App\Models\OfficeModel;
 use App\Models\CompanyModel;
 use App\Models\ModulesModel;
 use App\Models\EmployeeModel;
-use App\Models\AadhaarNumberMapModule;
 use App\Models\DepartmentModel;
+use App\Models\EmployeeDepartment;
+use App\Models\AadhaarNumberMapModule;
+use App\Models\EmployeeDepartmentModel;
 
 class Employee extends BaseController
 {
@@ -23,9 +25,12 @@ class Employee extends BaseController
   public $departmentModel;
   public $added_by;
   public $added_ip;
+  public $EmployeeDepartmentModel;
+  public $session;
 
   public function __construct()
   {
+    $this->session = \Config\Services::session();
     $u = new UserModel();
     $access = $u->setPermission();
     $this->_access = $access;
@@ -35,7 +40,7 @@ class Employee extends BaseController
     $this->user = new UserModel();
     $this->officeModel = new OfficeModel();
     $this->departmentModel = new DepartmentModel();
-
+    $this->EmployeeDepartmentModel = new EmployeeDepartmentModel();
     $this->added_by = isset($_SESSION['id']) ? $_SESSION['id'] : '0';
     $this->added_ip = isset($_SERVER['REMOTE_ADDR'])  ? $_SERVER['REMOTE_ADDR'] : '';
   }
@@ -225,7 +230,7 @@ class Employee extends BaseController
           $this->employeeModel->save([
             'company_id' => $this->request->getVar('company_name'),
             'branch_id' => $this->request->getVar('office_location'),
-            'dept_id' => $this->request->getVar('dept_id'),
+            'releaveing_date' => $this->request->getVar('releaveing_date'),
             'name' => $this->request->getVar('name'),
             'adhaar_number' => $this->request->getPost('aadhaar'),
             'aadhar_img_front' => $aadhaarfrontimage_name,
@@ -314,7 +319,7 @@ class Employee extends BaseController
           $this->employeeModel->update($id, [
             'company_id' => $this->request->getVar('company_name'),
             'branch_id' => $this->request->getVar('office_location'),
-            'dept_id' => $this->request->getVar('dept_id'),
+            'releaveing_date' => $this->request->getVar('releaveing_date'),
             'name' => $this->request->getVar('name'),
             'adhaar_number' => $this->request->getPost('aadhaar'),
             'mobile' => $this->request->getPost('mobile'),
@@ -514,7 +519,7 @@ class Employee extends BaseController
           $this->employeeModel->update($id, [
             'company_id' => $this->request->getVar('company_name'),
             'branch_id' => $this->request->getVar('office_location'),
-            'dept_id' => $this->request->getVar('dept_id'),
+            'releaveing_date' => $this->request->getVar('releaveing_date'),
             'name' => $this->request->getVar('name'),
             'adhaar_number' => $this->request->getPost('aadhaar'),
             'mobile' => $this->request->getPost('mobile'),
@@ -700,5 +705,45 @@ class Employee extends BaseController
       ->where('employee.id', $id)->first();
 
     return view('Employee/preview', $this->view);
+  }
+
+  function assign_department($id){
+    $this->view['token'] = $id;
+    $this->view['last_emp_dept_data'] = $this->EmployeeDepartmentModel->where(['employee_id' => $id])->orderBy('id', 'DESC')->first();
+    //  echo ' last_emp_dept_data <pre>';print_r($this->view['last_emp_dept_data']);exit;
+    if($this->request->getPost()){
+      $error = $this->validate([ 
+        'department_id' => 'required',
+        'start_date' => 'required',
+      ]);
+      if (!$error) {
+        $this->view['error'] = $this->validator;
+      } else {        
+        // echo '<pre>';print_r($this->request->getPost());
+        // echo ' last_emp_dept_data <pre>';print_r($this->view['last_emp_dept_data']);
+        
+        if(!empty($this->view['last_emp_dept_data'])) {
+          $last_date = (strtotime($this->request->getPost('start_date')) > 0) ? date('Y-m-d', strtotime($this->request->getPost('start_date') . ' -1 day')) : '';
+          $udata['last_date'] = $last_date;
+          $udata['updated_by'] = $this->added_by;
+          $this->EmployeeDepartmentModel->update($this->view['last_emp_dept_data']['id'],$udata);
+          // echo ' udata <pre>';print_r($udata);
+        }
+        
+        $data['employee_id'] = $id;
+        $data['department_id'] = $this->request->getPost('department_id');
+        $data['start_date'] = $this->request->getPost('start_date');        
+        $data['created_by'] = $this->added_by;
+        $this->EmployeeDepartmentModel->insert($data);  
+
+        // echo ' data <pre>';print_r($data);exit; 
+       //change employee status
+       $this->employeeModel->update($id,['status' => 0,'approved'=> 0]);
+        $this->session->setFlashdata('success', 'Employee Department Assigned Successfully');
+        return $this->response->redirect(base_url('employee'));
+      }
+    } 
+    $this->view['departments'] = $this->departmentModel->where(['status' => '1'])->orderBy('dept_name', 'ASC')->findAll();
+    return view('Employee/assign_department', $this->view);
   }
 }

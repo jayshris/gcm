@@ -28,6 +28,7 @@ class EmployeeModel extends Model
         'permanent_phone',
         'relation',
         'alternate_mobile',
-        'comp_mobile2'
+        'comp_mobile2',
+        'releaveing_date'
     ];
 }
