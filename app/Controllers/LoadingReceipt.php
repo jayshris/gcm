@@ -444,14 +444,22 @@ class LoadingReceipt extends BaseController
   function preview($id){
     $stateModel = new StateModel();
     $this->view['loading_receipts'] = $this->LoadingReceiptModel
-    ->select('loading_receipts.*,b.booking_number,o.name branch_name,v.rc_number,s.state_name consignor_state,s2.state_name consignee_state,s3.state_name place_of_delivery_state,s4.state_name place_of_dispatch_state')
+    ->select('loading_receipts.*,b.booking_number,o.name branch_name,v.rc_number,s.state_name consignor_state,s2.state_name consignee_state,s3.state_name place_of_delivery_state,s4.state_name place_of_dispatch_state
+     , IF(UNIX_TIMESTAMP(loading_receipts.reporting_datetime) > 0, loading_receipts.reporting_datetime, "") reporting_datetime
+     , IF(UNIX_TIMESTAMP(loading_receipts.invoice_boe_date) > 0, loading_receipts.invoice_boe_date, "") invoice_boe_date
+     , IF(UNIX_TIMESTAMP(loading_receipts.releasing_datetime) > 0, loading_receipts.releasing_datetime, "") releasing_datetime
+     , IF(UNIX_TIMESTAMP(loading_receipts.policy_date) > 0, loading_receipts.policy_date, "") policy_date
+     , IF(UNIX_TIMESTAMP(loading_receipts.booking_date) > 0, loading_receipts.booking_date, "") booking_date
+     , IF(UNIX_TIMESTAMP(loading_receipts.e_way_expiry_date) > 0, loading_receipts.e_way_expiry_date, "") e_way_expiry_date
+     , IF(UNIX_TIMESTAMP(loading_receipts.consignment_date) > 0, loading_receipts.consignment_date, "") consignment_date
+    ')
     ->join('bookings b','loading_receipts.booking_id = b.id')
-    ->join('vehicle v','loading_receipts.vehicle_id = v.id')
-    ->join('office o','loading_receipts.office_id = o.id')
-    ->join('states s','loading_receipts.consignor_state = s.state_id')
-    ->join('states s2','loading_receipts.consignee_state = s2.state_id')
-    ->join('states s3','loading_receipts.place_of_delivery_state = s3.state_id')
-    ->join('states s4','loading_receipts.place_of_dispatch_state = s4.state_id')
+    ->join('vehicle v','b.vehicle_id = v.id','left')
+    ->join('office o','loading_receipts.office_id = o.id','left')
+    ->join('states s','loading_receipts.consignor_state = s.state_id','left')
+    ->join('states s2','loading_receipts.consignee_state = s2.state_id','left')
+    ->join('states s3','loading_receipts.place_of_delivery_state = s3.state_id','left')
+    ->join('states s4','loading_receipts.place_of_dispatch_state = s4.state_id','left')
     ->where(['loading_receipts.id' => $id])->first();
 
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll(); 

@@ -38,7 +38,7 @@ $.getBookingDetails = function() {
                 $("#vehicle_number").val(res.vehicle_id);
                 $("#consignment_date").attr('min',res.booking_date);
                 $("#loading_station").val(res.bp_city);
-                $("#delivery_station").val(res.bp_city);
+                $("#delivery_station").val(res.bd_city);
                 $("#charge_weight").val(res.guranteed_wt);
                 $("#customer_name").val(res.party_name);
                 if(res.is_lr_third_party > 0){
