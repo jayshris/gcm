@@ -99,6 +99,10 @@ use App\Models\PartyModel;
                     if ($session->getFlashdata('success')) {
                       echo '<div class="alert alert-success">' . $session->getFlashdata("success") . '</div>';
                     }
+
+                    if ($session->getFlashdata('danger')) {
+                      echo '<div class="alert alert-danger">' . $session->getFlashdata("danger") . '</div>';
+                    }
                     ?>
                   </div>
                 </div>
