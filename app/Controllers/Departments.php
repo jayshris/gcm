@@ -3,18 +3,21 @@
 namespace App\Controllers;
   
 use App\Controllers\BaseController;
-use App\Models\DepartmentModel; 
+use App\Models\DepartmentModel;
+use App\Models\EmployeeDepartmentModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class Departments extends BaseController
 { 
     public $session; 
     public $DepartmentModel;
-
+    public $EmployeeDepartmentModel;
     public function __construct()
     { 
       $this->session = \Config\Services::session(); 
       $this->DepartmentModel = new DepartmentModel();
+      $this->EmployeeDepartmentModel= new EmployeeDepartmentModel();
+
     }
   
     public function index()
@@ -76,9 +79,16 @@ class Departments extends BaseController
   
     public function delete($id = null)
     {  
-      $this->DepartmentModel->where('id', $id)->delete($id); 
-      $this->session->setFlashdata('success', 'Department has been deleted successfully');
-      return $this->response->redirect(base_url('/departments')); 
+      $exist_emp_dept =  $this->EmployeeDepartmentModel->where('department_id',$id)->first();
+      // print_r($exist_emp_dept);exit;
+      if($exist_emp_dept){
+        $this->session->setFlashdata('danger', 'Department can not be deleted, department is assigned to employee');
+        return $this->response->redirect(base_url('/departments')); 
+      }else{
+        $this->DepartmentModel->where('id', $id)->delete($id); 
+        $this->session->setFlashdata('success', 'Department has been deleted successfully');
+        return $this->response->redirect(base_url('/departments')); 
+      }
     }
   
     function preview($id){ 

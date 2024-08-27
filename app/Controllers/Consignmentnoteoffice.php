@@ -86,6 +86,9 @@ class Consignmentnoteoffice extends BaseController
 
       
     // echo 'sdf<pre>';print_r($this->view['lr']);exit;
-    return view('ConsignmentNoteOfficialUse/preview', $this->view); 
+    // return view('ConsignmentNoteOfficialUse/preview', $this->view); 
+    return view('ConsignmentNoteOfficialUse/preview_copy', $this->view); 
   }
+
+  
 }
