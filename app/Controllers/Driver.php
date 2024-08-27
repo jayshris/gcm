@@ -73,7 +73,7 @@ class Driver extends BaseController
       ->join('party' . ' t2', 't2.id = driver.party_id')
       ->join('foreman' . ' t3', 't3.id = driver.foreman_id')
       ->join('party' . ' t4', 't4.id = t3.party_id')
-      ->join('driver_vehicle_map  dvm', 'driver.id = dvm.driver_id and dvm.unassign_date = ""','left')
+      ->join('driver_vehicle_map  dvm', 'driver.id = dvm.driver_id and (dvm.unassign_date IS NULL or dvm.unassign_date="")','left')
       ->join('vehicle  v', 'v.id = dvm.vehicle_id','left')
       ->join('booking_vehicle_logs  bvl', 'v.id = bvl.vehicle_id and bvl.unassigned_by= 0','left')
       ->join('bookings  b', 'b.id = bvl.booking_id','left');
@@ -475,7 +475,7 @@ class Driver extends BaseController
   public function assign_vehicle($id=0)
   {
     if ($this->request->getPost()) {
-      $result = $this->DVAModel->where('driver_id', $id)->where('(unassign_date IS NULL or unassign_date = "" )')->first();
+      $result = $this->DVAModel->where('driver_id', $id)->where('(unassign_date IS NULL or unassign_date="")')->first();
       if ($result) {
         $this->VModel->update($result['vehicle_id'], ['is_driver_assigned' => 0]);
         $this->DVAModel->update($result['id'], ['unassign_date' => date('Y-m-d h:i:s'), 'unassigned_by' => $this->added_by]);
@@ -504,7 +504,7 @@ class Driver extends BaseController
     //$this->view['vehicles'] = $this->VModel->findAll();
 
     $this->view['driver_detail'] = $this->DModel->select('driver.*, party.party_name')->join('party', 'party.id = driver.party_id')->where('driver.id', $id)->first();
-    $this->view['assignment_details'] = $this->DVAModel->where('driver_id', $id)->where('(unassign_date IS NULL or unassign_date = "" )')->first();
+    $this->view['assignment_details'] = $this->DVAModel->where('driver_id', $id)->where('(driver_vehicle_map.unassign_date IS NULL or driver_vehicle_map.unassign_date="")')->first();
     
     $this->view['driverAllowedVehicleTypes'] = $this->vehicletypeDriver->select('t2.id, t2.rc_number')->join('vehicle as t2','t2.vehicle_type_id=driver_vehicle_type_map.vehicle_type_id','inner')->where('driver_id', $id)->where('t2.is_driver_assigned', '0')->orderBy('t2.rc_number', 'ASC')->findAll();
 
@@ -541,28 +541,21 @@ class Driver extends BaseController
         return $this->response->redirect(base_url('driver'));
       }
   }
-
-
    $this->view['token'] = $id; 
-
    $this->view['driver_detail'] = $this->DModel->select('driver.*, party.party_name')->join('party', 'party.id = driver.party_id')->where('driver.id', $id)->first();
    $this->view['assignment_details'] = $this->DVAModel->where('driver_id', $id)->where('(unassign_date IS NULL or unassign_date = "" )')->first();
-   
-          echo '<pre>';print_r($this->view['assignment_details']); exit;
+   echo '<pre>';print_r($this->view['assignment_details']); exit;
    $this->view['driverAllowedVehicleTypes'] = $this->vehicletypeDriver->select('t2.id, t2.rc_number')->join('vehicle as t2','t2.vehicle_type_id=driver_vehicle_type_map.vehicle_type_id','inner')->where('driver_id', $id)->where('t2.is_driver_assigned', '1')->orderBy('t2.rc_number', 'ASC')->findAll();
-   
-  //  echo '<pre>';print_r( $this->view['driverAllowedVehicleTypes']);exit;
    return view('Driver/unassign', $this->view);
   }
-
   public function assigned_list()
   {
     $data['assigned_list'] = $this->DVAModel->select('driver_vehicle_map.*, vehicle.rc_number, party.party_name ')
       ->join('vehicle', 'vehicle.id = driver_vehicle_map.vehicle_id')
       ->join('driver', 'driver.id = driver_vehicle_map.driver_id')
       ->orderBy('driver_vehicle_map.assign_date', 'descs')
-      ->join('party', 'party.id = driver.party_id') 
-      ->where('(driver_vehicle_map.unassign_date IS NULL or driver_vehicle_map.unassign_date = "" )')
+      ->join('party', 'party.id = driver.party_id')
+      ->where('(driver_vehicle_map.unassign_date IS NULL or driver_vehicle_map.unassign_date="")')
       ->findAll();
     return view('Driver/assigned_list', $data);
   }
