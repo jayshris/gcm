@@ -1,60 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <?= $this->include('partials/title-meta') ?>
   <?= $this->include('partials/head-css') ?>
+  <style type="text/css">
+	.check-form { border: 1px solid #ccc; background: #fff; padding: 5px; height: 160px; overflow: auto; }
+	.check-form .checkbox { margin-top: 0; }
+	</style>
 </head>
-
 <body>
-
-  <!-- Main Wrapper -->
   <div class="main-wrapper">
-
     <?= $this->include('partials/menu') ?>
 
-    <!-- Page Wrapper -->
     <div class="page-wrapper">
       <div class="content">
         <div class="row">
           <div class="col-md-12">
-
             <?= $this->include('partials/page-title') ?>
             <div class="row">
               <div class="col-xl-12 col-lg-12">
-
-                <?php $validation = \Config\Services::validation();
-
+                <?php
+                $validation = \Config\Services::validation();
                 use App\Models\UserTypePermissionModel;
                 use App\Models\PartyModel;
-
                 ?>
-                <!-- Settings Info -->
+
                 <div class="card">
                   <div class="card-body">
                     <div class="settings-form">
                       <?php
                       $uriSegments = explode("/", parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
                       $last = array_pop($uriSegments);
-
-
                       $userPermissions = new UserTypePermissionModel();
                       ?>
                       <form method="post" id="driverform" action="<?php echo base_url('driver/create') ?>" enctype="multipart/form-data">
                         <div class="settings-sub-header">
                           <h6>Add New Driver</h6>
                         </div>
+
                         <div class="profile-details">
                           <div class="row">
-
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                               <div class="form-wrap">
                                 <label class="col-form-label">
                                   Driver Name <span class="text-danger">*</span>
                                 </label>
 
-                                <select class="dropdown select2" name="party_id" id="party_id">
-                                  <option>Select</option>
+                                <select class="form-control select2" name="name" id="party_id" style="pointer-events: none;">
+                                  <option>Select Driver</option>
                                   <?php
                                   foreach ($parties as $party) {
                                   ?>
@@ -63,16 +56,16 @@
                                   }
                                   ?>
                                 </select>
-
                               </div>
                             </div>
-                            <div class="col-md-6">
+
+                            <div class="col-md-3">
                               <div class="form-wrap">
                                 <label class="col-form-label">
                                   Foreman Name <span class="text-danger">*</span>
                                 </label>
-                                <select class="dropdown select2" id="forman_name" name="foreman_id">
-                                  <option>Select</option>
+                                <select class="form-class select2" id="forman_name" name="foreman_id">
+                                  <option>Select Foreman</option>
                                   <?php
                                   if (isset($foreman)) {
                                     foreach ($foreman as $row) {
@@ -92,19 +85,35 @@
                                 </select>
                               </div>
                             </div>
-                            <div class="col-md-6">
+
+                            <div class="col-md-3">
                               <label class="col-form-label">
                                 Driver Type <span class="text-danger">*</span>
-                              </label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                              </label><br>
                               <input type="radio" class="radio" id="Employee" value="Employee" name="driver_type" required>
                               <label for="Employee">Employee</label>&nbsp;&nbsp;&nbsp;
                               <input type="radio" class="radio" id="Contractor" value="Contractor" name="driver_type" required>
                               <label for="Contractor">Contractor</label><br>
                             </div>
 
-                            <div class="col-md-12"></div>
+                            <div class="col-md-3">
+                              <div class="form-wrap">
+                                <label class="col-form-label">Scheme <span class="text-danger">*</span></label>
+                                <select class="form-class select2" name="scheme_id" required>
+                                  <option>Select Scheme</option>
+                                  <?php
+                                  if (isset($schemes)) {
+                                    foreach ($schemes as $row) { ?>
+                                      <option value="<?php echo $row["id"] ?>"><?php echo $row["scheme_name"] . ' - ' . $row["rate"] . '/Km' ?></option>
+                                  <?php
+                                    }
+                                  }
+                                  ?>
+                                </select>
+                              </div>
+                            </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                               <div class="form-wrap">
                                 <label class="col-form-label">
                                   Email
@@ -112,7 +121,8 @@
                                 <input readonly type="text" name="email" id="email" class="form-control">
                               </div>
                             </div>
-                            <div class="col-md-6">
+
+                            <div class="col-md-3">
                               <div class="form-wrap">
                                 <label class="col-form-label">
                                   Phone Number
@@ -121,7 +131,7 @@
                               </div>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                               <div class="form-wrap">
                                 <label class="col-form-label">
                                   Bank A/C No:
@@ -130,7 +140,7 @@
                               </div>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                               <div class="form-wrap">
                                 <label class="col-form-label">
                                   Bank IFSC:
@@ -139,14 +149,14 @@
                               </div>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                               <div class="form-wrap">
                                 <label class="col-form-label">Driving Licence Number <span class="text-danger">*</span> <span class="text-danger" id="span_dl"></span></label>
                                 <input type="text" name="dl_no" id="dl_no" class="form-control" required>
                               </div>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                               <div class="form-wrap">
                                 <label class="col-form-label">Driving Licence Issue Auth. <span class="text-danger">*</span></label>
                                 <input type="text" name="dl_authority" class="form-control" required>
@@ -167,7 +177,6 @@
                               </div>
                             </div>
 
-
                             <div class="col-md-3">
                               <div class="form-wrap">
                                 <label class="col-form-label">
@@ -187,7 +196,6 @@
                                 <span class="text-info ">(PNG,JPEG,JPG,PDF)</span>
                               </div>
                             </div>
-
 
                             <div class="col-md-3">
                               <div class="form-wrap">
@@ -226,36 +234,25 @@
                               </div>
                             </div>
 
-                            <h5>Current Address</h5><br /><br />
-
-                            <div class="col-md-9">
+                            <h5>Current Address <span class="text-danger">*</span></h5><br /><br />
+                            <div class="col-md-12">
                               <div class="form-wrap">
-                                <label class="col-form-label">
-                                  Address<span class="text-danger">*</span>
-                                </label>
                                 <input type="text" required name="address" class="form-control">
                               </div>
                             </div>
 
                             <div class="col-md-3">
                               <div class="form-wrap">
-                                <label class="col-form-label"> WhatsApp No.<span class="text-danger">*</span> </label>
-                                <input type="text" required name="whatsapp" class="form-control">
-                              </div>
-                            </div>
-
-                            <div class="col-md-4">
-                              <div class="form-wrap">
                                 <label class="col-form-label">City:<span class="text-danger">*</span></label>
                                 <input type="text" required name="city" class="form-control">
                               </div>
                             </div>
 
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                               <div class="form-wrap">
                                 <label class="col-form-label">State<span class="text-danger">*</span></label>
                                 <select class="dropdown select2" name="state">
-                                  <option>Select</option>
+                                  <option>Select State</option>
                                   <?php
                                   if (isset($state)) {
                                     foreach ($state as $row) { ?>
@@ -268,57 +265,46 @@
                               </div>
                             </div>
 
-                            <div class="col-md-4">
+                            <div class="col-md-2">
                               <div class="form-wrap">
                                 <label class="col-form-label">Zip:</label>
                                 <input type="text" required name="zip" class="form-control">
                               </div>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-2">
                               <div class="form-wrap">
-                                <label class="col-form-label">
-                                  Vehicle Type
-                                </label><br>
-                                <?php
-                                $vehicletypesitem = [];
-                                if (isset($vehicletypes)) {
-                                  foreach ($vehicletypes as $row => $type) {
-                                    if (isset($vehicletypesdriver)) {
-                                      foreach ($vehicletypesdriver as $key => $value) {
-                                        $vehicletypesitem[] = $value['vehicle_type_id'];
-                                      }
-                                    }
-                                ?>
-                                    <input class="form-check-input" type="checkbox" name="vehicle_types[]" id="id_<?php echo $type["id"]; ?>" value="<?php echo $type["id"]; ?>" <?php if (in_array($type['id'], $vehicletypesitem)) {
-                                                                                                                                                                                    echo "checked";
-                                                                                                                                                                                  }
-                                                                                                                                                                                  ?>><label for="id_<?php echo $type["id"]; ?>" class="col-form-label" style=" margin: 0px 20px 0px 3px;">
-                                      <?php echo ucwords($type["name"]); ?></label>
-                                <?php
-                                  }
-                                }
-                                if ($validation->getError('vehicle_type')) {
-                                  echo '<div class="alert alert-danger mt-2">' . $validation->getError('vehicle_type') . '</div>';
-                                }
-                                ?>
+                                <label class="col-form-label"> WhatsApp No.<span class="text-danger">*</span> </label>
+                                <input type="text" required name="whatsapp" class="form-control">
                               </div>
                             </div>
 
                             <div class="col-md-3">
                               <div class="form-wrap">
-                                <label class="col-form-label">Scheme <span class="text-danger">*</span></label>
-                                <select class="dropdown form-control" name="scheme_id" required>
-                                  <option>Select Scheme</option>
+                                <label class="col-form-label">Vehicle Type</label><br>
+                                <div class="check-form">
                                   <?php
-                                  if (isset($schemes)) {
-                                    foreach ($schemes as $row) { ?>
-                                      <option value="<?php echo $row["id"] ?>"><?php echo $row["scheme_name"] . ' - ' . $row["rate"] . '/Km' ?></option>
-                                  <?php
-                                    }
+                                  $vehicletypesitem = [];
+                                  if (isset($vehicletypes)) {
+                                    foreach ($vehicletypes as $row => $type) {
+                                      if (isset($vehicletypesdriver)) {
+                                        foreach ($vehicletypesdriver as $key => $value) {
+                                          $vehicletypesitem[] = $value['vehicle_type_id'];
+                                        }
+                                      }
+                                  ?>                                
+                                  <div class="checkbox">
+                                    <input class="form-check-input chk" type="checkbox" name="vehicle_types[]" id="id_<?php echo $type["id"]; ?>" value="<?php echo $type["id"]; ?>" <?php if (in_array($type['id'], $vehicletypesitem)) { echo "checked"; } ?>>
+                                    <label for="id_<?php echo $type["id"]; ?>" class="col-form-label" style=" margin: 0px 20px 0px 3px;">
+                                      &nbsp;<?php echo ucwords($type["name"]); ?>
+                                    </label>
+                                  </div>
+                                  <?php } }
+                                  if ($validation->getError('vehicle_type')) {
+                                    echo '<div class="alert alert-danger mt-2">' . $validation->getError('vehicle_type') . '</div>';
                                   }
                                   ?>
-                                </select>
+                                </div>
                               </div>
                             </div>
 

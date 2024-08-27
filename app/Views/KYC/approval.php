@@ -126,7 +126,6 @@
                                                     <?php
                                                     foreach ($partyDocs as $flag) {
                                                     ?>
-
                                                         <div class="col-md-6">
                                                             <div class="form-wrap">
                                                                 <label class="col-form-label"><?= $flag['title'] ?> <?= $flag['mandatory'] ? '<span class="text-danger">*</span>' : '' ?><span class="text-danger" id="span_<?= $flag['flag_id'] ?>"></span></label>
@@ -137,7 +136,7 @@
                                                         <div class="col-md-3">
                                                             <div class="form-wrap">
                                                                 <label class="col-form-label"><?= $flag['title'] ?> Image 1 <?= $flag['mandatory'] ? '<span class="text-danger">*</span>' : '' ?></label>
-                                                                <?php if ($flag['img1'] != '') { ?>
+                                                                <?php if ($flag['img1'] != '' && file_exists('public/uploads/partyDocs/'.$flag['img1'])) { ?>
                                                                     <img src="<?= base_url('public/uploads/partyDocs/') . $flag['img1'] ?>" style="height: 150px;">
                                                                 <?php } ?>
                                                                 <input type="file" name="img_<?= $flag['flag_id'] ?>_1" class="form-control" <?= $flag['mandatory'] && $flag['img1'] == '' ? 'required' : '' ?> accept="image/png, image/gif, image/jpeg">
@@ -148,20 +147,15 @@
                                                             <div class="form-wrap">
                                                                 <label class="col-form-label"><?= $flag['title'] ?> Image 2</label>
 
-                                                                <?php if ($flag['img2'] != '') { ?>
+                                                                <?php if ($flag['img2'] != '' && file_exists('public/uploads/partyDocs/'.$flag['img2'])) { ?>
                                                                     <img src="<?= base_url('public/uploads/partyDocs/') . $flag['img2'] ?>" style="height: 150px;">
                                                                 <?php } ?>
 
                                                                 <input type="file" name="img_<?= $flag['flag_id'] ?>_2" class="form-control" accept="image/png, image/gif, image/jpeg">
                                                             </div>
                                                         </div>
-
                                                         <input type="hidden" name="flag_id[]" value="<?= $flag['flag_id'] ?>">
-
-                                                    <?php
-                                                    }
-                                                    ?>
-
+                                                    <?php } ?>
                                                 </div>
 
                                                 <div class="col-md-6">
@@ -178,14 +172,17 @@
                                                     <label class="col-form-label">Contact Person Name<span class="text-danger">*</span></label>
                                                     <input type="text" required class="form-control" name="office_person" value="<?php echo isset($customer_details['name']) ? $customer_details['name'] : ''; ?>">
                                                 </div>
+
                                                 <div class="col-md-2">
                                                     <label class="col-form-label">Designation<span class="text-danger">*</span></label>
                                                     <input type="text" required class="form-control" name="office_designation" value="<?php echo isset($customer_details['designation']) ? $customer_details['designation'] : ''; ?>">
                                                 </div>
+
                                                 <div class="col-md-3">
                                                     <label class="col-form-label">Phone No.<span class="text-danger">*</span></label>
                                                     <input type="number" required class="form-control" name="office_phone" value="<?php echo isset($customer_details['phone']) ? $customer_details['phone'] : ''; ?>">
                                                 </div>
+
                                                 <div class="col-md-3">
                                                     <label class="col-form-label">Email</label>
                                                     <input type="email" class="form-control" name="office_email" value="<?php echo isset($customer_details['email']) ? $customer_details['email'] : ''; ?>">
@@ -230,23 +227,15 @@
                                 </form>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
         </div>
-        <!-- /Page Wrapper -->
-
     </div>
-    <!-- /Main Wrapper -->
 
     <?= $this->include('partials/vendor-scripts') ?>
-
     <script>
         $(document).ready(function() {
-
-            // $.toggle();
-
             $("#business_type_id").on(' change', function() {
                 $("#target").empty();
                 var level = $(this).val();
@@ -266,10 +255,8 @@
         });
 
         $.validate = function(flag_id) {
-
             $('#span_' + flag_id).html('');
             $('#submit-btn').removeAttr('disabled');
-
             var numbr = $('#num_' + flag_id).val();
 
             $.ajax({
@@ -280,7 +267,6 @@
                     number: numbr
                 },
                 success: function(response) {
-
                     if (response == '1') {
                         $('#span_' + flag_id).html(' - document number already exists !!');
                         $('#submit-btn').attr('disabled', 'disabled');
@@ -298,7 +284,5 @@
             }
         });
     </script>
-
 </body>
-
 </html>

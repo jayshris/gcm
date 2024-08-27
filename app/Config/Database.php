@@ -29,7 +29,7 @@ class Database extends Config
         'hostname'     => 'localhost',
         'username'     => 'root',
         'password'     => '',
-        'database'     => 'aubadetech_gcmgrop_dev',
+        'database'     => 'aubadetech_gcmgrop_dev', 
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
         'pConnect'     => false,
@@ -199,3 +199,4 @@ class Database extends Config
         }
     }
 }
+

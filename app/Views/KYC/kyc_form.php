@@ -112,12 +112,11 @@
                                         <label class="col-form-label">Office Name<span class="text-danger">*</span></label>
                                         <select class="form-select select2" required name="office_name">
                                             <option value="">Select Office Name</option>
-                                            <option value="Head Office">Head Office</option>
-                                            <option value="Warehouse">Warehouse</option>
-                                            <option value="Parking">Parking</option>
-                                            <option value="Branch 1">Branch 1</option>
-                                            <option value="Branch 2">Branch 2</option>
-                                            <option value="Branch 3">Branch 3</option>
+                                            <?php if ($offices) {
+                                            foreach ($offices as $c) {
+                                                echo '<option value="'.$c['name'].'">' . $c['name'] . '</option>';
+                                            }
+                                            } ?>
                                         </select>
                                     </div>
 

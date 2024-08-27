@@ -79,9 +79,9 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 				$secLink  = strtolower(str_replace(' ', '_', $secName));
 				$cssClass = isset($act->section_icon) ? $act->section_icon : '';
 				if ($module == 'booking' && ($secLink == 'cancel' || $secLink == 'trip_start')) {
-				 	$confirm  = ''; 
+					$confirm  = ''; 
 				}  else {
-					 $confirm  = ($act->alert_msg == '1') ? "return confirm('Are you sure want to delete this record?')" : '';
+						$confirm  = ($act->alert_msg == '1') ? "return confirm('Are you sure want to delete this record?')" : '';
 				}
 
 				if ($pos == 1) {
@@ -99,7 +99,7 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 							//if status is waiting for approval then only show
 							if ($secLink == 'approve' && ($row['status'] != 1))	$makeButton = 0;
 							//if status is not Waiting for Approval or approved and not assign vehicle then only show
-							if ($secLink == 'assign_vehicle' && ($row['is_vehicle_assigned'] == 1 || !in_array($row['status'], [1, 2])))	$makeButton = 0;
+							if ($secLink == 'assign_vehicle' && ($row['is_vehicle_assigned'] == 1 || !in_array($row['status'], [1, 2, 8])))	$makeButton = 0;
 							//if status is 1 and assign vehicle or status 3  then only show
 							if ($secLink == 'unassign_vehicle' && ($row['is_vehicle_assigned'] != 1 || $row['lr_approved'] == 1 ||  !in_array($row['status'], [0, 1, 2, 3, 4, 6])))	$makeButton = 0;
 							//if status is Approval for Cancellation then only show
@@ -142,7 +142,6 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 								$menu .= anchor(PANEL . $module . '/' . $secLink . '/' . $token, '<i class="' . $cssClass . '" data-bs-toggle="tooltip" aria-label="' . $cssClass . '" data-bs-original-title="' . ucfirst($secName) . '"></i> ', ['class' => 'btn btn-icon btn-outline-primary rounded-pill', 'onclick' => $confirm, 'title' => ucfirst($secName)]);
 							}
 							$menu .= ' &nbsp; ';
-							
 						}
 					}
 				}

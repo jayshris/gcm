@@ -7,39 +7,27 @@
 </head>
 
 <body>
-
-    <!-- Main Wrapper -->
     <div class="main-wrapper">
-
         <?= $this->include('partials/menu') ?>
 
-        <!-- Page Wrapper -->
         <div class="page-wrapper">
             <div class="content">
                 <div class="row">
                     <div class="col-md-12">
-
                         <?= $this->include('partials/page-title') ?>
 
-                        <?php $validation = \Config\Services::validation();
-                        ?>
+                        <?php $validation = \Config\Services::validation();?>
 
                         <div class="row">
                             <div class="col-xl-12 col-lg-12">
-                                <!-- Settings Info -->
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="settings-form">
-                                            <?php
-                                            // print_r($assignment_details);
-                                            ?>
-
-                                            <!-- <form method="post" action="<?php //echo base_url('driver/assign_vehicle/' . $token); ?>"> -->
                                             <?php echo form_open_multipart(base_url().$currentController.'/'.$currentMethod.(($token>0) ? '/'.$token : ''), ['name'=>'actionForm', 'id'=>'actionForm']);?>
-
                                                 <div class="settings-sub-header">
                                                     <h6>Assign Vehicle To Driver</h6>
                                                 </div>
+
                                                 <div class="profile-details">
                                                     <div class="row mb-3 g-3">
                                                         <div class="col-md-3">
@@ -47,7 +35,21 @@
                                                             <input type="text" value="<?= $driver_detail['party_name'] ?>" class="form-control" readonly>
                                                         </div>
 
-                                                        <?php if (isset($assignment_details)) { ?>
+                                                        <div class="col-md-3">
+                                                            <label class="col-form-label">Vehicle<span class="text-danger">*</span></label>
+                                                            <select class="form-control select2" name="vehicle_id">
+                                                                <option value="">Select Vehicle</option>
+                                                                <?php
+                                                                foreach ($driverAllowedVehicleTypes as $v) {
+                                                                ?>
+                                                                    <option value="<?= $v["id"]; ?>" <?= isset($assignment_details) && $assignment_details['vehicle_id'] == $v['id'] ? 'selected' : '' ?>> <?php echo ucwords($v["rc_number"]); ?></option>
+                                                                <?php
+                                                                }
+                                                                ?>
+                                                            </select>
+                                                        </div>
+
+                                                        <?php /*if (isset($assignment_details)) { ?>
                                                             <div class="col-md-3">
                                                                 <label class="col-form-label">Vehicle<span class="text-danger">*</span></label>
                                                                 <select class="form-control select2" name="vehicle_id">
@@ -75,7 +77,7 @@
                                                                     ?>
                                                                 </select>
                                                             </div>
-                                                        <?php  } ?>
+                                                        <?php }*/ ?>
 
                                                         <div class="col-md-3">
                                                             <label class="col-form-label">Assigned Date<span class="text-danger">*</span></label>
@@ -85,9 +87,7 @@
                                                                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('assigned_date') . '</div>';
                                                             }   
                                                             ?>
-                                                        </div> 
-
-                                                        <div class="col-md-12"></div>
+                                                        </div>
 
                                                         <div class="col-md-3">
                                                             <label class="col-form-label">Vehicle Location <span class="text-danger">*</span></label>
@@ -103,9 +103,9 @@
                                                             <label class="col-form-label">Vehicle KM Reading</label>
                                                             <input type="text" name="km" class="form-control" value="<?= isset($assignment_details) ? $assignment_details['vehicle_km_reading'] : '' ?>">
                                                         </div>
-
                                                     </div>
                                                 </div>
+
                                                 <div class="submit-button mt-3">
                                                     <button type="submit" class="btn btn-primary">Save Changes</button>
                                                     <?php if (!isset($type_detail)) {

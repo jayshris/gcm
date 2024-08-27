@@ -44,20 +44,13 @@ class Kyc extends BaseController
 
     public function index()
     {
-        $access = $this->_access;
-        if ($access === 'false') {
-            $session = \Config\Services::session();
-            $session->setFlashdata('error', 'You are not permitted to access this page');
-            return $this->response->redirect(site_url('/dashboard'));
-        } else {
-            $partyModel = new PartyModel();
-            $this->view['party_data'] = $partyModel->where('created_by', '')->orderBy('id', 'DESC')->findAll();
-            $this->view['pagination_link'] = $partyModel->pager;
-            $this->view['page_data'] = [
-                'page_title' => view('partials/page-title', ['title' => 'Party', 'li_1' => '123', 'li_2' => 'deals'])
-            ];
-            return view('KYC/index', $this->view);
-        }
+        $partyModel = new PartyModel();
+        $this->view['party_data'] = $partyModel->select('party.*')->join('customer', 'customer.party_id = party.id')->where('party.created_by', '')->orderBy('id', 'DESC')->findAll();
+        $this->view['pagination_link'] = $partyModel->pager;
+        $this->view['page_data'] = [
+            'page_title' => view('partials/page-title', ['title' => 'Party', 'li_1' => '123', 'li_2' => 'deals'])
+        ];
+        return view('KYC/index', $this->view);
     }
 
     public function create()
@@ -355,15 +348,15 @@ class Kyc extends BaseController
         return view('KYC/thanks');
     }
 
-    public function approve($id)
+    public function approve($id=0)
     {
         $access = $this->_access;
         if ($access === 'false') {
             $session = \Config\Services::session();
             $session->setFlashdata('error', 'You are not permitted to access this page');
             return $this->response->redirect(site_url('/dashboard'));
-        } else {
-
+        }
+        else {
             $pcModel = new PartyModel();
             $partytype = new PartytypeModel();
             $partyTypes = new PartyTypePartyModel();
@@ -386,6 +379,9 @@ class Kyc extends BaseController
                 ->join('customer_branch_persons', 'customer_branch_persons.branch_id = customer_branches.id')
                 ->where('party_id', $id)->first();
 
+            $customerID = isset($this->view['customer_details']['id']) ? $this->view['customer_details']['id'] : 0;
+            $this->view['reg_address_office'] = $this->BAModel->where('branch_id', $customerID)->orderBy('id', 'desc')->first();
+
             $this->view['partyDocs'] = $PartyDocModel->select('party_documents.*, flags.title, business_type_flags.mandatory')
                 ->join('flags', 'flags.id = party_documents.flag_id')
                 ->join('business_type_flags', 'business_type_flags.flags_id = flags.id')
@@ -394,14 +390,7 @@ class Kyc extends BaseController
                 ->groupBy('party_documents.flag_id')
                 ->findAll();
 
-            $this->view['reg_address_office'] = $this->BAModel->where('branch_id', $this->view['customer_details']['id'])->orderBy('id', 'desc')->first();
-
-            // echo '<pre>';
-            // print_r($this->view['reg_address_office']);
-            // die;
-
             if ($this->request->getPost()) {
-
                 // update party details
                 $pcModel->update($id, [
                     'party_name'      =>  $this->request->getVar('party_name'),
@@ -425,7 +414,6 @@ class Kyc extends BaseController
                     'approval_ip_address'     =>  $_SERVER['REMOTE_ADDR'],
                 ]);
 
-
                 // save party documents
                 $flags = ($this->request->getVar('flag_id')) ? $this->request->getVar('flag_id') : [];
                 if (!empty($flags)) {
@@ -433,7 +421,6 @@ class Kyc extends BaseController
 
                         $img1 = '';
                         if ($_FILES['img_' . $flag . '_1']['name'] != '') {
-
                             $image = $this->request->getFile('img_' . $flag . '_1');
                             if ($image->isValid() && !$image->hasMoved()) {
                                 $newName1 = $image->getRandomName();
@@ -450,7 +437,6 @@ class Kyc extends BaseController
 
                         $img2 = '';
                         if ($_FILES['img_' . $flag . '_2']['name'] != '') {
-
                             $image = $this->request->getFile('img_' . $flag . '_2');
                             if ($image->isValid() && !$image->hasMoved()) {
                                 $newName2 = $image->getRandomName();
@@ -494,9 +480,10 @@ class Kyc extends BaseController
                     'modify_by' => isset($_SESSION['id']) ? $_SESSION['id'] : '0',
                     'modify_ip' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '',
                 ])->update();
-
-                $customer_id = $CustomerModel->where('party_id', $id)->first()['id'];
-
+                
+                $customerInfo = $CustomerModel->where('party_id', $id)->first();
+                $customer_id = isset($customerInfo['id']) ? $customerInfo['id'] : 0;
+                
                 //update customer branch
                 $CustomerBranchModel->where('customer_id', $customer_id)->set([
                     'office_name' => $this->request->getPost('office_name'),
@@ -509,8 +496,9 @@ class Kyc extends BaseController
                     'modify_date' => date('Y-m-d h:i:s')
                 ])->update();
 
-                $customer_branch_id = $CustomerBranchModel->where('customer_id', $customer_id)->first()['id'];
-
+                $customerBranchInfo = $CustomerBranchModel->where('customer_id', $customer_id)->first();
+                $customer_branch_id = isset($customerBranchInfo['id']) ? $customerBranchInfo['id'] : 0;
+                
                 //========================================
                 if ($this->request->getPost('office_address_id') != '') {
 
@@ -545,31 +533,4 @@ class Kyc extends BaseController
             return view('KYC/approval', $this->view);
         }
     }
-
-    // public function demo()
-    // {
-    //     $branchModel = new CustomerBranchModel();
-
-    //     echo '<pre>';
-
-    //     $branches = $branchModel->findAll();
-
-    //     // print_r($branches);
-
-    //     foreach ($branches as $branch) {
-
-
-    //         $arr = [
-    //             'branch_id' => $branch['id'],
-    //             'address' => $branch['address'],
-    //             'city' => $branch['city'],
-    //             'state' => $branch['state_id'],
-    //             'country' => $branch['country'],
-    //             'zip' => $branch['pincode'],
-    //             'effective_from' => date('Y-m-01')
-    //         ];
-    //         echo  $this->BAModel->save($arr);
-    //         print_r($arr);
-    //     }
-    // }
 }

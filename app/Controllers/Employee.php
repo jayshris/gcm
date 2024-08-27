@@ -8,11 +8,10 @@ use App\Models\OfficeModel;
 use App\Models\CompanyModel;
 use App\Models\ModulesModel;
 use App\Models\EmployeeModel;
+use App\Models\AadhaarNumberMapModule;
 use App\Models\DepartmentModel;
 use App\Models\EmployeeDepartment;
-use App\Models\AadhaarNumberMapModule;
 use App\Models\EmployeeDepartmentModel;
-
 class Employee extends BaseController
 {
   public $_access;
@@ -27,10 +26,8 @@ class Employee extends BaseController
   public $added_ip;
   public $EmployeeDepartmentModel;
   public $session;
-
   public function __construct()
   {
-    $this->session = \Config\Services::session();
     $u = new UserModel();
     $access = $u->setPermission();
     $this->_access = $access;
@@ -40,6 +37,8 @@ class Employee extends BaseController
     $this->user = new UserModel();
     $this->officeModel = new OfficeModel();
     $this->departmentModel = new DepartmentModel();
+
+    $this->session = \Config\Services::session();
     $this->EmployeeDepartmentModel = new EmployeeDepartmentModel();
     $this->added_by = isset($_SESSION['id']) ? $_SESSION['id'] : '0';
     $this->added_ip = isset($_SERVER['REMOTE_ADDR'])  ? $_SERVER['REMOTE_ADDR'] : '';
@@ -707,6 +706,7 @@ class Employee extends BaseController
     return view('Employee/preview', $this->view);
   }
 
+  
   function assign_department($id){
     $this->view['token'] = $id;
     $this->view['last_emp_dept_data'] = $this->EmployeeDepartmentModel->where(['employee_id' => $id])->orderBy('id', 'DESC')->first();
@@ -746,4 +746,5 @@ class Employee extends BaseController
     $this->view['departments'] = $this->departmentModel->where(['status' => '1'])->orderBy('dept_name', 'ASC')->findAll();
     return view('Employee/assign_department', $this->view);
   }
+  
 }
