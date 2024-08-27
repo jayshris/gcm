@@ -90,7 +90,7 @@ class Drivervehicleassign extends BaseController
   {
     $link = $this->DVAModel->where('driver_id', $id)->where('(unassign_date IS NULL or unassign_date = "" )')->first();
 
-    $this->DVAModel->update($link['id'], ['unassign_date' =>  date("Y-m-d h:i:sa"), 'unassigned_by' => $this->added_by]);
+    $this->DVAModel->update($link['id'], ['unassign_date' =>  date("Y-m-d h:i:s"), 'unassigned_by' => $this->added_by]);
     $this->VModel->update($link['vehicle_id'], ['vehicle_status' => 'Unassigned']);
     $this->DModel->update($id, ['assigned' => '0']);
 
