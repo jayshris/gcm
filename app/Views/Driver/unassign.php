@@ -43,74 +43,48 @@
                                                     <div class="row mb-3 g-3">
                                                         <div class="col-md-3">
                                                             <label class="col-form-label">Driver Name <span class="text-danger">*</span></label>
-                                                            <input type="text" value="<?= $driver_detail['party_name'] ?>" class="form-control" readonly>
+                                                            <input type="text" value="<?= $driver_detail['party_name'] ?>" class="form-control" disabled>
                                                         </div>
 
-                                                        <?php if (isset($assignment_details)) { ?>
-                                                            <div class="col-md-3">
-                                                                <label class="col-form-label">Vehicle<span class="text-danger">*</span></label>
-                                                                <select class="form-control select2" name="vehicle_id" disabled>
-                                                                    <option value="">Select Vehicle</option>
-                                                                    <?php
-                                                                    foreach ($vehicles as $v) {
-                                                                    ?>
-                                                                        <option value="<?= $v["id"]; ?>" <?= isset($assignment_details) && $assignment_details['vehicle_id'] == $v['id'] ? 'selected' : '' ?>> <?php echo ucwords($v["rc_number"]); ?></option>
-                                                                    <?php
-                                                                    }
-                                                                    ?>
-                                                                </select>
-                                                            </div>
-                                                        <?php } else { ?>
-                                                            <div class="col-md-3">
-                                                                <label class="col-form-label">Vehicle<span class="text-danger">*</span></label>
-                                                                <select class="form-control select2" name="vehicle_id" disabled>
-                                                                    <option value="">Select Vehicle</option>
-                                                                    <?php
-                                                                    foreach ($free_vehicles as $v) {
-                                                                    ?>
-                                                                        <option value="<?= $v["id"]; ?>"> <?php echo ucwords($v["rc_number"]); ?></option>
-                                                                    <?php
-                                                                    }
-                                                                    ?>
-                                                                </select>
-                                                            </div>
-                                                        <?php  } ?>
+                                                        <div class="col-md-3">
+                                                            <label class="col-form-label">Vehicle<span class="text-danger">*</span></label>
+                                                            <select class="form-control select2" name="vehicle_id" disabled>
+                                                                <option value="">Select Vehicle</option>
+                                                                <?php
+                                                                foreach ($driverAllowedVehicleTypes as $v) {
+                                                                ?>
+                                                                    <option value="<?= $v["id"]; ?>" <?= isset($assignment_details) && $assignment_details['vehicle_id'] == $v['id'] ? 'selected' : '' ?>> <?php echo ucwords($v["rc_number"]); ?></option>
+                                                                <?php
+                                                                }
+                                                                ?>
+                                                            </select>
+                                                        </div>
 
-                                                        <div class="col-md-2">
+                                                        <div class="col-md-3">
                                                             <label class="col-form-label">Unassigned Date<span class="text-danger">*</span></label>
-                                                            <input type="date" required name="unassigned_date" min="<?= (isset($assignment_details["assign_date"]) && strtotime($assignment_details["assign_date"])>0)  ? date('Y-m-d',strtotime($assignment_details["assign_date"]. ' +1 day')) : '' ?>" value="<?= isset($assignment_details["unassign_date"]) && (strtotime($assignment_details["unassign_date"]) > 0)  ? date('Y-m-d',strtotime($assignment_details["unassign_date"])) : ''; ?>" class="form-control">
+                                                            <input type="datetime-local" required name="unassigned_date" min="<?= (isset($assignment_details["assign_date"]) && strtotime($assignment_details["assign_date"])>0)  ? date('Y-m-d H:i',strtotime($assignment_details["assign_date"]. ' +1 day')) : '' ?>" value="<?= isset($assignment_details["assign_date"]) && (strtotime($assignment_details["assign_date"]) > 0)  ? date('Y-m-d H:i',strtotime($assignment_details["assign_date"]. ' +1 day')) : ''; ?>" class="form-control">
                                                             <?php
                                                             if ($validation->getError('assigned_date')) {
                                                                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('assigned_date') . '</div>';
                                                             }   
                                                             ?>
                                                         </div>
-
-                                                        <div class="col-md-2">
-                                                            <label class="col-form-label">Unassigned Time<span class="text-danger">*</span></label>
-                                                            <input type="time" required name="unassigned_time" class="form-control" value="<?= isset($assignment_details["unassign_date"])  && (strtotime($assignment_details["unassign_date"]) > 0) ? date('H:i:s',strtotime($assignment_details["unassign_date"])) : ''; ?>">
-                                                            <?php
-                                                            if ($validation->getError('assigned_time')) {
-                                                                echo '<div class="alert alert-danger mt-2">' . $validation->getError('assigned_time') . '</div>';
-                                                            }   
-                                                            ?>
-                                                        </div>
-
+ 
                                                         <div class="col-md-12"></div>
 
                                                         <div class="col-md-3">
                                                             <label class="col-form-label">Vehicle Location <span class="text-danger">*</span></label>
-                                                            <input type="text" name="location" class="form-control" readonly value="<?= isset($assignment_details) ? $assignment_details['vehicle_location'] : '' ?>" required>
+                                                            <input type="text" name="location" class="form-control" value="<?= isset($assignment_details) ? $assignment_details['vehicle_location'] : '' ?>" required>
                                                         </div>
 
                                                         <div class="col-md-3">
                                                             <label class="col-form-label">Vehicle Fuel Status</label>
-                                                            <input type="text" name="fuel" class="form-control" readonly value="<?= isset($assignment_details) ? $assignment_details['vehicle_fuel_status'] : '' ?>">
+                                                            <input type="text" name="fuel" class="form-control" value="">
                                                         </div>
 
                                                         <div class="col-md-3">
                                                             <label class="col-form-label">Vehicle KM Reading</label>
-                                                            <input type="text" name="km" class="form-control" readonly value="<?= isset($assignment_details) ? $assignment_details['vehicle_km_reading'] : '' ?>">
+                                                            <input type="text" name="km" class="form-control"  value="">
                                                         </div>
 
                                                     </div>

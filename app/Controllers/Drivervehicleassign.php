@@ -88,7 +88,7 @@ class Drivervehicleassign extends BaseController
 
   public function unassign($id = null)
   {
-    $link = $this->DVAModel->where('driver_id', $id)->where('unassign_date', '')->first();
+    $link = $this->DVAModel->where('driver_id', $id)->where('(unassign_date IS NULL or unassign_date = "" )')->first();
 
     $this->DVAModel->update($link['id'], ['unassign_date' =>  date("Y-m-d h:i:sa"), 'unassigned_by' => $this->added_by]);
     $this->VModel->update($link['vehicle_id'], ['vehicle_status' => 'Unassigned']);
@@ -106,7 +106,7 @@ class Drivervehicleassign extends BaseController
       ->join('vehicle', 'vehicle.id = driver_vehicle_map.vehicle_id')
       ->join('driver', 'driver.id = driver_vehicle_map.driver_id')
       ->join('party', 'party.id = driver.name')
-      ->where('unassign_date', '')
+      ->where('(unassign_date IS NULL or unassign_date = "" )')
       ->orderBy('vehicle.rc_number', 'asc')
       ->findAll();
 

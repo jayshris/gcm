@@ -649,8 +649,8 @@ class Booking extends BaseController
         ->join('booking_vehicle_logs bvl', 'bvl.vehicle_id = vehicle.id','left')
         ->join('driver_vehicle_map', 'driver_vehicle_map.vehicle_id = vehicle.id','left')
         ->join('driver', 'driver.id = driver_vehicle_map.driver_id','left')
-        ->join('party', 'party.id = driver.party_id','left')
-        ->where('driver_vehicle_map.unassign_date', '')
+        ->join('party', 'party.id = driver.party_id','left') 
+        ->where('(driver_vehicle_map.unassign_date IS NULL or driver_vehicle_map.unassign_date = "" )')
         ->where('vehicle.vehicle_type_id', $isVehicle_type)
         ->where('vehicle.status', '1')
         ->where('vehicle.working_status', '1')
@@ -671,7 +671,7 @@ class Booking extends BaseController
             ->join('driver_vehicle_map', 'driver_vehicle_map.vehicle_id = vehicle.id','left')
             ->join('driver', 'driver.id = driver_vehicle_map.driver_id','left')
             ->join('party', 'party.id = driver.party_id','left')
-            ->where('driver_vehicle_map.unassign_date', '')
+            ->where('(driver_vehicle_map.unassign_date IS NULL or driver_vehicle_map.unassign_date = "" )')
             ->where('vehicle.status', '1')
             ->where('vehicle.working_status', '2')
             ->where('b.booking_type', 'PTL')
@@ -721,14 +721,7 @@ class Booking extends BaseController
         $this->view['booking_drops'] = $this->BDModel->where('booking_id', $id)->findAll();
         $this->view['booking_expences'] = $this->BEModel->where('booking_id', $id)->findAll();
         $this->view['vehicle_rcs'] =  [];
-        // $this->view['vehicle_rcs'] = $this->VModel->select('vehicle.id, vehicle.rc_number, party.party_name')
-        //     ->join('driver_vehicle_map', 'driver_vehicle_map.vehicle_id = vehicle.id','left')
-        //     ->join('driver', 'driver.id = driver_vehicle_map.driver_id','left')
-        //     ->join('party', 'party.id = driver.party_id','left')
-        //     ->where('driver_vehicle_map.unassign_date', '')
-        //     ->where('vehicle_type_id', $this->view['booking_details']['vehicle_type_id'])
-        //     ->where('vehicle.status', 1)->where('vehicle.working_status', '1')->groupBy('vehicle.id')->findAll(); 
-        
+       
 
         // $this->view['vehicle_rcs'] =  $this->VModel->where('vehicle_type_id', $this->view['booking_details']['vehicle_type_id'] )->where('status', '1')->where('working_status', '1')->findAll();
        
@@ -1233,8 +1226,8 @@ class Booking extends BaseController
         $this->view['vehicle_rcs'] = $this->VModel->select('vehicle.id, vehicle.rc_number, party.party_name')
             ->join('driver_vehicle_map', 'driver_vehicle_map.vehicle_id = vehicle.id','left')
             ->join('driver', 'driver.id = driver_vehicle_map.driver_id','left')
-            ->join('party', 'party.id = driver.party_id','left')
-            ->where('driver_vehicle_map.unassign_date', '')
+            ->join('party', 'party.id = driver.party_id','left') 
+            ->where('(driver_vehicle_map.unassign_date IS NULL or driver_vehicle_map.unassign_date = "" )')
             ->where('vehicle_type_id', $this->view['booking_details']['vehicle_type_id'])
             ->where('vehicle.status', 1)->where('vehicle.working_status', '1')->groupBy('vehicle.id')->findAll(); 
          
