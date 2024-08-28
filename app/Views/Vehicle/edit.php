@@ -378,7 +378,7 @@
 
                             <div class="col-md-6">
                               <div class="form-wrap">
-                                <input type="checkbox" id="active" class="form-check-input" name="active" <?= $vehicle_data['status'] == 'Active' ? 'checked' : '' ?> value="1">
+                                <input type="checkbox" id="active" class="form-check-input" name="active" <?= $vehicle_data['status'] == 1 ? 'checked' : '' ?> value="1">
                                 <label for="active">Active</label>
                               </div>
                             </div>
@@ -473,6 +473,7 @@
             success: function(response) {
               if (response == '1') {
                 $('#span_rc').html('RC already added !!');
+                $("#rc_no").val('');
                 $('#submit-btn').attr('disabled', 'disabled');
               }
             }

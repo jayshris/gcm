@@ -383,6 +383,7 @@
             success: function(response) {
               if (response == '1') {
                 $('#span_rc').html('RC already added !!');
+                $("#rc_no").val('');
                 $('#submit-btn').attr('disabled', 'disabled');
               }
             }
