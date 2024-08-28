@@ -253,8 +253,8 @@
                                 <?php } ?>
                             </select>
                             <?php
-                            if ($validation->getError('booking_number')) {
-                                echo '<div class="alert alert-danger mt-2">' . $validation->getError('booking_number') . '</div>';
+                            if ($validation->getError('booking_id')) {
+                                echo '<div class="alert alert-danger mt-2">' . $validation->getError('booking_id') . '</div>';
                             }
                             ?>
                         </div>
