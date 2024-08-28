@@ -446,6 +446,25 @@
 															</div>
 														</div>
 
+														<div class="col-lg-3 col-md-6">
+															<div class="form-wrap">
+																<label class="col-form-label">
+																Tax Invoice Prefix
+																</label>
+																<input type="text" class="form-control" name="tax_invoice_prefix" value="<?php
+																																		if (isset($profile_data)) {
+																																			echo $profile_data['tax_invoice_prefix'];
+																																		} else {
+																																			echo set_value('tax_invoice_prefix');
+																																		} ?>">
+																<?php
+																if ($validation->getError('tax_invoice_prefix')) {
+																	echo '<div class="alert alert-danger mt-2">' . $validation->getError('tax_invoice_prefix') . '</div>';
+																}
+																?>
+															</div>
+														</div>
+
 													</div>
 												</div>
 												<div class="submit-button">

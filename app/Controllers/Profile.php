@@ -100,6 +100,7 @@ class Profile extends BaseController
               'booking_prefix'        => $this->request->getVar('booking_prefix'),
               'loading_receipt_prefix'        => $this->request->getVar('loading_receipt_prefix'),
               'proforma_invoice_prefix'        => $this->request->getVar('proforma_invoice_prefix'),
+              'tax_invoice_prefix'        => $this->request->getVar('tax_invoice_prefix'),
               'created_at'            => date("Y-m-d h:i:sa")
             ]);
           } else {
@@ -125,6 +126,7 @@ class Profile extends BaseController
               'booking_prefix'        => $this->request->getVar('booking_prefix'),
               'loading_receipt_prefix'        => $this->request->getVar('loading_receipt_prefix'),
               'proforma_invoice_prefix'        => $this->request->getVar('proforma_invoice_prefix'),
+              'tax_invoice_prefix'        => $this->request->getVar('tax_invoice_prefix'),
               'updated_at'            => date("Y-m-d h:i:sa")
             ]);
           }
@@ -212,6 +214,7 @@ class Profile extends BaseController
               'booking_prefix'        => $this->request->getVar('booking_prefix'),
               'loading_receipt_prefix'        => $this->request->getVar('loading_receipt_prefix'),
               'proforma_invoice_prefix'        => $this->request->getVar('proforma_invoice_prefix'),
+              'tax_invoice_prefix'        => $this->request->getVar('tax_invoice_prefix'),
               'created_at'            => date("Y-m-d h:i:sa")
             ]);
           } else {
@@ -237,6 +240,7 @@ class Profile extends BaseController
               'booking_prefix'        => $this->request->getVar('booking_prefix'),
               'loading_receipt_prefix'        => $this->request->getVar('loading_receipt_prefix'),
               'proforma_invoice_prefix'        => $this->request->getVar('proforma_invoice_prefix'),
+              'tax_invoice_prefix'        => $this->request->getVar('tax_invoice_prefix'),
               'updated_at'            => date("Y-m-d h:i:sa")
             ]);
           }
