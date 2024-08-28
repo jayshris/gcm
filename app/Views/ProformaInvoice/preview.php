@@ -33,7 +33,7 @@
                                             <div class="profile-details">
                                                 <div class="row g-3">
                                                     <div class="col-md-6">
-                                                        <label class="col-form-label"><b>Invoice No.: </b></label>
+                                                        <label class="col-form-label"><b>Proforma Invoice No.: </b></label>
                                                         <label class="col-form-label"><?= $proforma_invoice['proforma_invoices_no'] ?></label>
                                                     </div>
 
@@ -228,38 +228,20 @@
 															<p class="s10 p11" ><?= $proforma_invoice['total_freight'] ?></p>
 														</td>
 													</tr>
-													<tr style="height:11pt">
-														<td class="td46" colspan="5">
-															<p class="s10 p12 prtds10">Detention</p>
-														</td> 
-														<td class="td48" colspan="2">
-															<p class="s11 p12 fntb" style="padding-left: 44pt;">0</p>
-														</td>
-													</tr> 
-													<tr style="height:11pt">
-														<td class="td46" colspan="5">
-															<p class="s10 p12 prtds10">Loading Charges</p>
-														</td> 
-														<td class="td48" colspan="2">
-															<p class="s11 p12 fntb" style="padding-left: 44pt;">0</p>
-														</td>
-													</tr> 
-													<tr style="height:11pt">
-														<td class="td46" colspan="5">
-															<p class="s10 p12 prtds10">Unloading Charges</p>
-														</td> 
-														<td class="td48" colspan="2">
-															<p class="s11 p12 fntb" style="padding-left: 44pt;">0</p>
-														</td>
-													</tr> 
-													<tr style="height:11pt">
-														<td class="td46" colspan="5">
-															<p class="s10 p12 prtds10">Other Charges</p>
-														</td> 
-														<td class="td48" colspan="2">
-															<p class="s11 p12 fntb" style="padding-left: 44pt;">0</p>
-														</td>
-													</tr> 
+													<?php 
+													if(!empty($booking_expences)){
+														foreach($booking_expences as $booking_expence){ ?>
+															<tr style="height:11pt">
+																<td class="td46" colspan="5">
+																	<p class="s10 p12 prtds10"><?= ($booking_expence['head_name']) ? ucfirst($booking_expence['head_name']) : '' ?></p>
+																</td> 
+																<td class="td48" colspan="2">
+																	<p class="s11 p12 fntb" style="padding-left: 44pt;"><?= $booking_expence['value'] ?></p>
+																</td>
+															</tr> 
+														<?php }
+													}
+													?>
 													<tr style="height:11pt">
 														<td class="td46" colspan="5">
 															<p class="s10 p12 prtds10">SGST @ 6%</p>

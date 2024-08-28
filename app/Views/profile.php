@@ -427,6 +427,25 @@
 															</div>
 														</div>
 
+														<div class="col-lg-3 col-md-6">
+															<div class="form-wrap">
+																<label class="col-form-label">
+																Proforma Invoice Prefix
+																</label>
+																<input type="text" class="form-control" name="proforma_invoice_prefix" value="<?php
+																																		if (isset($profile_data)) {
+																																			echo $profile_data['proforma_invoice_prefix'];
+																																		} else {
+																																			echo set_value('proforma_invoice_prefix');
+																																		} ?>">
+																<?php
+																if ($validation->getError('proforma_invoice_prefix')) {
+																	echo '<div class="alert alert-danger mt-2">' . $validation->getError('proforma_invoice_prefix') . '</div>';
+																}
+																?>
+															</div>
+														</div>
+
 													</div>
 												</div>
 												<div class="submit-button">

@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
    
+use App\Models\ProfileModel;
 use App\Models\BookingsModel;
 use App\Models\CustomersModel;
 use App\Models\ExpenseHeadModel;
@@ -19,6 +20,7 @@ class Proformainvoices extends BaseController
     public $ExpenseHeadModel;
     public $CModel;
     public $added_by;
+    public $profile;
     public function __construct()
     { 
       $this->session = \Config\Services::session(); 
@@ -28,6 +30,7 @@ class Proformainvoices extends BaseController
       $this->ExpenseHeadModel = new ExpenseHeadModel();    
       $this->CModel = new CustomersModel();
       $this->added_by = isset($_SESSION['id']) ? $_SESSION['id'] : '0';
+      $this->profile = new ProfileModel();
     }
   
     public function index()
@@ -81,15 +84,16 @@ class Proformainvoices extends BaseController
         $data['id'] = $id;
         $data['updated_by'] = $this->added_by;
       }else{
+        $profile =  $this->profile->where('logged_in_userid',  session()->get('id'))->first();//echo __LINE__.'<pre>';print_r($profile);die;
         $lastr = $this->ProformaInvoiceModel->orderBy('id', 'desc')->first();
-        $lastr = isset($lastr['id']) ? ((int)$lastr['id']+1) : 1;
-        $data['proforma_invoices_no'] = 'PR/'.date('m').'/000'.$lastr;
+        $lastr = isset($lastr['id']) ? ((int)$lastr['id']+1) : 1; 
+        $data['proforma_invoices_no'] = isset($profile['proforma_invoice_prefix']) && !empty($profile['proforma_invoice_prefix']) ? $profile['proforma_invoice_prefix'].'/'.date('m').'/000'.$lastr : 'PR/'.date('m').'/000'.$lastr;
         $data['created_by'] =$this->added_by;
       }
       $data['booking_id'] = $post['booking_id'];
       $data['bill_to_party_id'] = $post['bill_to_party_id'];
       $data['total_freight'] = $post['total_freight']; 
-      // echo  'ProformaInvoice <pre>';print_r($data);
+      // echo  'ProformaInvoice <pre>';print_r($data);exit;
       $this->ProformaInvoiceModel->save($data);
       
       if($post['expense']){
@@ -161,8 +165,14 @@ class Proformainvoices extends BaseController
       ->join('customer c','c.id=proforma_invoices.bill_to_party_id')
       ->join('party p','c.party_id = p.id')
       ->join('states s', 'p.state_id = s.state_id','left')
-      ->where(['proforma_invoices.id' => $id])->first();
-      // echo '<pre>';print_r($this->view['proforma_invoice']);exit;
+      ->where(['proforma_invoices.id' => $id])->first(); 
+
+      $this->view['booking_expences'] = $this->BEModel->select('booking_expenses.*,eh.*')
+      ->join('expense_heads eh','eh.id = booking_expenses.expense')
+      ->where('booking_expenses.booking_id', $this->view['proforma_invoice']['booking_id'])
+      ->where('booking_expenses.bill_to_party',1)
+      ->findAll();   
+      //  echo '<pre>';print_r($this->view['booking_expences']);exit;
       return view('ProformaInvoice/preview', $this->view); 
     }
 
@@ -176,22 +186,7 @@ class Proformainvoices extends BaseController
       // exit;
       echo view('ProformaInvoice/expense_block', $this->view);
     } 
-    function getBookingCustomers($id){
-      // $Customers11 =  $this->BookingsModel->select('bookings.id,
-      // bookings.customer_id,
-      // c.id c_id,
-      // bookings.bill_to_party,      
-      // c_billto.id c_billto,
-      // lr_consignor_id.id lr_consignor_id,
-      // lr_consignee_id.id lr_consignee_id
-      // ') 
-      // ->join('customer c','bookings.customer_id = c.id') 
-      // ->join('customer c_billto','bookings.bill_to_party = c_billto.id','left') 
-      // ->join('loading_receipts lr_consignor_id','bookings.id = lr_consignor_id.booking_id','left')
-      // ->join('loading_receipts lr_consignee_id','bookings.id = lr_consignee_id.booking_id','left')
-      // ->where(['bookings.id'=> $id])  
-      // // ->groupBy('bookings.vehicle_id')
-      // ->findAll(); 
+    function getBookingCustomers($id){ 
       $Customers =  $this->BookingsModel->select('bookings.id, c.id c_id ') 
       ->join('customer c','bookings.customer_id = c.id')->where(['bookings.id'=> $id])->findAll();  
 
