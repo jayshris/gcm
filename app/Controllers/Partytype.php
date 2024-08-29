@@ -65,6 +65,7 @@ class Partytype extends BaseController
             'created_at'  =>  date("Y-m-d h:i:sa"),
             'lr_first_party' => ($this->request->getVar('lr_first_party')) ? $this->request->getVar('lr_first_party') : 0,
             'lr_third_party' => ($this->request->getVar('lr_third_party')) ? $this->request->getVar('lr_third_party') : 0,
+            'tax_applicable' => ($this->request->getVar('tax_applicable')) ? $this->request->getVar('tax_applicable') : 0,
           ]);
           $session = \Config\Services::session();
           $session->setFlashdata('success', 'Party type added');
@@ -102,6 +103,7 @@ class Partytype extends BaseController
             'updated_at'  =>  date("Y-m-d h:i:sa"),
             'lr_first_party' => ($this->request->getVar('lr_first_party')) ? $this->request->getVar('lr_first_party') : 0,
             'lr_third_party' => ($this->request->getVar('lr_third_party')) ? $this->request->getVar('lr_third_party') : 0,
+            'tax_applicable' => ($this->request->getVar('tax_applicable')) ? $this->request->getVar('tax_applicable') : 0,
           ]);
           $session = \Config\Services::session();
           $session->setFlashdata('success', 'Party type updated');

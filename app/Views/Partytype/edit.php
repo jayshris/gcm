@@ -62,11 +62,15 @@
       $('.lr-span').text(''); 
       $('input[name=lr_third_party]').attr("disabled",true).prop('checked', false); 
       $('.lr-third-span').text(''); 
+      $('input[name=tax_applicable]').attr("disabled",true).prop('checked', false); 
+      $('.tax_applicable-span').text(''); 
       if(sale==1){ 
         $('input[name="lr_first_party"]').removeAttr('disabled');
         $('.lr-span').text('*');
         $('input[name=lr_third_party]').removeAttr('disabled');
         $('.lr-third-span').text('*'); 
+        $('input[name=tax_applicable]').removeAttr('disabled');
+        $('.tax_applicable-span').text('*'); 
       }
     });
     function unselectYesParty(name){
