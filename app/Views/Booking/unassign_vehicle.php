@@ -45,104 +45,106 @@
                         <div class="profile-details">
                           <div class="row g-3"> 
 
-                            <div class="col-md-4">
-                              <label class="col-form-label">Customer Name<span class="text-danger">*</span></label>
-                              <select class="form-select " disabled name="customer_id" id="customer_id" aria-label="Default select example" onchange="$.getPartyType();">
-                                <option value="">Select Customer</option>
-                                <?php foreach ($customers as $c) {
-                                  echo '<option value="' . $c['id'] . '" ' . ($booking_details['customer_id'] == $c['id'] ? 'selected' : '') . '>' . $c['party_name'] . '</option>';
-                                } ?>
-                              </select>
+                          <div style="display: none;">
+                              <div class="col-md-4">
+                                  <label class="col-form-label">Customer Name<span class="text-danger">*</span></label>
+                                  <select class="form-select " disabled name="customer_id" id="customer_id" aria-label="Default select example" onchange="$.getPartyType();">
+                                    <option value="">Select Customer</option>
+                                    <?php foreach ($customers as $c) {
+                                      echo '<option value="' . $c['id'] . '" ' . ($booking_details['customer_id'] == $c['id'] ? 'selected' : '') . '>' . $c['party_name'] . '</option>';
+                                    } ?>
+                                  </select>
+                                </div>
+
+                                <div class="col-md-3">
+                                  <label class="col-form-label">Customer Branch<span class="text-danger">*</span></label>
+                                  <select class="form-select" name="customer_branch" disabled id="customer_branch" aria-label="Default select example">
+                                    <option value="">Select Branch</option>
+                                  </select>
+                                  <label id="msg" class="text-danger"></label>
+                                </div> 
+                                <div class="col-md-12"></div> 
+
+                                <div class="col-md-9">
+
+                                  <label class="col-form-label">Pickup Details<span class="text-danger">*</span></label>
+                                  <table class="table table-borderless" id="pickup_table">
+                                    <tbody id="pickup_body">
+                                      <tr> 
+                                        <td width="25%">State<span class="text-danger">*</span></td>
+                                        <td width="40%">City<span class="text-danger">*</span></td>
+                                        <td width="20%">PinCode</td>
+                                      </tr>
+
+                                      <?php
+                                      $i = 1;
+                                      foreach ($booking_pickups as $bp) { ?>
+
+                                        <tr <?= $i > 1 ? 'id="del_pickup_' . $i . '"' : '' ?>>
+                                          <td>
+                                            <select class="form-select" name="pickup_state_id[]" disabled aria-label="Default select example">
+                                              <option value="">Select State</option>
+                                              <?php foreach ($states as $s) {
+                                                echo '<option value="' . $s['state_id'] . '" ' . ($bp['state'] == $s['state_id'] ? 'selected' : '') . '>' . $s['state_name'] . '</option>';
+                                              } ?>
+                                            </select>
+                                          </td>
+                                          <td>
+                                            <input type="text" name="pickup_city[]" disabled class="form-control" value="<?= $bp['city'] ?>">
+                                          </td>
+                                          <td>
+                                            <input type="text" name="pickup_pin[]" disabled class="form-control" value="<?= $bp['pincode'] ?>">
+                                          </td>
+
+                                        </tr>
+
+                                      <?php $i++;
+                                      } ?>
+
+                                    </tbody>
+                                  </table>
+                                </div> 
+
+                                <div class="col-md-9">
+                                  <label class="col-form-label">Drop Details<span class="text-danger">*</span></label>
+                                  <table class="table table-borderless" id="drop_table">
+                                    <tbody id="drop_body">
+                                      <tr>
+                                        <td width="25%">State<span class="text-danger">*</span></td>
+                                        <td width="40%">City<span class="text-danger">*</span></td>
+                                        <td width="20%">PinCode</td>
+                                      </tr>
+
+                                      <?php
+                                      $i = 1;
+                                      foreach ($booking_drops as $bd) { ?>
+
+                                        <tr <?= $i > 1 ? 'id="del_drop_' . $i . '"' : '' ?>>
+                                          <td>
+                                            <select class="form-select" name="drop_state_id[]" aria-label="Default select example" disabled>
+                                              <option value="">Select State</option>
+                                              <?php foreach ($states as $s) {
+                                                echo '<option value="' . $s['state_id'] . '" ' . ($bd['state'] == $s['state_id'] ? 'selected' : '') . '>' . $s['state_name'] . '</option>';
+                                              } ?>
+                                            </select>
+                                            </select>
+                                          </td>
+                                          <td>
+                                            <input type="text" name="drop_city[]" class="form-control" value="<?= $bd['city'] ?>" disabled>
+                                          </td>
+                                          <td>
+                                            <input type="text" name="drop_pin[]" class="form-control" value="<?= $bd['pincode'] ?>" disabled>
+                                          </td>
+
+                                        </tr>
+
+                                      <?php $i++;
+                                      } ?>
+                                    </tbody>
+                                  </table>
+                                </div>
                             </div>
-
-                            <div class="col-md-3">
-                              <label class="col-form-label">Customer Branch<span class="text-danger">*</span></label>
-                              <select class="form-select" name="customer_branch" disabled id="customer_branch" aria-label="Default select example">
-                                <option value="">Select Branch</option>
-                              </select>
-                              <label id="msg" class="text-danger"></label>
-                            </div> 
-                            <div class="col-md-12"></div> 
-
-                            <div class="col-md-9">
-
-                              <label class="col-form-label">Pickup Details<span class="text-danger">*</span></label>
-                              <table class="table table-borderless" id="pickup_table">
-                                <tbody id="pickup_body">
-                                  <tr> 
-                                    <td width="25%">State<span class="text-danger">*</span></td>
-                                    <td width="40%">City<span class="text-danger">*</span></td>
-                                    <td width="20%">PinCode</td>
-                                  </tr>
-
-                                  <?php
-                                  $i = 1;
-                                  foreach ($booking_pickups as $bp) { ?>
-
-                                    <tr <?= $i > 1 ? 'id="del_pickup_' . $i . '"' : '' ?>>
-                                      <td>
-                                        <select class="form-select" name="pickup_state_id[]" disabled aria-label="Default select example">
-                                          <option value="">Select State</option>
-                                          <?php foreach ($states as $s) {
-                                            echo '<option value="' . $s['state_id'] . '" ' . ($bp['state'] == $s['state_id'] ? 'selected' : '') . '>' . $s['state_name'] . '</option>';
-                                          } ?>
-                                        </select>
-                                      </td>
-                                      <td>
-                                        <input type="text" name="pickup_city[]" disabled class="form-control" value="<?= $bp['city'] ?>">
-                                      </td>
-                                      <td>
-                                        <input type="text" name="pickup_pin[]" disabled class="form-control" value="<?= $bp['pincode'] ?>">
-                                      </td>
-
-                                    </tr>
-
-                                  <?php $i++;
-                                  } ?>
-
-                                </tbody>
-                              </table>
-                            </div> 
-
-                            <div class="col-md-9">
-                              <label class="col-form-label">Drop Details<span class="text-danger">*</span></label>
-                              <table class="table table-borderless" id="drop_table">
-                                <tbody id="drop_body">
-                                  <tr>
-                                    <td width="25%">State<span class="text-danger">*</span></td>
-                                    <td width="40%">City<span class="text-danger">*</span></td>
-                                    <td width="20%">PinCode</td>
-                                  </tr>
-
-                                  <?php
-                                  $i = 1;
-                                  foreach ($booking_drops as $bd) { ?>
-
-                                    <tr <?= $i > 1 ? 'id="del_drop_' . $i . '"' : '' ?>>
-                                       <td>
-                                        <select class="form-select" name="drop_state_id[]" aria-label="Default select example" disabled>
-                                          <option value="">Select State</option>
-                                          <?php foreach ($states as $s) {
-                                            echo '<option value="' . $s['state_id'] . '" ' . ($bd['state'] == $s['state_id'] ? 'selected' : '') . '>' . $s['state_name'] . '</option>';
-                                          } ?>
-                                        </select>
-                                        </select>
-                                      </td>
-                                      <td>
-                                        <input type="text" name="drop_city[]" class="form-control" value="<?= $bd['city'] ?>" disabled>
-                                      </td>
-                                      <td>
-                                        <input type="text" name="drop_pin[]" class="form-control" value="<?= $bd['pincode'] ?>" disabled>
-                                      </td>
-
-                                    </tr>
-
-                                  <?php $i++;
-                                  } ?>
-                                </tbody>
-                              </table>
-                            </div>
-
+                            
                             <div class="col-md-12"></div> 
                             
                             <div class="col-md-6">
