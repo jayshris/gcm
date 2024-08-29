@@ -68,9 +68,9 @@
 													</div>
 
 													<div class="col-md-4">
-														<label class="col-form-label">Customer Name<span class="text-danger">*</span></label>
+														<label class="col-form-label">Bill to Party<span class="text-danger">*</span></label>
 														<select class="form-select select2" required name="bill_to_party_id" id="bill_to_party_id" aria-label="Default select example">
-															<option value="">Select Customer</option> 
+															<option value="">Select Bill to Party</option> 
 														</select>
 														<input type="hidden" id="selecected_bill_to_party_id" value="<?= isset($invoice['bill_to_party_id']) && ($invoice['bill_to_party_id'] > 0) ? $invoice['bill_to_party_id'] : 0 ?>"/>
 														<?php
