@@ -78,12 +78,11 @@
                                 <div class="card" id="printableArea" style="display: block;">
                                     <div class="card-body">  
                                         <?= $this->include('ConsignmentNote/consignee_note.php') ?> 
-                                        <?= $this->include('ConsignmentNote/terms_and_conditions.php') ?>     
-                                        <?= $this->include('ConsignmentNote/truck_forwarding_note.php') ?> 
-                                        <?= $this->include('ConsignmentNote/terms_and_conditions.php') ?> 
-                                        <?= $this->include('ConsignmentNote/consignor_note.php') ?> 
-                                        <?= $this->include('ConsignmentNote/terms_and_conditions.php') ?> 
-
+                                        <?= $this->include('ConsignmentNote/terms_and_conditions.php') ?>
+                                        <?= $this->include('ConsignmentNote/consignor_note.php') ?>
+                                        <?= $this->include('ConsignmentNote/terms_and_conditions.php') ?>
+                                        <?= $this->include('ConsignmentNote/truck_forwarding_note.php') ?>
+                                        <?= $this->include('ConsignmentNote/terms_and_conditions.php') ?>
                                     </div>
                                 </div>
 
