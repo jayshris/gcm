@@ -75,7 +75,7 @@
 								</div>
 								<!-- /Settings Info -->
                                 
-                                <div class="card" id="printableArea" style="display: block;">
+                                <div class="card" id="printableArea" style="display: none;">
                                     <div class="card-body">  
                                         <?= $this->include('ConsignmentNote/consignee_note.php') ?> 
                                         <?= $this->include('ConsignmentNote/terms_and_conditions.php') ?>
