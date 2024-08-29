@@ -29,7 +29,7 @@
 
 
               <div class="settings-sub-header">
-                <h6>Update Party type</h6>
+                <h6>Update Customer type</h6>
               </div>
               <?= $this->include('Partytype/form.php') ?>
 

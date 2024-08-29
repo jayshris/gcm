@@ -28,7 +28,7 @@
               <div class="col-xl-12 col-lg-12">
                 
               <div class="settings-sub-header">
-                <h6>Add Party type</h6>
+                <h6>Add Customer type</h6>
               </div>
               <?= $this->include('Partytype/form.php') ?>
               </div>
