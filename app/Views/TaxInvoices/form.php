@@ -53,7 +53,7 @@
 													<div class="col-md-4">
 														<label class="col-form-label">Booking Order No<span class="text-danger">*</span></label>
 														<select class="form-select select2" required name="booking_id" id="booking_id" aria-label="Default select example"  onchange="$.getBookingDetails();">
-														 	
+														<option value="">Select Booking No.</option>
 														<?php if($bookings){ foreach ($bookings as $o) { ?>
 															<option value="<?= $o['id'] ?>" <?= (isset($invoice['booking_id']) && ($invoice['booking_id'] == $o['id'])) ? 'selected' : ''?> ><?= $o['booking_number'] ?></option> 
 															<?php }}else{ ?>
@@ -110,7 +110,9 @@
 														
 	<script>
 	$(document).ready(function() {
-		$.getBookingDetails();
+		if($('#id').val()){
+			$.getBookingDetails();
+		}		
     });
 	$.getVehicleBookings = function() {
 		var vehicle_id = $('#vehicle_number').val();
@@ -124,7 +126,7 @@
 			dataType: "json",
 			success: function(res) { 
 				console.log(res);
-				var html  ='';
+				var html  ='<option value="">Select Booking No.</option>';
 				if(res){
 					$.each(res, function(i, item) {  
 						var selected = (i=0) ? 'selected' : '';
@@ -176,7 +178,11 @@
 					} 
 				}
 			});
-		} 			
+		}else{
+			$('#expense_div_body').html('');
+			$('#bill_to_party_id').html('');
+			$('#total_freight').val('');
+		}  			
 	}	
 
 	$.billToParty = function(index) {

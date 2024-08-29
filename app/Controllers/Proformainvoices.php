@@ -74,7 +74,10 @@ class Proformainvoices extends BaseController
     }
   
     function getVehicleBookings(){ 
-      $bookings = $this->BookingsModel->where('vehicle_id', $this->request->getPost('vehicle_id'))->where(['status >='=> '6'])->findAll();       
+      if($this->request->getPost('vehicle_id')){
+        $this->BookingsModel->where('vehicle_id', $this->request->getPost('vehicle_id'));
+      }
+      $bookings = $this->BookingsModel->where(['status >='=> '6'])->findAll();       
       echo json_encode($bookings);exit;
     }
 
@@ -178,9 +181,8 @@ class Proformainvoices extends BaseController
 
     function getBookingExpense($id){ 
       $this->view['booking_details'] = $this->BookingsModel->where(['id'=> $id])->first();  
-      $this->view['booking_expences'] = $this->BEModel->where('booking_id', $id)->findAll();  
-      $this->view['expense_heads'] =  $this->ExpenseHeadModel->orderBy('head_name', 'asc')->findAll();
-
+      $this->view['booking_expences'] = $this->BEModel->where(['booking_id'=>$id])->findAll();  
+      $this->view['expense_heads'] =  $this->ExpenseHeadModel->orderBy('head_name', 'asc')->findAll(); 
       // echo 'expense_heads <pre>';print_r($this->view['expense_heads']);
       // echo 'booking_expences <pre>';print_r($this->view['booking_expences']);
       // exit;

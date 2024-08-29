@@ -10,13 +10,13 @@
                 <?php
                 if(isset($booking_expences) && !empty($booking_expences)){
                 $i = 1;
-                foreach ($booking_expences as $be) {
+                foreach ($booking_expences as $be) { 
                 ?>
-                <tr id="del_expense_<?= $i ?>">
+                <tr id="del_expense_<?= $i ?>" class="<?= ($be['bill_to_party'] == 1) ? 'tr-block' : 'tr-readonly'; ?>">
                     <td>
                     <select class="form-select" name="expense[]" aria-label="Default select example">
                         <option value="">Select Expense</option>
-                        <?php if(isset($expense_heads)){
+                        <?php if(isset($expense_heads) && !empty($expense_heads)){
                         foreach($expense_heads as $val){ ?> 
                                 <option value="<?= $val['id'] ?>" <?= $be['expense'] == $val['id'] ? 'selected' : '' ?> ><?= $val['head_name'] ?></option>
                         <?php }
@@ -25,23 +25,22 @@
                     </td>
                     <td><input type="number" name="expense_value[]" id="expense_<?= $i ?>" value="<?= $be['value'] ?>" class="form-control <?= $be['bill_to_party'] != 1 ? 'not_to_bill' : 'bill' ?>" onchange="$.billToParty('<?= $i ?>');"></td>
                     <td><input class="form-check-input" type="checkbox" name="expense_flag_<?= $i ?>" id="expense_flag_<?= $i ?>" style="height:30px; width:30px; border-radius: 50%;" onchange="$.billToParty('<?= $i ?>');" <?= $be['bill_to_party'] == 1 ? 'checked' : '' ?>></td>
-                    <td>
+                    <td class="tr-block">
                     <?php if ($i > 1) { ?>
                         <button type="button" class="btn btn-sm btn-danger" onclick="$.delete(<?= $i ?>,'expense')"><i class="fa fa-trash" aria-hidden="true"></i></button>
                     <?php } else { ?>
                         <button type="button" class="btn btn-sm btn-warning" onclick="$.addExpense()"><i class="fa fa-plus" aria-hidden="true"></i></button>
                     <?php } ?>
-
                     </td>
                 </tr>
                 <?php
                 $i++;
-                }}else{ ?>
+                 }}else{ ?>
                 <tr>
                 <td>
                     <select class="form-select" name="expense[]" aria-label="Default select example">
                     <option value="">Select Expense</option>
-                    <?php if(isset($expense_heads)){
+                    <?php if(isset($expense_heads) && !empty($expense_heads)){
                         foreach($expense_heads as $val){ ?> 
                             <option value="<?= $val['id'] ?>"><?= $val['head_name'] ?></option>
                         <?php }
@@ -53,7 +52,6 @@
                 <td><button type="button" class="btn btn-sm btn-warning" onclick="$.addExpense()"><i class="fa fa-plus" aria-hidden="true"></i></button></td>
                 </tr>
                 <?php } ?>
-
             </tbody>
         </table> 
     </div>

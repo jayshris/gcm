@@ -74,8 +74,11 @@ class Taxinvoices extends BaseController
       return view('TaxInvoices/form', $this->view); 
     }
   
-    function getVehicleBookings(){ 
-      $bookings = $this->BookingsModel->where('vehicle_id', $this->request->getPost('vehicle_id'))->where(['status >='=> '6'])->findAll();       
+    function getVehicleBookings(){   
+      if($this->request->getPost('vehicle_id')){
+        $this->BookingsModel->where('vehicle_id', $this->request->getPost('vehicle_id'));
+      }
+      $bookings = $this->BookingsModel->where(['status >='=> '11'])->findAll();       
       echo json_encode($bookings);exit;
     }
 

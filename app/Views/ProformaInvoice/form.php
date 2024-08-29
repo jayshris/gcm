@@ -3,6 +3,14 @@
 <head>
 	<?= $this->include('partials/title-meta') ?>
 	<?= $this->include('partials/head-css') ?>
+	<style>
+		.tr-readonly{
+			pointer-events:none;
+		}
+		.tr-block{
+			pointer-events: visible;
+		}
+	</style>
 </head>
 <body>
 	<!-- Main Wrapper -->
@@ -51,9 +59,10 @@
 													</div>
 
 													<div class="col-md-4">
-														<label class="col-form-label">Booking Order No<span class="text-danger">*</span></label>
+														<label class="col-form-label">Booking Order No<span class="text-danger">*</span></label> 
 														<select class="form-select select2" required name="booking_id" id="booking_id" aria-label="Default select example"  onchange="$.getBookingDetails();">
-															 <?php foreach ($bookings as $o) { ?>
+															<option value="">Select Booking No.</option>
+															<?php foreach ($bookings as $o) { ?>
 															<option value="<?= $o['id'] ?>" <?= (isset($proforma_invoice['booking_id']) && ($proforma_invoice['booking_id'] == $o['id'])) ? 'selected' : ''?> ><?= $o['booking_number'] ?></option> 
 															<?php } ?>
 														</select>
@@ -107,21 +116,22 @@
 														
 	<script>
 	$(document).ready(function() {
-		$.getBookingDetails();
+		if($('#id').val()){
+			$.getBookingDetails();
+		}		
     });
 	$.getVehicleBookings = function() {
-		var vehicle_id = $('#vehicle_number').val();
-		
+		var vehicle_id = $('#vehicle_number').val(); 		
 		$.ajax({
-			method: "POST",
-			url: '<?php echo base_url('proformainvoices/getVehicleBookings'); ?>' ,
-			data: {
-				vehicle_id: vehicle_id
-			},
-			dataType: "json",
-			success: function(res) { 
+		method: "POST",
+		url: '<?php echo base_url('proformainvoices/getVehicleBookings'); ?>' ,
+		data: {
+			vehicle_id: vehicle_id
+		},
+		dataType: "json",
+		success: function(res) { 
 				console.log(res);
-				var html  ='';
+				var html  ='<option value="">Select Booking No.</option>';
 				if(res){
 					$.each(res, function(i, item) {  
 						var selected = (i=0) ? 'selected' : '';
@@ -130,13 +140,13 @@
 					$('#booking_id').html(html); 
 					$('#booking_id').val($('#booking_id').val()).attr("selected","selected").trigger('change');  
 				}
-				 
 			}
-		});
+		}); 
+		
 	}
 
 	$.getBookingDetails = function() { 
-		var booking_id = $('#booking_id').val(); 
+		var booking_id = $('#booking_id').val();  
 		if(booking_id){
 			$.ajax({
 				method: "POST",
@@ -173,6 +183,10 @@
 					} 
 				}
 			});
+		}else{
+			$('#expense_div_body').html('');
+			$('#bill_to_party_id').html('');
+			$('#total_freight').val('');
 		} 			
 	}	
 
