@@ -71,7 +71,7 @@
  .s12 { color: #221E1F; font-family:"Times New Roman", serif; font-style: normal; font-weight: bold; text-decoration: none; font-size: 8pt; }
  table, tbody {vertical-align: top; overflow: visible; }
  .td-head{
-    width:546pt;border-top-style:solid;border-top-width:1pt;border-top-color:#221E1F;border-left-style:solid;border-left-width:1pt;border-left-color:#221E1F;border-bottom-style:solid;border-bottom-width:1pt;border-bottom-color:#221E1F;border-right-style:solid;border-right-width:1pt;border-right-color:#221E1F
+    width:680pt;border-top-style:solid;border-top-width:1pt;border-top-color:#221E1F;border-left-style:solid;border-left-width:1pt;border-left-color:#221E1F;border-bottom-style:solid;border-bottom-width:1pt;border-bottom-color:#221E1F;border-right-style:solid;border-right-width:1pt;border-right-color:#221E1F
  } 
 .txt-center{
     text-align: center !important;
@@ -351,4 +351,12 @@
     padding-left: 3px;
     padding-top: 1px;
     padding-bottom: 1px;
+}
+.terms-p{
+    padding-left: 7pt;
+    text-indent: -6pt;
+    line-height: 8pt;
+    text-align: justify;
+    font-size: 6pt;
+    font-weight: 600;
 }
