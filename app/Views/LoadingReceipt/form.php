@@ -524,9 +524,10 @@
 
                         <div class="col-md-6">
                             <?php 
-                            $label = 'GSTIN';
-                            echo '<label class="col-form-label">'.$label.'</label>';
-                            echo form_input(['name'=>'consignor_GSTIN','id'=>'consignor_GSTIN','value'=>set_value('consignor_GSTIN', (isset($loading_receipts['consignor_GSTIN']) ? $loading_receipts['consignor_GSTIN'] : '')),'class'=>'form-control '.(($validation->getError('consignor_GSTIN')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off']);
+                            $required = ($currentMethod=='approve') ? '<span class="text-danger">*</span>' : '';  
+                            $label = 'GSTIN '; 
+                            echo '<label class="col-form-label">'.$label.$required.' </label>';
+                            echo form_input(['name'=>'consignor_GSTIN','id'=>'consignor_GSTIN','value'=>set_value('consignor_GSTIN', (isset($loading_receipts['consignor_GSTIN']) ? $loading_receipts['consignor_GSTIN'] : '')),'class'=>'form-control '.(($validation->getError('consignor_GSTIN')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off','required' => ($required) ? true: false]);
                             echo ($validation->getError('consignor_GSTIN')) ? '<div class="invalid-feedback">'.$validation->getError('consignor_GSTIN').'</div>' : '';
                             ?>
                         </div>
@@ -700,9 +701,10 @@
 
                         <div class="col-md-4">
                             <?php 
+                            $required = ($currentMethod=='approve') ? '<span class="text-danger">*</span>' : '';  
                             $label = 'GSTIN';
-                            echo '<label class="col-form-label">'.$label.'</label>';
-                            echo form_input(['name'=>'consignee_GSTIN','id'=>'consignee_GSTIN','value'=>set_value('consignee_GSTIN', (isset($loading_receipts['consignee_GSTIN']) ? $loading_receipts['consignee_GSTIN'] : '')),'class'=>'form-control '.(($validation->getError('consignee_GSTIN')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off']);
+                            echo '<label class="col-form-label">'.$label.$required.'</label>';
+                            echo form_input(['name'=>'consignee_GSTIN','id'=>'consignee_GSTIN','value'=>set_value('consignee_GSTIN', (isset($loading_receipts['consignee_GSTIN']) ? $loading_receipts['consignee_GSTIN'] : '')),'class'=>'form-control '.(($validation->getError('consignee_GSTIN')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off','required' => ($required) ? true: false]);
                             echo ($validation->getError('consignee_GSTIN')) ? '<div class="invalid-feedback">'.$validation->getError('consignee_GSTIN').'</div>' : '';
                             ?>
                         </div>

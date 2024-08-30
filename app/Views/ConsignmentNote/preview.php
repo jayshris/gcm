@@ -8,14 +8,15 @@
         @media print {
             .printableArea { 
                 display: block;
-            } 
+            }   
         }
     </style>
 </head>
 <body>
+    
 	<!-- Main Wrapper -->
 	<div class="main-wrapper">
-		<?= $this->include('partials/menu') ?> 
+		<?php  echo $this->include('partials/menu') ?> 
         <hr>
 		<!-- Page Wrapper -->
 		<div class="page-wrapper">
@@ -36,6 +37,7 @@
                                                     <div class="col-md-6">
                                                         <label class="col-form-label">Consignment No: </label>
                                                         <label class="col-form-label"><?= $lr['consignment_no'] ?></label>
+                                                        <input type="hidden" id="consignment_no" value="<?= str_replace('/','-',$lr['consignment_no']) ?>" />
                                                     </div>
 
                                                     <div class="col-md-6">
@@ -73,20 +75,7 @@
 										</div>
 									</div>
 								</div>
-								<!-- /Settings Info -->
-                                
-                                <div class="card" id="printableArea" style="display: none;">
-                                    <div class="card-body">  
-                                        <?= $this->include('ConsignmentNote/consignee_note.php') ?> 
-                                        <?= $this->include('ConsignmentNote/terms_and_conditions.php') ?>
-                                        <?= $this->include('ConsignmentNote/consignor_note.php') ?>
-                                        <?= $this->include('ConsignmentNote/terms_and_conditions.php') ?>
-                                        <?= $this->include('ConsignmentNote/truck_forwarding_note.php') ?>
-                                        <?= $this->include('ConsignmentNote/terms_and_conditions.php') ?>
-                                    </div>
-                                </div>
-
-
+								<!-- /Settings Info --> 
 							</div>
 						</div>
 
@@ -99,13 +88,24 @@
 	</div>
 	<!-- /Main Wrapper -->
 
+    <div  id="printableArea" style="display: none;">
+        <div  >  
+            <?= $this->include('ConsignmentNote/consignee_note.php') ?> 
+            <?= $this->include('ConsignmentNote/terms_and_conditions.php') ?>
+            <?= $this->include('ConsignmentNote/consignor_note.php') ?>
+            <?= $this->include('ConsignmentNote/terms_and_conditions.php') ?>  
+            <?= $this->include('ConsignmentNote/truck_forwarding_note.php') ?>
+            <?= $this->include('ConsignmentNote/terms_and_conditions.php') ?>
+        </div>
+    </div>
+    
 	<?= $this->include('partials/vendor-scripts') ?> 
 
     <script>
         function printDiv(divId) {
             var printContents = document.getElementById(divId).innerHTML;
             var originalContents = document.body.innerHTML;
-
+            document.title = $('#consignment_no').val();
             document.body.innerHTML = printContents;
 
             window.print();

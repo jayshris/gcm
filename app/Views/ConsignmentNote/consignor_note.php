@@ -38,7 +38,7 @@
                     <span class="s6 td-sub">
                     Subject to Delhi Jurisdiction         
                     </span>
-                    <span class="s7">FOR CONSIGNOR</span>
+                    <span class="s7 prtds10">FOR CONSIGNOR</span>
                 </p>
             </td>
         </tr>

@@ -530,6 +530,19 @@ class LoadingReceipt extends BaseController
         ->where('CONCAT(",", party_type_id, ",") REGEXP ",('.$party_type_ids['party_type_ids'].'),"')
         ->findAll(); 
 
+    $this->view['consignor_branches'] = [];
+    if($this->view['loading_receipts']['consignor_id'] > 0 ){
+      $this->view['consignor_branches']=  $this->CustomerBranchModel->where([
+        'customer_id'=> $this->view['loading_receipts']['consignor_id']
+        ])->findAll(); 
+    }
+    $this->view['consignee_branches'] = [];
+    if($this->view['loading_receipts']['consignee_id'] > 0 ){
+      $this->view['consignee_branches']=  $this->CustomerBranchModel->where([
+        'customer_id'=> $this->view['loading_receipts']['consignee_id']
+        ])->findAll(); 
+    }
+    
     if($this->request->getPost()){
       $error = $this->validate([
         'booking_id'   =>  'required',  

@@ -83,7 +83,10 @@
     width:546pt;border-top-style:solid;border-top-width:1pt;border-top-color:#221E1F;border-left-style:solid;border-left-width:1pt;border-left-color:#221E1F;border-bottom-style:solid;border-bottom-width:1pt;border-bottom-color:#221E1F;border-right-style:solid;border-right-width:1pt;border-right-color:#221E1F
 }
 .print-table{
-    border-collapse:collapse;margin-left:5.6pt;display: ruby-text;
+    border-collapse:collapse;margin-left:5.6pt;
+    /* display: ruby-text; */
+    width: 98%;
+    display: inline-table;
 }
 .td-sub{
     display: inline-block;
@@ -359,4 +362,5 @@
     text-align: justify;
     font-size: 10px;
     font-weight: normal;
+    padding-right: 3px;
 }

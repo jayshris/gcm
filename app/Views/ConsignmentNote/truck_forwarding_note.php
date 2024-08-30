@@ -38,7 +38,7 @@
                     <span class="s6 td-sub">
                     Subject to Delhi Jurisdiction         
                     </span>
-                    <span class="s7">TRUCK FORWARDING NOTE</span>
+                    <span class="s7 prtds10">TRUCK FORWARDING NOTE</span>
                     <span class="s6" style="float: right;">Transporter Copy</span>
                 </p>
             </td>

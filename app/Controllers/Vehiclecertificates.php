@@ -75,8 +75,7 @@ class Vehiclecertificates extends BaseController
         if ($this->access === 'false') {
             $this->session->setFlashdata('error', 'You are not permitted to access this page');
             return $this->response->redirect(base_url('dashboard'));
-        } else if ($this->request->getPost()) {
-
+        } else if ($this->request->getPost()) { 
 
             $image1 = '';
             if ($this->request->getFile('image1') != null) {
@@ -107,6 +106,17 @@ class Vehiclecertificates extends BaseController
                 }
                 $image2 = $newName;
             }
+
+             // save multiple certificates
+            //  foreach ($this->request->getPost('expense') as $key => $val) {
+            //     $expense_data = [
+            //         'booking_id' => $id,
+            //         'expense' => $this->request->getPost('expense')[$key],
+            //         'value' => $this->request->getPost('expense_value')[$key],
+            //         'bill_to_party' => ($this->request->getPost('expense_flag_' . $key +1) == 'on') ? '1' : '0'
+            //     ]; 
+            //     $this->BEModel->insert($expense_data);
+            // }    
 
             $this->VCModel->save([
                 'vehicle_id' => $this->request->getVar('vehicle_id'),
@@ -139,5 +149,13 @@ class Vehiclecertificates extends BaseController
         $this->session->setFlashdata('danger', 'Certificate Deleted Successfully');
 
         return $this->response->redirect(base_url('VehicleCertificates'));
+    }
+
+    function addCertificate(){
+        $this->view['party'] = $this->PModel->where('status', '1')->findAll();
+        $this->view['vehicles'] = $this->VModel->findAll();
+        $this->view['cert_type'] = $this->DTModel->findAll();
+        $this->view['index'] = $this->request->getPost('index'); 
+        echo view('VehicleCertificates/certificate_block', $this->view);
     }
 }
