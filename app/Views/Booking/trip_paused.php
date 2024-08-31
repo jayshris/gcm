@@ -53,7 +53,9 @@
                                                             <label class="col-form-label">Reason</label>
                                                             <select name="reason" class="form-select">
                                                                 <option value="">Select Reason</option>
-                                                                <option value="1">Test</option>
+                                                                <?php if(!empty($reasons)) {foreach($reasons as $reason){ ?>
+                                                                <option value="<?= $reason['id']?>"><?= ucfirst($reason['name']) ?></option>
+                                                                <?php }}?>
                                                             </select>
                                                             <?php
                                                             if ($validation->getError('reason')) {

@@ -6,6 +6,7 @@ use App\Models\CityModel;
 use App\Models\UserModel;
 use App\Models\PartyModel;
 use App\Models\StateModel;
+use App\Models\DriverModel;
 use App\Models\OfficeModel;
 use App\Models\ProfileModel;
 use App\Models\VehicleModel;
@@ -22,14 +23,15 @@ use App\Models\BookingStatusModel;
 use App\Controllers\BaseController;
 use App\Models\BookingPickupsModel;
 use App\Models\CustomerBranchModel;
-use App\Models\BookingExpensesModel;
-use App\Models\BookingTransactionModel;
-use App\Models\BookingUploadedKantaParchiModel;
-use App\Models\BookingVehicleLogModel;
-use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\LoadingReceiptModel;
+use App\Models\BookingExpensesModel;
+use App\Models\TripPausedReasonModel;
+use App\Models\BookingVehicleLogModel;
+use App\Models\BookingTransactionModel;
 use App\Models\BookingUploadedPodModel;
-use App\Models\DriverModel;
+use CodeIgniter\HTTP\ResponseInterface;
+use App\Models\BookingUploadedKantaParchiModel;
+
 class Booking extends BaseController
 {
     public $session;
@@ -65,6 +67,7 @@ class Booking extends BaseController
     public $DModel;
     public $BookingTransactionModel;
     public $BookingUploadedKantaParchiModel;
+    public $TripPausedReasonModel;
     public function __construct()
     {
         $this->session = \Config\Services::session();
@@ -102,6 +105,7 @@ class Booking extends BaseController
         $this->DModel = new DriverModel();
         $this->BookingTransactionModel = new BookingTransactionModel();
         $this->BookingUploadedKantaParchiModel = new BookingUploadedKantaParchiModel();
+        $this->TripPausedReasonModel = new TripPausedReasonModel();
     }
 
     public function index()
@@ -1660,6 +1664,7 @@ class Booking extends BaseController
                 return $this->response->redirect(base_url('booking'));  
             }           
         }
+        $this->view['reasons'] = $this->TripPausedReasonModel->where('status',1)->orderBy('name', 'asc')->findAll();
         $this->view['booking_details'] = $this->BookingTransactionModel->where('booking_id',$id)->orderBy('id', 'desc')->first();
         // echo 'status <pre>';print_r($this->view['booking_details']);exit;
         $this->view['token'] = $id;
