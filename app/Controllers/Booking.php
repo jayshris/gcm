@@ -118,6 +118,8 @@ class Booking extends BaseController
 
         if ($this->request->getPost('status') != '') {
             $this->BModel->where('bookings.status', $this->request->getPost('status'));
+        }else{
+            $this->BModel->whereNotIn('bookings.status', [11,15]);
         }
 
         $this->view['bookings'] = $this->BModel->orderBy('bookings.id', 'desc')->groupBy('bookings.id')->findAll();
@@ -1367,7 +1369,8 @@ class Booking extends BaseController
 
     function free_vehivle($id){
         //Change vehile status not assigned and vehicle log as unassign vehicle
-        $result = $this->BVLModel->where('booking_id', $id)->where('(unassign_date IS NULL or (UNIX_TIMESTAMP(unassign_date) = 0)))')->first();
+        $result = $this->BVLModel->where('booking_id', $id)->where('unassign_date IS NULL or ((UNIX_TIMESTAMP(unassign_date)) = 0)')->first();
+        // echo '$result<pre>';print_r($result);exit;
         if ($result) {
             //update old vehicle status  
             $this->VModel->update($result['vehicle_id'], [ 
@@ -1537,7 +1540,7 @@ class Booking extends BaseController
                         $image->move($imgpath, $image_name);
                     }
                 } 
-                $booking_status_id = 6;
+                $booking_status_id = 7;
                 $booking_data['booking_id'] = $id; 
                 $booking_data['created_by'] = $this->added_by;
                 $booking_data['status'] = $booking_status_id; 
@@ -1573,7 +1576,7 @@ class Booking extends BaseController
             ->first(); 
     }
     //update booking status 
-    function update_booking_status($booking_id,$booking_status_id,$vehicle_id = 0,$driver_id = 0,$status_date = ''){ 
+    function update_booking_status($booking_id,$booking_status_id,$vehicle_id = 0,$driver_id = 0,$status_date = '',$post = []){ 
         $booking_details =  $this->BModel->where('id', $booking_id)->first(); 
         //get driver details if vehicle is assigned
         $d_id= 0;
@@ -1582,26 +1585,103 @@ class Booking extends BaseController
             $driver_assigned_vehicle = $this->getDriverAssignedVehicle($booking_id);
             $d_id= isset($driver_assigned_vehicle['d_id']) && ($driver_assigned_vehicle['d_id'] > 0) ? $driver_assigned_vehicle['d_id'] : 0;
         }
-        
-        // $db = \Config\Database::connect();  
-        // echo  $db->getLastQuery()->getQuery(); 
+         
        if($status_date) { 
-        $data['status_date'] = $status_date;
+         $data['status_date'] = $status_date;
+       }else{
+         $data['status_date'] = date('Y-m-d H:i');
        }
 
+        if(!empty($post)){ 
+            $data['location'] = $post['location']; 
+            $data['reason_id'] = $post['reason']; 
+            $data['remarks'] = $post['remarks'];    
+        }
         $data['booking_id'] = $booking_id;
         $data['booking_status_id'] = $booking_status_id;
         $data['created_by'] = $this->added_by;
         $data['vehicle_id'] = ($vehicle_id > 0) ? $vehicle_id : $booking_details['vehicle_id'];
         $data['driver_id'] = ($driver_id > 0 ) ? $driver_id : $d_id;
        
-        // echo '  <pre>';print_r($driver_assigned_vehicle);//exit;
-        // echo '  <pre>';print_r($data);exit;
+        // echo ' post <pre>';print_r($post);
+        // echo ' driver_assigned_vehicle <pre>';print_r($driver_assigned_vehicle);
+        // echo ' data <pre>';print_r($data);exit;
         $this->BookingTransactionModel->insert($data);  
     }
 
-    function getBookingDetails($id){
-        $data = $this->BModel->select('booking_date')->where('id',$id)->first();
+    function getBookingDetails($id,$action){
+        if($action == 'unloading'){ 
+            $data = $this->BookingTransactionModel->select('DATE_FORMAT(status_date, "%Y-%m-%d %H:%i")  statusDate')->where('booking_id',$id)->orderBy('id', 'desc')->first(); 
+        }else{
+            $data = $this->BModel->select('DATE_FORMAT(booking_date, "%Y-%m-%d %H:%i") statusDate')->where('id',$id)->first();
+        } 
         echo json_encode($data);
+    }
+
+    function trip_paused($id){
+        if ($this->request->getPost()) {          
+            $error = $this->validate([
+                'status_date' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'The date time field is required'
+                    ],
+                ],
+                'location' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'The location field is required'
+                    ],
+                ],
+                'reason' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'The reason field is required'
+                    ],
+                ],
+                'remarks' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'The remarks time field is required'
+                    ],
+                ],
+            ]);
+
+            if (!$error) { 
+                $this->view['error'] = $this->validator; 
+            } else {   
+
+                $booking_data['status'] = 8;   
+                $this->BModel->update($id, $booking_data);  
+                //update booking status 
+                $this->update_booking_status($id,$booking_data['status'],'','',$this->request->getPost('status_date'),$this->request->getPost());
+
+                $this->session->setFlashdata('success',"Trip has been paused successfully");
+                return $this->response->redirect(base_url('booking'));  
+            }           
+        }
+        $this->view['booking_details'] = $this->BookingTransactionModel->where('booking_id',$id)->orderBy('id', 'desc')->first();
+        // echo 'status <pre>';print_r($this->view['booking_details']);exit;
+        $this->view['token'] = $id;
+        return view('Booking/trip_paused', $this->view);
+    }
+
+    function unloading($id){
+        // echo '  <pre>';print_r($this->request->getPost());exit; 
+        $booking_status= 9;
+        $this->BModel->update($id, ['status' => $booking_status]);
+        //update booking status 
+        $this->update_booking_status($id,$booking_status,0,0,$this->request->getPost('status_date'));
+        $this->session->setFlashdata('success', 'Unloading is done successfully');
+        return $this->response->redirect(base_url('booking'));
+    }
+
+    function trip_running($id){
+        $booking_status = 7;
+        $this->BModel->update($id, ['status' => $booking_status]);
+        //update booking status 
+        $this->update_booking_status($id,$booking_status,0,0,$this->request->getPost('status_date'));
+        $this->session->setFlashdata('success', 'Trip has been running');
+        return $this->response->redirect(base_url('booking'));
     }
 }

@@ -208,7 +208,7 @@
           </div> 
         </div>
         <div class="modal-footer">
-        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Start Trip</button>
+        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
         </div>
 
@@ -233,14 +233,14 @@
          var secLink = $(this).attr('secLink');
           $.ajax({
               type: 'GET',
-              url: '<?= base_url($currentController.'/getBookingDetails/') ?>'+id,
+              url: '<?= base_url($currentController.'/getBookingDetails/') ?>'+id+'/'+secLink,
               dataType:'json',
               success: function(data) {
                 console.log(data);
                 if(data){
-                  $('#status_date').attr('min',data.booking_date+' 00:00');
+                  $('#status_date').attr('min',data.statusDate);
                 }
-                $('#gcmModalLabel').html(title);
+                $('#gcmModalLabel').html(title); 
                 $('#confirmMsg').val(msg);
                 $('form#bookigStatusUpdate').attr('action','<?= base_url($currentController.'/') ?>'+secLink+'/'+id)
                 $('#gcmModal').modal('show'); 

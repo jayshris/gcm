@@ -85,7 +85,7 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 				}
 
 				if ($pos == 1) {
-					$menu .= '<li>' . anchor(PANEL . $module . '/' . $secLink, '<i class="' . $cssClass . '"></i> &nbsp;' . ucfirst($secName), ['class' => 'btn btn-primary']) . '</li>';
+					$menu .= '<li>'. anchor(PANEL . $module . '/' . $secLink, '<i class="' . $cssClass . '"></i> &nbsp;' . ucfirst($secName), ['class' => 'btn btn-primary']) . '</li>';
 				} elseif ($pos == 2 && !empty($token)) {
 					if ($dropdown) {
 						$menu .= anchor(PANEL . $module . '/' . $secLink . '/' . $token, '<i class="' . $cssClass . '"></i> ' . ucfirst($secName), ['class' => 'dropdown-item', 'onclick' => $confirm]);
@@ -101,19 +101,28 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 							//if status is not Waiting for Approval or approved and not assign vehicle then only show
 							if ($secLink == 'assign_vehicle' && ($row['is_vehicle_assigned'] == 1 || !in_array($row['status'], [1, 2, 8])))	$makeButton = 0;
 							//if status is 1 and assign vehicle or status 3  then only show
-							if ($secLink == 'unassign_vehicle' && ($row['is_vehicle_assigned'] != 1 || $row['lr_approved'] == 1 ||  !in_array($row['status'], [0, 1, 2, 3, 4, 6])))	$makeButton = 0;
+							if ($secLink == 'unassign_vehicle' && ($row['is_vehicle_assigned'] != 1 || $row['lr_approved'] == 1 ||  !in_array($row['status'], [0, 1, 2, 3, 6,8])))	$makeButton = 0;
 							//if status is Approval for Cancellation then only show
 							if ($secLink == 'approval_for_cancellation' && $row['status'] != 14)	$makeButton = 0;
 							//if status is 6 means kanta parchi uploaded then only show 
-							if ($secLink == 'upload_pod' && $row['status'] != 6)	$makeButton = 0;
+							if ($secLink == 'upload_pod' && $row['status'] != 9)	$makeButton = 0;
 							//if status is 10 means kanta parchi uploaded then only show 
 							if ($secLink == 'trip_end' && $row['status'] != 10)	$makeButton = 0;
 							//if status is 3 means ready for trip then only show 
-							if ($secLink == 'trip_start' && $row['status'] != 3)	$makeButton = 0;
+							if ($secLink == 'trip_start' && ($row['status'] != 3) && ($row['status'] != 8))	$makeButton = 0;
 							//if status is 4 means Trip Start then only show 
 							if ($secLink == 'loading_done' && $row['status'] != 4)	$makeButton = 0;
 							//if status is 5 means loading_done then only show 
 							if ($secLink == 'kanta_parchi_uploaded' && $row['status'] != 5)	$makeButton = 0;
+
+							//trip_paused show for
+							if ($secLink == 'trip_paused' && (($row['status'] != 4) && ($row['status'] != 5) && ($row['status'] != 7)))	$makeButton = 0;
+
+							//Unloading show for
+							if ($secLink == 'unloading' && ($row['status'] != 7))	$makeButton = 0;
+
+							//trip_running show for
+							if ($secLink == 'trip_running' && ($row['status'] != 6))	$makeButton = 0;
 						}
 
 						if ($module == 'driver') {
@@ -126,16 +135,22 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 							if ($secLink == 'edit' && ($row['approved'] == 1 || $row['status'] != 1))	$makeButton = 0;
 						}
 						if ($makeButton == 1) {
-							if ($module == 'booking' && ($secLink == 'trip_start' || $secLink == 'cancel')) {		
+							if ($module == 'booking' && ($secLink == 'trip_start' || $secLink == 'cancel' || $secLink == 'unloading' || $secLink == 'trip_running')) {		
 								switch($secLink){
 									case "trip_start":
 										$msg = "Are you sure want to start trip?";
 										break;
-									  case "cancel":
-										$msg = "Are you sure want to cancel trip?";
+									case "unloading":
+										$msg = "Are you sure want to unloading?";
 										break;
-									  default:
-									  $msg = "Are you sure want to delete?";
+									case "trip_running":
+										$msg = "Are you sure want to change booking status to trip running?";
+										break;
+									case "cancel":
+									$msg = "Are you sure want to cancel trip?";
+									break;
+									default:
+									$msg = "Are you sure want to delete?";
 								}	 
 								$menu .= '<a href="#" class="action_link btn btn-icon btn-outline-primary rounded-pill" token="'.$token.'" msg="'.$msg.'" secLink="' . $secLink . '"  title="'.ucfirst($secName).'"><i class="' . $cssClass . '" data-bs-toggle="tooltip" aria-label="' . $cssClass . '" data-bs-original-title="' . ucfirst($secName) . '"></i></a>';
 							} else{
@@ -143,6 +158,7 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 							}
 							$menu .= ' &nbsp; ';
 						}
+
 					}
 				}
 			}
