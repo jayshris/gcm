@@ -107,7 +107,7 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 							//if status is 6 means kanta parchi uploaded then only show 
 							if ($secLink == 'upload_pod' && $row['status'] != 9)	$makeButton = 0;
 							//if status is 10 means kanta parchi uploaded then only show 
-							if ($secLink == 'trip_end' && $row['status'] != 10)	$makeButton = 0;
+							if ($secLink == 'approval_for_pod' && $row['status'] != 10)	$makeButton = 0;
 							//if status is 3 means ready for trip then only show 
 							if ($secLink == 'trip_start' && ($row['status'] != 3) && ($row['status'] != 8))	$makeButton = 0;
 							//if status is 4 means Trip Start then only show 
@@ -123,6 +123,9 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 
 							//trip_running show for
 							if ($secLink == 'trip_running' && ($row['status'] != 6))	$makeButton = 0;
+
+							//trip_update only show when status between 3 and 8
+							if ($secLink == 'trip_update' && ($row['status'] < 3) && ($row['status'] <  8))	$makeButton = 0;
 						}
 
 						if ($module == 'driver') {

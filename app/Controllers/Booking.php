@@ -25,6 +25,7 @@ use App\Models\BookingPickupsModel;
 use App\Models\CustomerBranchModel;
 use App\Models\LoadingReceiptModel;
 use App\Models\BookingExpensesModel;
+use App\Models\BookingsTripUpdateModel;
 use App\Models\TripPausedReasonModel;
 use App\Models\BookingVehicleLogModel;
 use App\Models\BookingTransactionModel;
@@ -68,6 +69,7 @@ class Booking extends BaseController
     public $BookingTransactionModel;
     public $BookingUploadedKantaParchiModel;
     public $TripPausedReasonModel;
+    public $BookingsTripUpdateModel;
     public function __construct()
     {
         $this->session = \Config\Services::session();
@@ -106,6 +108,7 @@ class Booking extends BaseController
         $this->BookingTransactionModel = new BookingTransactionModel();
         $this->BookingUploadedKantaParchiModel = new BookingUploadedKantaParchiModel();
         $this->TripPausedReasonModel = new TripPausedReasonModel();
+        $this->BookingsTripUpdateModel = new BookingsTripUpdateModel();
     }
 
     public function index()
@@ -1688,5 +1691,47 @@ class Booking extends BaseController
         $this->update_booking_status($id,$booking_status,0,0,$this->request->getPost('status_date'));
         $this->session->setFlashdata('success', 'Trip has been running');
         return $this->response->redirect(base_url('booking'));
+    }
+
+    function trip_update($id){
+        if ($this->request->getPost()) {          
+            $error = $this->validate([
+                'status_date' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'The date time field is required'
+                    ],
+                ],
+                'location' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'The location field is required'
+                    ],
+                ], 
+                'remarks' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'The remarks time field is required'
+                    ],
+                ],
+            ]);
+
+            if (!$error) { 
+                $this->view['error'] = $this->validator; 
+            } else {   
+ 
+                //update booking trip update info 
+                $data['booking_id'] = $id; 
+                $data['created_by'] = $this->added_by;
+                $data['status_date'] = $this->request->getPost('status_date');
+                $data['location'] = $this->request->getPost('location');
+                $data['remarks'] = $this->request->getPost('remarks'); 
+                $this->BookingsTripUpdateModel->insert($data); 
+                $this->session->setFlashdata('success',"Trip has been updated successfully");
+                return $this->response->redirect(base_url('booking'));  
+            }           
+        }   
+        $this->view['token'] = $id;
+        return view('Booking/trip_update', $this->view);
     }
 }
