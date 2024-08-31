@@ -1380,7 +1380,7 @@ class Booking extends BaseController
         } 
     }
 
-    function trip_end($booking_id){ 
+    function approval_for_pod($booking_id){ 
         if ($this->request->getPost()) {     
             // echo '$result<pre>';print_r($this->request->getPost());//exit;       
             $error = $this->validate([
