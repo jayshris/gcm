@@ -41,7 +41,7 @@
                                                         
                                                         <div class="col-md-6">
                                                             <label class="col-form-label">Location<span class="text-danger">*</span></label>
-                                                            <input type="text" name="location" class="form-control" required/>
+                                                            <input type="text" name="location" value="<?= set_value('location') ?>" class="form-control" required/>
                                                             <?php
                                                             if ($validation->getError('location')) {
                                                                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('location') . '</div>';
@@ -54,7 +54,7 @@
                                                             <select name="reason" class="form-select">
                                                                 <option value="">Select Reason</option>
                                                                 <?php if(!empty($reasons)) {foreach($reasons as $reason){ ?>
-                                                                <option value="<?= $reason['id']?>"><?= ucfirst($reason['name']) ?></option>
+                                                                <option value="<?= $reason['id']?>" <?= (set_value('location')) && (set_value('location') == $reason['id']) ? 'selected' : '' ?>><?= ucfirst($reason['name']) ?></option>
                                                                 <?php }}?>
                                                             </select>
                                                             <?php

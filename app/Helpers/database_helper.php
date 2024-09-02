@@ -109,7 +109,7 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 							//if status is 10 means kanta parchi uploaded then only show 
 							if ($secLink == 'approval_for_pod' && $row['status'] != 10)	$makeButton = 0;
 							//if status is 3 means ready for trip then only show 
-							if ($secLink == 'trip_start' && ($row['status'] != 3) && ($row['status'] != 8))	$makeButton = 0;
+							if ($secLink == 'trip_start' && ($row['status'] != 3))	$makeButton = 0;
 							//if status is 4 means Trip Start then only show 
 							if ($secLink == 'loading_done' && $row['status'] != 4)	$makeButton = 0;
 							//if status is 5 means loading_done then only show 
@@ -126,6 +126,9 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 							
 							//trip_update only show when status between 3 and 8
 							if ($secLink == 'trip_update' && ($row['status'] < 3) && ($row['status'] <  8))	$makeButton = 0;
+
+							//if status is 8 means trip paused then only show 
+							if ($secLink == 'trip_restart' &&  ($row['status'] != 8))	$makeButton = 0;
 						}
 
 						if ($module == 'driver') {
@@ -138,10 +141,13 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 							if ($secLink == 'edit' && ($row['approved'] == 1 || $row['status'] != 1))	$makeButton = 0;
 						}
 						if ($makeButton == 1) {
-							if ($module == 'booking' && ($secLink == 'trip_start' || $secLink == 'cancel' || $secLink == 'unloading' || $secLink == 'trip_running')) {		
+							if ($module == 'booking' && ($secLink == 'trip_start' || $secLink == 'trip_restart' || $secLink == 'cancel' || $secLink == 'unloading' || $secLink == 'trip_running')) {		
 								switch($secLink){
 									case "trip_start":
 										$msg = "Are you sure want to start trip?";
+										break;
+									case "trip_restart":
+										$msg = "Are you sure want to restart trip?";
 										break;
 									case "unloading":
 										$msg = "Are you sure want to unloading?";

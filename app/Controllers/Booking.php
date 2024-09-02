@@ -1645,13 +1645,7 @@ class Booking extends BaseController
                     'errors' => [
                         'required' => 'The reason field is required'
                     ],
-                ],
-                'remarks' => [
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => 'The remarks time field is required'
-                    ],
-                ],
+                ] 
             ]);
 
             if (!$error) { 
@@ -1733,5 +1727,19 @@ class Booking extends BaseController
         }   
         $this->view['token'] = $id;
         return view('Booking/trip_update', $this->view);
+    }
+
+    function trip_restart($id){
+        // echo '  <pre>';print_r($this->request->getPost());  
+        
+        //get last booking status before pause booking
+        $last_booking_status = $this->BookingTransactionModel->where(['booking_id'=>$id,'booking_status_id < '=>8])->orderBy('id', 'desc')->first();  
+        $booking_status = isset($last_booking_status['booking_status_id']) && ($last_booking_status['booking_status_id'] > 0) ? $last_booking_status['booking_status_id']: 16;
+        $this->BModel->update($id, ['status' => $booking_status]);
+        
+        //update booking status 
+        $this->update_booking_status($id,$booking_status,0,0,$this->request->getPost('status_date'));
+        $this->session->setFlashdata('success', 'Trip is restarted');
+        return $this->response->redirect(base_url('booking'));
     }
 }
