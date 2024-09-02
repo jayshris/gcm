@@ -240,11 +240,12 @@ class LoadingReceipt extends BaseController
   function edit($id){  
     $stateModel = new StateModel();
     $this->view['loading_receipts'] = $this->LoadingReceiptModel->where(['id' => $id])->first();
-    
-    if($this->view['loading_receipts']['approved'] ==1){
-      $this->session->setFlashdata('danger', 'Loading Receipt can not be allow to update because of LR is approved.'); 
+
+    //Edit allow only 3 times
+    if($this->view['loading_receipts']['edit_count'] >= 3){
+      $this->session->setFlashdata('danger', 'Loading Receipt can be edited only 3 times'); 
       return $this->response->redirect(base_url('/loadingreceipt'));
-    }
+    } 
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
     $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
     $this->view['bookings'] = $this->BookingsModel->where(['approved'=> '1','is_vehicle_assigned' => 1])->findAll();
@@ -400,6 +401,8 @@ class LoadingReceipt extends BaseController
           'transporter_state' =>  $this->request->getVar('transporter_state'),
           'transporter_pincode' =>  $this->request->getVar('transporter_pincode'),
           'transporter_GSTIN' =>  $this->request->getVar('transporter_GSTIN'),
+          'edit_count' => ($this->view['loading_receipts']['edit_count']+1),
+          'approved' => 0
         ];
 
         // echo 'data<pre>';print_r($data);exit;
@@ -634,6 +637,7 @@ class LoadingReceipt extends BaseController
           'transporter_pincode' =>  $this->request->getVar('transporter_pincode'),
           'transporter_GSTIN' =>  $this->request->getVar('transporter_GSTIN'),
           'approved' => ($this->request->getVar('approved')) ? $this->request->getVar('approved') : 0,
+          'is_approved' => ($this->request->getVar('approved')) ? $this->request->getVar('approved') : 0,
         ];
 
         // echo 'data<pre>';print_r($data);exit;

@@ -231,7 +231,7 @@
                     <div class="row">
                         <div class="col-md-4">
                             <label class="col-form-label">Vehicle Number</label> 
-                            <select class="form-select select2" name="vehicle_id" id="vehicle_number" aria-label="Default select example" onchange="$.getVehicleBookings();">
+                            <select class="form-select select2" <?= ($loading_receipts['is_approved'] == 1) ? 'disabled' : '' ?> name="vehicle_id" id="vehicle_number" aria-label="Default select example" onchange="$.getVehicleBookings();">
                                 <option value="">Select Vehicle</option>
                                 <?php foreach ($vehicles as $o) { ?> 
                                     <option value="<?= $o['id'] ?>"  <?= (isset($loading_receipts['vehicle_id']) && ($loading_receipts['vehicle_id'] == $o['id'])) ? 'selected' : ''?>><?= $o['rc_number'] ?></option> 
@@ -246,12 +246,15 @@
 
                         <div class="col-md-4">
                             <label class="col-form-label">Booking Order No<span class="text-danger">*</span></label>
-                            <select class="form-select select2" required name="booking_id" id="booking_id" aria-label="Default select example"  onchange="$.getBookingDetails();">
+                            <?php if($loading_receipts['is_approved'] == 1){ ?>
+                                <input type="hidden" name="booking_id"  value="<?= $loading_receipts['booking_id']?>">
+                            <?php } ?>
+                            <select class="form-select select2" required <?= ($loading_receipts['is_approved'] == 1) ? 'disabled' : '' ?> name="booking_id" id="booking_id" aria-label="Default select example"  onchange="$.getBookingDetails();">
                                 <option value="">Select Booking Order</option>
                                 <?php foreach ($bookings as $o) { ?>
                                 <option value="<?= $o['id'] ?>" <?= (isset($loading_receipts['booking_id']) && ($loading_receipts['booking_id'] == $o['id'])) ? 'selected' : ''?> ><?= $o['booking_number'] ?></option> 
                                 <?php } ?>
-                            </select>
+                            </select> 
                             <?php
                             if ($validation->getError('booking_id')) {
                                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('booking_id') . '</div>';
@@ -1409,7 +1412,7 @@
             <input type="checkbox" id="approved" class="form-check-input" name="approved" value="1"  > 
             <label class="form-check-label" for="approve"> Approve</label>
             <br/>
-            <span class="text-info">Loading Receipt can not be allow to update after approve.</span>
+            <!-- <span class="text-info">Loading Receipt can not be allow to update after approve.</span> -->
         </div>  
         <?php } ?>
     </div>

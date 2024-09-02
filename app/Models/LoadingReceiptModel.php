@@ -73,7 +73,10 @@ class LoadingReceiptModel extends Model
         'approved',
         'status',
         'place_of_delivery_name',
-        'place_of_dispatch_name'
+        'place_of_dispatch_name',
+        'edit_count',
+        'is_approved',
+        'is_update_vehicle'
     ];
 
     protected bool $allowEmptyInserts = false;

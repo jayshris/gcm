@@ -138,7 +138,7 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 
 						if ($module == 'loadingreceipt') {
 							if ($secLink == 'approve' && ($row['approved'] == 1 || $row['status'] != 1))	$makeButton = 0;
-							if ($secLink == 'edit' && ($row['approved'] == 1 || $row['status'] != 1))	$makeButton = 0;
+							if ($secLink == 'edit' && ($row['status'] != 1))	$makeButton = 0;
 						}
 						if ($makeButton == 1) {
 							if ($module == 'booking' && ($secLink == 'trip_start' || $secLink == 'trip_restart' || $secLink == 'cancel' || $secLink == 'unloading' || $secLink == 'trip_running')) {		

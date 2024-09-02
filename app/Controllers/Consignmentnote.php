@@ -35,10 +35,14 @@ class Consignmentnote extends BaseController
     public function index()
     {        
       $this->view['bookings'] = $this->LoadingReceiptModel->select('b.id,b.booking_number')
-      ->join('bookings b','loading_receipts.booking_id = b.id')->orderBy('loading_receipts.id', 'desc')->groupBy('loading_receipts.booking_id')->findAll();  
+      ->join('bookings b','loading_receipts.booking_id = b.id')
+      ->where('loading_receipts.approved',1)
+      ->orderBy('loading_receipts.id', 'desc')->groupBy('loading_receipts.booking_id')->findAll();  
   
       $this->view['rc_number'] =  $this->LoadingReceiptModel->select('v.id,v.rc_number') 
-      ->join('vehicle v','loading_receipts.vehicle_id = v.id')->orderBy('loading_receipts.id', 'desc')->groupBy('v.id')->findAll();
+      ->join('vehicle v','loading_receipts.vehicle_id = v.id')
+      ->where('loading_receipts.approved',1)
+      ->orderBy('loading_receipts.id', 'desc')->groupBy('v.id')->findAll();
       // echo '<pre>';print_r( $this->view['rc_number']);exit;
   
      $this->LoadingReceiptModel->select('loading_receipts.*,b.booking_number,o.name branch_name')
@@ -52,7 +56,7 @@ class Consignmentnote extends BaseController
         $this->LoadingReceiptModel->where('b.vehicle_id',$this->request->getPost('vehicle_id'));
       } 
   
-      $this->view['loading_receipts'] = $this->LoadingReceiptModel->orderBy('id', 'desc')->findAll();
+      $this->view['loading_receipts'] = $this->LoadingReceiptModel->where('loading_receipts.approved',1)->orderBy('id', 'desc')->findAll();
       $db = \Config\Database::connect();  
       //     echo  $db->getLastQuery()->getQuery();  
       // echo 'sdf<pre>';print_r($this->request->getPost());
