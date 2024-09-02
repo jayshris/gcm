@@ -830,8 +830,20 @@ class Booking extends BaseController
 
          //update booking status 
          $this->update_booking_status($id,$booking_status);
+        
+        //update vevhicle status assigned as 2
 
-        //update vevhicl status assigned as 2
+        //Check if LR is generated then update flag
+        $lrResult = $this->LoadingReceiptModel->where(['booking_id'=> $id,'vehicle_id'=>$post['vehicle_rc']])->findAll();
+        // echo '<pre>';print_r($lrResult);exit;
+        if(!empty($lrResult)){
+            foreach($lrResult as $val){
+                if(isset($val['id']) && ($val['id']>0)){
+                    $this->LoadingReceiptModel->update($val['id'], ['is_update_vehicle' => 1]); 
+                }
+            }
+        }
+        
         return  $result;
 
     }

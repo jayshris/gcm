@@ -12,6 +12,7 @@ use App\Models\VehicleModel;
 use App\Models\BookingsModel; 
 use App\Models\CustomersModel;
 use App\Controllers\BaseController;
+use App\Models\BookingVehicleLogModel;
 use App\Models\CustomerBranchModel;
 use App\Models\LoadingReceiptModel;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -28,7 +29,7 @@ class LoadingReceipt extends BaseController
   public $CustomersModel;
   public $PTModel;
   public $CustomerBranchModel;
-
+  public $BVLModel;
   public function __construct()
   {
     $u = new UserModel(); 
@@ -42,6 +43,7 @@ class LoadingReceipt extends BaseController
     $this->CustomersModel = new CustomersModel();
     $this->PTModel = new PartytypeModel();
     $this->CustomerBranchModel = new CustomerBranchModel();
+    $this->BVLModel = new BookingVehicleLogModel(); 
   }
 
   public function index()
@@ -652,5 +654,75 @@ class LoadingReceipt extends BaseController
       }
     }
     return view('LoadingReceipt/approve', $this->view); 
+  }
+
+  function update_vehicle($id){
+      $this->view['loading_receipts'] = $this->LoadingReceiptModel->where(['id' => $id])->first();
+      $this->view['vehicles'] =  $this->BookingsModel->select('v.id,v.rc_number') 
+      ->join('vehicle v','bookings.vehicle_id = v.id')->orderBy('v.id', 'desc')
+      ->where(['bookings.approved'=> '1','bookings.is_vehicle_assigned' => 1])
+      ->groupBy('bookings.vehicle_id')
+      ->findAll();
+      $this->view['token'] = $id;  
+      if ($this->request->getPost()) {          
+        $error = $this->validate([
+            'vehicle_id' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'The vehicle field is required'
+                ],
+            ],
+            'vehicle_location' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'The vehicle location field is required'
+                ],
+            ], 
+            'lr_update_vehicle_date' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'The date field is required'
+                ],
+            ],
+            'reason_id' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'The date field is required'
+                ],
+            ] 
+        ]);
+
+        if (!$error) { 
+            $this->view['error'] = $this->validator; 
+        } else {   
+            // echo 'data <pre>';print_r($this->request->getPost()); 
+        
+            $booking_vehicle = $this->BVLModel
+            ->where('booking_id', $this->view['loading_receipts']['booking_id'])
+            ->where('vehicle_id', $this->request->getPost('vehicle_id'))
+            ->where('(unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date = 0))')
+            ->first();
+            // echo 'booking_vehicle <pre>';print_r($booking_vehicle); 
+            //update booking trip update info 
+            if(isset($booking_vehicle['id']) && ($booking_vehicle['id']>0)){ 
+              $data['vehicle_location'] = $this->request->getPost('vehicle_location');
+              $data['lr_update_vehicle_date'] = $this->request->getPost('lr_update_vehicle_date');
+              $data['reason_id'] = $this->request->getPost('reason_id');
+              $data['remarks'] = $this->request->getPost('remarks'); 
+              // echo 'BVLModel <pre>';print_r($data); exit;
+              $this->BVLModel->update($booking_vehicle['id'],$data); 
+            }
+            // exit;
+            $this->LoadingReceiptModel->update($id,[
+              'vehicle_id' => $this->request->getPost('vehicle_id'),
+              'is_update_vehicle' => 0
+            ]); 
+           
+            $this->session->setFlashdata('success',"Update vehicle successfully");
+            return $this->response->redirect(base_url('loadingreceipt'));  
+        }           
+    }
+
+    return view('LoadingReceipt/update_vehicle', $this->view); 
   }
 }
