@@ -32,6 +32,18 @@ use App\Models\PartytypeModel;
                   <hr>
                   <div class="row mt-2">
 
+                    <div class="col-md-3">
+                      <div class="form-wrap">
+                        <label class="col-form-label">Party Name</label>
+                        <select class="form-select select2" name="party_id" aria-label="Default select example">
+                          <option value="">Select Party</option>
+                          <?php foreach ($party_data as $p) {
+                            echo '<option value="' . $p['id'] . '"' . (set_value('party_id') == $p['id'] ? 'selected' : '') . '>' . $p['party_name'] . '</option>';
+                          } ?>
+                        </select>
+                      </div>
+                    </div>
+
                     <div class="col-md-2">
                       <div class="form-wrap">
                         <label class="col-form-label">Status</label>
@@ -43,12 +55,12 @@ use App\Models\PartytypeModel;
                       </div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-5">
                       <button class="btn btn-info mt-4">Search</button>&nbsp;&nbsp;
                       <a href="./party" class="btn btn-warning mt-4">Reset</a>&nbsp;&nbsp;
                     </div>
 
-                    <div class="col-md-4 text-end">
+                    <div class="col-md-2 text-end">
                       <?php echo makeListActions($currentController, $Action, 0, 1); ?>
                     </div>
                   </div>
@@ -72,6 +84,7 @@ use App\Models\PartytypeModel;
                   <table class="table" id="partyTable">
                     <thead class="thead-light">
                       <tr>
+                        <th>#</th>
                         <th>Action</th>
                         <th>Party Name</th>
                         <th>Contact Person</th>
@@ -82,6 +95,7 @@ use App\Models\PartytypeModel;
                     <tbody>
                       <?php
                       if ($party_data) {
+                        $i = 1;
                         foreach ($party_data as $party) {
                           $pcustomertype = new PartytypeModel();
                           $pcustomertype = $pcustomertype->where('id', $party['id'])->findAll();
@@ -104,6 +118,7 @@ use App\Models\PartytypeModel;
                           }
                           echo '
                                 <tr>
+                                    <td>' . $i++ . '.</td>
                                     <td>' . makeListActions($currentController, $Action, $party['id'], 2) . '</td>
                                     
                                     <td>' . $party['party_name'] . '</td>

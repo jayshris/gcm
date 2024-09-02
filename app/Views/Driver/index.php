@@ -118,7 +118,8 @@ use App\Models\PartyModel;
                 <div class="table-responsive custom-table">
                   <table class="table" id="driver-table">
                     <thead class="thead-light">
-                    <tr>
+                      <tr>
+                        <th>#</th>
                         <th>Action</th>
                         <th>Driver Name</th>
                         <th>Driver Ph. No.</th>
@@ -132,6 +133,7 @@ use App\Models\PartyModel;
                     <tbody>
                       <?php
                       if ($driver_data) {
+                        $i = 1;
                         foreach ($driver_data as $driver) {
 
                           // var_dump(makeListActions($currentController, $Action, $driver['id'], 2, false, $driver));
@@ -159,15 +161,16 @@ use App\Models\PartyModel;
                           }
                       ?>
                           <tr>
+                            <td><?= $i++ ?>.</td>
                             <td><?= makeListActions($currentController, $Action, $driver['id'], 2, false, $driver); ?></td>
                             <td><?= $driver['party_name'] ?></td>
                             <td><?= $driver['primary_phone'] ?></td>
                             <td><?= $driver['rc_number'] ?></td>
                             <td><?= $driver['foreman_name'] ?></td>
-                            <td><?= isset($driver['total_completed_trips']) && ($driver['total_completed_trips']> 0) ? $driver['total_completed_trips'] : '0' ?></td>
+                            <td><?= isset($driver['total_completed_trips']) && ($driver['total_completed_trips'] > 0) ? $driver['total_completed_trips'] : '0' ?></td>
                             <td><?= isset($driver['booking_number']) ? $driver['booking_number'] : '-' ?></td>
                             <!-- <td>
-                              <?php 
+                              <?php
                               // if ($driver['status'] == 'Inactive') {
                               //   echo '<span class="badge badge-pill bg-danger">Inactive</span>';
                               // } else {

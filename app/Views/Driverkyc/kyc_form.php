@@ -351,7 +351,7 @@
                                                 <?php
                                                 if (isset($schemes)) {
                                                     foreach ($schemes as $row) { ?>
-                                                        <option value="<?php echo $row["id"] ?>"><?php echo $row["scheme_name"] . ' - ' . $row["rate"] . '/Km' ?></option>
+                                                        <option value="<?php echo $row["id"] ?>"><?php echo $row["scheme_name"]  ?></option>
                                                 <?php
                                                     }
                                                 }

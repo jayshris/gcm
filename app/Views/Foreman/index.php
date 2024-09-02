@@ -75,6 +75,7 @@ use App\Models\PartyModel;
                   <table class="table" id="foreman-table">
                     <thead class="thead-light">
                       <tr>
+                        <th>#</th>
                         <th>Action</th>
                         <th>Foreman Name</th>
                         <th>Mobile</th>
@@ -84,9 +85,11 @@ use App\Models\PartyModel;
                     </thead>
                     <tbody>
                       <?php
+                      $i = 1;
                       foreach ($foreman_data as $foreman) {
                       ?>
                         <tr>
+                          <td><?= $i++ ?>.</td>
                           <td><?= makeListActions($currentController, $Action, $foreman['id'], 2) ?></td>
                           <td><?= $foreman['party_name'] ?></td>
                           <td><?= $foreman['mobile'] ?></td>

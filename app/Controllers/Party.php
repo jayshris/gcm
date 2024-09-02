@@ -20,12 +20,17 @@ use App\Models\PartyTypePartyModel;
 class Party extends BaseController
 {
   public $_access;
+  public $PModel;
+  public $PDModel;
 
   public function __construct()
   {
     $u = new UserModel();
     $access = $u->setPermission();
     $this->_access = $access;
+
+    $this->PModel = new PartyModel();
+    $this->PDModel = new PartyDocumentsModel();
   }
 
   public function index()
@@ -37,6 +42,10 @@ class Party extends BaseController
       return $this->response->redirect(base_url('/dashboard'));
     } else {
       $partyModel = new PartyModel();
+
+      if ($this->request->getPost('party_id') != '') {
+        $partyModel->where('id', $this->request->getPost('party_id'));
+      }
 
       if ($this->request->getPost('status') != '') {
         $partyModel->where('status', $this->request->getPost('status'));
@@ -448,10 +457,17 @@ class Party extends BaseController
       $partyModel = new PartyModel();
       $pModel = $partyModel->where('id', $id)->first();
       if (isset($pModel)) {
-        if ($pModel['status'] == '1') {
-          $status = '0';
+
+        if ($pModel['approved'] == '1') {
+          if ($pModel['status'] == '1') {
+            $status = '0';
+          } else {
+            $status = '1';
+          }
         } else {
-          $status = '1';
+          $session = \Config\Services::session();
+          $session->setFlashdata('success', "Party Not Approved, Status Can't Be updated");
+          return $this->response->redirect(base_url('/party'));
         }
       }
 
@@ -476,5 +492,25 @@ class Party extends BaseController
       ];
       return view('Party/search', $this->view);
     }
+  }
+
+  public function preview($id = null)
+  {
+
+    $this->view['party_details'] = $this->PModel->select('party.*,business_type.company_structure_name as business_type,states.state_name')
+      ->join('business_type', 'business_type.id = party.business_type_id')
+      ->join('states', 'states.state_id = party.state_id')
+      ->where('party.id', $id)->first();
+
+    $this->view['party_docs'] = $this->PDModel
+      ->join('flags', 'flags.id = party_documents.flag_id')
+      ->where('party_id', $id)->findAll();
+
+    // echo '<pre>';
+    // print_r($this->view['party_details']);
+    // print_r($this->view['party_docs']);
+    // die;
+
+    return view('Party/preview', $this->view);
   }
 }

@@ -348,15 +348,14 @@ class Kyc extends BaseController
         return view('KYC/thanks');
     }
 
-    public function approve($id=0)
+    public function approve($id = 0)
     {
         $access = $this->_access;
         if ($access === 'false') {
             $session = \Config\Services::session();
             $session->setFlashdata('error', 'You are not permitted to access this page');
             return $this->response->redirect(site_url('/dashboard'));
-        }
-        else {
+        } else {
             $pcModel = new PartyModel();
             $partytype = new PartytypeModel();
             $partyTypes = new PartyTypePartyModel();
@@ -480,10 +479,10 @@ class Kyc extends BaseController
                     'modify_by' => isset($_SESSION['id']) ? $_SESSION['id'] : '0',
                     'modify_ip' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '',
                 ])->update();
-                
+
                 $customerInfo = $CustomerModel->where('party_id', $id)->first();
                 $customer_id = isset($customerInfo['id']) ? $customerInfo['id'] : 0;
-                
+
                 //update customer branch
                 $CustomerBranchModel->where('customer_id', $customer_id)->set([
                     'office_name' => $this->request->getPost('office_name'),
@@ -498,7 +497,7 @@ class Kyc extends BaseController
 
                 $customerBranchInfo = $CustomerBranchModel->where('customer_id', $customer_id)->first();
                 $customer_branch_id = isset($customerBranchInfo['id']) ? $customerBranchInfo['id'] : 0;
-                
+
                 //========================================
                 if ($this->request->getPost('office_address_id') != '') {
 

@@ -199,4 +199,3 @@ class Database extends Config
         }
     }
 }
-

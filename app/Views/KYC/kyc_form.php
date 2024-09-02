@@ -113,9 +113,9 @@
                                         <select class="form-select select2" required name="office_name">
                                             <option value="">Select Office Name</option>
                                             <?php if ($offices) {
-                                            foreach ($offices as $c) {
-                                                echo '<option value="'.$c['name'].'">' . $c['name'] . '</option>';
-                                            }
+                                                foreach ($offices as $c) {
+                                                    echo '<option value="' . $c['name'] . '">' . $c['name'] . '</option>';
+                                                }
                                             } ?>
                                         </select>
                                     </div>
@@ -169,6 +169,11 @@
                                     <div class="col-md-3">
                                         <label class="col-form-label">Office Postcode <span class="text-danger">*</span></label>
                                         <input type="number" class="form-control" name="office_postcode" id="zip" required value="<?php echo set_value('office_postcode') ?>">
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label class="col-form-label">Effective From <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" name="effective_from" max="<?= date('Y-m-d') ?>" value="<?php echo date('Y-m-d') ?>" required>
                                     </div>
                                 </div>
                             </div>

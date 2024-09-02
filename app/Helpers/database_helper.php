@@ -85,7 +85,7 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 				}
 
 				if ($pos == 1) {
-					$menu .= '<li>'. anchor(PANEL . $module . '/' . $secLink, '<i class="' . $cssClass . '"></i> &nbsp;' . ucfirst($secName), ['class' => 'btn btn-primary']) . '</li>';
+					$menu .= '<li>' . anchor(PANEL . $module . '/' . $secLink, '<i class="' . $cssClass . '"></i> &nbsp;' . ucfirst($secName), ['class' => 'btn btn-primary']) . '</li>';
 				} elseif ($pos == 2 && !empty($token)) {
 					if ($dropdown) {
 						$menu .= anchor(PANEL . $module . '/' . $secLink . '/' . $token, '<i class="' . $cssClass . '"></i> ' . ucfirst($secName), ['class' => 'dropdown-item', 'onclick' => $confirm]);
@@ -123,7 +123,7 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 
 							//trip_running show for
 							if ($secLink == 'trip_running' && ($row['status'] != 6))	$makeButton = 0;
-
+							
 							//trip_update only show when status between 3 and 8
 							if ($secLink == 'trip_update' && ($row['status'] < 3) && ($row['status'] <  8))	$makeButton = 0;
 						}
@@ -161,7 +161,6 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 							}
 							$menu .= ' &nbsp; ';
 						}
-
 					}
 				}
 			}
