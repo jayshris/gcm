@@ -440,18 +440,18 @@ class Booking extends BaseController
             // $isVehicle = $this->BModel->where('id', $id)->first()['vehicle_id'] > 0 ? true : false;
              // update Drops, Pickups and delete Expences 
              $booking_details =  $this->BModel->where('id', $id)->first(); 
-             // echo '<pre>';
-             // print_r($this->request->getPost());
-             // print_r($isVehicle);
-             // die;
- 
+            
              //if status is waitng for approval and vehicle assign then status is ready for trip
-             if($booking_details['status'] == 1 && $booking_details['vehicle_id'] > 0 ){
-                 $booking_status = 3;
+             if($booking_details['status'] == 1 && $booking_details['vehicle_id'] > 0 ){ 
+                 $booking_status_valid = $this->validateBookingLr($id);
+                 $booking_status =  ( $booking_status_valid == 1) ? 3 : 2;
              }else{
                  $booking_status = ($this->request->getPost('approve')) ? 2 : 1;
              }
- 
+            //  echo  $booking_status.'<pre>';
+            //  print_r($booking_details); 
+             //die; 
+
             // update booking
             $this->BModel->update($id, [
                 'booking_for' => $this->request->getPost('booking_for'),
@@ -473,7 +473,7 @@ class Booking extends BaseController
                 'bill_to_party' => $this->request->getPost('bill_to'),
                 'remarks' => $this->request->getPost('remarks'),
                 // 'status' => $isVehicle ? '3' : '2',
-                'status' => $booking_status,
+                // 'status' => $booking_status,
                 'approved_by' => $this->added_by,
                 'approved_ip' => $this->added_ip,
                 'approved_date' => date('Y-m-d h:i:s'),
@@ -778,7 +778,7 @@ class Booking extends BaseController
     }
 
     function assignVehicleBooking($id,$post,$booking_status = -1){
-        $current_booking = $this->BModel->select('status,booking_type,vehicle_id')->where('id',$id)->first();
+        $current_booking = $this->BModel->select('status,booking_type,vehicle_id,customer_id')->where('id',$id)->first();
         
         if($booking_status<0){
             //IF ON VEHICLE ASSIGNED, BOOKING STATUS IS APPROVED (2) IT WILL CHANGE TO READY FOR TRIP (3)
@@ -798,6 +798,13 @@ class Booking extends BaseController
             }
         } 
         
+        //If booking status 3 = Ready For Trip , then 
+        //Check if LR of booking is approved and customer lr first part or third party is yes (mandatory) else booking status as it is
+        
+        if($booking_status == 3){
+            $booking_status_valid = $this->validateBookingLr($id);
+            $booking_status = ($booking_status_valid == 1) ? 3 :  $current_booking['status'];
+        } 
         $this->BModel->update($id, [
             'vehicle_id' => $post['vehicle_rc'],
             'vehicle_type_id' => $post['vehicle_type'],
@@ -842,12 +849,37 @@ class Booking extends BaseController
                     $this->LoadingReceiptModel->update($val['id'], ['is_update_vehicle' => 1]); 
                 }
             }
-        }
-        
+        } 
         return  $result;
-
     }
     
+    function validateBookingLr($id){
+        $current_booking = $this->BModel->select('status,booking_type,vehicle_id,customer_id')->where('id',$id)->first();
+        // LR of booking is approved
+        $bookingLr = $this->LoadingReceiptModel->select('id')->where(['booking_id'=>$id,'approved' =>1])->first();
+        // echo $id.' $bookingLr <pre>';print_r($bookingLr);
+       
+        //get customer party type: LR details 
+        $bookingPartyLR = $this->CModel->where('customer.id',$current_booking['customer_id'])->first();
+        echo   $current_booking['customer_id'].' $bookingPartyLR <pre>';print_r($bookingPartyLR); 
+        $party_types= isset($bookingPartyLR['party_type_id']) && (!empty($bookingPartyLR['party_type_id'])) ? explode(',',$bookingPartyLR['party_type_id']) : [];
+        //get only those customers whose sale = 1
+        if(!empty($party_types)){
+            $party_type_ids = $this->PTModel
+            ->whereIn('id',$party_types)
+            ->where('(lr_first_party = 1 or lr_third_party =1)') 
+            ->findAll();  
+        }   
+        // echo  ' $party_type_ids <pre>';print_r($party_type_ids);
+        
+         if(!empty($bookingLr) && !empty($party_type_ids)){
+            return 1;
+        }else{
+            return 0;
+        } 
+        return $booking_status;
+
+    }
     public function cancel($id)
     {
         $booking_details =  $this->BModel->where('id', $id)->first();
