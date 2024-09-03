@@ -41,75 +41,27 @@
                         <div class="settings-sub-header">
                           <h6>Add New Certificate</h6>
                         </div>
-                        <div class="profile-details">
-                          <div class="row g-3">
-
+                        <div class="profile-details" id="certificate_div">
+                          <div class="row g-3"> 
                             <div class="col-md-4">
                               <label class="col-form-label">Vehicle <span class="text-danger">*</span></label>
-                              <select class="form-select select2" name="vehicle_id" aria-label="Default select example">
+                              <select class="form-select select2" required name="vehicle_id" aria-label="Default select example">
                                 <option value="">Select Vehicle</option>
                                 <?php foreach ($vehicles as $v) {
                                   echo '<option value="' . $v['id'] . '">' . $v['rc_number'] . '</option>';
                                 } ?>
                               </select>
                             </div>
-
-                            <div class="col-md-4">
-                              <label class="col-form-label">Certificate Type</label>
-                              <select class="form-select select2" name="certificate_id" aria-label="Default select example">
-                                <option value="">Select Certificate</option>
-                                <?php foreach ($cert_type as $c) {
-                                  echo '<option value="' . $c['id'] . '" ' . (set_value('certificate_id') == $c['id'] ? 'selected' : '') . '>' . $c['name'] . '</option>';
-                                } ?>
-                              </select>
-                            </div>
-
-                            <div class="col-md-4">
-                              <label class="col-form-label">Vendor</label>
-                              <select class="form-select select2" name="party_id" aria-label="Default select example">
-                                <option value="">Select Vendor</option>
-                                <?php foreach ($party as $p) {
-                                  echo '<option value="' . $p['id'] . '" ' . (set_value('party_id') == $p['id'] ? 'selected' : '') . '>' . $p['party_name'] . '</option>';
-                                } ?>
-                              </select>
-                            </div>
-
-                            <div class="col-md-4">
-                              <label class="col-form-label">Document Number </label>
-                              <input type="text" name="doc_no" class="form-control">
-                            </div>
-
-                            <div class="col-md-4">
-                              <label class="col-form-label">Issue Date <span class="text-danger">*</span></label>
-                              <input type="date" required name="issue_date" class="form-control">
-                            </div>
-
-                            <div class="col-md-4">
-                              <label class="col-form-label">Expiry Date <span class="text-danger">*</span></label>
-                              <input type="date" required name="expiry_date" class="form-control">
-                            </div>
-
-                            <div class="col-md-4">
-                              <label class="col-form-label">Authority Issued By <span class="text-danger">*</span></label>
-                              <input type="text" required name="issue_by" class="form-control">
-                            </div>
-
-                            <div class="col-md-4">
-                              <label class="col-form-label">Image 1<span class="text-danger">*</span></label>
-                              <input type="file" required name="image1" accept="application/pdf, application/vnd.ms-excel, image/png, image/gif, image/jpeg" class="form-control">
-                            </div>
-                            <div class="col-md-4">
-                              <label class="col-form-label">Image 2</label>
-                              <input type="file" name="image2" accept="application/pdf,application/vnd.ms-excel,image/png, image/gif, image/jpeg" class="form-control">
-                            </div>
-
                           </div>
+                          <br> 
+                          
                           <br>
                         </div>
                         <div class="submit-button">
                           <button type="submit" class="btn btn-primary">Save</button>
+                          <button type="button" class="btn btn-info" id="add_more" onclick="$.addCertificate()">Add More</button>
                           <a href="./create" class="btn btn-warning">Reset</a>
-                          <a href="<?php echo base_url('warehouses'); ?>" class="btn btn-light">Back</a>
+                          <a href="<?php echo base_url().$currentController; ?>" class="btn btn-light">Back</a>
                         </div>
                       </form>
 
@@ -132,6 +84,10 @@
 
   <?= $this->include('partials/vendor-scripts') ?>
   <script>
+    $(document).ready(function() {
+      $.addCertificate();
+    });
+
     $.getOffice = function() {
 
       var company_id = $('#company_id').val();
@@ -150,6 +106,56 @@
         }
       });
 
+    }
+
+    $.addCertificate = function() {
+      var index = $('#certificate_div .certificate_div_block').children('div').length; 
+      $.ajax({
+        type: "POST",
+        url: "<?php echo base_url($currentController.'/addCertificate'); ?>",
+        data: {
+          index: index
+        },
+        beforeSend: function() {
+            // setting a timeout
+            $('#add_more').attr('disabled','disabled');
+        },
+        success: function(data) {
+          $('#add_more').removeAttr('disabled');
+          $('#certificate_div').append(data);
+        }
+      })
+    }
+
+    $.delete = function(index) {
+      $('.del_cert_' + index).remove(); 
+    }
+
+    function checkUniqueCertificate(index){ 
+
+      var certificates=[]; 
+      var selectedVal = $('#certificate_'+index).val();
+      // alert('selectedVal = '+selectedVal + ' / arra = ' +certificates + ' / isexist =' + certificates.indexOf(selectedVal));
+      $('.certificates-err').html('');
+     var added = true;
+      $('select[name="certificate_id[]"] option:selected').each(function(i) {  
+        console.log(index);
+        if ($(this).val() > 0) { 
+          // alert($(this).val() +'=='+ selectedVal + certificates.indexOf(selectedVal));
+          if((certificates.indexOf(selectedVal) > -1) && ($(this).val() == selectedVal)){
+            added = false;
+          }
+          if(certificates.indexOf(selectedVal) < 0){
+            certificates.push($(this).val());   
+          } 
+         
+        }
+      });     
+      if(added == false){
+        $("#certificate_"+index).val("");//.trigger('change'); 
+        var html = "<font color=red>Certificate type already selected. Please try another one.</font>"
+        $("#certificates_sp_"+index).html(html);
+      } 
     }
   </script>
 

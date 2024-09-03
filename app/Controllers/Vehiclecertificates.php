@@ -77,11 +77,14 @@ class Vehiclecertificates extends BaseController
             return $this->response->redirect(base_url('dashboard'));
         } else if ($this->request->getPost()) {
 
+            // echo '<pre>';print_r( $this->request->getPost());   
+             // save multiple certificates
+            foreach ($this->request->getPost('certificate_id') as $key => $val) { 
 
             $image1 = '';
-            if ($this->request->getFile('image1') != null) {
+            if ($this->request->getFileMultiple('image1')[$key] != null) {
 
-                $image = $this->request->getFile('image1');
+                $image = $this->request->getFileMultiple('image1')[$key];
                 if ($image->isValid() && !$image->hasMoved()) {
                     $newName = $image->getRandomName();
                     $imgpath = 'public/uploads/vehicle_certificates';
@@ -94,9 +97,9 @@ class Vehiclecertificates extends BaseController
             }
 
             $image2 = '';
-            if ($this->request->getFile('image2') != null) {
+            if ($this->request->getFileMultiple('image2')[$key] != null) {
 
-                $image = $this->request->getFile('image2');
+                $image = $this->request->getFileMultiple('image2')[$key];
                 if ($image->isValid() && !$image->hasMoved()) {
                     $newName = $image->getRandomName();
                     $imgpath = 'public/uploads/vehicle_certificates';
@@ -106,20 +109,23 @@ class Vehiclecertificates extends BaseController
                     $image->move($imgpath, $newName);
                 }
                 $image2 = $newName;
-            }
-
-            $this->VCModel->save([
+            } 
+            $data = [
                 'vehicle_id' => $this->request->getVar('vehicle_id'),
-                'certificate_id' => $this->request->getVar('certificate_id'),
-                'party_id' => $this->request->getVar('party_id'),
-                'certificate_no' => $this->request->getVar('doc_no'),
-                'issue_date' => $this->request->getVar('issue_date'),
-                'expiry_date' => $this->request->getVar('expiry_date'),
+                'certificate_id' => $this->request->getVar('certificate_id')[$key],
+                'party_id' => $this->request->getVar('party_id')[$key],
+                'certificate_no' => $this->request->getVar('doc_no')[$key],
+                'issue_date' => $this->request->getVar('issue_date')[$key],
+                'expiry_date' => $this->request->getVar('expiry_date')[$key],
                 'img1' => $image1,
                 'img2' => $image2,
                 'added_by' => $this->added_by,
                 'added_ip' => $this->added_ip
-            ]);
+            ];
+            // echo '<pre>';print_r($data);  
+            $this->VCModel->save($data);
+        }
+        // exit;
             $this->session->setFlashdata('success', 'Vehicle Certificate Successfully Added');
 
             return $this->response->redirect(base_url('vehiclecertificates'));
@@ -139,5 +145,13 @@ class Vehiclecertificates extends BaseController
         $this->session->setFlashdata('danger', 'Certificate Deleted Successfully');
 
         return $this->response->redirect(base_url('VehicleCertificates'));
+    }
+
+    function addCertificate(){
+        $this->view['party'] = $this->PModel->where('status', '1')->findAll();
+        $this->view['vehicles'] = $this->VModel->findAll();
+        $this->view['cert_type'] = $this->DTModel->findAll();
+        $this->view['index'] = $this->request->getPost('index'); 
+        echo view('VehicleCertificates/certificate_block', $this->view);
     }
 }
