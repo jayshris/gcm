@@ -17,7 +17,7 @@
                         <?php $validation = \Config\Services::validation();
                         ?>
                         <div class="row">
-                            <div class="col-xl-12 col-lg-12">
+                            <div class="col-xl-12 col-lg-12"> 
                                 <!-- Settings Info -->
                                 <div class="card">
                                     <div class="card-body">
@@ -38,13 +38,23 @@
                                                             }   
                                                             ?>  
                                                         </div>  
-                                                        
+
                                                         <div class="col-md-4">
                                                             <label class="col-form-label">Location<span class="text-danger">*</span></label>
                                                             <input type="text" name="location" class="form-control" required/>
                                                             <?php
                                                             if ($validation->getError('location')) {
                                                                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('location') . '</div>';
+                                                            }   
+                                                            ?> 
+                                                        </div> 
+
+                                                        <div class="col-md-4">
+                                                            <label class="col-form-label">Updated By<span class="text-danger">*</span></label>
+                                                            <input type="text" name="updated_by" class="form-control" required/>
+                                                            <?php
+                                                            if ($validation->getError('updated_by')) {
+                                                                echo '<div class="alert alert-danger mt-2">' . $validation->getError('updated_by') . '</div>';
                                                             }   
                                                             ?> 
                                                         </div> 
@@ -76,6 +86,43 @@
                             </div>
                         </div>
 
+                        <div class="card main-card">
+                            <div class="card-body">
+                                <div class="table-responsive custom-table">
+                                    <table class="table" id="datatable">
+                                        <thead class="thead-light">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Date</th>
+                                            <th>Location</th>
+                                            <th>Update By</th>
+                                            <th>Remarks</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php $i = 1;
+                                            foreach ($data as $val) {  ?>
+                                            <tr>
+                                            <td><?= $i++; ?>.</td>
+                                            <td><?= date('d-m-Y H:i a',strtotime($val['status_date'])) ?></td>
+                                            <td><?= $val['location']; ?></td>
+                                            <td><?= $val['updated_by']; ?></td>
+                                            <td><?= $val['remarks']; ?></td>
+                                            </tr>
+                                            <?php } ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="datatable-length"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="datatable-paginate"></div>
+                        </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -87,7 +134,32 @@
 
     <?= $this->include('partials/vendor-scripts') ?>
 
-
+                                                        
+    <script>
+    // datatable init
+    if ($(' #datatable').length > 0) {
+      $('#datatable').DataTable({
+        "bFilter": false,
+        "bInfo": false,
+        "autoWidth": true,
+        "language": {
+          search: ' ',
+          sLengthMenu: '_MENU_',
+          searchPlaceholder: "Search",
+          info: "_START_ - _END_ of _TOTAL_ items",
+          "lengthMenu": "Show _MENU_ entries",
+          paginate: {
+            next: 'Next <i class=" fa fa-angle-right"></i> ',
+            previous: '<i class="fa fa-angle-left"></i> Prev '
+          },
+        },
+        initComplete: (settings, json) => {
+          $('.dataTables_paginate').appendTo('.datatable-paginate');
+          $('.dataTables_length').appendTo('.datatable-length');
+        }
+      });
+    }
+    </script>
 </body>
 
 </html>

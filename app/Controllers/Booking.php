@@ -1700,6 +1700,8 @@ class Booking extends BaseController
     }
 
     function trip_update($id){
+        $this->view['data'] = $this->BookingsTripUpdateModel->select('bookings_trip_updates.*')->orderBy('id', 'desc')->findAll(); 
+        // echo '  <pre>';print_r($this->view['data']); exit;
         if ($this->request->getPost()) {          
             $error = $this->validate([
                 'status_date' => [
@@ -1714,10 +1716,10 @@ class Booking extends BaseController
                         'required' => 'The location field is required'
                     ],
                 ], 
-                'remarks' => [
+                'updated_by' => [
                     'rules' => 'required',
                     'errors' => [
-                        'required' => 'The remarks time field is required'
+                        'required' => 'The updated by field is required'
                     ],
                 ],
             ]);
@@ -1728,6 +1730,7 @@ class Booking extends BaseController
  
                 //update booking trip update info 
                 $data['booking_id'] = $id; 
+                $data['updated_by'] = $this->request->getPost('updated_by');
                 $data['created_by'] = $this->added_by;
                 $data['status_date'] = $this->request->getPost('status_date');
                 $data['location'] = $this->request->getPost('location');
