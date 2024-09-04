@@ -85,7 +85,8 @@
 											<th>#</th>
 											<th>Action</th>
 											<th>Name</th>  
-											<th>Status</th> 
+											<th>Status</th>
+											<th>Booking</th>
 										</tr>
 										</thead>
 										<tbody>
@@ -102,6 +103,14 @@
 														echo '<span class="badge badge-pill bg-success">Active</span>';	
 													}else{
 														echo '<span class="badge badge-pill bg-danger">Inactive</span>';
+													}												
+													?>
+												</td>
+												<td>
+													<?php if($b['booking'] == 1){
+														echo '<span class="badge badge-pill bg-success">Yes</span>';	
+													}else{
+														echo '<span class="badge badge-pill bg-danger">No</span>';
 													}												
 													?>
 												</td>
