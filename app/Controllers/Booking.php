@@ -443,8 +443,7 @@ class Booking extends BaseController
             
              //if status is waitng for approval and vehicle assign then status is ready for trip
              if($booking_details['status'] == 1 && $booking_details['vehicle_id'] > 0 ){ 
-                 $booking_status_valid = $this->validateBookingLr($id);
-                 $booking_status =  ( $booking_status_valid == 1) ? 3 : 2;
+                $booking_status = 3;
              }else{
                  $booking_status = ($this->request->getPost('approve')) ? 2 : 1;
              }
@@ -473,7 +472,7 @@ class Booking extends BaseController
                 'bill_to_party' => $this->request->getPost('bill_to'),
                 'remarks' => $this->request->getPost('remarks'),
                 // 'status' => $isVehicle ? '3' : '2',
-                // 'status' => $booking_status,
+                'status' => $booking_status,
                 'approved_by' => $this->added_by,
                 'approved_ip' => $this->added_ip,
                 'approved_date' => date('Y-m-d h:i:s'),
@@ -796,15 +795,8 @@ class Booking extends BaseController
              if($current_booking['status'] ==1){
                 $booking_status = 1;
             }
-        } 
+        }  
         
-        //If booking status 3 = Ready For Trip , then 
-        //Check if LR of booking is approved and customer lr first part or third party is yes (mandatory) else booking status as it is
-        
-        if($booking_status == 3){
-            $booking_status_valid = $this->validateBookingLr($id);
-            $booking_status = ($booking_status_valid == 1) ? 3 :  $current_booking['status'];
-        } 
         $this->BModel->update($id, [
             'vehicle_id' => $post['vehicle_rc'],
             'vehicle_type_id' => $post['vehicle_type'],

@@ -644,17 +644,7 @@ class LoadingReceipt extends BaseController
 
         // echo 'data<pre>';print_r($data);exit;
         $this->LoadingReceiptModel->update($id,$data);
-        
-        //update booking status = 3, if booking approved and lr third or first = 1 and booking_type not PTL and vehicle assigned
-        if($this->request->getVar('approved')){ 
-          if($booking['vehicle_id'] >0 && $booking['status'] == 2  && ($booking['booking_type'] != 'PTL')){
-           $isValid =  $this->validateBookingLr($booking['customer_id']);
-           if($isValid){
-            //update booking status as ready for trip
-            $this->BookingsModel->update($booking['id'],['status' =>3]);
-           }
-          }
-        }
+         
         $msg = 'Loading Receipt Updated Successfully';
         if($this->request->getVar('approved')){
           $msg = 'Loading Receipt Approved Successfully';
@@ -668,27 +658,25 @@ class LoadingReceipt extends BaseController
   }
 
   function validateBookingLr($customer_id){  
-    //get customer party type: LR details 
-    $bookingPartyLR = $this->CustomersModel->where('customer.id',$customer_id)->first();
-    // echo   $customer_id.' $bookingPartyLR <pre>';print_r($bookingPartyLR); 
-    $party_types= isset($bookingPartyLR['party_type_id']) && (!empty($bookingPartyLR['party_type_id'])) ? explode(',',$bookingPartyLR['party_type_id']) : [];
-    //get only those customers whose sale = 1
-    if(!empty($party_types)){
-        $party_type_ids = $this->PTModel
-        ->whereIn('id',$party_types)
-        ->where('(lr_first_party = 1 or lr_third_party =1)') 
-        ->findAll();  
-    }   
-    // echo  ' $party_type_ids <pre>';print_r($party_type_ids);exit;
-    
-     if(!empty($party_type_ids)){
-        return 1;
-    }else{
-        return 0;
-    } 
-    return $booking_status;
-
-}
+      //get customer party type: LR details 
+      $bookingPartyLR = $this->CustomersModel->where('customer.id',$customer_id)->first();
+      // echo   $customer_id.' $bookingPartyLR <pre>';print_r($bookingPartyLR); 
+      $party_types= isset($bookingPartyLR['party_type_id']) && (!empty($bookingPartyLR['party_type_id'])) ? explode(',',$bookingPartyLR['party_type_id']) : [];
+      //get only those customers whose sale = 1
+      if(!empty($party_types)){
+          $party_type_ids = $this->PTModel
+          ->whereIn('id',$party_types)
+          ->where('(lr_first_party = 1 or lr_third_party =1)') 
+          ->findAll();  
+      }   
+      // echo  ' $party_type_ids <pre>';print_r($party_type_ids);exit;
+      
+      if(!empty($party_type_ids)){
+          return 1;
+      }else{
+          return 0;
+      }   
+  }
 
   function update_vehicle($id){
       $this->view['loading_receipts'] = $this->LoadingReceiptModel->where(['id' => $id])->first();
