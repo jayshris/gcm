@@ -261,7 +261,14 @@ class LoadingReceipt extends BaseController
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
     $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
     $this->view['transport_offices'] = $this->getTransporterBranches($this->view['loading_receipts']['transporter_id']); 
-    $this->view['bookings'] = $this->BookingsModel->where(['approved'=> '1','is_vehicle_assigned' => 1])->findAll();
+    
+    $this->view['bookings'] = $this->BookingsModel    
+    ->where(['approved'=> '1','is_vehicle_assigned' => 1]) 
+    ->where('NOT EXISTS (SELECT 1 
+                  FROM   loading_receipts
+                  WHERE  loading_receipts.booking_id = bookings.id and id != '.$id.')')
+    ->findAll(); 
+
     // $this->view['vehicles'] = $this->VModel->where('status', 1)->findAll();
     $this->view['vehicles'] =  $this->BookingsModel->select('v.id,v.rc_number') 
     ->join('vehicle v','bookings.vehicle_id = v.id')->orderBy('v.id', 'desc')
@@ -498,8 +505,13 @@ class LoadingReceipt extends BaseController
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
     $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
     $this->view['transport_offices'] = $this->getTransporterBranches($this->view['loading_receipts']['transporter_id']); 
-    $this->view['bookings'] = $this->BookingsModel->where(['approved'=> '1','is_vehicle_assigned' => 1])->findAll();
-    
+    $this->view['bookings'] = $this->BookingsModel    
+    ->where(['approved'=> '1','is_vehicle_assigned' => 1]) 
+    ->where('NOT EXISTS (SELECT 1 
+                  FROM   loading_receipts
+                  WHERE  loading_receipts.booking_id = bookings.id and id != '.$id.')')
+    ->findAll(); 
+
     $this->view['vehicles'] =  $this->BookingsModel->select('v.id,v.rc_number') 
     ->join('vehicle v','bookings.vehicle_id = v.id')->orderBy('v.id', 'desc')
     ->where(['bookings.approved'=> '1','bookings.is_vehicle_assigned' => 1])
