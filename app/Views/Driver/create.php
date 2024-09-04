@@ -46,7 +46,7 @@
                                   Driver Name <span class="text-danger">*</span>
                                 </label>
 
-                                <select class="form-control select2" name="name" id="party_id" style="pointer-events: none;">
+                                <select class="form-control select2" name="party_id" id="party_id" style="pointer-events: none;">
                                   <option>Select Driver</option>
                                   <?php
                                   foreach ($parties as $party) {
@@ -122,6 +122,15 @@
                               </div>
                             </div>
 
+                            <div class="col-md-3">
+                              <div class="form-wrap">
+                                <label class="col-form-label">
+                                  Father Name<span class="text-danger">*</span>
+                                </label>
+                                <input type="text" name="father_name" required id="father_name" class="form-control">
+                              </div>
+                            </div>
+                            
                             <div class="col-md-3">
                               <div class="form-wrap">
                                 <label class="col-form-label">

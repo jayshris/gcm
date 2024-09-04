@@ -113,6 +113,15 @@
                                 <input readonly type="text" name="email" id="email" value="<?= $driver_data['email'] ?>" class="form-control">
                               </div>
                             </div>
+                            
+                            <div class="col-md-3">
+                              <div class="form-wrap">
+                                <label class="col-form-label">
+                                  Father Name<span class="text-danger">*</span>
+                                </label>
+                                <input type="text" name="father_name" required id="father_name" class="form-control" value="<?= isset($driver_data['father_name']) ? $driver_data['father_name'] : '' ?>">
+                              </div>
+                            </div>
 
                             <div class="col-md-3">
                               <div class="form-wrap">

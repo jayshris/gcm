@@ -47,11 +47,15 @@
                                                         <tr>
                                                             <td width="10%">Name </td>
                                                             <td width="30%"><?= $driver_data['driver_name'] ?></td>
-                                                            <td rowspan="4" colspan="2" width="" align="center">
+                                                            <td rowspan="5" colspan="2" width="" align="center">
                                                                 <img src="<?= base_url('public/uploads/driverDocs/') . $driver_data['profile_image1'] ?>" style="height: 150px;">&nbsp;&nbsp;
                                                                 <img src="<?= base_url('public/uploads/driverDocs/') . $driver_data['profile_image2'] ?>" style="height: 150px;">
                                                                 <!-- <h6 class="text-center">Profile Images</h6> -->
                                                             </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Father Name </td>
+                                                            <td><?= $driver_data['father_name'] ?></td>
                                                         </tr>
                                                         <tr>
                                                             <td>Foreman Name </td>

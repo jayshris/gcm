@@ -270,7 +270,8 @@ class Driverkyc extends BaseController
                         'emergency_relation' =>  $this->request->getPost('emergency_relation'),
                         'emergency_contact' =>  $this->request->getPost('emergency_contact'),
                         'working_status'  =>  '1',
-                        'created_at'  =>  date("Y-m-d h:i:sa")
+                        'created_at'  =>  date("Y-m-d h:i:sa"),
+                        'father_name'  =>  $this->request->getVar('father_name'),
                     ]);
 
                     $driver_id = $this->DModel->getInsertID();
@@ -472,6 +473,7 @@ class Driverkyc extends BaseController
                     'emergency_contact' =>  $this->request->getPost('emergency_contact'),
                     'working_status' =>  '1',
                     'updated_at' =>  date("Y-m-d h:i:sa"),
+                    'father_name'  =>  $this->request->getVar('father_name'),
                 ]);
 
                 // update image if uploaded

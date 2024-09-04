@@ -138,10 +138,13 @@ class Driver extends BaseController
       $error = $this->validate([
         'foreman_id'              =>  'required',
         'driver_type'             =>  'required',
+        'father_name'             =>  'required'
       ]);
       if (!$error) {
         $this->view['error']   = $this->validator;
       } else {
+        // echo '<pre>';print_r($this->request->getVar());exit;
+
         $driverModel = new DriverModel();
 
         $newName1 = '';
@@ -233,7 +236,8 @@ class Driver extends BaseController
           'state'  =>  $this->request->getPost('state'),
           'zip'  =>  $this->request->getPost('zip'),
           'working_status'  =>  '1',
-          'created_at'  =>  date("Y-m-d h:i:sa")
+          'created_at'  =>  date("Y-m-d h:i:sa"),
+          'father_name'  =>  $this->request->getVar('father_name'),
         ]);
 
         $user_id = $driverModel->getInsertID();
@@ -297,7 +301,7 @@ class Driver extends BaseController
       $driverModel = new DriverModel();
 
       $driverModel->update($id, [
-        'name'  =>  $this->request->getVar('name'),
+        'party_id'  =>  $this->request->getVar('name'),
         'foreman_id'  =>  $this->request->getVar('foreman_id'),
         'driver_type'  =>   $this->request->getPost('driver_type'),
         'bank_ac' => $this->request->getPost('bank_account_number'),
@@ -314,6 +318,7 @@ class Driver extends BaseController
         'zip'  =>  $this->request->getPost('zip'),
         'working_status' =>  '1',
         'updated_at' =>  date("Y-m-d h:i:sa"),
+        'father_name'  =>  $this->request->getVar('father_name'),
       ]);
 
       // update image if uploaded
