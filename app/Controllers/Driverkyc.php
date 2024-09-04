@@ -541,13 +541,16 @@ class Driverkyc extends BaseController
                 $this->VTDModule->where('driver_id', $id)->delete();
 
                 $vehicle = $this->request->getVar('vehicle_types');
-                foreach ($vehicle as $key => $value) {
-                    $vehicledata = [
-                        'vehicle_type_id' =>  $value,
-                        'driver_id'       =>  $id,
-                    ];
-                    $this->VTDModule->save($vehicledata);
+                if ($vehicle) {
+                    foreach ($vehicle as $key => $value) {
+                        $vehicledata = [
+                            'vehicle_type_id' =>  $value,
+                            'driver_id'       =>  $id
+                        ];
+                        $this->VTDModule->save($vehicledata);
+                    }
                 }
+
 
 
                 // add scheme
