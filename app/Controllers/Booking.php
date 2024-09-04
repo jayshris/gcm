@@ -445,7 +445,7 @@ class Booking extends BaseController
              $booking_details =  $this->BModel->where('id', $id)->first(); 
             
              //if status is waitng for approval and vehicle assign then status is ready for trip
-             if($booking_details['status'] == 1 && $booking_details['vehicle_id'] > 0 ){ 
+             if(($booking_details['status'] == 1 && $this->request->getPost('vehicle_rc') > 0) || ($this->request->getPost('vehicle_rc') > 0) ){ 
                 $booking_status = 3;
              }else{
                  $booking_status = ($this->request->getPost('approve')) ? 2 : 1;
