@@ -59,6 +59,7 @@ class LoadingReceipt extends BaseController
     $stateModel = new StateModel();
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
     $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
+    $this->view['transport_offices'] = []; 
     $this->view['bookings'] = $this->BookingsModel    
                               ->where(['approved'=> '1','is_vehicle_assigned' => 1])
                               ->where('NOT EXISTS (SELECT 1 
@@ -95,7 +96,7 @@ class LoadingReceipt extends BaseController
     ->first(); 
      $party_type_ids = str_replace([',',', '],'|', $party_type_ids );
    
-    $this->view['transporters'] = $this->CustomersModel->select('party.id,party.party_name')
+    $this->view['transporters'] = $this->CustomersModel->select('customer.id,party.party_name')
         ->join('party', 'party.id = customer.party_id')
         ->where('customer.status', '1')
         ->where('CONCAT(",", party_type_id, ",") REGEXP ",('.$party_type_ids['party_type_ids'].'),"')
@@ -126,7 +127,7 @@ class LoadingReceipt extends BaseController
       ]); 
       $validation = \Config\Services::validation();
       // echo 'POst dt<pre>';print_r($this->request->getPost());
-      // echo 'getErrors<pre>';print_r($validation->getErrors());//exit;
+      // echo 'getErrors<pre>';print_r($validation->getErrors());exit;
 
       if (!$error) {
         $this->view['error']   = $this->validator;
@@ -238,7 +239,16 @@ class LoadingReceipt extends BaseController
     $rows = (object) array_merge((array) $party, (array) $gstn);
     echo json_encode($rows);exit;
   }
+  function getTransporterBranches($id){
+    return $this->CustomerBranchModel->where([
+      'customer_id'=> $id
+      ])->findAll();
+  }
 
+  function getTransporterBranchesById(){
+    $rows =  $this->getTransporterBranches($this->request->getPost('customer_id'));
+    echo json_encode($rows);exit;
+  }
   function edit($id){  
     $stateModel = new StateModel();
     $this->view['loading_receipts'] = $this->LoadingReceiptModel->where(['id' => $id])->first();
@@ -250,6 +260,7 @@ class LoadingReceipt extends BaseController
     } 
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
     $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
+    $this->view['transport_offices'] = $this->getTransporterBranches($this->view['loading_receipts']['transporter_id']); 
     $this->view['bookings'] = $this->BookingsModel->where(['approved'=> '1','is_vehicle_assigned' => 1])->findAll();
     // $this->view['vehicles'] = $this->VModel->where('status', 1)->findAll();
     $this->view['vehicles'] =  $this->BookingsModel->select('v.id,v.rc_number') 
@@ -486,6 +497,7 @@ class LoadingReceipt extends BaseController
     $this->view['loading_receipts'] = $this->LoadingReceiptModel->where(['id' => $id])->first();
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
     $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
+    $this->view['transport_offices'] = $this->getTransporterBranches($this->view['loading_receipts']['transporter_id']); 
     $this->view['bookings'] = $this->BookingsModel->where(['approved'=> '1','is_vehicle_assigned' => 1])->findAll();
     
     $this->view['vehicles'] =  $this->BookingsModel->select('v.id,v.rc_number') 
