@@ -122,6 +122,7 @@ use App\Models\PartyModel;
                         <th>#</th>
                         <th>Action</th>
                         <th>Driver Name</th>
+                        <th>Father Name</th>
                         <th>Driver Ph. No.</th>
                         <th>Vehicle No.</th>
                         <th>Foreman Name</th>
@@ -164,6 +165,7 @@ use App\Models\PartyModel;
                             <td><?= $i++ ?>.</td>
                             <td><?= makeListActions($currentController, $Action, $driver['id'], 2, false, $driver); ?></td>
                             <td><?= $driver['party_name'] ?></td>
+                            <td><?= ($driver['father_name'] != '') ? ucfirst($driver['father_name']) : '' ?></td>
                             <td><?= $driver['primary_phone'] ?></td>
                             <td><?= $driver['rc_number'] ?></td>
                             <td><?= $driver['foreman_name'] ?></td>
