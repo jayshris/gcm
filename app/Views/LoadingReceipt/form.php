@@ -447,7 +447,7 @@
             <div class="security-grid flex-fill">
                 <div class="security-header">
                     <div class="security-heading">
-                        <h4>Consignor Details:</h4>
+                        <h4>Supplier:</h4>
                     </div><hr>
 
                     <div class="row">
@@ -543,7 +543,7 @@
             <div class="security-grid flex-fill">
                 <div class="security-header">
                     <div class="security-heading">
-                        <h4>Place of Delivery:</h4>
+                        <h4>Ship To:</h4>
                     </div>
                     <hr>
 
@@ -622,7 +622,7 @@
             <div class="security-grid flex-fill">
                 <div class="security-header">
                     <div class="security-heading">
-                        <h4>Consignee Details:</h4>
+                        <h4>Recipient:</h4>
                     </div>
                     <hr>
 
@@ -720,7 +720,7 @@
             <div class="security-grid flex-fill">
                 <div class="security-header">
                     <div class="security-heading">
-                        <h4>Place of Dispatch:</h4>
+                        <h4>Dispatch From:</h4>
                     </div>
                     <hr>
 
@@ -997,7 +997,7 @@
             </div>
         </div>
         
-        <!-- <h6>Consignor Details:</h6>
+        <!-- <h6>Supplier:</h6>
         <div class="col-md-4">
             <label class="col-form-label">Consignor Name<span class="text-danger">*</span></label> 
             <input type="hidden"  name="consignor_id" id="consignor_id" class="form-control" value="<?= isset($loading_receipts['consignor_id']) ? $loading_receipts['consignor_id'] : '' ?>">   
@@ -1081,7 +1081,7 @@
         </div>       
         <hr>
         
-        <h6>Consignee Details:</h6>        
+        <h6>Recipient:</h6>        
         <div class="col-md-4">
             <label class="col-form-label">Consignee Name<span class="text-danger">*</span></label>
             <input type="hidden"  name="consignee_id" id="consignee_id" class="form-control" value="<?= isset($loading_receipts['consignor_id']) ? $loading_receipts['consignor_id'] : '' ?>">   
@@ -1165,7 +1165,7 @@
         </div>
         <hr>
         
-        <h6>Place of Delivery:</h6>
+        <h6>Ship To:</h6>
         <div class="col-md-12">
             <label class="col-form-label">Address<span class="text-danger">*</span></label>
             <input type="text" name="place_of_delivery_address" id="place_of_delivery_address" class="form-control" required value="<?= (isset($loading_receipts['place_of_delivery_address'])) ?  $loading_receipts['place_of_delivery_address'] : ''?>">
@@ -1209,7 +1209,7 @@
         </div>
         <hr>
 
-        <h6>Place of Dispatch:</h6>
+        <h6>Dispatch From:</h6>
         <div class="col-md-12">
             <label class="col-form-label">Address<span class="text-danger">*</span></label>
             <input type="text" name="place_of_dispatch_address" id="place_of_dispatch_address" class="form-control" required value="<?= (isset($loading_receipts['place_of_dispatch_address'])) ?  $loading_receipts['place_of_dispatch_address'] : ''?>">

@@ -61,7 +61,7 @@
 
                                                     <hr>
 
-                                                    <h6>Consignor Details:</h6>
+                                                    <h6>Supplier:</h6>
                                                     <div class="col-md-4">
                                                         <label class="col-form-label">Consignor Name: </label>
                                                         <label class="col-form-label"><?= $loading_receipts['consignor_name'] ?></label> 
@@ -94,7 +94,7 @@
                                                     
                                                     <hr>
                                                     
-                                                    <h6>Consignee Details:</h6>
+                                                    <h6>Recipient:</h6>
                                                     
                                                     <div class="col-md-4">
                                                         <label class="col-form-label">Consignee Name: </label>
@@ -128,7 +128,7 @@
 
                                                     <hr>
                                                     
-                                                    <h6>Place of Delivery:</h6>
+                                                    <h6>Ship To:</h6>
                                                     <div class="col-md-12">
                                                         <label class="col-form-label">Address: </label>
                                                         <label class="col-form-label"><?= $loading_receipts['place_of_delivery_address'] ?></label>
@@ -151,7 +151,7 @@
                                                     
                                                     <hr>
 
-                                                    <h6>Place of Dispatch:</h6>
+                                                    <h6>Dispatch From:</h6>
                                                     <div class="col-md-12">
                                                         <label class="col-form-label">Address: </label>
                                                         <label class="col-form-label"><?= $loading_receipts['place_of_dispatch_address'] ?></label>
