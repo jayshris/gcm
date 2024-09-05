@@ -71,14 +71,6 @@
                                             <span class="text-info ">(PNG,JPEG,JPG,PDF)</span>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
-                                        <div class="form-wrap">
-                                            <label class="col-form-label">
-                                            Father Name<span class="text-danger">*</span>
-                                            </label>
-                                            <input type="text" name="father_name" required id="father_name" class="form-control">
-                                        </div>
-                                    </div>
                                     <hr>
 
                                     <h5>Contact Details</h5>

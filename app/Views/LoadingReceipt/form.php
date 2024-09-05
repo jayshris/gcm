@@ -326,10 +326,10 @@
 
                         <div class="col-md-4"></div>
 
-                        <div class="col-md-4" id="transporter_bilti_no_div" <?= isset($loading_receipts['transporter_id']) && ($loading_receipts['transporter_id'] > 0) ? '' : 'Hidden' ?>>
+                        <div class="col-md-4" id="transporter_bilti_no_div" hidden>
                             <?php $label = 'Transporter Bilti No';?>
-                            <label class="col-form-label"><?php echo $label;?></label>
-                            <input type="text" name="transporter_bilti_no" id="transporter_bilti_no" <?= isset($loading_receipts['transporter_bilti_no']) && ($loading_receipts['transporter_bilti_no'] != '') ? '' : 'readonly' ?>  class="form-control" value="<?= (isset($loading_receipts['transporter_bilti_no'])) ?  $loading_receipts['transporter_bilti_no'] : ''?>" placeholder="<?php echo $label;?>" autocomplete="off">
+                            <label class="col-form-label"><?php echo $label;?><span class="text-danger" <?php echo isset($loading_receipts['transporter_bilti_no']) && ($loading_receipts['transporter_bilti_no'] != '' ) ? '' : 'hidden';?>  id="transporter_bilti_no_span">*</span></label>
+                            <input type="number" name="transporter_bilti_no" id="transporter_bilti_no" <?= isset($loading_receipts['transporter_bilti_no']) && ($loading_receipts['transporter_bilti_no'] != '') ? 'required' : 'readonly' ?>  class="form-control" value="<?= (isset($loading_receipts['transporter_bilti_no'])) ?  $loading_receipts['transporter_bilti_no'] : ''?>" placeholder="<?php echo $label;?>" autocomplete="off">
                             <?php
                             if ($validation->getError('transporter_bilti_no')) {
                                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('transporter_bilti_no') . '</div>';
@@ -337,10 +337,10 @@
                             ?>
                         </div>   
 
-                        <div class="col-md-4"  id="e_way_bill_no_div" <?= isset($loading_receipts['transporter_id']) && ($loading_receipts['transporter_id'] > 0) ? '' : 'Hidden' ?>>
+                        <div class="col-md-4"  id="e_way_bill_no_div" hidden>
                             <?php $label = 'E-Way Bill No';?>
-                            <label class="col-form-label"><?php echo $label;?></label>
-                            <input type="text" name="e_way_bill_number" id="e_way_bill_no" <?= isset($loading_receipts['e_way_bill_number']) && ($loading_receipts['e_way_bill_number'] != '') ? '' : 'readonly' ?> class="form-control" value="<?= (isset($loading_receipts['e_way_bill_number'])) ?  $loading_receipts['e_way_bill_number'] : ''?>" placeholder="<?php echo $label;?>" autocomplete="off">
+                            <label class="col-form-label"><?php echo $label;?><span class="text-danger" <?= isset($loading_receipts['e_way_bill_number']) && ($loading_receipts['e_way_bill_number'] != '' ) ? '' : 'hidden' ?> id="e_way_bill_no_span">*</span></label>
+                            <input type="number" name="e_way_bill_number" id="e_way_bill_no" <?= isset($loading_receipts['e_way_bill_number']) && ($loading_receipts['e_way_bill_number'] != '') ? 'required' : 'readonly' ?> class="form-control" value="<?= (isset($loading_receipts['e_way_bill_number'])) ?  $loading_receipts['e_way_bill_number'] : ''?>" placeholder="<?php echo $label;?>" autocomplete="off">
                             <?php
                             if ($validation->getError('e_way_bill_number')) {
                                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('e_way_bill_number') . '</div>';
@@ -353,7 +353,7 @@
                             <h6>Transporter Details:</h6><br>
                             <div class="col-md-4">
                                 <label class="col-form-label">Transporter Name<span class="text-danger">*</span></label> 
-                                <select class="form-select tr-req" name="transporter_id" id="transporter_id" aria-label="Default select example"  onchange="transportedBranches( $(this).find(':selected').val(),'transporter')">
+                                <select class="form-select tr-req" name="transporter_id" id="transporter_id" aria-label="Default select example" >
                                         <option value="">Select </option> 
                                         <?php if(!empty($transporters)){ ?>
                                             <?php foreach($transporters as $key => $c){ ?>
@@ -370,10 +370,10 @@
 
                             <div class="col-md-4">
                                 <label class="col-form-label">Branch Name<span class="text-danger">*</span></label>
-                                <select class="form-select select2 tr-req"  name="transporter_office_id" id="transporter_office_id" <?= isset($loading_receipts['transporter_id']) && ($loading_receipts['transporter_id'] >0) ? 'required' : 'disabled' ?> >
+                                <select class="form-select select2 tr-req"  name="transporter_office_id" id="transporter_office_id" aria-label="Default select example">
                                     <option value="">Select Office</option>
-                                    <?php foreach ($transport_offices as $o) {?> 
-                                    <option value="<?= $o['id'] ?>" <?= (isset($loading_receipts['transporter_office_id']) && ($loading_receipts['transporter_office_id'] == $o['id'])) ? 'selected' : ''?>><?= $o['office_name'] ?></option>
+                                    <?php foreach ($offices as $o) {?> 
+                                    <option value="<?= $o['id'] ?>" <?= (isset($loading_receipts['transporter_office_id']) && ($loading_receipts['transporter_office_id'] == $o['id'])) ? 'selected' : ''?>><?= $o['name'] ?></option>
                                     <?php  } ?>
                                 </select>
                                 <?php
@@ -429,7 +429,7 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label class="col-form-label">GSTIN<span class="text-danger">*</span></label>
+                                <label class="col-form-label">GSTIN</label>
                                 <input type="text" name="transporter_GSTIN" id="transporter_GSTIN" class="form-control tr-req" value="<?= (isset($loading_receipts['transporter_GSTIN'])) ?  $loading_receipts['transporter_GSTIN'] : ''?>">
                                 <?php
                                 if ($validation->getError('transporter_GSTIN')) {
@@ -858,17 +858,16 @@
                             ?>
                         </div>
 
-                        <div class="col-md-4" id="e_way_bill_number_div" <?= isset($loading_receipts['transporter_id']) && ($loading_receipts['transporter_id'] > 0) ? 'Hidden' : '' ?>>
+                        <div class="col-md-4">
                             <?php 
                             $label = 'E-Way Bill No';
-                            $isdisabled= isset($loading_receipts['transporter_id']) && ($loading_receipts['transporter_id'] > 0) ? 'disabled' : '';
                             echo '<label class="col-form-label">'.$label.' </label>';
-                            echo form_input(['name'=>'e_way_bill_number','id'=>'e_way_bill_number','value'=>set_value('e_way_bill_number', (isset($loading_receipts['e_way_bill_number']) ? $loading_receipts['e_way_bill_number'] : '')),'class'=>'form-control '.(($validation->getError('e_way_bill_number')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off','disabled' => $isdisabled]);
+                            echo form_input(['name'=>'e_way_bill_number','id'=>'e_way_bill_number','value'=>set_value('e_way_bill_number', (isset($loading_receipts['e_way_bill_number']) ? $loading_receipts['e_way_bill_number'] : '')),'class'=>'form-control '.(($validation->getError('e_way_bill_number')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off']);
                             echo ($validation->getError('e_way_bill_number')) ? '<div class="invalid-feedback">'.$validation->getError('e_way_bill_number').'</div>' : '';
                             ?>
                         </div>
 
-                        <div class="col-md-4" id="e_way_expiry_date_div" <?= isset($loading_receipts['transporter_id']) && ($loading_receipts['transporter_id'] > 0) ? 'Hidden' : '' ?>>
+                        <div class="col-md-4">
                             <label class="col-form-label">E-WAY Bill Expiry Date</label>
                             <input type="date" name="e_way_expiry_date" id="e_way_expiry_date" class="form-control" value="<?= (isset($loading_receipts['e_way_expiry_date'])) ?  $loading_receipts['e_way_expiry_date'] : ''?>">
                             <?php

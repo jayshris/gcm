@@ -1,13 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <?= $this->include('partials/title-meta') ?>
   <?= $this->include('partials/head-css') ?>
   <style type="text/css">
-	.check-form { border: 1px solid #ccc; background: #fff; padding: 5px; height: 160px; overflow: auto; }
-	.check-form .checkbox { margin-top: 0; }
-	</style>
+    .check-form {
+      border: 1px solid #ccc;
+      background: #fff;
+      padding: 5px;
+      height: 160px;
+      overflow: auto;
+    }
+
+    .check-form .checkbox {
+      margin-top: 0;
+    }
+  </style>
 </head>
+
 <body>
   <div class="main-wrapper">
     <?= $this->include('partials/menu') ?>
@@ -21,6 +32,7 @@
               <div class="col-xl-12 col-lg-12">
                 <?php
                 $validation = \Config\Services::validation();
+
                 use App\Models\UserTypePermissionModel;
                 use App\Models\PartyModel;
                 ?>
@@ -125,15 +137,6 @@
                             <div class="col-md-3">
                               <div class="form-wrap">
                                 <label class="col-form-label">
-                                  Father Name<span class="text-danger">*</span>
-                                </label>
-                                <input type="text" name="father_name" required id="father_name" class="form-control">
-                              </div>
-                            </div>
-                            
-                            <div class="col-md-3">
-                              <div class="form-wrap">
-                                <label class="col-form-label">
                                   Phone Number
                                 </label>
                                 <input readonly type="text" name="mobile" id="mobile" class="form-control">
@@ -182,7 +185,7 @@
                             <div class="col-md-3">
                               <div class="form-wrap">
                                 <label class="col-form-label">Driving Licence DOB <span class="text-danger">*</span></label>
-                                <input type="date" name="dl_dob"  class="form-control" required>
+                                <input type="date" name="dl_dob" class="form-control" required>
                               </div>
                             </div>
 
@@ -301,14 +304,17 @@
                                           $vehicletypesitem[] = $value['vehicle_type_id'];
                                         }
                                       }
-                                  ?>                                
-                                  <div class="checkbox">
-                                    <input class="form-check-input chk" type="checkbox" name="vehicle_types[]" id="id_<?php echo $type["id"]; ?>" value="<?php echo $type["id"]; ?>" <?php if (in_array($type['id'], $vehicletypesitem)) { echo "checked"; } ?>>
-                                    <label for="id_<?php echo $type["id"]; ?>" class="col-form-label" style=" margin: 0px 20px 0px 3px;">
-                                      &nbsp;<?php echo ucwords($type["name"]); ?>
-                                    </label>
-                                  </div>
-                                  <?php } }
+                                  ?>
+                                      <div class="checkbox">
+                                        <input class="form-check-input chk" type="checkbox" name="vehicle_types[]" id="id_<?php echo $type["id"]; ?>" value="<?php echo $type["id"]; ?>" <?php if (in_array($type['id'], $vehicletypesitem)) {
+                                                                                                                                                                                            echo "checked";
+                                                                                                                                                                                          } ?>>
+                                        <label for="id_<?php echo $type["id"]; ?>" class="col-form-label" style=" margin: 0px 20px 0px 3px;">
+                                          &nbsp;<?php echo ucwords($type["name"]); ?>
+                                        </label>
+                                      </div>
+                                  <?php }
+                                  }
                                   if ($validation->getError('vehicle_type')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('vehicle_type') . '</div>';
                                   }

@@ -5,6 +5,22 @@
   <?= $this->include('partials/head-css') ?>
   <!-- Feathericon CSS -->
   <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/feather.css">
+
+  <style type="text/css">
+    .custom-table .table-responsive {
+      position: relative !important;
+      height: 500px !important;
+      border-left: 1px solid #ddd !important;
+      border: 0px !important;
+    }
+
+    table.table.dataTable > thead > tr {
+      border-color: #E8E8E8 !important;
+      position: sticky !important;
+      top: 0px !important;
+      z-index: 9 !important;
+    }
+  </style>
 </head>
 
 <body>
@@ -65,8 +81,8 @@
                           
                           <div class="row dt-row">
                             <div class="col-sm-12 table-responsive">
-                              <table class="table dataTable no-footer" id="permission_lists" style="width: 1346px;">
-                                <thead class="thead-light">
+                              <table class="table table-fixed table-hover" id="permission_lists">
+                                <thead class="thead-light sticky-top top-0">
                                   <tr>
                                     <th class="no-sort">
                                       <!-- <label class="checkboxs">

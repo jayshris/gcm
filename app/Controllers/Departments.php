@@ -33,14 +33,12 @@ class Departments extends BaseController
     function create(){   
       if($this->request->getPost()){
         $error = $this->validate([ 
-          'dept_name'   =>  'required',
-          'booking'   =>  'required' 
+          'dept_name'   =>  'required' 
         ]);   
         if (!$error) {
           $this->view['error']   = $this->validator;
         } else {  
           $data['dept_name'] = $this->request->getVar('dept_name');
-          $data['booking'] = $this->request->getVar('booking');
           $data['status'] = 1;
 
           $this->DepartmentModel->save($data);  
@@ -58,8 +56,7 @@ class Departments extends BaseController
       // echo '<pre>';print_r($this->view['department']);exit;
       if($this->request->getPost()){
         $error = $this->validate([ 
-         'dept_name'   =>  'required',
-         'booking'   =>  'required'   
+         'dept_name'   =>  'required'  
         ]); 
         $validation = \Config\Services::validation();
         // echo 'POst dt<pre>';print_r($this->request->getPost());
@@ -69,7 +66,6 @@ class Departments extends BaseController
           $this->view['error']   = $this->validator;
         } else { 
           $data['dept_name'] = $this->request->getVar('dept_name'); 
-          $data['booking'] = $this->request->getVar('booking');
 
           $this->DepartmentModel->update($id,$data); 
           // echo 'data<pre>';print_r($data);exit;

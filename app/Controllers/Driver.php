@@ -93,7 +93,10 @@ class Driver extends BaseController
     if ($this->request->getPost('foreman_id') != '') {
       $driverModel->where('t3.id', $this->request->getPost('foreman_id'));
     }
+
+    $driverModel->where('t2.approved', '1');
     $driverModel->groupBy('driver.id');
+
     $this->view['driver_data'] = $driverModel->orderBy('t2.party_name', 'asc')->findAll();
 
     // echo '<pre>';print_r( $this->view['driver_data']);exit;
@@ -135,16 +138,14 @@ class Driver extends BaseController
     $this->view['schemes'] = $this->SCModel->orderBy('id', 'ASC')->findAll();
 
     if ($this->request->getMethod() == 'POST') {
+
       $error = $this->validate([
         'foreman_id'              =>  'required',
         'driver_type'             =>  'required',
-        'father_name'             =>  'required'
       ]);
       if (!$error) {
         $this->view['error']   = $this->validator;
       } else {
-        // echo '<pre>';print_r($this->request->getVar());exit;
-
         $driverModel = new DriverModel();
 
         $newName1 = '';
@@ -214,7 +215,6 @@ class Driver extends BaseController
 
 
         $driverModel->save([
-
           'party_id'  =>  $this->request->getVar('party_id'),
           'foreman_id'  =>  $this->request->getVar('foreman_id'),
           'driver_type'  =>   $this->request->getPost('driver_type'),
@@ -236,8 +236,7 @@ class Driver extends BaseController
           'state'  =>  $this->request->getPost('state'),
           'zip'  =>  $this->request->getPost('zip'),
           'working_status'  =>  '1',
-          'created_at'  =>  date("Y-m-d h:i:sa"),
-          'father_name'  =>  $this->request->getVar('father_name'),
+          'created_at'  =>  date("Y-m-d h:i:sa")
         ]);
 
         $user_id = $driverModel->getInsertID();
@@ -301,7 +300,7 @@ class Driver extends BaseController
       $driverModel = new DriverModel();
 
       $driverModel->update($id, [
-        'party_id'  =>  $this->request->getVar('name'),
+        'party_id'  =>  $this->request->getVar('party_id'),
         'foreman_id'  =>  $this->request->getVar('foreman_id'),
         'driver_type'  =>   $this->request->getPost('driver_type'),
         'bank_ac' => $this->request->getPost('bank_account_number'),
@@ -318,7 +317,6 @@ class Driver extends BaseController
         'zip'  =>  $this->request->getPost('zip'),
         'working_status' =>  '1',
         'updated_at' =>  date("Y-m-d h:i:sa"),
-        'father_name'  =>  $this->request->getVar('father_name'),
       ]);
 
       // update image if uploaded
@@ -584,8 +582,9 @@ class Driver extends BaseController
       ->orderBy('driver_vehicle_map.assign_date', 'descs')
       ->join('party', 'party.id = driver.party_id')
       // ->where('(driver_vehicle_map.unassign_date IS NULL or driver_vehicle_map.unassign_date="")')
-      ->where('(driver_vehicle_map.unassign_date IS NULL)')
+      ->where('(driver_vehicle_map.unassign_date IS NOT NULL)')
       ->findAll();
+      
 
     return view('Driver/assigned_list', $data);
   }

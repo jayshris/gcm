@@ -43,7 +43,7 @@ class LoadingReceipt extends BaseController
     $this->CustomersModel = new CustomersModel();
     $this->PTModel = new PartytypeModel();
     $this->CustomerBranchModel = new CustomerBranchModel();
-    $this->BVLModel = new BookingVehicleLogModel();  
+    $this->BVLModel = new BookingVehicleLogModel(); 
   }
 
   public function index()
@@ -59,7 +59,6 @@ class LoadingReceipt extends BaseController
     $stateModel = new StateModel();
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
     $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
-    $this->view['transport_offices'] = []; 
     $this->view['bookings'] = $this->BookingsModel    
                               ->where(['approved'=> '1','is_vehicle_assigned' => 1])
                               ->where('NOT EXISTS (SELECT 1 
@@ -96,7 +95,7 @@ class LoadingReceipt extends BaseController
     ->first(); 
      $party_type_ids = str_replace([',',', '],'|', $party_type_ids );
    
-    $this->view['transporters'] = $this->CustomersModel->select('customer.id,party.party_name')
+    $this->view['transporters'] = $this->CustomersModel->select('party.id,party.party_name')
         ->join('party', 'party.id = customer.party_id')
         ->where('customer.status', '1')
         ->where('CONCAT(",", party_type_id, ",") REGEXP ",('.$party_type_ids['party_type_ids'].'),"')
@@ -127,7 +126,7 @@ class LoadingReceipt extends BaseController
       ]); 
       $validation = \Config\Services::validation();
       // echo 'POst dt<pre>';print_r($this->request->getPost());
-      // echo 'getErrors<pre>';print_r($validation->getErrors());exit;
+      // echo 'getErrors<pre>';print_r($validation->getErrors());//exit;
 
       if (!$error) {
         $this->view['error']   = $this->validator;
@@ -239,16 +238,7 @@ class LoadingReceipt extends BaseController
     $rows = (object) array_merge((array) $party, (array) $gstn);
     echo json_encode($rows);exit;
   }
-  function getTransporterBranches($id){
-    return $this->CustomerBranchModel->where([
-      'customer_id'=> $id
-      ])->findAll();
-  }
 
-  function getTransporterBranchesById(){
-    $rows =  $this->getTransporterBranches($this->request->getPost('customer_id'));
-    echo json_encode($rows);exit;
-  }
   function edit($id){  
     $stateModel = new StateModel();
     $this->view['loading_receipts'] = $this->LoadingReceiptModel->where(['id' => $id])->first();
@@ -260,15 +250,7 @@ class LoadingReceipt extends BaseController
     } 
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
     $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
-    $this->view['transport_offices'] = $this->getTransporterBranches($this->view['loading_receipts']['transporter_id']); 
-    
-    $this->view['bookings'] = $this->BookingsModel    
-    ->where(['approved'=> '1','is_vehicle_assigned' => 1]) 
-    ->where('NOT EXISTS (SELECT 1 
-                  FROM   loading_receipts
-                  WHERE  loading_receipts.booking_id = bookings.id and id != '.$id.')')
-    ->findAll(); 
-
+    $this->view['bookings'] = $this->BookingsModel->where(['approved'=> '1','is_vehicle_assigned' => 1])->findAll();
     // $this->view['vehicles'] = $this->VModel->where('status', 1)->findAll();
     $this->view['vehicles'] =  $this->BookingsModel->select('v.id,v.rc_number') 
     ->join('vehicle v','bookings.vehicle_id = v.id')->orderBy('v.id', 'desc')
@@ -356,7 +338,7 @@ class LoadingReceipt extends BaseController
       ]); 
       $validation = \Config\Services::validation();
       // echo 'POst dt<pre>';print_r($this->request->getPost());
-      // echo 'getErrors<pre>';print_r($validation->getErrors());exit;
+      // echo 'getErrors<pre>';print_r($validation->getErrors());//exit;
 
       if (!$error) {
         $this->view['error']   = $this->validator;
@@ -504,14 +486,8 @@ class LoadingReceipt extends BaseController
     $this->view['loading_receipts'] = $this->LoadingReceiptModel->where(['id' => $id])->first();
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
     $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
-    $this->view['transport_offices'] = $this->getTransporterBranches($this->view['loading_receipts']['transporter_id']); 
-    $this->view['bookings'] = $this->BookingsModel    
-    ->where(['approved'=> '1','is_vehicle_assigned' => 1]) 
-    ->where('NOT EXISTS (SELECT 1 
-                  FROM   loading_receipts
-                  WHERE  loading_receipts.booking_id = bookings.id and id != '.$id.')')
-    ->findAll(); 
-
+    $this->view['bookings'] = $this->BookingsModel->where(['approved'=> '1','is_vehicle_assigned' => 1])->findAll();
+    
     $this->view['vehicles'] =  $this->BookingsModel->select('v.id,v.rc_number') 
     ->join('vehicle v','bookings.vehicle_id = v.id')->orderBy('v.id', 'desc')
     ->where(['bookings.approved'=> '1','bookings.is_vehicle_assigned' => 1])
@@ -667,8 +643,7 @@ class LoadingReceipt extends BaseController
         ];
 
         // echo 'data<pre>';print_r($data);exit;
-        $this->LoadingReceiptModel->update($id,$data);
-         
+        $this->LoadingReceiptModel->update($id,$data); 
         $msg = 'Loading Receipt Updated Successfully';
         if($this->request->getVar('approved')){
           $msg = 'Loading Receipt Approved Successfully';
@@ -679,27 +654,6 @@ class LoadingReceipt extends BaseController
       }
     }
     return view('LoadingReceipt/approve', $this->view); 
-  }
-
-  function validateBookingLr($customer_id){  
-      //get customer party type: LR details 
-      $bookingPartyLR = $this->CustomersModel->where('customer.id',$customer_id)->first();
-      // echo   $customer_id.' $bookingPartyLR <pre>';print_r($bookingPartyLR); 
-      $party_types= isset($bookingPartyLR['party_type_id']) && (!empty($bookingPartyLR['party_type_id'])) ? explode(',',$bookingPartyLR['party_type_id']) : [];
-      //get only those customers whose sale = 1
-      if(!empty($party_types)){
-          $party_type_ids = $this->PTModel
-          ->whereIn('id',$party_types)
-          ->where('(lr_first_party = 1 or lr_third_party =1)') 
-          ->findAll();  
-      }   
-      // echo  ' $party_type_ids <pre>';print_r($party_type_ids);exit;
-      
-      if(!empty($party_type_ids)){
-          return 1;
-      }else{
-          return 0;
-      }   
   }
 
   function update_vehicle($id){

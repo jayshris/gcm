@@ -12,5 +12,5 @@ class DepartmentModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['dept_name', 'status','booking'];
+    protected $allowedFields    = ['dept_name', 'status'];
 }

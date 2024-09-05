@@ -7,22 +7,31 @@
   <!-- Feathericon CSS -->
   <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/feather.css">
 
+  <style type="text/css">
+    .custom-table .table-responsive {
+      position: relative !important;
+      height: 500px !important;
+      border-left: 1px solid #ddd !important;
+      border: 0px !important;
+    }
 
+    table.table.dataTable > thead > tr {
+      border-color: #E8E8E8 !important;
+      position: sticky !important;
+      top: 0px !important;
+      z-index: 9 !important;
+    }
+  </style>
 </head>
 
 <body>
-
-  <!-- Main Wrapper -->
   <div class="main-wrapper">
-
     <?= $this->include('partials/menu') ?>
 
-    <!-- Page Wrapper -->
     <div class="page-wrapper">
       <div class="content">
         <div class="row">
           <div class="col-md-12">
-
             <?= $this->include('partials/page-title') ?>
             <?php $validation = \Config\Services::validation(); ?>
 
@@ -38,8 +47,7 @@
                 ?>
                 
                 <?php 
-                echo form_open_multipart(base_url().'user/'.$router->methodName().(($token>0) ? '/'.$token : ''), ['name'=>'actionForm', 'id'=>'actionForm']);
-                //echo form_open_multipart(base_url().$router->controllerName().'/'.$router->methodName().(($token>0) ? '/'.$token : ''), ['name'=>'actionForm', 'id'=>'actionForm']);
+                echo form_open_multipart(base_url().'user/'.$router->methodName().(($token>0) ? '/'.$token : ''),['name'=>'actionForm','id'=>'actionForm']);
                 ?>
                   <div class="card main-card">
                     <div class="card-body">

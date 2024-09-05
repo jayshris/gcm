@@ -270,8 +270,7 @@ class Driverkyc extends BaseController
                         'emergency_relation' =>  $this->request->getPost('emergency_relation'),
                         'emergency_contact' =>  $this->request->getPost('emergency_contact'),
                         'working_status'  =>  '1',
-                        'created_at'  =>  date("Y-m-d h:i:sa"),
-                        'father_name'  =>  $this->request->getVar('father_name'),
+                        'created_at'  =>  date("Y-m-d h:i:sa")
                     ]);
 
                     $driver_id = $this->DModel->getInsertID();
@@ -473,7 +472,6 @@ class Driverkyc extends BaseController
                     'emergency_contact' =>  $this->request->getPost('emergency_contact'),
                     'working_status' =>  '1',
                     'updated_at' =>  date("Y-m-d h:i:sa"),
-                    'father_name'  =>  $this->request->getVar('father_name'),
                 ]);
 
                 // update image if uploaded
@@ -543,16 +541,13 @@ class Driverkyc extends BaseController
                 $this->VTDModule->where('driver_id', $id)->delete();
 
                 $vehicle = $this->request->getVar('vehicle_types');
-                if ($vehicle) {
-                    foreach ($vehicle as $key => $value) {
-                        $vehicledata = [
-                            'vehicle_type_id' =>  $value,
-                            'driver_id'       =>  $id
-                        ];
-                        $this->VTDModule->save($vehicledata);
-                    }
+                foreach ($vehicle as $key => $value) {
+                    $vehicledata = [
+                        'vehicle_type_id' =>  $value,
+                        'driver_id'       =>  $id,
+                    ];
+                    $this->VTDModule->save($vehicledata);
                 }
-
 
 
                 // add scheme

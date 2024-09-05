@@ -29,19 +29,6 @@
                                                         <label class="col-form-label"><?= $department['dept_name'] ?></label>
                                                     </div>
 
-													<div class="col-md-12">
-                                                        <label class="col-form-label"><b>Booking: </b></label>
-                                                        <label class="col-form-label">
-                                                            <?php 
-                                                            if($department['booking'] == 1){
-                                                                echo 'Yes';	
-                                                            }else {
-                                                                echo 'No';	
-                                                            }												
-                                                            ?>
-                                                        </label>  
-                                                    </div>
-
                                                     <div class="col-md-12">
                                                         <label class="col-form-label"><b>Status: </b></label>
                                                         <label class="col-form-label">
