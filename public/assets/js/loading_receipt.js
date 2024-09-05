@@ -20,6 +20,7 @@ $.getBookingDetails = function() {
     $('#e_way_bill_number_div').removeAttr('hidden');
     $('#e_way_bill_number').removeAttr('disabled');
     $('#e_way_expiry_date_div').removeAttr('hidden');
+    $('#payment_terms_div').attr('hidden','hidden');
     var booking_id = $('#booking_id').val();
     $(".tr-req").removeAttr('required');
     $(".tr-req").val('');
@@ -52,6 +53,10 @@ $.getBookingDetails = function() {
                     $('#e_way_expiry_date_div').attr('hidden','hidden');
                     $(".tr-req").attr('required','required');
                 } 
+
+                if(res.is_lr_first_party > 0){
+                    $('#payment_terms_div').removeAttr('hidden');
+                }
             }
         });
     }else{
@@ -69,9 +74,9 @@ $.getBookingDetails = function() {
 function changeIdIpt(branch_id,party_id,id,key = 'consignor'){
     // return true;
     var party_id = (party_id) > 0 ? party_id : 0; 
-    var pre = 'place_of_dispatch';
+    var pre = 'place_of_delivery';
     if(key == 'consignor'){
-        pre = 'place_of_delivery';
+        pre = 'place_of_dispatch';
     }  
     if(key == 'transporter'){
         pre = 'transporter';
@@ -178,9 +183,9 @@ function customerBranches(customer_id,customer_type){
 }
 
 function partyInfo(party_id=0, key = 'consignor'){   
-    var pre = 'place_of_delivery';
+    var pre = 'place_of_dispatch';
     if(key == 'consignee'){
-        pre = 'place_of_dispatch';
+        pre = 'place_of_delivery';
     } 
     
     $("#"+key+"_state").val('').attr("selected","selected").trigger('change');  

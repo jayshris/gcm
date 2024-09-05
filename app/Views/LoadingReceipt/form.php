@@ -527,10 +527,11 @@
 
                         <div class="col-md-6">
                             <?php 
+                            $isrequired = ($currentMethod=='approve') ? ['required' => 'required'] : [];  
                             $required = ($currentMethod=='approve') ? '<span class="text-danger">*</span>' : '';  
                             $label = 'GSTIN '; 
                             echo '<label class="col-form-label">'.$label.$required.' </label>';
-                            echo form_input(['name'=>'consignor_GSTIN','id'=>'consignor_GSTIN','value'=>set_value('consignor_GSTIN', (isset($loading_receipts['consignor_GSTIN']) ? $loading_receipts['consignor_GSTIN'] : '')),'class'=>'form-control '.(($validation->getError('consignor_GSTIN')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off','required' => ($required) ? true: false]);
+                            echo form_input(['name'=>'consignor_GSTIN','id'=>'consignor_GSTIN','value'=>set_value('consignor_GSTIN', (isset($loading_receipts['consignor_GSTIN']) ? $loading_receipts['consignor_GSTIN'] : '')),'class'=>'form-control '.(($validation->getError('consignor_GSTIN')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off'] + $isrequired);
                             echo ($validation->getError('consignor_GSTIN')) ? '<div class="invalid-feedback">'.$validation->getError('consignor_GSTIN').'</div>' : '';
                             ?>
                         </div>
@@ -543,7 +544,7 @@
             <div class="security-grid flex-fill">
                 <div class="security-header">
                     <div class="security-heading">
-                        <h4>Ship To:</h4>
+                        <h4>Dispatch From:</h4>
                     </div>
                     <hr>
 
@@ -552,10 +553,10 @@
                             <?php 
                             $label = 'Name';
                             echo '<label class="col-form-label">'.$label.' <span class="text-danger">*</span></label>';
-                            echo form_input(['name'=>'place_of_delivery_name','id'=>'place_of_delivery_name','value'=>set_value('place_of_delivery_name', (isset($loading_receipts['place_of_delivery_name']) ? $loading_receipts['place_of_delivery_name'] : '')),'class'=>'form-control '.(($validation->getError('place_of_delivery_name')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off', 'required'=>'required']);
-                            echo ($validation->getError('place_of_delivery_name')) ? '<div class="invalid-feedback">'.$validation->getError('place_of_delivery_name').'</div>' : '';
+                            echo form_input(['name'=>'place_of_dispatch_name','id'=>'place_of_dispatch_name','value'=>set_value('place_of_dispatch_name', (isset($loading_receipts['place_of_dispatch_name']) ? $loading_receipts['place_of_dispatch_name'] : '')),'class'=>'form-control '.(($validation->getError('place_of_dispatch_name')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'required'=>'required']);
+                            echo ($validation->getError('place_of_dispatch_name')) ? '<div class="invalid-feedback">'.$validation->getError('place_of_dispatch_name').'</div>' : '';
                             ?>
-                        </div>
+                        </div> 
 
                         <div class="col-md-4">
                             <label class="col-form-label">Branch Name<span class="text-danger"  <?= isset($loading_receipts['consignor_id']) && ($loading_receipts['consignor_id'] >0 ) ? '' : 'hidden' ?>  id="consignor_branch_span">*</span></label>
@@ -576,8 +577,8 @@
                             <?php 
                             $label = 'Address';
                             echo '<label class="col-form-label">'.$label.' <span class="text-danger">*</span></label>';
-                            echo form_input(['name'=>'place_of_delivery_address','id'=>'place_of_delivery_address','value'=>set_value('place_of_delivery_address', (isset($loading_receipts['place_of_delivery_address']) ? $loading_receipts['place_of_delivery_address'] : '')),'class'=>'form-control '.(($validation->getError('place_of_delivery_address')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off', 'required'=>'required']);
-                            echo ($validation->getError('place_of_delivery_address')) ? '<div class="invalid-feedback">'.$validation->getError('place_of_delivery_address').'</div>' : '';
+                            echo form_input(['name'=>'place_of_dispatch_address','id'=>'place_of_dispatch_address','value'=>set_value('place_of_dispatch_address', (isset($loading_receipts['place_of_dispatch_address']) ? $loading_receipts['place_of_dispatch_address'] : '')),'class'=>'form-control '.(($validation->getError('place_of_dispatch_address')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'required'=>'required']);
+                            echo ($validation->getError('place_of_dispatch_address')) ? '<div class="invalid-feedback">'.$validation->getError('place_of_dispatch_address').'</div>' : '';
                             ?>
                         </div>
 
@@ -585,22 +586,22 @@
                             <?php 
                             $label = 'City';
                             echo '<label class="col-form-label">'.$label.' <span class="text-danger">*</span></label>';
-                            echo form_input(['name'=>'place_of_delivery_city','id'=>'place_of_delivery_city','value'=>set_value('place_of_delivery_city', (isset($loading_receipts['place_of_delivery_city']) ? $loading_receipts['place_of_delivery_city'] : '')),'class'=>'form-control '.(($validation->getError('place_of_delivery_city')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off', 'required'=>'required']);
-                            echo ($validation->getError('place_of_delivery_city')) ? '<div class="invalid-feedback">'.$validation->getError('place_of_delivery_city').'</div>' : '';
+                            echo form_input(['name'=>'place_of_dispatch_city','id'=>'place_of_dispatch_city','value'=>set_value('place_of_dispatch_city', (isset($loading_receipts['place_of_dispatch_city']) ? $loading_receipts['place_of_dispatch_city'] : '')),'class'=>'form-control '.(($validation->getError('place_of_dispatch_city')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'required'=>'required']);
+                            echo ($validation->getError('place_of_dispatch_city')) ? '<div class="invalid-feedback">'.$validation->getError('place_of_dispatch_city').'</div>' : '';
                             ?>
                         </div>
 
                         <div class="col-md-4">
                             <label class="col-form-label">State<span class="text-danger">*</span></label> 
-                            <select class="form-select select2" required name="place_of_delivery_state" id="place_of_delivery_state" aria-label="Default select example">
+                            <select class="form-select select2" required name="place_of_dispatch_state" id="place_of_dispatch_state" aria-label="Default select example">
                                 <option value="">Select State</option>
                                 <?php foreach ($states as $o) { ?> 
-                                <option value="<?= $o['state_id'] ?>" <?= (isset($loading_receipts['place_of_delivery_state']) && ($loading_receipts['place_of_delivery_state'] == $o['state_id'])) ? 'selected' : ''?> ><?= $o['state_name'] ?></option> 
+                                <option value="<?= $o['state_id'] ?>" <?= (isset($loading_receipts['place_of_dispatch_state']) && ($loading_receipts['place_of_dispatch_state'] == $o['state_id'])) ? 'selected' : ''?> ><?= $o['state_name'] ?></option> 
                                 <?php } ?>
-                            </select>
+                            </select> 
                             <?php
-                            if ($validation->getError('place_of_delivery_state')) {
-                                echo '<div class="alert alert-danger mt-2">' . $validation->getError('place_of_delivery_state') . '</div>';
+                            if ($validation->getError('place_of_dispatch_state')) {
+                                echo '<div class="alert alert-danger mt-2">' . $validation->getError('place_of_dispatch_state') . '</div>';
                             }
                             ?>
                         </div>
@@ -608,15 +609,15 @@
                         <div class="col-md-4">
                             <?php 
                             $label = 'Pincode';
-                            echo '<label class="col-form-label">'.$label.'</label>';
-                            echo form_input(['name'=>'place_of_delivery_pincode','id'=>'place_of_delivery_pincode','value'=>set_value('place_of_delivery_pincode', (isset($loading_receipts['place_of_delivery_pincode']) ? $loading_receipts['place_of_delivery_pincode'] : '')),'class'=>'form-control '.(($validation->getError('place_of_delivery_pincode')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');"]);
-                            echo ($validation->getError('place_of_delivery_pincode')) ? '<div class="invalid-feedback">'.$validation->getError('place_of_delivery_pincode').'</div>' : '';
+                            echo '<label class="col-form-label">'.$label.' </label>';
+                            echo form_input(['name'=>'place_of_dispatch_pincode','id'=>'place_of_dispatch_pincode','value'=>set_value('place_of_dispatch_pincode', (isset($loading_receipts['place_of_dispatch_pincode']) ? $loading_receipts['place_of_dispatch_pincode'] : '')),'class'=>'form-control '.(($validation->getError('place_of_dispatch_pincode')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');",]);
+                            echo ($validation->getError('place_of_dispatch_pincode')) ? '<div class="invalid-feedback">'.$validation->getError('place_of_dispatch_pincode').'</div>' : '';
                             ?>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </div>   
 
         <div class="col-lg-6 col-md-6 d-flex">
             <div class="security-grid flex-fill">
@@ -704,10 +705,11 @@
 
                         <div class="col-md-4">
                             <?php 
+                            $isrequired = ($currentMethod=='approve') ? ['required' => 'required'] : [];  
                             $required = ($currentMethod=='approve') ? '<span class="text-danger">*</span>' : '';  
                             $label = 'GSTIN';
                             echo '<label class="col-form-label">'.$label.$required.'</label>';
-                            echo form_input(['name'=>'consignee_GSTIN','id'=>'consignee_GSTIN','value'=>set_value('consignee_GSTIN', (isset($loading_receipts['consignee_GSTIN']) ? $loading_receipts['consignee_GSTIN'] : '')),'class'=>'form-control '.(($validation->getError('consignee_GSTIN')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off','required' => ($required) ? true: false]);
+                            echo form_input(['name'=>'consignee_GSTIN','id'=>'consignee_GSTIN','value'=>set_value('consignee_GSTIN', (isset($loading_receipts['consignee_GSTIN']) ? $loading_receipts['consignee_GSTIN'] : '')),'class'=>'form-control '.(($validation->getError('consignee_GSTIN')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off']+$isrequired);
                             echo ($validation->getError('consignee_GSTIN')) ? '<div class="invalid-feedback">'.$validation->getError('consignee_GSTIN').'</div>' : '';
                             ?>
                         </div>
@@ -720,7 +722,7 @@
             <div class="security-grid flex-fill">
                 <div class="security-header">
                     <div class="security-heading">
-                        <h4>Dispatch From:</h4>
+                        <h4>Ship To:</h4>
                     </div>
                     <hr>
 
@@ -729,8 +731,8 @@
                             <?php 
                             $label = 'Name';
                             echo '<label class="col-form-label">'.$label.' <span class="text-danger">*</span></label>';
-                            echo form_input(['name'=>'place_of_dispatch_name','id'=>'place_of_dispatch_name','value'=>set_value('place_of_dispatch_name', (isset($loading_receipts['place_of_dispatch_name']) ? $loading_receipts['place_of_dispatch_name'] : '')),'class'=>'form-control '.(($validation->getError('place_of_dispatch_name')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'required'=>'required']);
-                            echo ($validation->getError('place_of_dispatch_name')) ? '<div class="invalid-feedback">'.$validation->getError('place_of_dispatch_name').'</div>' : '';
+                            echo form_input(['name'=>'place_of_delivery_name','id'=>'place_of_delivery_name','value'=>set_value('place_of_delivery_name', (isset($loading_receipts['place_of_delivery_name']) ? $loading_receipts['place_of_delivery_name'] : '')),'class'=>'form-control '.(($validation->getError('place_of_delivery_name')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off', 'required'=>'required']);
+                            echo ($validation->getError('place_of_delivery_name')) ? '<div class="invalid-feedback">'.$validation->getError('place_of_delivery_name').'</div>' : '';
                             ?>
                         </div>
 
@@ -753,8 +755,8 @@
                             <?php 
                             $label = 'Address';
                             echo '<label class="col-form-label">'.$label.' <span class="text-danger">*</span></label>';
-                            echo form_input(['name'=>'place_of_dispatch_address','id'=>'place_of_dispatch_address','value'=>set_value('place_of_dispatch_address', (isset($loading_receipts['place_of_dispatch_address']) ? $loading_receipts['place_of_dispatch_address'] : '')),'class'=>'form-control '.(($validation->getError('place_of_dispatch_address')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'required'=>'required']);
-                            echo ($validation->getError('place_of_dispatch_address')) ? '<div class="invalid-feedback">'.$validation->getError('place_of_dispatch_address').'</div>' : '';
+                            echo form_input(['name'=>'place_of_delivery_address','id'=>'place_of_delivery_address','value'=>set_value('place_of_delivery_address', (isset($loading_receipts['place_of_delivery_address']) ? $loading_receipts['place_of_delivery_address'] : '')),'class'=>'form-control '.(($validation->getError('place_of_delivery_address')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off', 'required'=>'required']);
+                            echo ($validation->getError('place_of_delivery_address')) ? '<div class="invalid-feedback">'.$validation->getError('place_of_delivery_address').'</div>' : '';
                             ?>
                         </div>
 
@@ -762,22 +764,22 @@
                             <?php 
                             $label = 'City';
                             echo '<label class="col-form-label">'.$label.' <span class="text-danger">*</span></label>';
-                            echo form_input(['name'=>'place_of_dispatch_city','id'=>'place_of_dispatch_city','value'=>set_value('place_of_dispatch_city', (isset($loading_receipts['place_of_dispatch_city']) ? $loading_receipts['place_of_dispatch_city'] : '')),'class'=>'form-control '.(($validation->getError('place_of_dispatch_city')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'required'=>'required']);
-                            echo ($validation->getError('place_of_dispatch_city')) ? '<div class="invalid-feedback">'.$validation->getError('place_of_dispatch_city').'</div>' : '';
+                            echo form_input(['name'=>'place_of_delivery_city','id'=>'place_of_delivery_city','value'=>set_value('place_of_delivery_city', (isset($loading_receipts['place_of_delivery_city']) ? $loading_receipts['place_of_delivery_city'] : '')),'class'=>'form-control '.(($validation->getError('place_of_delivery_city')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off', 'required'=>'required']);
+                            echo ($validation->getError('place_of_delivery_city')) ? '<div class="invalid-feedback">'.$validation->getError('place_of_delivery_city').'</div>' : '';
                             ?>
                         </div>
 
                         <div class="col-md-4">
                             <label class="col-form-label">State<span class="text-danger">*</span></label> 
-                            <select class="form-select select2" required name="place_of_dispatch_state" id="place_of_dispatch_state" aria-label="Default select example">
+                            <select class="form-select select2" required name="place_of_delivery_state" id="place_of_delivery_state" aria-label="Default select example">
                                 <option value="">Select State</option>
                                 <?php foreach ($states as $o) { ?> 
-                                <option value="<?= $o['state_id'] ?>" <?= (isset($loading_receipts['place_of_dispatch_state']) && ($loading_receipts['place_of_dispatch_state'] == $o['state_id'])) ? 'selected' : ''?> ><?= $o['state_name'] ?></option> 
+                                <option value="<?= $o['state_id'] ?>" <?= (isset($loading_receipts['place_of_delivery_state']) && ($loading_receipts['place_of_delivery_state'] == $o['state_id'])) ? 'selected' : ''?> ><?= $o['state_name'] ?></option> 
                                 <?php } ?>
-                            </select> 
+                            </select>
                             <?php
-                            if ($validation->getError('place_of_dispatch_state')) {
-                                echo '<div class="alert alert-danger mt-2">' . $validation->getError('place_of_dispatch_state') . '</div>';
+                            if ($validation->getError('place_of_delivery_state')) {
+                                echo '<div class="alert alert-danger mt-2">' . $validation->getError('place_of_delivery_state') . '</div>';
                             }
                             ?>
                         </div>
@@ -785,15 +787,16 @@
                         <div class="col-md-4">
                             <?php 
                             $label = 'Pincode';
-                            echo '<label class="col-form-label">'.$label.' </label>';
-                            echo form_input(['name'=>'place_of_dispatch_pincode','id'=>'place_of_dispatch_pincode','value'=>set_value('place_of_dispatch_pincode', (isset($loading_receipts['place_of_dispatch_pincode']) ? $loading_receipts['place_of_dispatch_pincode'] : '')),'class'=>'form-control '.(($validation->getError('place_of_dispatch_pincode')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');",]);
-                            echo ($validation->getError('place_of_dispatch_pincode')) ? '<div class="invalid-feedback">'.$validation->getError('place_of_dispatch_pincode').'</div>' : '';
+                            echo '<label class="col-form-label">'.$label.'</label>';
+                            echo form_input(['name'=>'place_of_delivery_pincode','id'=>'place_of_delivery_pincode','value'=>set_value('place_of_delivery_pincode', (isset($loading_receipts['place_of_delivery_pincode']) ? $loading_receipts['place_of_delivery_pincode'] : '')),'class'=>'form-control '.(($validation->getError('place_of_delivery_pincode')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');"]);
+                            echo ($validation->getError('place_of_delivery_pincode')) ? '<div class="invalid-feedback">'.$validation->getError('place_of_delivery_pincode').'</div>' : '';
                             ?>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>        
+        </div>
+           
 
         <div class="col-lg-12 col-md-12 d-flex">
             <div class="security-grid flex-fill">
@@ -849,9 +852,9 @@
                             ?>
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-4" id="payment_terms_div" hidden>
                             <?php 
-                            $label = 'Payment Terms';
+                            $label = 'Terms';
                             echo '<label class="col-form-label">'.$label.' </label>';
                             echo form_input(['name'=>'payment_terms','id'=>'payment_terms','value'=>set_value('payment_terms', (isset($loading_receipts['payment_terms']) ? $loading_receipts['payment_terms'] : '')),'class'=>'form-control '.(($validation->getError('payment_terms')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off']);
                             echo ($validation->getError('payment_terms')) ? '<div class="invalid-feedback">'.$validation->getError('payment_terms').'</div>' : '';

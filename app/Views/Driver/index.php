@@ -10,6 +10,12 @@ use App\Models\PartyModel;
 <head>
   <?= $this->include('partials/title-meta') ?>
   <?= $this->include('partials/head-css') ?>
+  <style>
+    .driver-menu ul li{
+      display: inline;
+      padding: 9px;
+    }
+  </style>
 </head>
 
 <body>
@@ -36,7 +42,7 @@ use App\Models\PartyModel;
                     <div class="col-md-8">
                       <h4>Search / Filter</h4>
                     </div>
-                    <div class="col-md-4 text-end"><?php echo makeListActions($currentController, $Action, 0, 1); ?></div>
+                    <div class="col-md-4 text-end driver-menu"><?php echo makeListActions($currentController, $Action, 0, 1); ?></div>
                   </div>
                   <hr>
 
@@ -87,7 +93,7 @@ use App\Models\PartyModel;
                     <div class="col-md-4">
                       <button class="btn btn-info mt-4">Search</button>&nbsp;&nbsp;
                       <a href="./driver" class="btn btn-warning mt-4">Reset</a>&nbsp;&nbsp;
-                      <button id="list" type="button" class="btn btn-warning  mt-4">Assigned List</button>
+                      <!-- <button id="list" type="button" class="btn btn-warning  mt-4">Assigned List</button> -->
                     </div>
 
                   </div>

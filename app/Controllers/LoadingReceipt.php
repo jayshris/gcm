@@ -125,7 +125,7 @@ class LoadingReceipt extends BaseController
         'place_of_delivery_name'   =>   'required', 
         'place_of_dispatch_name'   =>   'required',  
       ]); 
-      $validation = \Config\Services::validation();
+      $validation = \Config\Services::validation(); 
       // echo 'POst dt<pre>';print_r($this->request->getPost());
       // echo 'getErrors<pre>';print_r($validation->getErrors());exit;
 
@@ -137,8 +137,14 @@ class LoadingReceipt extends BaseController
         //create consignment_no
         $profile =  $this->profile->select('loading_receipt_prefix')->where('logged_in_userid',  session()->get('id'))->first();//echo __LINE__.'<pre>';print_r($profile);//die;
         $last_lr = $this->LoadingReceiptModel->orderBy('id', 'desc')->first();
-        $lastlr = isset($last_lr['id']) ? ((int)$last_lr['id']+1) : 1;
-        $consignment_no = isset($profile['loading_receipt_prefix'])  && !empty($profile['loading_receipt_prefix']) ? $profile['loading_receipt_prefix'].'/'.$lastlr : 'LR/'.$lastlr;
+        // $lastlr = isset($last_lr['id']) ? ((int)$last_lr['id']+1) : 1;
+
+        //change: consignment_no start from 1014 , 1015...        
+        $lastlrId = isset($last_lr['id']) && ($last_lr['id'] >0) ? $last_lr['id'] : 0;
+        $lastconsignment_no = isset($last_lr['consignment_no']) && ($last_lr['consignment_no'] != '') ? substr($last_lr['consignment_no'] , -4) : 0; 
+        $newConsignmentNo = ($lastlrId > 0) ?  ((int)$lastconsignment_no +1) : 1014;
+         
+        $consignment_no = isset($profile['loading_receipt_prefix'])  && !empty($profile['loading_receipt_prefix']) ? $profile['loading_receipt_prefix'].'/'.$newConsignmentNo : 'LR/'.$newConsignmentNo;
         // echo $consignment_no.'<pre>';print_r($last_lr);die;
 
         $data = [
@@ -196,7 +202,7 @@ class LoadingReceipt extends BaseController
           'customer_name'   =>  $this->request->getVar('customer_name'),
           'transporter_bilti_no'   =>  $this->request->getVar('transporter_bilti_no'),
           'transporter_id' =>  $this->request->getVar('transporter_id'),
-          'transporter_office_id' =>  $this->request->getVar('transporter_office_id'),
+          'transporter_office_id' =>  $this->request->getVar('transporter_office_id') ?  $this->request->getVar('transporter_office_id') : '',
           'transporter_address' =>  $this->request->getVar('transporter_address'),
           'transporter_city' =>  $this->request->getVar('transporter_city'),
           'transporter_state' =>  $this->request->getVar('transporter_state'),
@@ -415,7 +421,7 @@ class LoadingReceipt extends BaseController
           'customer_name'   =>  $this->request->getVar('customer_name'),
           'transporter_bilti_no'   =>  $this->request->getVar('transporter_bilti_no'),
           'transporter_id' =>  $this->request->getVar('transporter_id'),
-          'transporter_office_id' =>  $this->request->getVar('transporter_office_id'),
+          'transporter_office_id' =>  $this->request->getVar('transporter_office_id') ?  $this->request->getVar('transporter_office_id') : '',
           'transporter_address' =>  $this->request->getVar('transporter_address'),
           'transporter_city' =>  $this->request->getVar('transporter_city'),
           'transporter_state' =>  $this->request->getVar('transporter_state'),
@@ -449,9 +455,13 @@ class LoadingReceipt extends BaseController
       $lr_third_party =  $this->PTModel->select('count(id) as lr_third_party_cnt')
                         ->where('lr_third_party',1)
                         ->whereIn('id',$party_type_ids)->first(); 
+      $lr_first_party =  $this->PTModel->select('count(id) as lr_first_party_cnt')
+      ->where('lr_first_party',1)
+      ->whereIn('id',$party_type_ids)->first(); 
     }
     
     $rows['is_lr_third_party'] = (isset($lr_third_party['lr_third_party_cnt']) && ($lr_third_party['lr_third_party_cnt'] >0)) ? 1 : 0;
+    $rows['is_lr_first_party'] = (isset($lr_first_party['lr_first_party_cnt']) && ($lr_first_party['lr_first_party_cnt'] >0)) ? 1 : 0;
     // echo '<pre>';print_r($lr_third_party );exit;
     
     echo json_encode($rows);exit;
@@ -656,7 +666,7 @@ class LoadingReceipt extends BaseController
           'customer_name'   =>  $this->request->getVar('customer_name'),
           'transporter_bilti_no'   =>  $this->request->getVar('transporter_bilti_no'),
           'transporter_id' =>  $this->request->getVar('transporter_id'),
-          'transporter_office_id' =>  $this->request->getVar('transporter_office_id'),
+          'transporter_office_id' =>  $this->request->getVar('transporter_office_id') ?  $this->request->getVar('transporter_office_id') : '',
           'transporter_address' =>  $this->request->getVar('transporter_address'),
           'transporter_city' =>  $this->request->getVar('transporter_city'),
           'transporter_state' =>  $this->request->getVar('transporter_state'),

@@ -301,10 +301,10 @@ class Booking extends BaseController
             ->whereIn('party_type_party_map.party_type_id', [1, 2, 5])->groupBy('party.id')->orderBy('party.party_name')->findAll();
         $this->view['offices'] = $this->OModel->where('status', '1')->findAll(); 
         $this->view['vehicle_types'] = $this->VTModel->where('status', 'Active')->findAll();
-        $this->view['employees'] = $this->EmployeeModel
-                                    ->join('departments d','d.id= employee.dept_id')
-                                    ->where(['d.booking'=> 1,'d.status'=> 1])
-                                    ->findall();
+        $this->view['employees'] = $this->EmployeeModel->select('employee.id,employee.name')
+        ->join('departments d','d.id= employee.dept_id')
+        ->where(['d.booking'=> 1,'d.status'=> 1])
+        ->findall();
         $this->view['states'] =  $this->SModel->orderBy('state_name', 'asc')->findAll();
         $this->view['expense_heads'] =  $this->ExpenseHeadModel->orderBy('head_name', 'asc')->findAll();
         
@@ -534,10 +534,10 @@ class Booking extends BaseController
         $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
 
         $this->view['vehicle_types'] = $this->VTModel->where('status', 'Active')->findAll();
-        $this->view['employees'] = $this->EmployeeModel
-                                    ->join('departments d','d.id= employee.dept_id')
-                                    ->where(['d.booking'=> 1,'d.status'=> 1])
-                                    ->findall();
+        $this->view['employees'] = $this->EmployeeModel->select('employee.id,employee.name')
+        ->join('departments d','d.id= employee.dept_id')
+        ->where(['d.booking'=> 1,'d.status'=> 1])
+        ->findall();
         $this->view['states'] =  $this->SModel->orderBy('state_name', 'asc')->findAll();
 
         $this->view['customers'] = $this->CModel->select('customer.*, party.party_name')
@@ -1094,10 +1094,11 @@ class Booking extends BaseController
         $this->view['expense_heads'] =  $this->ExpenseHeadModel->orderBy('head_name', 'asc')->findAll();
         $this->view['offices'] = $this->OModel->where('status', '1')->findAll(); 
         $this->view['vehicle_types'] = $this->VTModel->where('status', 'Active')->findAll();
-        $this->view['employees'] = $this->EmployeeModel
+        $this->view['employees'] = $this->EmployeeModel->select('employee.id,employee.name')
         ->join('departments d','d.id= employee.dept_id')
         ->where(['d.booking'=> 1,'d.status'=> 1])
         ->findall();
+        // echo ' employees <pre>';print_r($this->view['employees'] );exit; 
         $this->view['vehicle_rcs'] = [];
         return view('Booking/edit', $this->view); 
     }
@@ -1220,10 +1221,10 @@ class Booking extends BaseController
         $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
 
         $this->view['vehicle_types'] = $this->VTModel->where('status', 'Active')->findAll();
-        $this->view['employees'] = $this->EmployeeModel
-                                    ->join('departments d','d.id= employee.dept_id')
-                                    ->where(['d.booking'=> 1,'d.status'=> 1])
-                                    ->findall();
+        $this->view['employees'] = $this->EmployeeModel->select('employee.id,employee.name')
+        ->join('departments d','d.id= employee.dept_id')
+        ->where(['d.booking'=> 1,'d.status'=> 1])
+        ->findall();
         $this->view['states'] =  $this->SModel->orderBy('state_name', 'asc')->findAll();
 
         $this->view['customers'] = $this->CModel->select('customer.*, party.party_name')

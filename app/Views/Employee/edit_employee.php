@@ -429,8 +429,8 @@
 
                               <div class="col-md-6">
                                 <div class="form-wrap">
-                                  <label class="col-form-label">Releaveing Date<span class="text-danger">*</span></label>
-                                  <input class="form-control" name="releaveing_date" id="releaveing_date" type="date" value="<?= $employee_detail['releaveing_date'] ?>" <?= set_value('releaveing_date') ?>required>
+                                  <label class="col-form-label">Relieving Date</label>
+                                  <input class="form-control" name="releaveing_date" id="releaveing_date" type="date" value="<?= $employee_detail['releaveing_date'] ?>" max="<?= date('Y-m-d') ?>">
                                   <?php if ($validation->getError('releaveing_date')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('releaveing_date') . '</div>';
                                   } ?>
@@ -496,9 +496,10 @@
 
     <script>
       $(document).ready(function() {
-        $('#joiningdate').change(function() { 
-            $('#releaveing_date').attr('min',$('#joiningdate').val() );
-        });
+        // $('#joiningdate').change(function() { 
+        //     $('#releaveing_date').attr('min',$('#joiningdate').val() );
+        //     $('#releaveing_date').val('');
+        // });
 
         $('#releaveing_date').change(function() {
             $('#joiningdate').attr('max',$('#releaveing_date').val() );
