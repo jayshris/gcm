@@ -356,7 +356,7 @@ class LoadingReceipt extends BaseController
       ]); 
       $validation = \Config\Services::validation();
       // echo 'POst dt<pre>';print_r($this->request->getPost());
-      // echo 'getErrors<pre>';print_r($validation->getErrors());//exit;
+      // echo 'getErrors<pre>';print_r($validation->getErrors());exit;
 
       if (!$error) {
         $this->view['error']   = $this->validator;

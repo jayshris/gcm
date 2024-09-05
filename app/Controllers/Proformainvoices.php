@@ -202,8 +202,12 @@ class Proformainvoices extends BaseController
       $Customers4 =  $this->BookingsModel->select('bookings.id,lr.consignee_id c_id') 
       ->join('loading_receipts lr','bookings.id = lr.booking_id')
       ->join('customer c','lr.consignee_id = c.id','left')->where(['bookings.id'=> $id])->findAll();  
+
+      $Customers5 =  $this->BookingsModel->select('bookings.id,lr.transporter_id c_id') 
+      ->join('loading_receipts lr','bookings.id = lr.booking_id')
+      ->join('customer c','lr.transporter_id = c.id','left')->where(['bookings.id'=> $id])->findAll(); 
       
-      $all_customers = array_merge($Customers,$Customers2,$Customers3,$Customers4); 
+      $all_customers = array_merge($Customers,$Customers2,$Customers3,$Customers4,$Customers5); 
       $unique_customers =  array_unique(array_column($all_customers, 'c_id'));
       // echo 'all_customers<pre>';print_r($unique_customers);  
       $customers = [];
