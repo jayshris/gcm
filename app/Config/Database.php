@@ -27,9 +27,9 @@ class Database extends Config
     public array $default = [
         'DSN'          => '',
         'hostname'     => 'localhost',
-        'username'     => 'gaegroup_gcmLive_Usr',
-        'password'     => 'ezi9E!l90SEt#q-{H;e!xm7u',
-        'database'     => 'gaegroup_gcmLive_db',
+        'username'     => 'root',
+        'password'     => '',
+        'database'     => 'aubadetech_gcmgrop_dev',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
         'pConnect'     => false,
