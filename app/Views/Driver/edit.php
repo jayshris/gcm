@@ -117,6 +117,15 @@
                             <div class="col-md-3">
                               <div class="form-wrap">
                                 <label class="col-form-label">
+                                  Father Name<span class="text-danger">*</span>
+                                </label>
+                                <input type="text" name="father_name" required id="father_name" class="form-control" value="<?= isset($driver_data['father_name']) ? $driver_data['father_name'] : '' ?>">
+                              </div>
+                            </div>
+                            
+                            <div class="col-md-3">
+                              <div class="form-wrap">
+                                <label class="col-form-label">
                                   Phone Number
                                 </label>
                                 <input readonly type="text" name="mobile" id="mobile" value="<?= $driver_data['primary_phone'] ?>" class="form-control">

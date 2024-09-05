@@ -142,6 +142,7 @@ class Driver extends BaseController
       $error = $this->validate([
         'foreman_id'              =>  'required',
         'driver_type'             =>  'required',
+        'father_name'             =>  'required'
       ]);
       if (!$error) {
         $this->view['error']   = $this->validator;
@@ -236,7 +237,8 @@ class Driver extends BaseController
           'state'  =>  $this->request->getPost('state'),
           'zip'  =>  $this->request->getPost('zip'),
           'working_status'  =>  '1',
-          'created_at'  =>  date("Y-m-d h:i:sa")
+          'created_at'  =>  date("Y-m-d h:i:sa"),
+          'father_name'  =>  $this->request->getVar('father_name'),
         ]);
 
         $user_id = $driverModel->getInsertID();
@@ -317,6 +319,7 @@ class Driver extends BaseController
         'zip'  =>  $this->request->getPost('zip'),
         'working_status' =>  '1',
         'updated_at' =>  date("Y-m-d h:i:sa"),
+        'father_name'  =>  $this->request->getVar('father_name'),
       ]);
 
       // update image if uploaded
