@@ -12,6 +12,17 @@
             }
             ?>
         </div> 
+        <div class="col-md-6"></div>
+        <div class="col-md-6" style="margin-top: 30px;"> 
+            <input type="checkbox" name="booking" id="booking" class="form-check-input" required value="1"  <?= (isset($department['booking']) && ($department['booking'] == 1)) ? 'checked'  : ''?> style="height: 25px; width:25px;">
+            <label for="booking" style="margin-top: 5px;"> Booking</label>
+       
+            <?php
+            if ($validation->getError('booking')) {
+                echo '<div class="alert alert-danger mt-2">' . $validation->getError('booking') . '</div>';
+            }
+            ?>
+        </div> 
     </div>
     <br>
 </div> 
