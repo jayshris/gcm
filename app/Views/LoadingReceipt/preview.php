@@ -251,6 +251,9 @@
                                                 <br>
                                             </div> 
                                             <div class="submit-button"> 
+                                                <?php if(isset($loading_receipts['approved']) && ($loading_receipts['approved'] == 1)){ ?>
+                                                    <a href="<?php echo base_url('consignmentnote/preview/'.$loading_receipts['id']); ?>" class="btn btn-primary"><i class="fa fa-print" aria-hidden="true"></i> Print</a>
+                                                <?php } ?>
                                                 <a href="<?php echo base_url(); ?>loadingreceipt" class="btn btn-light">Cancel</a>
                                             </div>  
 										</div>
@@ -269,8 +272,9 @@
 
 	</div>
 	<!-- /Main Wrapper -->
+ 
+	<?= $this->include('partials/vendor-scripts') ?>  
 
-	<?= $this->include('partials/vendor-scripts') ?> 
 </body>
 
 </html>

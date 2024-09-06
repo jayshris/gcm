@@ -1,8 +1,8 @@
-<table cellspacing="0" id="printTable" class="print-table">
+<table cellspacing="0" class="print-table">
     <tbody> 
         <tr style="height:77pt"> 
             <td colspan="6" class="td-head">
-                <table border="0" cellspacing="0" cellpadding="0">
+                <table border="0" cellspacing="0" cellpadding="0" class="tbl-center">
                     <tbody>
                         <tr>
                             <td>
@@ -74,7 +74,7 @@
                 <p class="s9 p14 txt-center" >Work Order Date</p>
             </td> 
         </tr>
-        <tr style="height:20pt">
+        <tr style="height:auto">
             <td class="td18 bor-r-none bobn">
                 <p class="s9 p14" >ConsignorName:</p>
             </td>
@@ -88,21 +88,21 @@
                 <p class="s10 p14" ><?= isset($lr['consignee_name']) && (!empty($lr['consignee_name'])) ? strtoupper($lr['consignee_name']) : '-' ?></p>
             </td>
         </tr>
-        <tr style="height:61pt">
+        <tr style="height:auto">
             <td class="td22 bor-r-none botn bobn">
                 <p class="s9 p14" >Consignor Address:</p>
             </td>
             <td class="td23 bn " colspan="2">
-                <p class="s10 p15" ><?= isset($lr['consignor_address_f']) && (!empty($lr['consignor_address_f'])) ? strtoupper($lr['consignor_address_f']) : '-' ?></p>
+                <p class="s10 p15" style="text-indent: 0pt;line-height: 12pt;text-align: left;"><?= isset($lr['consignor_address_f']) && (!empty($lr['consignor_address_f'])) ? strtoupper($lr['consignor_address_f']) : '-' ?></p>
             </td>
             <td class="td24 botn  bor-r-none bobn">
                 <p class="s9 p14" >Consignee Address:</p>
             </td>
             <td class="td25 botn bor-l-none bobn" colspan="2">
-                <p class="s10 bn" style="text-indent: 0pt;line-height: 21pt;text-align: left;"><?= isset($lr['consignee_address_f']) && (!empty($lr['consignee_address_f'])) ? strtoupper($lr['consignee_address_f']) : '-' ?></p> 
+                <p class="s10 bn" style="text-indent: 0pt;line-height: 12pt;text-align: left;"><?= isset($lr['consignee_address_f']) && (!empty($lr['consignee_address_f'])) ? strtoupper($lr['consignee_address_f']) : '-' ?></p> 
             </td>
         </tr>
-        <tr style="height:21pt">
+        <tr style="height:auto">
             <td class="td26 bor-r-none botn">
                 <p class="s9 p14" >GSTIN:</p>
             </td>

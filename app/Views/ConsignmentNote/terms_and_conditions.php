@@ -2,7 +2,7 @@
     <tbody>
         <tr style="height:77pt"> 
             <td colspan="6" class="td-head">
-                <table border="0" cellspacing="0" cellpadding="0">
+                <table border="0" cellspacing="0" cellpadding="0" class="tbl-center">
                     <tbody>
                         <tr>
                             <td>
