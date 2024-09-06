@@ -21,6 +21,29 @@
       top: 0px !important;
       z-index: 9 !important;
     }
+
+    table.table.dataTable > tbody > th {
+      border-color: #E8E8E8 !important;
+      position: sticky !important;
+      top: 0px !important;
+      z-index: 9 !important;
+    }
+
+    tbody th {
+      position: -webkit-sticky;
+      position: sticky;
+      left: 0;
+      background: #E8E8E8;
+      border-right: 1px solid #CCC;
+      z-index: 9;
+    }
+
+    .fixtopth {
+      position: -webkit-sticky;
+      position: sticky;
+      left: 0;
+      z-index: 9;
+    }
   </style>
 </head>
 
@@ -81,15 +104,15 @@
                           <div class="row dt-row">
                             <div class="col-sm-12 table-responsive">
                               <table class="table dataTable no-footer" id="permission_lists" style="width: 1346px;">
-                                <thead class="thead-light">
+                                <thead class="thead-light sticky-top top-0">
                                   <tr>
-                                    <th class="no-sort">
+                                    <th class="no-sort fixtopth">
                                       <!-- <label class="checkboxs">
                                         <input type="checkbox" id="select-all"><span class="checkmarks"></span>
                                       </label> -->
                                     </th>
-                                    <th class="sorting" tabindex="0" aria-controls="permission_list" rowspan="1" colspan="1" style="width: 154px;" aria-label="Modules: activate to sort column ascending">Modules</th>
-                                    <th class="sorting" tabindex="0" aria-controls="permission_list" rowspan="1" colspan="1" style="width: 210px;" aria-label="Sub Modules: activate to sort column ascending">Sub Modules</th>
+                                    <th class="sorting fixtopth" tabindex="0" aria-controls="permission_list" rowspan="1" colspan="1" style="width: 154px;" aria-label="Modules: activate to sort column ascending">Modules</th>
+                                    <th class="sorting fixtopth" tabindex="0" aria-controls="permission_list" rowspan="1" colspan="1" style="width: 210px;" aria-label="Sub Modules: activate to sort column ascending">Sub Modules</th>
                                     <?php if(!empty($sections)){ foreach($sections as $s){?>
                                     <th class="no-sort"><?php echo ($s->section_name) ? $s->section_name : '';?></th>
                                     <?php } } ?>
@@ -112,6 +135,7 @@
                                       $parentSection = isset($r['sections']) ? $r['sections'] : [];
                                       $sub_module = isset($r['sub_module']) ? $r['sub_module'] : [];
                                       $parentChecked = isset($assignedModules[$parentId]) ? 'checked' : '';
+                                      //if(empty($sub_module)){
                                   ?>
                                   <tr>
                                     <td class="sorting_1">
@@ -120,8 +144,8 @@
                                         <span class="checkmarks"></span>
                                       </label>
                                     </td>
-                                    <td><?php echo !empty($sub_module) ? '<b>'.$parentName.'</b>' : $parentName;?></td>
-                                    <td><?php echo $parentName;?></td>
+                                    <td><?php echo '<b>'.$parentName.'</b>';//!empty($sub_module) ? '<b>'.$parentName.'</b>' : $parentName;?></td>
+                                    <th><?php echo $parentName;?></th>
 
                                     <?php 
                                     if(!empty($sections)){
@@ -141,9 +165,11 @@
                                     </td>
                                     <?php } } ?>
                                   </tr>
+                                  <?php //} ?>
 
                                   <?php 
                                   if(!empty($sub_module)){
+                                    $i=0;
                                     foreach($sub_module as $s){
                                       $moduleId = isset($s['module_id']) ? $s['module_id'] : '';
                                       $moduleName = isset($s['module_name']) ? $s['module_name'] : '';
@@ -157,12 +183,12 @@
                                         <span class="checkmarks"></span>
                                       </label>
                                     </td>
-                                    <td><?php //echo $moduleName;?></td>
-                                    <td><?php echo $moduleName;?></td>
+                                    <td><?php //echo ($i==0) ? '<b>'.$parentName.'</b>' : '';?></td>
+                                    <th><?php echo $moduleName;?></th>
                                     <?php 
-                                    if(!empty($sections)){ //moduleSection
-                                      foreach($sections as $ms){//moduleSection
-                                        $secId = ($ms->id) ? $ms->id : 0;//echo __LINE__.'<pre>';print_r($moduleSection);print_r($sections);
+                                    if(!empty($sections)){
+                                      foreach($sections as $ms){
+                                        $secId = ($ms->id) ? $ms->id : 0;
                                     ?>
                                     <td>
                                       <?php 
@@ -175,7 +201,7 @@
                                       </label>
                                       <?php } ?>
                                     </td>
-                                    <?php } } ?>
+                                    <?php } } $i++; ?>
                                   </tr>
                                   <?php } } } } ?>
                                 </tbody>

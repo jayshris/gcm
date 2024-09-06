@@ -56,7 +56,7 @@ class RoleModel extends Model
 
   public function getSections(){
     try{
-      $sql = "SELECT t1.* FROM ".SECTION." t1 WHERE t1.status_id='1' ORDER BY t1.sort_order, t1.section_name ASC";
+      $sql = "SELECT t1.* FROM ".SECTION." t1 WHERE t1.status_id='1' ORDER BY t1.sort_order DESC, t1.section_name ASC";
       $query = $this->db->query($sql);
       return $rows = $query->getResult();
     }

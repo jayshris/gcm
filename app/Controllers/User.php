@@ -314,7 +314,7 @@ class User extends BaseController
                 $this->view['user_role_modules'] = $this->model->getUserRoleModules($roleID);
                 $this->view['sections'] = $this->model->getSections();
                 $this->view['user_modules'] = $userModule->where('user_id', $id)->findAll();
-                //echo '<pre>';print_r($this->view['sections']);die;
+                //echo __LINE__.'<pre>';print_r($this->view['user_role_modules']);die;
 
                 return view('User/permission',$this->view);
         }
