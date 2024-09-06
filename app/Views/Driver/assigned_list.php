@@ -53,7 +53,7 @@ use App\Models\PartyModel;
 
 <body>
 <div id="print-driver-div"  style="display: none;">
-  <h4 class="padtb-5"><center>Driver Assigned List</center></h4>
+  <h4 class="padtb-5"><center>Driver Vehicle Assigned List</center></h4>
 
 <table>
     <thead>
@@ -107,6 +107,21 @@ use App\Models\PartyModel;
           <div class="col-md-12">
 
             <?= $this->include('partials/page-title') ?>
+         <!-- Page Header -->
+         <div class="page-header noprint">
+              <div class="row align-items-center">
+                <div class="col-8">
+                  <h4 class="page-title">Driver Vehicle Assigned List</h4>
+                </div>
+                <div class="col-4 text-end">
+                  <div class="head-icons">
+                    <a href="<?= base_url($currentController.'/'.$currentMethod) ?>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Refresh"><i class="ti ti-refresh-dot"></i></a>
+                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="Collapse" id="collapse-header"><i class="ti ti-chevrons-up"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- /Page Header -->
 
             <form method="post" enctype="multipart/form-data" action="<?php echo base_url($currentController.'/'.$currentMethod); ?>">
               <div class="card main-card noprint">
