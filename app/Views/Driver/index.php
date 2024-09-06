@@ -13,7 +13,7 @@ use App\Models\PartyModel;
   <style>
     .driver-menu ul li{
       display: inline;
-      padding: 9px;
+      padding: 5px;
     }
   </style>
 </head>
