@@ -34,8 +34,18 @@
             /* margin-bottom: 15px !important; */
             border-bottom: none !important;
            }
-           .debug-icon{
+           #debug-icon{
             display: none !important;
+           }
+
+           .page-wrapper .content, .card .card-body{
+            padding: 0;
+           }
+           .print-header{
+            border-bottom: 1px solid #E8E8E8;
+           }
+           .prdheader img{
+            height: 34px !important;
            }
         }  
         .prheader{ 
@@ -60,16 +70,15 @@
           text-align: center;
           margin-bottom: 0 !important;
         }
-        
+         
+          
     </style>
 </head>
 <body>
   <!-- Main Wrapper -->
   <div class="main-wrapper">
     <?php echo $this->include('partials/menu') ?>
-    <?php echo $this->include('partials/print-header') ?>
-    <hr>
-    
+    <?php echo $this->include('partials/print-header') ?> 
     <!-- Page Wrapper -->
     <div class="page-wrapper">
       <div class="content">
@@ -85,7 +94,7 @@
                   <div class="card-body">
                     <div class="settings-form">                                           
                         <div class="settings-sub-header print-heder">
-                          <h6>Booking Note</h6>
+                          <h6>Booking Note</h6> 
                         </div>
                         <div class="profile-details">
                           <div class="row g-3">
@@ -97,6 +106,16 @@
                             <div class="col-md-6 col-sm-6">
                                 <label class="col-form-label"><b>Customer City: </b></label>
                                 <label class="col-form-label"><?= isset($booking_details['cb_city']) && !empty($booking_details['cb_city']) ? $booking_details['cb_city'] : '-' ?></label>
+                            </div>
+
+                            <div class="col-md-6 col-sm-6">
+                                <label class="col-form-label"><b>Contact Person: </b></label>
+                                <label class="col-form-label"><?= isset($booking_details['contact_person']) && !empty($booking_details['contact_person']) ? $booking_details['contact_person'] : '-' ?></label>
+                            </div>
+
+                            <div class="col-md-6 col-sm-6">
+                                <label class="col-form-label"><b>Contact No.: </b></label>
+                                <label class="col-form-label"><?= isset($booking_details['primary_phone']) && !empty($booking_details['primary_phone']) ? $booking_details['primary_phone'] : '-' ?></label>
                             </div>
 
                             <div class="col-md-6 col-sm-6">
@@ -120,24 +139,9 @@
                             </div>   
                             
                             <div class="col-md-6 col-sm-6">
-                                <label class="col-form-label"><b>Booking For: </b></label>
-                                <label class="col-form-label">
-                                  <?= isset($booking_details['booking_for']) && $booking_details['booking_for'] == '1' ? 'Material 1' : '' ?>
-                                  <?= isset($booking_details['booking_for']) && $booking_details['booking_for'] == '2' ? 'Material 2' : '' ?>
-                                  <?= isset($booking_details['booking_for']) && $booking_details['booking_for'] == '3' ? 'Material 3' : '' ?>
-                                  <?= isset($booking_details['booking_for']) && $booking_details['booking_for'] == '4' ? 'Material 4' : '' ?>
-                                </label>
-                            </div> 
-
-                            <div class="col-md-6 col-sm-6">
                                 <label class="col-form-label"><b>Vehicle RC: </b></label>
                                 <label class="col-form-label"><?= isset($booking_details['rc_number']) && !empty($booking_details['rc_number']) ? $booking_details['rc_number'] : '-' ?></label>
                             </div> 
-
-                            <div class="col-md-6 col-sm-6">
-                              <label class="col-form-label"><b>Bill To: </b></label>
-                              <label class="col-form-label"><?= isset($booking_details['bill_to_party_name']) && !empty($booking_details['bill_to_party_name']) ? $booking_details['bill_to_party_name'] : '-' ?></label>                                
-                            </div>
 
                             <div class="col-md-6 col-sm-6">
                                 <label class="col-form-label"><b>Driver Name: </b></label>

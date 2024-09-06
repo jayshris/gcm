@@ -1105,7 +1105,7 @@ class Booking extends BaseController
     
     function preview($id){
         $this->view['token'] = $id;
-        $this->view['booking_details'] = $this->BModel->select('bookings.*,cb.office_name,cb.city cb_city,e.name booking_by_name,vt.name vehicle_type_name,v.rc_number,p.party_name bill_to_party_name,party.party_name as customer,v.id v_id')
+        $this->view['booking_details'] = $this->BModel->select('bookings.*,cb.office_name,cb.city cb_city,e.name booking_by_name,vt.name vehicle_type_name,v.rc_number,p.party_name bill_to_party_name,party.party_name as customer,v.id v_id,party.contact_person,party.primary_phone')
         ->join('vehicle v', 'v.id = bookings.vehicle_id','left')
         ->join('vehicle_type vt', 'vt.id = bookings.vehicle_type_id','left')
         ->join('employee e', 'e.id = bookings.booking_by','left')
