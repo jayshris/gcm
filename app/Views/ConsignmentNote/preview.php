@@ -36,15 +36,13 @@
 <div class="page-wrapper">
     <div class="content">
         <div class="row">
-            <div  id="printableArea" class="col-md-12">
-                <div  >  
+            <div  id="printableArea" class="col-md-12"> 
                     <?= $this->include('ConsignmentNote/consignee_note.php') ?> 
                     <?= $this->include('ConsignmentNote/terms_and_conditions.php') ?>
                     <?= $this->include('ConsignmentNote/consignor_note.php') ?>
                     <?= $this->include('ConsignmentNote/terms_and_conditions.php') ?>  
                     <?= $this->include('ConsignmentNote/truck_forwarding_note.php') ?>
-                    <?= $this->include('ConsignmentNote/terms_and_conditions.php') ?>
-                </div>
+                    <?= $this->include('ConsignmentNote/terms_and_conditions.php') ?> 
             </div>
             <div class="submit-button noprint"> 
                 <button type="button" class="btn btn-danger" onclick="printDiv('printableArea')"><i class="fa fa-print" aria-hidden="true"></i> Print</button>
