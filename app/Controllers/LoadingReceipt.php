@@ -504,9 +504,20 @@ class LoadingReceipt extends BaseController
 
   function getVehicleBookings(){
     if($this->request->getPost('vehicle_id') > 0){
-      $bookings = $this->BookingsModel->where('vehicle_id', $this->request->getPost('vehicle_id'))->where(['approved'=> '1','is_vehicle_assigned' => 1])->findAll();       
+      $bookings = $this->BookingsModel
+                  ->where('vehicle_id', $this->request->getPost('vehicle_id'))
+                  ->where(['approved'=> '1','is_vehicle_assigned' => 1])
+                  ->where('NOT EXISTS (SELECT 1 
+                          FROM   loading_receipts
+                          WHERE  loading_receipts.booking_id = bookings.id)')
+                  ->findAll();       
     }else{
-      $bookings = $this->BookingsModel->where(['approved'=> '1','is_vehicle_assigned' => 1])->findAll(); 
+      $bookings = $this->BookingsModel
+      ->where(['approved'=> '1','is_vehicle_assigned' => 1])
+      ->where('NOT EXISTS (SELECT 1 
+              FROM   loading_receipts
+              WHERE  loading_receipts.booking_id = bookings.id)')
+      ->findAll(); 
     }
     echo json_encode($bookings);exit;
   }
