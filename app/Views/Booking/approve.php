@@ -49,10 +49,9 @@
                               <label class="col-form-label">Booking For <span class="text-danger">*</span></label>
                               <select class="form-select select2" required name="booking_for" id="booking_for" aria-label="Default select example">
                                 <option value="">Select Material</option>
-                                <option value="1" <?= $booking_details['booking_for'] == '1' ? 'selected' : '' ?>>Material 1</option>
-                                <option value="2" <?= $booking_details['booking_for'] == '2' ? 'selected' : '' ?>>Material 2</option>
-                                <option value="3" <?= $booking_details['booking_for'] == '3' ? 'selected' : '' ?>>Material 3</option>
-                                <option value="4" <?= $booking_details['booking_for'] == '4' ? 'selected' : '' ?>>Material 4</option>
+                                 <option value="1" <?= $booking_details['booking_for'] == '1' ? 'selected' : '' ?>>Market Material</option>
+                                <option value="2" <?= $booking_details['booking_for'] == '2' ? 'selected' : '' ?>>Own Material</option>
+                                <option value="3" <?= $booking_details['booking_for'] == '3' ? 'selected' : '' ?>>All Material</option>
                               </select>
                             </div>
 

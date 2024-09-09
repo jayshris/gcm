@@ -247,11 +247,10 @@
                               <label class="col-form-label">Booking For</label>
                               <select class="form-select select2" name="booking_for" id="booking_for" aria-label="Default select example">
                                 <option value="">Select Material</option>
-                                <option value="1">Material 1</option>
-                                <option value="2">Material 2</option>
-                                <option value="3">Material 3</option>
-                                <option value="4">Material 4</option>
-                              </select>
+                                <option value="1">Market Material</option>
+                                <option value="2">Own Material</option>
+                                <option value="3">All Material</option>
+                                </select>
                               <?php
                               if ($validation->getError('booking_for')) {
                                   echo '<div class="alert alert-danger mt-2">' . $validation->getError('booking_for') . '</div>';

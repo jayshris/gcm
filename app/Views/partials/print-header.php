@@ -2,7 +2,7 @@
   <div class="content"> 
     <div class="row"> 
       <div  class="prdheader col-md-12 col-sm-12">
-        <div><img width="105" height="35px" src="<?php echo base_url(); ?>public/assets/img/print-head.png"></div>
+        <div><img width="105" height="35px" src="<?php echo base_url(); ?>public/assets/img/logo.png"></div>
         <div > &nbsp;&nbsp;
           <p class="prheader">  
           GAE CARGO MOVERS PRIVATE LIMITED 

@@ -70,6 +70,7 @@ class Booking extends BaseController
     public $BookingUploadedKantaParchiModel;
     public $TripPausedReasonModel;
     public $BookingsTripUpdateModel;
+
     public function __construct()
     {
         $this->session = \Config\Services::session();
@@ -142,10 +143,7 @@ class Booking extends BaseController
     {    
         if ($this->request->getPost()) {
             $post = $this->request->getPost();
-            // echo '<pre>';print_r($post);//exit;                      
-                //show booking_details page
             if(isset($post['office_id'])){
-                // echo '<pre>';print_r($post);exit;   
                 $error = $this->validate([
                     'vehicle_type' =>  'required',
                     'office_id' =>  'required',
@@ -156,10 +154,9 @@ class Booking extends BaseController
                     ]);
     
                 if (!$error) {
-                    // echo 'b<pre>';print_r($error);exit;
                     $this->view['error']   = $this->validator;
                 } else {
-                    $profile =  $this->profile->where('logged_in_userid',  session()->get('id'))->first();//echo __LINE__.'<pre>';print_r($profile);die;
+                    $profile =  $this->profile->where('logged_in_userid',  '1')->first();//session()->get('id')
                     $last_booking = $this->BModel->orderBy('id', 'desc')->first();
                     $lastBooking = isset($last_booking['id']) ? ((int)$last_booking['id']+1) : 1;
                     $booking_number = isset($profile['booking_prefix']) && !empty($profile['booking_prefix']) ? $profile['booking_prefix'].'/'.date('m').'/000'.$lastBooking : 'BK/'.date('m').'/000'.$lastBooking;
@@ -210,8 +207,7 @@ class Booking extends BaseController
                         ];
                         $this->BookingLinkModel->save($generate_link_data);
                         $this->session->setFlashdata('success', 'Booking link generated successfully');
-                        return $this->response->redirect(base_url('bookinglinks'));
-                        
+                        return $this->response->redirect(base_url('bookinglinks'));                        
                     }else{
                         $this->session->setFlashdata('success', 'Booking Successfully Added');
                         return $this->response->redirect(base_url('booking'));
@@ -232,10 +228,8 @@ class Booking extends BaseController
                     ]);
                     
                 if (!$error) {
-                    // echo 'error <pre>';print_r($error);exit;
                     $this->view['error']   = $this->validator;
                 } else {
-                    // echo 'post <pre>';print_r($post);exit;
                     $booking_id =  $this->request->getPost('id');
                     $bookingPTLData = [    
                         'customer_type' => ($this->request->getPost('customer_type')) ? $this->request->getPost('customer_type') : 0,
@@ -253,7 +247,7 @@ class Booking extends BaseController
                         'status' => '1',
                         'added_by' => $this->added_by,
                         'added_ip' => $this->added_ip
-                    ];//echo __LINE__.'<pre>';print_r($bookingData);die;
+                    ];
 
                     $this->BModel->update($booking_id,$bookingPTLData);
                      //update booking status 
@@ -291,7 +285,6 @@ class Booking extends BaseController
                     $this->session->setFlashdata('success', 'Booking Successfully Added');
 
                     return $this->response->redirect(base_url('booking'));
-                    //redirect to bookings index
                 }                     
             }else{
                 return $this->response->redirect(base_url('booking'));

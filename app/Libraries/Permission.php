@@ -76,7 +76,7 @@ class Permission
 		$this->viewData['Actions'] = $Actions;
 
 		$condition = ['controllers'=>$Controllers,'actions'=>$Actions,'controller'=>$this->viewData['currentController'],'action'=>$this->viewData['currentMethod']];
-		if($this->checkPrivileged($condition)==0 && !in_array($this->viewData['currentController'], ['home','login','dashboard','kyc','driverkyc','foremankyc','bookinglinks'])) {
+		if($this->checkPrivileged($condition)==0 && !in_array($this->viewData['currentController'], ['home','login','dashboard','kyc','driverkyc','foremankyc','bookinglinks','consignmentnote'])) {
 			$this->session->setFlashdata('error', ACCESS_MSG);
 			header("Location: ".base_url()."dashboard");die;
 		}

@@ -136,7 +136,8 @@ class LoadingReceipt extends BaseController
         $booking = $this->BookingsModel->where('id', $this->request->getVar('booking_id'))->first();
        
         //create consignment_no
-        $profile =  $this->profile->select('loading_receipt_prefix')->where('logged_in_userid',  session()->get('id'))->first();//echo __LINE__.'<pre>';print_r($profile);//die;
+        $logId = '1';//session()->get('id');
+        $profile =  $this->profile->select('loading_receipt_prefix')->where('logged_in_userid',  $logId)->first();
         $last_lr = $this->LoadingReceiptModel->orderBy('id', 'desc')->first();
         // $lastlr = isset($last_lr['id']) ? ((int)$last_lr['id']+1) : 1;
 

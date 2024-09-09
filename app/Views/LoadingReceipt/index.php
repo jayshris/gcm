@@ -71,7 +71,7 @@
 											<th>Vehicle Number</th>
 											<th>Consignee Name</th>
 											<th>Consignor Name</th>
-											<th>Branch Name</th>
+											<!-- <th>Branch Name</th> -->
 											<th>Booking Date</th> 
 											<th>Status</th>
 										</tr>
@@ -92,7 +92,7 @@
 												<td><?= $b['rc_number'] ?></td>
 												<td><?= $b['consignee_name'] ?></td>
 												<td><?= $b['consignor_name'] ?></td>
-												<td><?= $b['branch_name'] ?></td>
+												<!-- <td><?= $b['branch_name'] ?></td> -->
 												<td><?= date('d M Y', strtotime($b['booking_date'])) ?></td> 
 												<td><span class="badge badge-pill <?= $b['status'] != 1 ? 'bg-danger' : 'bg-success' ?>"> <?= $status ?></span></td>
 											</td>
