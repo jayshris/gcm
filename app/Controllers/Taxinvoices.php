@@ -88,7 +88,7 @@ class Taxinvoices extends BaseController
         $data['id'] = $id;
         $data['updated_by'] = $this->added_by;
       }else{
-        $profile =  $this->profile->where('logged_in_userid',  session()->get('id'))->first();//echo __LINE__.'<pre>';print_r($profile);die;
+        $profile =  $this->profile->where('logged_in_userid', 1)->first();//echo __LINE__.'<pre>';print_r($profile);die;
         $lastr = $this->TaxInvoiceModel->orderBy('id', 'desc')->first();
         $lastr = isset($lastr['id']) ? ((int)$lastr['id']+1) : 1; 
         $data['invoices_no'] = isset($profile['tax_invoice_prefix']) && !empty($profile['tax_invoice_prefix']) ? $profile['tax_invoice_prefix'].'/'.date('m').'/000'.$lastr : 'PR/'.date('m').'/000'.$lastr;

@@ -44,24 +44,44 @@
                   <hr>
                   <div class="row">
 
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                       <div class="form-wrap">
                         <label class="col-form-label">Status</label>
                         <select class="form-select" name="status" aria-label="Default select example">
                           <option value="">Select Status</option>
                           <?php foreach ($statuses as $s) { ?>
-                            <option value="<?= $s['id'] ?>"><?= ucwords($s['status_name']) ?></option>
+                            <option value="<?= $s['id'] ?>" <?= (set_value('status') == $s['id']) ? 'selected' : '' ?>><?= ucwords($s['status_name']) ?></option>
                           <?php } ?>
                         </select>
                       </div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-3">
+                      <label class="col-form-label">Customer Name</label>
+                      <select class="form-select select2" name="customer_id" id="customer_id">
+                        <option value="">Select Customer</option>
+                        <?php foreach ($customers as $c) { ?>
+                          <option value="<?= $c['id'] ?>" <?= (set_value('customer_id') == $c['id']) ? 'selected' : '' ?> ><?= $c['party_name'] ?></option>
+                       <?php } ?>
+                      </select> 
+                    </div>
+                    
+                    <div class="col-md-2">
+                      <label class="col-form-label">RC No.</label>
+                      <select class="form-select select2" name="vehicle_rc" id="vehicle_rc">
+                        <option value="">Select RC No.</option>
+                        <?php foreach ($vehicles as $v) { ?>
+                          <option value="<?= $v['id'] ?>" <?= (set_value('vehicle_rc') == $v['id']) ? 'selected' : '' ?>  ><?= $v['rc_number'] ?></option> 
+                        <?php } ?>
+                      </select>
+                    </div>
+                    
+                    <div class="col-md-3">
                       <button class="btn btn-info mt-4">Search</button>&nbsp;&nbsp;
                       <a href="./booking" class="btn btn-warning mt-4">Reset</a>&nbsp;&nbsp;
                     </div>
 
-                    <div class="col-md-3 text-end mt-3">
+                    <div class="col-md-2 text-end mt-3">
                       <?php echo makeListActions($currentController, $Action, 0, 1); ?>
                     </div>
                   </div>
@@ -225,8 +245,8 @@
     $('form#bookigStatusUpdate').submit(function() {
       return confirm(($('#confirmMsg').val()).trim()); 
     });
-    $(document).ready(function() {
-      $('.action_link').on('click', function() {
+    $(document).ready(function() { 
+        $(document).on("click", ".action_link", function() {  
          var id = $(this).attr('token');
          var title = $(this).attr('title');
          var msg = $(this).attr('msg');

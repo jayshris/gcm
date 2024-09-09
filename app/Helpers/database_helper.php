@@ -101,7 +101,7 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 							//if status is not Waiting for Approval or approved and not assign vehicle then only show
 							if ($secLink == 'assign_vehicle' && ($row['is_vehicle_assigned'] == 1 || !in_array($row['status'], [1, 2, 8])))	$makeButton = 0;
 							//if status is 1 and assign vehicle or status 3  then only show
-							if ($secLink == 'unassign_vehicle' && ($row['is_vehicle_assigned'] != 1 || $row['lr_approved'] == 1 ||  !in_array($row['status'], [0, 1, 2, 3, 6,8])))	$makeButton = 0;
+							if ($secLink == 'unassign_vehicle' && ($row['is_vehicle_assigned'] != 1 || !in_array($row['status'], [0, 1, 2, 3, 6,8])))	$makeButton = 0;
 							//if status is Approval for Cancellation then only show
 							if ($secLink == 'approval_for_cancellation' && $row['status'] != 14)	$makeButton = 0;
 							//if status is 6 means kanta parchi uploaded then only show 
@@ -124,8 +124,8 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 							//trip_running show for
 							if ($secLink == 'trip_running' && ($row['status'] != 6))	$makeButton = 0;
 							
-							//trip_update only show when status between 3 and 8
-							if ($secLink == 'trip_update' && ($row['status'] < 3) && ($row['status'] <  8))	$makeButton = 0;
+							//trip_update only show when status between 2 and 11
+							if ($secLink == 'trip_update' && !in_array($row['status'], [3,4,5,6,7,8,9,10]))	$makeButton = 0;
 
 							//if status is 8 means trip paused then only show 
 							if ($secLink == 'trip_restart' &&  ($row['status'] != 8))	$makeButton = 0;

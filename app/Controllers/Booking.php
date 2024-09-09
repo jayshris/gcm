@@ -130,15 +130,46 @@ class Booking extends BaseController
             $this->BModel->whereNotIn('bookings.status', [11,15]);
         }
 
+        if ($this->request->getPost('customer_id') != '') {
+            $this->BModel->where('bookings.customer_id', $this->request->getPost('customer_id'));
+        }
+
+        if ($this->request->getPost('vehicle_rc') != '') {
+            $this->BModel->where('bookings.vehicle_id', $this->request->getPost('vehicle_rc'));
+        }
+
         $this->view['bookings'] = $this->BModel->orderBy('bookings.id', 'desc')->groupBy('bookings.id')->findAll();
 
         $this->view['statuses'] = $this->BSModel->findAll();
         $this->view['pickup'] = $this->BPModel;
         $this->view['drop'] = $this->BDModel;
 
+        $this->view['vehicles'] = $this->getDriverAssignedVehicles();
+        $this->view['customers'] = $this->getCustomers();
         return view('Booking/index', $this->view); 
     }
-
+ 
+    function getDriverAssignedVehicles(){
+         return $this->VModel->select('vehicle.id, vehicle.rc_number, party.party_name')
+            ->join('driver_vehicle_map', 'driver_vehicle_map.vehicle_id = vehicle.id','left')
+            ->join('driver', 'driver.id = driver_vehicle_map.driver_id','left')
+            ->join('party', 'party.id = driver.party_id','left')
+            ->where('(driver_vehicle_map.unassign_date = "" or driver_vehicle_map.unassign_date IS NULL or (UNIX_TIMESTAMP(driver_vehicle_map.unassign_date) = 0))')
+            ->where('vehicle.status', 1)->groupBy('vehicle.id')->findAll(); 
+    }
+    function getCustomers(){
+        //Get only that customers which party sale is yes
+        $party_type_ids = $this->PTModel->select("(GROUP_CONCAT(id)) party_type_ids") 
+        ->where('sale', '1') 
+        ->first(); 
+         $party_type_ids = str_replace([',',', '],'|', $party_type_ids );
+       
+        return $this->CModel->select('customer.*, party.party_name')
+            ->join('party', 'party.id = customer.party_id')
+            ->where('customer.status', '1')
+            ->where('CONCAT(",", party_type_id, ",") REGEXP ",('.$party_type_ids['party_type_ids'].'),"')
+            ->findAll();
+    }
     public function create()
     {    
         if ($this->request->getPost()) {
@@ -657,7 +688,7 @@ class Booking extends BaseController
         ->join('driver_vehicle_map', 'driver_vehicle_map.vehicle_id = vehicle.id' )
         ->join('driver', 'driver.id = driver_vehicle_map.driver_id' )
         ->join('party', 'party.id = driver.party_id','left')
-        ->where('(driver_vehicle_map.unassign_date IS NULL or (UNIX_TIMESTAMP(driver_vehicle_map.unassign_date) = 0)) ')
+        ->where('(driver_vehicle_map.unassign_date = "" or driver_vehicle_map.unassign_date IS NULL or (UNIX_TIMESTAMP(driver_vehicle_map.unassign_date) = 0)) ')
         ->where('vehicle.vehicle_type_id', $isVehicle_type)
         ->where('vehicle.status', '1')
         ->where('vehicle.working_status', '1')
@@ -678,7 +709,7 @@ class Booking extends BaseController
             ->join('driver_vehicle_map', 'driver_vehicle_map.vehicle_id = vehicle.id')
             ->join('driver', 'driver.id = driver_vehicle_map.driver_id' )
             ->join('party', 'party.id = driver.party_id','left')
-            ->where('(driver_vehicle_map.unassign_date IS NULL or (UNIX_TIMESTAMP(driver_vehicle_map.unassign_date) = 0))')
+            ->where('(driver_vehicle_map.unassign_date = "" or driver_vehicle_map.unassign_date IS NULL or (UNIX_TIMESTAMP(driver_vehicle_map.unassign_date) = 0))')
             ->where('vehicle.status', '1')
             ->where('vehicle.working_status', '2')
             ->where('b.booking_type', 'PTL')
@@ -1285,7 +1316,7 @@ class Booking extends BaseController
             ->join('driver_vehicle_map', 'driver_vehicle_map.vehicle_id = vehicle.id','left')
             ->join('driver', 'driver.id = driver_vehicle_map.driver_id','left')
             ->join('party', 'party.id = driver.party_id','left')
-            ->where('(driver_vehicle_map.unassign_date IS NULL or (UNIX_TIMESTAMP(driver_vehicle_map.unassign_date) = 0))')
+            ->where('(driver_vehicle_map.unassign_date = "" or driver_vehicle_map.unassign_date IS NULL or (UNIX_TIMESTAMP(driver_vehicle_map.unassign_date) = 0))')
             ->where('vehicle_type_id', $this->view['booking_details']['vehicle_type_id'])
             ->where('vehicle.status', 1)->where('vehicle.working_status', '1')->groupBy('vehicle.id')->findAll(); 
          
