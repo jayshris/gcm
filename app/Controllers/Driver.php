@@ -590,8 +590,8 @@ class Driver extends BaseController
       ->join('driver', 'driver.id = driver_vehicle_map.driver_id')
       ->orderBy('driver_vehicle_map.assign_date', 'descs')
       ->join('party', 'party.id = driver.party_id')
-      // ->where('(driver_vehicle_map.unassign_date IS NULL or driver_vehicle_map.unassign_date="")')
-      ->where('(driver_vehicle_map.unassign_date IS NOT NULL)');
+      ->where('(driver_vehicle_map.unassign_date IS NULL or driver_vehicle_map.unassign_date="" or (UNIX_TIMESTAMP(driver_vehicle_map.unassign_date) = 0))');
+      // ->where('(driver_vehicle_map.unassign_date IS NOT NULL)');
      
       if ($this->request->getPost('vehicle_id') >0 ) {
         $this->DVAModel->where('vehicle.id', $this->request->getPost('vehicle_id'));

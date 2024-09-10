@@ -1827,7 +1827,13 @@ class Booking extends BaseController
     }
 
     function trip_update($id){
-        $this->view['data'] = $this->BookingsTripUpdateModel->select('bookings_trip_updates.*')->orderBy('id', 'desc')->findAll(); 
+        $this->view['employees'] = $this->EmployeeModel->select('employee.id,employee.name')
+        ->join('departments d','d.id= employee.dept_id')
+        ->where(['d.booking'=> 1,'d.status'=> 1])
+        ->findall();
+        $this->view['data'] = $this->BookingsTripUpdateModel->select('bookings_trip_updates.*,e.name e_name')
+        ->join('employee e','e.id = bookings_trip_updates.updated_by')
+        ->orderBy('id', 'desc')->findAll(); 
         // echo '  <pre>';print_r($this->view['data']); exit;
         if ($this->request->getPost()) {          
             $error = $this->validate([
@@ -1846,15 +1852,42 @@ class Booking extends BaseController
                 'updated_by' => [
                     'rules' => 'required',
                     'errors' => [
-                        'required' => 'The updated by field is required'
+                        'required' => 'The authorised by field is required'
                     ],
                 ],
+                'purpose_of_update' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'The purpose of update field is required'
+                    ],
+                ], 
             ]);
 
-            if (!$error) { 
-                $this->view['error'] = $this->validator; 
-            } else {   
- 
+            if($this->request->getPost('purpose_of_update') == 2){
+                $this->validate([
+                    'fuel' => [
+                        'rules' => 'required',
+                        'errors' => [
+                            'required' => 'The fuel field is required'
+                        ],
+                    ],
+                ]);
+            }
+            if(in_array($this->request->getPost('purpose_of_update'),[3,4,5,6,7])){ 
+                $this->validate([
+                    'money' => [
+                        'rules' => 'required',
+                        'errors' => [
+                            'required' => 'The money field is required'
+                        ],
+                    ],
+                ]);
+            }
+            $validation = \Config\Services::validation(); 
+            if (!empty($validation->getErrors())) {
+                $this->view['error'] = $this->validator;
+            }else {   
+                // echo '<pre>';print_r($this->request->getPost());exit;
                 //update booking trip update info 
                 $data['booking_id'] = $id; 
                 $data['updated_by'] = $this->request->getPost('updated_by');
@@ -1862,6 +1895,9 @@ class Booking extends BaseController
                 $data['status_date'] = $this->request->getPost('status_date');
                 $data['location'] = $this->request->getPost('location');
                 $data['remarks'] = $this->request->getPost('remarks'); 
+                $data['purpose_of_update'] = $this->request->getPost('purpose_of_update'); 
+                $data['fuel'] = $this->request->getPost('fuel'); 
+                $data['money'] = $this->request->getPost('money'); 
                 $this->BookingsTripUpdateModel->insert($data); 
                 $this->session->setFlashdata('success',"Trip has been updated successfully");
                 return $this->response->redirect(base_url('booking'));  

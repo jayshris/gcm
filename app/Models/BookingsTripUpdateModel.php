@@ -12,7 +12,7 @@ class BookingsTripUpdateModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['booking_id','status_date','location','remarks','created_by','updated_by'];
+    protected $allowedFields    = ['booking_id','status_date','location','remarks','created_by','updated_by','purpose_of_update','fuel','money'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
