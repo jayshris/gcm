@@ -40,11 +40,33 @@
                                                         </div>  
                                                         
                                                         <div class="col-md-6">
-                                                            <label class="col-form-label">Loading Doc</label>
+                                                            <label class="col-form-label">Loading Doc First</label>
                                                             <input type="file" name="loading_doc" class="form-control" accept=".png, .jpg, .jpeg,.pdf">
                                                             <?php
                                                             if ($validation->getError('loading_doc')) {
                                                                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('loading_doc') . '</div>';
+                                                            }   
+                                                            ?>
+                                                            <span class="text-info" id="lr-info">JPEG,PNG,PDF</span>
+                                                        </div>
+
+                                                        <div class="col-md-6">
+                                                            <label class="col-form-label">Loading Doc Second</label>
+                                                            <input type="file" name="loading_doc_2" class="form-control" accept=".png, .jpg, .jpeg,.pdf">
+                                                            <?php
+                                                            if ($validation->getError('loading_doc_2')) {
+                                                                echo '<div class="alert alert-danger mt-2">' . $validation->getError('loading_doc_2') . '</div>';
+                                                            }   
+                                                            ?>
+                                                            <span class="text-info" id="lr-info">JPEG,PNG,PDF</span>
+                                                        </div>
+
+                                                        <div class="col-md-6">
+                                                            <label class="col-form-label">Loading Doc Third</label>
+                                                            <input type="file" name="loading_doc_3" class="form-control" accept=".png, .jpg, .jpeg,.pdf">
+                                                            <?php
+                                                            if ($validation->getError('loading_doc_3')) {
+                                                                echo '<div class="alert alert-danger mt-2">' . $validation->getError('loading_doc_3') . '</div>';
                                                             }   
                                                             ?>
                                                             <span class="text-info" id="lr-info">JPEG,PNG,PDF</span>

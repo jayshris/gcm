@@ -113,7 +113,7 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 							//if status is 4 means Trip Start then only show 
 							if ($secLink == 'loading_done' && $row['status'] != 4)	$makeButton = 0;
 							//if status is 5 means loading_done then only show 
-							if ($secLink == 'kanta_parchi_uploaded' && $row['status'] != 5)	$makeButton = 0;
+							if ($secLink == 'kanta_parchi_uploaded' && !in_array($row['status'], [5,6,7,8,9]))	$makeButton = 0;
 
 							//trip_paused show for
 							if ($secLink == 'trip_paused' && (($row['status'] != 4) && ($row['status'] != 5) && ($row['status'] != 7)))	$makeButton = 0;
@@ -122,7 +122,7 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 							if ($secLink == 'unloading' && ($row['status'] != 7))	$makeButton = 0;
 
 							//trip_running show for
-							if ($secLink == 'trip_running' && ($row['status'] != 6))	$makeButton = 0;
+							if ($secLink == 'trip_running' && ($row['status'] != 5))	$makeButton = 0;
 							
 							//trip_update only show when status between 2 and 11
 							if ($secLink == 'trip_update' && !in_array($row['status'], [3,4,5,6,7,8,9,10]))	$makeButton = 0;

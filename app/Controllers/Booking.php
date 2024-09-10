@@ -25,9 +25,10 @@ use App\Models\BookingPickupsModel;
 use App\Models\CustomerBranchModel;
 use App\Models\LoadingReceiptModel;
 use App\Models\BookingExpensesModel;
-use App\Models\BookingsTripUpdateModel;
 use App\Models\TripPausedReasonModel;
 use App\Models\BookingVehicleLogModel;
+use App\Models\BookingLoadingDocsModel;
+use App\Models\BookingsTripUpdateModel;
 use App\Models\BookingTransactionModel;
 use App\Models\BookingUploadedPodModel;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -69,10 +70,10 @@ class Booking extends BaseController
     public $BookingTransactionModel;
     public $BookingUploadedKantaParchiModel;
     public $TripPausedReasonModel;
-    public $BookingsTripUpdateModel;
-
+    public $BookingsTripUpdateModel; 
     public function __construct()
     {
+        // date_default_timezone_set("Asia/Kolkata");
         $this->session = \Config\Services::session();
 
         $this->user = new UserModel();
@@ -109,7 +110,7 @@ class Booking extends BaseController
         $this->BookingTransactionModel = new BookingTransactionModel();
         $this->BookingUploadedKantaParchiModel = new BookingUploadedKantaParchiModel();
         $this->TripPausedReasonModel = new TripPausedReasonModel();
-        $this->BookingsTripUpdateModel = new BookingsTripUpdateModel();
+        $this->BookingsTripUpdateModel = new BookingsTripUpdateModel(); 
     }
 
     public function index()
@@ -140,7 +141,7 @@ class Booking extends BaseController
 
         $this->view['bookings'] = $this->BModel->orderBy('bookings.id', 'desc')->groupBy('bookings.id')->findAll();
 
-        $this->view['statuses'] = $this->BSModel->findAll();
+        $this->view['statuses'] = $this->BSModel->where('status_name !=','')->findAll();
         $this->view['pickup'] = $this->BPModel;
         $this->view['drop'] = $this->BDModel;
 
@@ -170,6 +171,7 @@ class Booking extends BaseController
             ->where('CONCAT(",", party_type_id, ",") REGEXP ",('.$party_type_ids['party_type_ids'].'),"')
             ->findAll();
     }
+
     public function create()
     {    
         if ($this->request->getPost()) {
@@ -186,12 +188,12 @@ class Booking extends BaseController
     
                 if (!$error) {
                     $this->view['error']   = $this->validator;
-                } else {
+                } else { 
                     $profile =  $this->profile->where('logged_in_userid',  '1')->first();//session()->get('id')
                     $last_booking = $this->BModel->orderBy('id', 'desc')->first();
                     $lastBooking = isset($last_booking['id']) ? ((int)$last_booking['id']+1) : 1;
                     $booking_number = isset($profile['booking_prefix']) && !empty($profile['booking_prefix']) ? $profile['booking_prefix'].'/'.date('m').'/000'.$lastBooking : 'BK/'.date('m').'/000'.$lastBooking;
-
+                  
                     // save booking
                     $bookingData = [
                         'booking_number' => $booking_number,
@@ -204,9 +206,11 @@ class Booking extends BaseController
                         'booking_by' => $this->request->getPost('booking_by'),
                         'booking_date' => $this->request->getPost('booking_date'),
                         'booking_type' => $this->request->getPost('booking_type') ? $this->request->getPost('booking_type') : '',
-                        'lr_first_party' => $this->request->getPost('lr_first_party'),
+                        'lr_first_party' => $this->request->getPost('lr_first_party')
                     ];
-                    
+                     
+                    // echo ' <pre>';print_r($bookingData);
+                    // exit;
                     $booking_id = $this->BModel->insert($bookingData) ? $this->BModel->getInsertID() : '0';   
                     //assign vehicle
                     if($this->request->getPost('vehicle_type') > 0  && $this->request->getPost('vehicle_rc') > 0){
@@ -282,7 +286,7 @@ class Booking extends BaseController
 
                     $this->BModel->update($booking_id,$bookingPTLData);
                      //update booking status 
-                     $this->update_booking_status($booking_id,1);
+                     $this->update_booking_status($booking_id,1); 
                     // save pickups 
                     $this->BPModel->insert([
                         'booking_id' => $booking_id,
@@ -348,7 +352,8 @@ class Booking extends BaseController
         // echo '  <pre>';print_r($this->view['customers'] );exit; 
 
         return view('Booking/create', $this->view); 
-    }
+    } 
+   
     public function getCitiesByState()
     {
         $cities = $this->CityModel->where('state_id', $this->request->getPost('state_id'))->findAll();
@@ -463,7 +468,7 @@ class Booking extends BaseController
     public function approve($id)
     { 
         if ($this->request->getPost()) {
-
+            
             // $isVehicle = $this->BModel->where('id', $id)->first()['vehicle_id'] > 0 ? true : false;
              // update Drops, Pickups and delete Expences 
              $booking_details =  $this->BModel->where('id', $id)->first(); 
@@ -508,10 +513,10 @@ class Booking extends BaseController
 
             //assign vehicle
             if($this->request->getPost('vehicle_type') > 0  && $this->request->getPost('vehicle_rc') > 0){
-                $this->assignVehicleBooking($id,$this->request->getPost(),$booking_status);   
+                $this->assignVehicleBooking($id,$this->request->getPost(),$booking_status);                   
             }else{ 
                 //update booking status 
-                $this->update_booking_status($id,$booking_status); 
+                $this->update_booking_status($id,$booking_status);
             }
             // update Drops, Pickups and delete Expences 
             $this->BEModel->where('booking_id', $id)->delete();
@@ -713,10 +718,10 @@ class Booking extends BaseController
             ->where('vehicle.status', '1')
             ->where('vehicle.working_status', '2')
             ->where('b.booking_type', 'PTL')
-            ->where('b.status', '1')
+            // ->where('b.status', '1')
             ->orWhere("(bvl.booking_id = '$booking_id' and vehicle.working_status = '2' and vehicle.vehicle_type_id = '$isVehicle_type' )")
             ->groupBy('vehicle.id')
-            ->findAll();
+            ->findAll(); 
             
             $rows = array_merge($unassigned_vehicles,$assigned_vehicles); 
             if(!empty($assigned_vehicles)){
@@ -727,7 +732,7 @@ class Booking extends BaseController
             //  echo ' assigned_vehicles  <pre>';print_r($assigned_vehicles);
         }else{
             $rows = $unassigned_vehicles; 
-        } 
+        }  
         //   echo ' rows <pre>';print_r($rows);exit; 
 
         $html = '<option value="">Select Vehicle</option>';
@@ -776,7 +781,7 @@ class Booking extends BaseController
        $this->view['booking_vehicle'] = $this->BVLModel->where('booking_id', $id)->where('(unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date = 0))')->first();
         //   echo '<pre>';print_r($this->view['booking_vehicle']);exit;
        if ($this->request->getPost()) {
-            $result = $this->assignVehicleBooking($id,$this->request->getPost());
+            $result = $this->assignVehicleBooking($id,$this->request->getPost(),-1);
             if($result){
                 $this->session->setFlashdata('success', 'Vehicle Assigned To Booking');
             }else{
@@ -807,8 +812,8 @@ class Booking extends BaseController
     }
 
     function assignVehicleBooking($id,$post,$booking_status = -1){
-        $current_booking = $this->BModel->select('status,booking_type,vehicle_id,customer_id')->where('id',$id)->first();
-        
+        $current_booking = $this->BModel->select('id,status,booking_type,vehicle_id,customer_id,approved')->where('id',$id)->first();
+       
         if($booking_status<0){
             //IF ON VEHICLE ASSIGNED, BOOKING STATUS IS APPROVED (2) IT WILL CHANGE TO READY FOR TRIP (3)
             $booking_status = 3; 
@@ -858,7 +863,17 @@ class Booking extends BaseController
         ]); 
 
          //update booking status 
-         $this->update_booking_status($id,$booking_status);
+         $this->update_booking_status($id,$booking_status); 
+
+         $this->update_PTLBookings($id,$booking_status,0,0,'',[]);
+
+        //Check if booking type is PTL and vehicle > 0, for booking_type and vehicle
+        // If records exist then get parent_id ==0 and assign with new booking parent_id
+        $bookingParentId =0; 
+        if(($current_booking['booking_type'] == 'PTL') && $post['vehicle_rc'] > 0 && $current_booking['approved'] == 1){
+            $bookingParentId =  $this->getBookingParentId($current_booking['id'],$current_booking['booking_type'],$post['vehicle_rc']);
+            $this->BModel->update($current_booking['id'], ['parent_id' => $bookingParentId]); 
+        }  
         
         //update vevhicle status assigned as 2
 
@@ -926,6 +941,7 @@ class Booking extends BaseController
             $this->BModel->update($id, ['status' => '14']);
              //update booking status 
             $this->update_booking_status($id,14,0,0,$this->request->getPost('status_date'));
+            $this->update_PTLBookings($id,14,0,0,$this->request->getPost('status_date'));
             $this->session->setFlashdata('success', 'Approval is send for Cancellation');
             return $this->response->redirect(base_url('booking'));
         }
@@ -999,14 +1015,15 @@ class Booking extends BaseController
                     'bill_to_party' => $this->request->getPost('bill_to'),
                     'remarks' => $this->request->getPost('remarks'), 
                     'added_by' => $this->added_by,
-                    'added_ip' => $this->added_ip
+                    'added_ip' => $this->added_ip,
+                    'booking_type' => $this->request->getPost('booking_type'),
                 ];//echo __LINE__.'<pre>';print_r($bookingData);die;
 
                 //update status only when booking status is created i.e 0 
                 if($booking_details['status'] == 0){
                     $bookingData['status'] = 1;
                     //update booking status 
-                    $this->update_booking_status($id,$bookingData['status']);
+                    $this->update_booking_status($id,$bookingData['status']); 
 
                 }
 
@@ -1234,6 +1251,7 @@ class Booking extends BaseController
             //update booking status 
             if($this->request->getPost('approval_for_cancellation')){
                 $this->update_booking_status($id,$this->request->getPost('approval_for_cancellation'));            
+                $this->update_PTLBookings($id,$this->request->getPost('approval_for_cancellation'));
             }
             
             return $this->response->redirect(base_url('booking'));
@@ -1325,7 +1343,7 @@ class Booking extends BaseController
         $this->view['booking_vehicle'] = $this->BVLModel->where('booking_id', $id)->where('(unassign_date IS NULL or (UNIX_TIMESTAMP(unassign_date) = 0))')->first();
         // echo '<pre>';print_r($this->view['booking_vehicle']);exit;
         if ($this->request->getPost()) {
-            $current_booking = $this->BModel->select('status,booking_type,vehicle_id')->where('id',$id)->first();
+            $current_booking = $this->BModel->select('status,booking_type,vehicle_id,approved')->where('id',$id)->first();
             //update vevhicle status unassigned as 1
             $this->VModel->update($current_booking['vehicle_id'], [ 
                 'working_status' => '1'
@@ -1334,9 +1352,11 @@ class Booking extends BaseController
             $booking_status = 2; 
 
             //if current booking status is waiting for approval then after unassign the status remains same
-            if($current_booking['status'] == 1){
+            //if current booking status is 3 and booking not approved then status will 1
+            if($current_booking['status'] == 1 || ($current_booking['status'] == 3 && $current_booking['approved'] == 0)){
                 $booking_status = 1;
             }
+ 
 
             //if current status is > than 3 then status is paused 8
             if($current_booking['status'] > 3){
@@ -1363,7 +1383,7 @@ class Booking extends BaseController
 
             //update booking status 
             $this->update_booking_status($id,$booking_status);
-
+            $this->update_PTLBookings($id,$booking_status);
             $this->session->setFlashdata('success', 'Vehicle is Unassigned To Booking');
 
             return $this->response->redirect(base_url('booking'));
@@ -1437,7 +1457,7 @@ class Booking extends BaseController
                 ]); 
                 //update booking status 
                 $this->update_booking_status($booking_id,10);
-
+                $this->update_PTLBookings($booking_id,10);
                 $this->session->setFlashdata('success', 'Uploaded pod Successfully');
                 return $this->response->redirect(base_url('booking'));  
             }            
@@ -1512,6 +1532,7 @@ class Booking extends BaseController
                     $d_id= isset($driver_assigned_vehicle['d_id']) && ($driver_assigned_vehicle['d_id'] > 0) ? $driver_assigned_vehicle['d_id'] : 0;
                 }
                 $this->update_booking_status($booking_id,$status,$v_id,$d_id);
+                $this->update_PTLBookings($booking_id,$status,$v_id,$d_id);
 
                 $this->session->setFlashdata($alert ,$msg);
                 return $this->response->redirect(base_url('booking'));  
@@ -1527,6 +1548,7 @@ class Booking extends BaseController
         $this->BModel->update($id, ['status' => '4']);
         //update booking status 
         $this->update_booking_status($id,4,0,0,$this->request->getPost('status_date'));
+        $this->update_PTLBookings($id,4,0,0,$this->request->getPost('status_date'));
         $this->session->setFlashdata('success', 'Trip is started');
         return $this->response->redirect(base_url('booking'));
     }
@@ -1546,12 +1568,24 @@ class Booking extends BaseController
                         'mime_in' => 'Image must be in jpeg/png/pdf format' 
                     ]
                 ],
+                'loading_doc_2' => [
+                    'rules' => 'mime_in[loading_doc_2,image/png,image/PNG,image/jpg,image/jpeg,image/JPEG,application/pdf]',
+                    'errors' => [
+                        'mime_in' => 'Image must be in jpeg/png/pdf format' 
+                    ]
+                ],
+                'loading_doc_3' => [
+                    'rules' => 'mime_in[loading_doc_3,image/png,image/PNG,image/jpg,image/jpeg,image/JPEG,application/pdf]',
+                    'errors' => [
+                        'mime_in' => 'Image must be in jpeg/png/pdf format' 
+                    ]
+                ],
             ]);
 
             if (!$error) { 
                 $this->view['error'] = $this->validator; 
             } else {  
-                //upload kanta parchi 
+                //upload  loading_doc 1  
                 $image = $this->request->getFile('loading_doc'); 
                 $image_name = '';
                 if (isset($image)) {
@@ -1565,13 +1599,45 @@ class Booking extends BaseController
                     }
                 }
 
+                //upload  loading_doc 2  
+                $image = $this->request->getFile('loading_doc_2'); 
+                $image_name_2 = '';
+                if (isset($image)) {
+                    if ($image->isValid() && !$image->hasMoved()) {
+                        $image_name_2 = $image->getRandomName();
+                        $imgpath = 'public/uploads/loading_docs';
+                        if (!is_dir($imgpath)) {
+                            mkdir($imgpath, 0777, true);
+                        }
+                        $image->move($imgpath, $image_name_2);
+                    }
+                }
+
+                //upload  loading_doc 3  
+                $image = $this->request->getFile('loading_doc_3'); 
+                $image_name_3 = '';
+                if (isset($image)) {
+                    if ($image->isValid() && !$image->hasMoved()) {
+                        $image_name_3 = $image->getRandomName();
+                        $imgpath = 'public/uploads/loading_docs';
+                        if (!is_dir($imgpath)) {
+                            mkdir($imgpath, 0777, true);
+                        }
+                        $image->move($imgpath, $image_name_3);
+                    }
+                }
+
                 $booking_data['status'] = 5; 
                 $booking_data['loading_doc'] = $image_name;
+                $booking_data['loading_doc_2'] = $image_name_2;
+                $booking_data['loading_doc_3'] = $image_name_3;
                 $booking_data['loading_date_time'] = $this->request->getPost('loading_date_time'); 
+                // echo '  <pre>';print_r($booking_data);exit; 
                 $this->BModel->update($id, $booking_data);   
+ 
                 //update booking status 
                 $this->update_booking_status($id,5);
-
+                $this->update_PTLBookings($id,5);
                 $this->session->setFlashdata('success',"Loading done successfully");
                 return $this->response->redirect(base_url('booking'));  
             }           
@@ -1620,18 +1686,21 @@ class Booking extends BaseController
                         $image->move($imgpath, $image_name);
                     }
                 } 
-                $booking_status_id = 7;
+                //Change: 10-09-2024 for allow multiple kanta parchi uploading
+                //2. Kanta Parchi Upload should not change the status. It should be allowed multiple times from Trip Start to Upload POD
+                // $booking_status_id = 7;
                 $booking_data['booking_id'] = $id; 
                 $booking_data['created_by'] = $this->added_by;
-                $booking_data['status'] = $booking_status_id; 
+                // $booking_data['status'] = $booking_status_id; 
                 $booking_data['actual_weight'] = $this->request->getPost('actual_weight'); 
                 $booking_data['kanta_parchi_datetime'] = $this->request->getPost('kanta_parchi_datetime');
                 $booking_data['kanta_parchi'] = $image_name;
-                $this->BModel->update($id, ['status' => $booking_status_id]);  
+                // $this->BModel->update($id, ['status' => $booking_status_id]);  
 
                 $this->BookingUploadedKantaParchiModel->insert($booking_data);      
                 //update booking status 
-                $this->update_booking_status($id,$booking_status_id);
+                // $this->update_booking_status($id,$booking_status_id);
+                // $this->update_PTLBookings($id,$booking_status_id);
                 $this->session->setFlashdata('success',"Kanta parchi is uploaded successfully");
                 return $this->response->redirect(base_url('booking'));  
             }           
@@ -1698,7 +1767,8 @@ class Booking extends BaseController
         echo json_encode($data);
     }
 
-    function trip_paused($id){
+    function trip_paused($id){ 
+
         if ($this->request->getPost()) {          
             $error = $this->validate([
                 'status_date' => [
@@ -1712,13 +1782,7 @@ class Booking extends BaseController
                     'errors' => [
                         'required' => 'The location field is required'
                     ],
-                ],
-                'reason' => [
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => 'The reason field is required'
-                    ],
-                ] 
+                ]  
             ]);
 
             if (!$error) { 
@@ -1729,7 +1793,7 @@ class Booking extends BaseController
                 $this->BModel->update($id, $booking_data);  
                 //update booking status 
                 $this->update_booking_status($id,$booking_data['status'],'','',$this->request->getPost('status_date'),$this->request->getPost());
-
+                $this->update_PTLBookings($id,$booking_data['status'],'','',$this->request->getPost('status_date'),$this->request->getPost());
                 $this->session->setFlashdata('success',"Trip has been paused successfully");
                 return $this->response->redirect(base_url('booking'));  
             }           
@@ -1747,6 +1811,7 @@ class Booking extends BaseController
         $this->BModel->update($id, ['status' => $booking_status]);
         //update booking status 
         $this->update_booking_status($id,$booking_status,0,0,$this->request->getPost('status_date'));
+        $this->update_PTLBookings($id,$booking_status,0,0,$this->request->getPost('status_date'));
         $this->session->setFlashdata('success', 'Unloading is done successfully');
         return $this->response->redirect(base_url('booking'));
     }
@@ -1756,6 +1821,7 @@ class Booking extends BaseController
         $this->BModel->update($id, ['status' => $booking_status]);
         //update booking status 
         $this->update_booking_status($id,$booking_status,0,0,$this->request->getPost('status_date'));
+        $this->update_PTLBookings($id,$booking_status,0,0,$this->request->getPost('status_date'));
         $this->session->setFlashdata('success', 'Trip has been running');
         return $this->response->redirect(base_url('booking'));
     }
@@ -1815,7 +1881,74 @@ class Booking extends BaseController
         
         //update booking status 
         $this->update_booking_status($id,$booking_status,0,0,$this->request->getPost('status_date'));
+        $this->update_PTLBookings($id,$booking_status,0,0,$this->request->getPost('status_date'));
         $this->session->setFlashdata('success', 'Trip is restarted');
         return $this->response->redirect(base_url('booking'));
+    }
+
+    function getBookingParentId($id,$booking_type,$vehicle_rc){
+        $getPTLBooking = $this->BModel->where([
+            'booking_type'=> $booking_type,
+            'vehicle_id'=> $vehicle_rc,
+            'approved' =>1,
+            'id !=' => $id
+        ])->findAll(); 
+        if($getPTLBooking){
+            //get booking where parent_id = 0 in 
+            $getPTLBookingIds = array_unique(array_column($getPTLBooking, 'id'));  
+            $getParentPTLBooking = $this->BModel->whereIn('id',$getPTLBookingIds)->where('parent_id' , 0)->first(); 
+        } 
+        return isset($getParentPTLBooking['id']) && ($getParentPTLBooking['id'] > 0) ? $getParentPTLBooking['id'] : 0;
+    }
+
+    
+    //Update all PTL bookings status for child and parent
+    function update_all_child_bookings($id,$booking_status,$child_id=0,$vehicle_id = 0,$driver_id = 0,$status_date= '',$post = []){
+        $this->BModel->where(['parent_id'=>$id,'approved' => 1,'booking_type' => 'PTL']);
+        if($child_id > 0){
+            $this->BModel->where('id != ',$child_id);
+        }
+        $child_bookings= $this->BModel->findAll();
+        // echo 'child_bookings <pre>';print_r($child_bookings);exit;
+        if($child_bookings){
+            //get child vehicle
+            $parent_vehicle = $this->BModel->where('id',$id)->first(); 
+            foreach($child_bookings as $child_booking){            
+                if($parent_vehicle['vehicle_id'] == $child_booking['vehicle_id']){
+                    $this->update_booking_status($child_booking['id'], $booking_status,$vehicle_id,$driver_id,$status_date,$post);
+                }                
+            }   
+        } 
+    } 
+
+    //Get PTL Child or Parent bookings
+    function update_PTLBookings($id,$booking_status,$vehicle_id = 0,$driver_id = 0,$status_date = '',$post = []){
+        //If booking type is PTL
+        //Check current booking is parent or child
+        $booking_details = $this->BModel->where(['id'=>$id,'approved' => 1])->first(); 
+        // echo 'update_PTLBookings <pre>';print_r($booking_details); exit;
+        if(isset($booking_details['booking_type']) && $booking_details['booking_type'] == 'PTL'){
+            if($booking_details['parent_id'] > 0 ){
+                //booking is child
+                //update all same parent_id  
+                $this->update_all_child_bookings($booking_details['parent_id'],$booking_status,$booking_details['id'],$vehicle_id,$driver_id,$status_date,$post);
+                
+                $this->BModel->set('status',$booking_status)->where('parent_id',$booking_details['parent_id'])->update();
+
+                //update parent also, id = parent id  
+                //get parent vehicle
+                $parent_vehicle = $this->BModel->where('id',$booking_details['parent_id'])->first(); 
+                if($parent_vehicle['vehicle_id'] == $booking_details['vehicle_id']){
+                    $this->BModel->set('status',$booking_status)->where('id',$booking_details['parent_id'])->update();
+                    $this->update_booking_status($booking_details['parent_id'], $booking_status,$vehicle_id,$driver_id,$status_date,$post);
+                }
+               
+            }else{
+                //booking is parent 
+                //update all child booking
+                $this->update_all_child_bookings($booking_details['id'],$booking_status,0,$vehicle_id,$driver_id,$status_date,$post); 
+            }
+        }
+        // exit;
     }
 }

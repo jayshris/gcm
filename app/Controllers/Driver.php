@@ -520,7 +520,10 @@ class Driver extends BaseController
     $this->view['driver_detail'] = $this->DModel->select('driver.*, party.party_name')->join('party', 'party.id = driver.party_id')->where('driver.id', $id)->first();
     $this->view['assignment_details'] = $this->DVAModel->where('driver_id', $id)->where('(driver_vehicle_map.unassign_date IS NULL or UNIX_TIMESTAMP(driver_vehicle_map.unassign_date) = 0)')->first();
 
-    $this->view['driverAllowedVehicleTypes'] = $this->vehicletypeDriver->select('t2.id, t2.rc_number')->join('vehicle as t2', 't2.vehicle_type_id=driver_vehicle_type_map.vehicle_type_id', 'inner')->where('driver_id', $id)->where('t2.is_driver_assigned', '0')->orderBy('t2.rc_number', 'ASC')->findAll();
+    $this->view['driverAllowedVehicleTypes'] = $this->vehicletypeDriver->select('t2.id, t2.rc_number')->join('vehicle as t2', 't2.vehicle_type_id=driver_vehicle_type_map.vehicle_type_id', 'inner')->where('driver_id', $id)->where('t2.is_driver_assigned', '0')
+    ->where('t2.status', 1)
+    ->where('t2.deleted_at', NULL)
+    ->orderBy('t2.rc_number', 'ASC')->findAll();
 
     return view('Driver/assign', $this->view);
   }

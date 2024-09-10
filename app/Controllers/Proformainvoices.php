@@ -44,14 +44,14 @@ class Proformainvoices extends BaseController
     function getvehicles(){
         return  $this->BookingsModel->select('v.id,v.rc_number') 
         ->join('vehicle v','bookings.vehicle_id = v.id') 
-        ->where(['bookings.status >='=> '6']) 
+        ->where(['bookings.status >'=> '5']) 
         ->orderBy('v.id', 'desc')
         ->groupBy('bookings.vehicle_id')
         ->findAll();
     }
 
     function getBooking(){
-      return $this->BookingsModel->where(['status >='=> '6'])->findAll();  
+      return $this->BookingsModel->where(['status >'=> '5'])->findAll();  
     }
 
     function create(){     
@@ -80,7 +80,7 @@ class Proformainvoices extends BaseController
       if($this->request->getPost('vehicle_id')){
         $this->BookingsModel->where('vehicle_id', $this->request->getPost('vehicle_id'));
       }
-      $bookings = $this->BookingsModel->where(['status >='=> '6'])->findAll();       
+      $bookings = $this->BookingsModel->where(['status >'=> '5'])->findAll();       
       echo json_encode($bookings);exit;
     }
 

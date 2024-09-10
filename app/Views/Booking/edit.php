@@ -133,9 +133,9 @@
                                 <label class="col-form-label" style="padding-right: 10px;">
                                     Booking Type<span class="text-danger">*</span>
                                 </label>
-                                <input type="radio" name="booking_type" id="FTL" value="FTL" <?= $booking_details['booking_type'] == 'FTL' ? 'checked' : '' ?> disabled >
+                                <input type="radio" name="booking_type" id="FTL" value="FTL" <?= $booking_details['booking_type'] == 'FTL' ? 'checked' : '' ?>  >
                                 <label for="FTL" style="padding-right:15px">FTL</label>
-                                <input type="radio" name="booking_type" id="PTL" value="PTL" <?= $booking_details['booking_type'] == 'PTL' ? 'checked' : '' ?> disabled >
+                                <input type="radio" name="booking_type" id="PTL" value="PTL" <?= $booking_details['booking_type'] == 'PTL' ? 'checked' : '' ?>  >
                                 <label for="PTL">PTL</label>  
                             </div>
                             <!-- Added booking details -->

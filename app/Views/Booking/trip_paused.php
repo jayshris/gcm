@@ -31,7 +31,7 @@
                                                        
                                                         <div class="col-md-6">
                                                             <label class="col-form-label">Date<span class="text-danger">*</span></label>
-                                                            <input type="datetime-local"  name="status_date" min="<?= date('Y-m-d H:i',strtotime($booking_details['status_date'])) ?>" value="<?= date('Y-m-d H:i');?>" max="<?= date('Y-m-d H:i');?>"  class="form-control" required/>                                                            
+                                                            <input type="datetime-local"  name="status_date" min="<?= isset($booking_details['status_date']) ? date('Y-m-d H:i',strtotime($booking_details['status_date'])): '' ?>" value="<?= date('Y-m-d H:i');?>" max="<?= date('Y-m-d H:i');?>"  class="form-control" required/>                                                            
                                                             <?php
                                                             if ($validation->getError('status_date')) {
                                                                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('status_date') . '</div>';
