@@ -707,7 +707,7 @@ class Booking extends BaseController
         
         if(isset($current_booking['booking_type']) && ($current_booking['booking_type'] == 'PTL')){
             //get assigned vehicles(working_status=2) but assigned booking type PTL
-            $assigned_vehicles = $this->VModel->select('vehicle.id, vehicle.rc_number, party.party_name')
+            $assigned_vehicles = $this->VModel->select('vehicle.id, vehicle.rc_number, party.party_name,b.id booking_id')
             ->join('booking_vehicle_logs bvl', 'bvl.vehicle_id = vehicle.id','left')
             ->join('bookings b', 'b.id = bvl.booking_id','left')
             ->where('vehicle.vehicle_type_id', $isVehicle_type)
@@ -718,18 +718,17 @@ class Booking extends BaseController
             ->where('vehicle.status', '1')
             ->where('vehicle.working_status', '2')
             ->where('b.booking_type', 'PTL')
-            // ->where('b.status', '1')
+            ->where('b.status <', '4')
             ->orWhere("(bvl.booking_id = '$booking_id' and vehicle.working_status = '2' and vehicle.vehicle_type_id = '$isVehicle_type' )")
             ->groupBy('vehicle.id')
             ->findAll(); 
-            
+            //  echo ' assigned_vehicles  <pre>';print_r($assigned_vehicles);exit;
             $rows = array_merge($unassigned_vehicles,$assigned_vehicles); 
             if(!empty($assigned_vehicles)){
                 $temp = array_unique(array_column($rows, 'id'));
                 $rows = array_intersect_key($rows, $temp);
-            }
+            } 
             
-            //  echo ' assigned_vehicles  <pre>';print_r($assigned_vehicles);
         }else{
             $rows = $unassigned_vehicles; 
         }  
@@ -924,7 +923,7 @@ class Booking extends BaseController
         // echo '<pre>';
         // print_r($booking_details);
 
-        //change sstatus of driver and vehicle too
+        //change status of driver and vehicle too 
 
         if ($booking_details['status'] >= 5) {
             if($booking_details['status'] == 14){
@@ -939,9 +938,13 @@ class Booking extends BaseController
             //send notfication 
             $this->sendNotification($booking_details);
             $this->BModel->update($id, ['status' => '14']);
-             //update booking status 
-            $this->update_booking_status($id,14,0,0,$this->request->getPost('status_date'));
-            $this->update_PTLBookings($id,14,0,0,$this->request->getPost('status_date'));
+
+            //update booking status 
+            $this->update_booking_status($id,14,0,0,$this->request->getPost('status_date')); 
+            
+            //Unlink PTL Bookings
+            $this->unlinkPTLBookings($id);
+
             $this->session->setFlashdata('success', 'Approval is send for Cancellation');
             return $this->response->redirect(base_url('booking'));
         }
@@ -1235,7 +1238,7 @@ class Booking extends BaseController
                     ]); 
                     $this->BVLModel->update($result['id'], ['unassign_date' =>date('Y-m-d H:i:s'), 'unassigned_by' => $this->added_by]);
                 }  
-                
+               
                 //update LR as cancel
                 $lrresult = $this->LoadingReceiptModel->where('booking_id', $id)->first();
                 if( $lrresult){
@@ -1250,8 +1253,7 @@ class Booking extends BaseController
             }    
             //update booking status 
             if($this->request->getPost('approval_for_cancellation')){
-                $this->update_booking_status($id,$this->request->getPost('approval_for_cancellation'));            
-                $this->update_PTLBookings($id,$this->request->getPost('approval_for_cancellation'));
+                $this->update_booking_status($id,$this->request->getPost('approval_for_cancellation'));    
             }
             
             return $this->response->redirect(base_url('booking'));
@@ -1307,6 +1309,30 @@ class Booking extends BaseController
         return view('Booking/approval_for_cancellation', $this->view); 
     }
 
+    function unlinkPTLBookings($id){
+        //Check If current booking is parent or child
+        $booking_details = $this->BModel->where('id',$id)->first();
+        if($booking_details){
+            $parent_id = isset($booking_details['parent_id']) && ($booking_details['parent_id'] > 0) ? $booking_details['parent_id'] : 0;
+            echo $parent_id;
+            if($parent_id > 0){
+                //child booking - only unlink current booking
+               $this->BModel->update($booking_details['id'],['parent_id' => 0]);
+            }else{
+                //parent booking              
+                //unlink all child bookings i.e get all child and set parent_id = 0
+                $childBookings =$this->BModel->select('id')->where('parent_id',$booking_details['id'])->findAll();
+                // echo 'childBookings <pre>';print_r($childBookings);exit;
+                if($childBookings){
+                    foreach($childBookings as $childBooking){
+                        $this->BModel->update($childBooking['id'],['parent_id' => 0]);
+                    }
+                } 
+               
+            } 
+        }
+       
+    }
     public function unassign_vehicle($id)
     {
         //for booking data
@@ -1382,8 +1408,10 @@ class Booking extends BaseController
             }
 
             //update booking status 
-            $this->update_booking_status($id,$booking_status);
-            $this->update_PTLBookings($id,$booking_status);
+            $this->update_booking_status($id,$booking_status); 
+
+            //Unlink PTL Bookings
+            $this->unlinkPTLBookings($id);
             $this->session->setFlashdata('success', 'Vehicle is Unassigned To Booking');
 
             return $this->response->redirect(base_url('booking'));
@@ -1697,10 +1725,7 @@ class Booking extends BaseController
                 $booking_data['kanta_parchi'] = $image_name;
                 // $this->BModel->update($id, ['status' => $booking_status_id]);  
 
-                $this->BookingUploadedKantaParchiModel->insert($booking_data);      
-                //update booking status 
-                // $this->update_booking_status($id,$booking_status_id);
-                // $this->update_PTLBookings($id,$booking_status_id);
+                $this->BookingUploadedKantaParchiModel->insert($booking_data);    
                 $this->session->setFlashdata('success',"Kanta parchi is uploaded successfully");
                 return $this->response->redirect(base_url('booking'));  
             }           
