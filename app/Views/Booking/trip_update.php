@@ -88,7 +88,7 @@
                                                             ?> 
                                                         </div> 
 
-                                                        <div class="col-md-4">
+                                                        <div class="col-md-8">
                                                             <label class="col-form-label">Remarks</label>
                                                             <input type="text" name="remarks" class="form-control" value="<?= set_value('remarks') ?>"/>
                                                             <?php
@@ -99,21 +99,21 @@
                                                         </div>
 
                                                         <div class="col-md-4">
-                                                            <label class="col-form-label">Fuel<span class="text-danger" id="fuel_span" hidden>*</span></label>
-                                                            <input type="number" name="fuel" step="0.01" id="fuel_txt" class="form-control"  value="<?= set_value('fuel') ?>" />
-                                                            <?php
-                                                            if ($validation->getError('fuel')) {
-                                                                echo '<div class="alert alert-danger mt-2">' . $validation->getError('fuel') . '</div>';
-                                                            }   
-                                                            ?> 
-                                                        </div> 
-
-                                                        <div class="col-md-4">
                                                             <label class="col-form-label">Money<span class="text-danger" id="money_span" hidden>*</span></label>
                                                             <input type="number" name="money" step="0.01" id="money_txt" class="form-control" value="<?= set_value('money') ?>" />
                                                             <?php
                                                             if ($validation->getError('money')) {
                                                                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('money') . '</div>';
+                                                            }   
+                                                            ?> 
+                                                        </div> 
+
+                                                        <div class="col-md-4">
+                                                            <label class="col-form-label">Fuel<span class="text-danger" id="fuel_span" hidden>*</span></label>
+                                                            <input type="number" name="fuel" step="0.01" id="fuel_txt" class="form-control"  value="<?= set_value('fuel') ?>" />
+                                                            <?php
+                                                            if ($validation->getError('fuel')) {
+                                                                echo '<div class="alert alert-danger mt-2">' . $validation->getError('fuel') . '</div>';
                                                             }   
                                                             ?> 
                                                         </div> 

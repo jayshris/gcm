@@ -583,24 +583,41 @@ class Driver extends BaseController
 
   public function assigned_list()
   {
-    $this->view['vehicles'] = $this->VModel->where(['working_status'=>1,'status' =>1])->findAll();
+
+    $this->view['vehicles'] = $this->VModel->where(['status' =>1])->findAll();
+
     $this->DVAModel->select('driver_vehicle_map.*, vehicle.rc_number, party.party_name,vt.name vehicle_type_nm')
+
       ->join('vehicle', 'vehicle.id = driver_vehicle_map.vehicle_id')
+
       ->join('vehicle_type vt','vt.id = vehicle.vehicle_type_id')
+
       ->join('driver', 'driver.id = driver_vehicle_map.driver_id')
-      ->orderBy('driver_vehicle_map.assign_date', 'descs')
+      
       ->join('party', 'party.id = driver.party_id')
+
       ->where('(driver_vehicle_map.unassign_date IS NULL or driver_vehicle_map.unassign_date="" or (UNIX_TIMESTAMP(driver_vehicle_map.unassign_date) = 0))');
+
       // ->where('(driver_vehicle_map.unassign_date IS NOT NULL)');
+
      
+
       if ($this->request->getPost('vehicle_id') >0 ) {
+
         $this->DVAModel->where('vehicle.id', $this->request->getPost('vehicle_id'));
+
       }
-      $this->view['assigned_list'] = $this->DVAModel->findAll();
+
+      $this->view['assigned_list'] = $this->DVAModel->orderBy('driver_vehicle_map.assign_date', 'descs')->findAll();
+
+
 
       // echo '<pre>';print_r($this->request->getPost());  
+
       // echo '<pre>';print_r( $this->view['assigned_list']); exit;
+
     return view('Driver/assigned_list', $this->view);
+
   }
 
   public function preview($id)
