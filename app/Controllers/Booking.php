@@ -1147,7 +1147,27 @@ class Booking extends BaseController
         return view('Booking/edit', $this->view); 
     }
     
-    function preview($id){
+    function getPTLBookings($id,$vehicle_id){
+        return $this->BVLModel->select('GROUP_CONCAT(p.party_name) ptl_customers,GROUP_CONCAT(b.booking_number) ptl_bokking_no, count(b.id) ptl_cnt')
+        ->join('bookings b', 'b.id = booking_vehicle_logs.booking_id')
+        ->join('customer c', 'c.id = b.customer_id','left')
+        ->join('party p', 'p.id = c.party_id','left') 
+        ->where('b.id !=', $id)
+        ->where('booking_vehicle_logs.unassign_date is NULL')
+        ->where('booking_vehicle_logs.vehicle_id', $vehicle_id)
+        ->groupBy('booking_vehicle_logs.vehicle_id')
+        ->first();
+    }
+
+    function getTotalPTLBookings($id,$vehicle_id){
+        return $this->BVLModel->select('ROUND(sum(b.guranteed_wt),2) total_charged_weight,ROUND(sum(b.freight),2) total_freight ')
+        ->join('bookings b', 'b.id = booking_vehicle_logs.booking_id')   
+        ->where('booking_vehicle_logs.unassign_date is NULL')
+        ->where('booking_vehicle_logs.vehicle_id', $vehicle_id)
+        ->groupBy('b.id')
+        ->first();
+    }
+    function preview($id){        
         $this->view['token'] = $id;
         $this->view['booking_details'] = $this->BModel->select('bookings.*,cb.office_name,cb.city cb_city,e.name booking_by_name,vt.name vehicle_type_name,v.rc_number,p.party_name bill_to_party_name,party.party_name as customer,v.id v_id,party.contact_person,party.primary_phone')
         ->join('vehicle v', 'v.id = bookings.vehicle_id','left')
@@ -1174,6 +1194,7 @@ class Booking extends BaseController
 
         
         $this->view['driver'] = [];
+        $this->view['getPTLBookings'] =[];
         $vehicle_id = isset($this->view['booking_details']['v_id']) && ($this->view['booking_details']['v_id'] > 0) ? $this->view['booking_details']['v_id'] : 0;
         if($vehicle_id > 0 ){
             $this->view['driver'] = $this->DModel->select('driver.id, party.party_name as driver_name,party.primary_phone')
@@ -1181,12 +1202,17 @@ class Booking extends BaseController
             ->join('party', 'party.id = driver.party_id')
             ->where('dvp.vehicle_id',$vehicle_id) 
             ->first();
+
+            $this->view['ptl_bookings'] = $this->getPTLBookings($id,$vehicle_id);
+            $this->view['booking_total'] = $this->getTotalPTLBookings($id,$vehicle_id);
+            // echo '  <pre>';print_r($this->view['ptl_bookings']);exit;
+            // echo '  <pre>';print_r($this->view['booking_total']);exit;
         }
 
         // $db = \Config\Database::connect();  
         // echo  $db->getLastQuery()->getQuery(); 
         // echo '  <pre>';print_r($this->view['driver'] );exit; 
-      
+       
         return view('Booking/preview', $this->view); 
     }
     

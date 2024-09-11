@@ -13,7 +13,7 @@
             display: none !important;
            } 
 
-           .print-header,.print-footer{
+           .print-header,.print-footer,.hrcl{
             display: block !important;
           }
            
@@ -47,6 +47,11 @@
            .prdheader img{
             height: 34px !important;
            }
+
+           .pagebreak {
+                clear: both !important;
+                page-break-after: always !important;
+            }
         }  
         .prheader{ 
           line-height: 31pt;
@@ -62,6 +67,7 @@
         }
         .prdheader{
           display: flex; 
+          margin-left: 25% !important;
         }
         .prfooter-txt{
           text-align: justify;
@@ -250,7 +256,7 @@
                             </div>
 
                             <!-- Weight & Payment Details -->
-                            <div class="col-lg-4 col-md-4 d-flex">
+                            <div class="col-lg-4 col-md-4 d-flex ">
                               <div class="security-grid flex-fill">
                                 <div class="security-header">
                                   <div class="security-heading">
@@ -359,7 +365,49 @@
                                 </div>
                               </div>
                             </div>
-                            <?php } ?>
+                            <?php } ?> 
+                            <hr class="hrcl" style="display: none;">
+                            <?php echo $this->include('partials/print-footer') ?>
+                            <div class="pagebreak"></div>
+                            <!-- PTL Booking Details -->
+                             <?php if(isset($ptl_bookings['ptl_cnt']) && ($ptl_bookings['ptl_cnt'] > 0) ){ ?>
+                            <div class="col-lg-12 col-md-12 d-flex">
+                              <div class="security-grid flex-fill">
+                                <div class="security-header">
+                                  <div class="security-heading">
+                                      <h4>PTL Booking Details:</h4>
+                                  </div><hr>
+
+                                  <div class="row">
+                                     <div class="col-md-5"><span class="fw-bold">No. Of Bookings Linked: </span></div>
+                                      <div class="col-md-7">
+                                      <?php echo isset($ptl_bookings['ptl_cnt']) && ($ptl_bookings['ptl_cnt'] > 0) ? $ptl_bookings['ptl_cnt'] : 0;?>
+                                      </div>
+
+                                      <div class="col-md-5"><span class="fw-bold">Customer Name: </span></div>
+                                      <div class="col-md-7">
+                                        <?php echo isset($ptl_bookings['ptl_customers']) && !empty($ptl_bookings['ptl_customers']) ? $ptl_bookings['ptl_customers'] : '-';?>
+                                      </div> 
+                                     
+                                      <div class="col-md-5"><span class="fw-bold">Bookings Numbers: </span></div>
+                                      <div class="col-md-7">
+                                        <?php echo isset($ptl_bookings['ptl_bokking_no']) && !empty($ptl_bookings['ptl_bokking_no']) ? $ptl_bookings['ptl_bokking_no'] : '-';?>
+                                      </div>
+
+                                      <div class="col-md-5"><span class="fw-bold">Total Charged Weight: </span></div>
+                                      <div class="col-md-7">
+                                        <?php echo isset($booking_total['total_charged_weight']) && ($booking_total['total_charged_weight'] > 0) ? number_format($booking_total['total_charged_weight'],2).' kg' : 0;?>
+                                      </div>
+
+                                      <div class="col-md-5"><span class="fw-bold">Total Freight: </span></div>
+                                      <div class="col-md-7">
+                                        <?php echo isset($booking_total['total_freight']) && ($booking_total['total_freight'] > 0) ? 'Rs '.number_format($booking_total['total_freight'],2) : 0;?>
+                                      </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <?php } ?> 
 
                           </div>
                         </div>
@@ -377,8 +425,7 @@
           </div>
         </div>
       </div>
-      <hr>
-      <?php echo $this->include('partials/print-footer') ?>
+      
     </div>  
 
   <?php echo $this->include('partials/vendor-scripts') ?>

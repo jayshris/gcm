@@ -144,22 +144,45 @@
                                             <th>#</th>
                                             <th>Date</th>
                                             <th>Location</th>
-                                            <th>Update By</th>
+                                            <th>Authorised By</th>
                                             <th>Remarks</th>
+                                            <th>Purpose Of Update</th>
+                                            <th>Fuel</th>
+                                            <th>Money</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                            <?php $i = 1;
-                                            foreach ($data as $val) {  ?>
+                                            <?php $i = 1;$total_fuel = 0;$total_money = 0;
+                                            foreach ($data as $val) {  
+                                                $total_fuel += $val['fuel'];
+                                                $total_money += $val['money'];
+                                            ?>
                                             <tr>
                                             <td><?= $i++; ?>.</td>
                                             <td><?= date('d-m-Y H:i a',strtotime($val['status_date'])) ?></td>
                                             <td><?= $val['location']; ?></td>
                                             <td><?= $val['e_name']; ?></td>
                                             <td><?= $val['remarks']; ?></td>
+                                            <td><?= $purpose_of_updates[$val['purpose_of_update']]; ?></td>
+                                            <td><?= number_format($val['fuel'],2); ?></td>
+                                            <td><?= number_format($val['money'],2); ?></td>
                                             </tr>
                                             <?php } ?>
                                         </tbody>
+                                        <tfoot>
+                                            <?php if(!empty($data)){ ?>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td><b>Total:</b></td>
+                                                <td><?= number_format($total_fuel,2); ?></td>
+                                                <td><?= number_format($total_money,2); ?></td>
+                                            </tr>
+                                            <?php }?>
+                                        </tfoot>
                                     </table>
                                 </div>
                             </div>
