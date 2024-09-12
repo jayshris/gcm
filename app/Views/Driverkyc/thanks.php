@@ -25,7 +25,7 @@
 
         <h2 style="text-align: center; text-decoration: underline;">GAE CARGO MOVERS PVT. LTD.</h2>
         <h6 style="text-align: center;"><strong>A/131/2 2nd FLOOR, WAZIRPUR GROUP IND. AREA, WAZIRPUR</strong></h6>
-        <h6 style="text-align: center;"><strong>DELHI-110052. PHONE NO. 7669027902</strong></h6><br><br>
+        <h6 style="text-align: center;"><strong>DELHI-110052. PHONE NO. 7669027900</strong></h6><br><br>
         <h4 style="text-align: center;"><span style="text-decoration: underline;"><strong>DRIVER REGISTERATION FORM</strong></span></h4><br><br>
         <p style="text-align: justify;">
             मैं <?= isset($details) ? $details['party_name'] : '...............................' ?> , <br><br>

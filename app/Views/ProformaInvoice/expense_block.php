@@ -60,6 +60,7 @@
 
     <div class="col-md-6">
         <label class="col-form-label">Rate Type</label>
+        <input type="hidden" name="rate_type" value="<?= isset($booking_details['rate_type']) ? $booking_details['rate_type'] : 0; ?>"/>
         <select class="form-select" name="rate_type" disabled id="rate_type" onchange="$.calculation()">
         <option value="">Select Rate Type</option>
         <option value="1" <?= isset($booking_details['rate_type']) && ($booking_details['rate_type'] == 1) ? 'selected' : '' ?> >By Weight</option>
@@ -78,7 +79,7 @@
 
     <div class="col-md-3">
         <label class="col-form-label">Total Freight<span class="text-danger">*</span></label>
-        <input type="decimal" step="0.01" id="freight" class="form-control" required name="total_freight" readonly value="<?= isset($proforma_invoice['total_freight']) && ($proforma_invoice['total_freight'] > 0) ? $proforma_invoice['total_freight'] : $booking_details['freight'] ?>">
+        <input type="decimal" step="0.01" id="freight" class="form-control" required name="total_freight" readonly value="<?= isset($booking_details['total_freight'])  ? $booking_details['total_freight'] : $booking_details['freight'] ?>" >
     </div>	
     
     <div class="col-md-2">

@@ -21,7 +21,7 @@
                 </p>
                 <p class="sub-headerpr">
                     <a href="mailto:gaecargo21@yahoo.com" class="s4" target="_blank">
-                        Mobile : 7669027902, EMail :booking@gaegroup.in
+                        Mobile : 7669027900, EMail :booking@gaegroup.in
                     </a>
                 </p> 
                 <p class="sub-headerpr">
@@ -131,7 +131,7 @@
             <td style="width:179pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
                 <p class="s10 txt-center">MUNDRA (GUJARAT) BRANCH</p>
                 <p class="s10 txt-center">CONTACT PERSON–ALOK GUPTA</p>
-                <p class="s10 txt-center">CONTACT NUMBER-+91-7669027902</p>
+                <p class="s10 txt-center">CONTACT NUMBER-+91-7669027900</p>
             </td>
             <td style="width:179pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
                 <p class="s10 txt-center">ACCOUNTS QUERY</p>

@@ -125,7 +125,7 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 							if ($secLink == 'trip_running' && ($row['status'] != 5))	$makeButton = 0;
 							
 							//trip_update only show when status between 2 and 11
-							if ($secLink == 'trip_update' && !in_array($row['status'], [3,4,5,6,7,8,9,10]))	$makeButton = 0;
+							if ($secLink == 'trip_update' && !in_array($row['status'], [2,3,4,5,6,7,8,9,10]))	$makeButton = 0;
 
 							//if status is 8 means trip paused then only show 
 							if ($secLink == 'trip_restart' &&  ($row['status'] != 8))	$makeButton = 0;

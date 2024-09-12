@@ -5,11 +5,13 @@ namespace App\Controllers;
 use App\Models\ProfileModel;
 use App\Models\BookingsModel;
 use App\Models\CustomersModel;
+use App\Models\PartytypeModel;
 use App\Models\ExpenseHeadModel;
 use App\Controllers\BaseController;
 use App\Models\BookingExpensesModel;
 use App\Models\ProformaInvoiceModel; 
 use CodeIgniter\HTTP\ResponseInterface;
+use App\Models\ProformaInvoiceExpenseModel;
 
 class Proformainvoices extends BaseController
 { 
@@ -21,6 +23,8 @@ class Proformainvoices extends BaseController
     public $CModel;
     public $added_by;
     public $profile;
+    public $PTModel;
+    public $ProformaInvoiceExpenseModel;
     public function __construct()
     { 
       $this->session = \Config\Services::session(); 
@@ -31,6 +35,8 @@ class Proformainvoices extends BaseController
       $this->CModel = new CustomersModel();
       $this->added_by = isset($_SESSION['id']) ? $_SESSION['id'] : '0';
       $this->profile = new ProfileModel();
+      $this->PTModel = new PartytypeModel();
+      $this->ProformaInvoiceExpenseModel = new ProformaInvoiceExpenseModel();
     }
   
     public function index()
@@ -41,17 +47,28 @@ class Proformainvoices extends BaseController
         return view('ProformaInvoice/index', $this->view); 
     } 
 
-    function getvehicles(){
+    function getvehicles($id = 0){ 
+        $condition = $id> 0 ? ' and proforma_invoices.id != '.$id: ''; 
         return  $this->BookingsModel->select('v.id,v.rc_number') 
         ->join('vehicle v','bookings.vehicle_id = v.id') 
-        ->where(['bookings.status >'=> '5']) 
+        ->where('NOT EXISTS (SELECT 1 
+                FROM   proforma_invoices
+                WHERE  proforma_invoices.booking_id = bookings.id '.$condition.')')
+        ->where(['bookings.status >'=> '3']) 
         ->orderBy('v.id', 'desc')
         ->groupBy('bookings.vehicle_id')
         ->findAll();
     }
 
-    function getBooking(){
-      return $this->BookingsModel->where(['status >'=> '5'])->findAll();  
+    function getBooking($id = 0){
+      $condition = $id> 0 ? ' and proforma_invoices.id != '.$id: '';  
+      return $this->BookingsModel->where(['status >'=> '3'])  
+      ->where('NOT EXISTS (SELECT 1 
+                FROM   proforma_invoices
+                WHERE  proforma_invoices.booking_id = bookings.id '.$condition.')')
+      ->findAll();  
+
+      // echo '<pre>'.$this->ProformaInvoiceModel->getLastQuery().'<pre>';print_r($d);exit;
     }
 
     function create(){     
@@ -80,7 +97,11 @@ class Proformainvoices extends BaseController
       if($this->request->getPost('vehicle_id')){
         $this->BookingsModel->where('vehicle_id', $this->request->getPost('vehicle_id'));
       }
-      $bookings = $this->BookingsModel->where(['status >'=> '5'])->findAll();       
+      $bookings = $this->BookingsModel->where(['status >'=> '3'])
+      ->where('NOT EXISTS (SELECT 1 
+      FROM   proforma_invoices
+      WHERE  proforma_invoices.booking_id = bookings.id)')
+      ->findAll();       
       echo json_encode($bookings);exit;
     }
 
@@ -98,42 +119,56 @@ class Proformainvoices extends BaseController
       $data['booking_id'] = $post['booking_id'];
       $data['bill_to_party_id'] = $post['bill_to_party_id'];
       $data['total_freight'] = $post['total_freight']; 
-      //echo  'ProformaInvoice <pre>';print_r($data);exit;
-      $this->ProformaInvoiceModel->save($data);
+      $data['sgst_percent'] = $post['sgst_percent']; 
+      $data['sgst_total'] = $post['sgst_total']; 
+      $data['cgst_percent'] = $post['cgst_percent']; 
+      $data['cgst_total'] = $post['cgst_total']; 
+      $data['igst_percent'] = $post['igst_percent']; 
+      $data['igst_total'] = $post['igst_total']; 
+      $data['discount'] = $post['discount'];
+      $data['balance'] = $post['balance'];
+      $data['guranteed_wt'] = $post['guranteed_wt']; 
+      $data['advance'] = $post['advance']; 
+      $data['rate'] = $post['rate'];
+      $data['rate_type'] = $post['rate_type'];
+      // echo  'ProformaInvoice <pre>';print_r($data); 
+      // echo  'post <pre>';print_r($post);exit;
       
-      if($post['expense']){
+      if($id > 0){
+        $proforma_invoice_id = $id;
+        $this->ProformaInvoiceModel->save($data);   
+      }else{
+        $proforma_invoice_id = $this->ProformaInvoiceModel->insert($data) ? $this->ProformaInvoiceModel->getInsertID() : 0;   
+      }
+      
+      if($proforma_invoice_id > 0){
         // update Expences 
-        $this->BEModel->where('booking_id', $data['booking_id'])->delete();
+        if($id > 0){
+          $this->ProformaInvoiceExpenseModel->where('proforma_invoice_id', $id)->delete();
+        }
+        
         // save expenses 
         foreach ($post['expense'] as $key => $val) {
           if(($post['expense'][$key]) || $post['expense_value'][$key] || isset($post['expense_flag_' . $key +1])){
             $expense_data = [
-                'booking_id' => $data['booking_id'],
+                'proforma_invoice_id' => $proforma_invoice_id,
                 'expense' => $post['expense'][$key],
                 'value' => $post['expense_value'][$key],
                 'bill_to_party' =>isset($post['expense_flag_' . $key +1]) && ($post['expense_flag_' . $key +1] == 'on') ? '1' : '0'
             ]; 
-            // echo  'expense_data <pre>';print_r($expense_data);
-            $this->BEModel->insert($expense_data);
-          }
-        }    
-        $booking['discount'] = $post['discount'];
-        $booking['balance'] = $post['balance'];
-        $booking['guranteed_wt'] = $post['guranteed_wt']; 
-        $booking['advance'] = $post['advance']; 
-        $booking['rate'] = $post['rate'];   
+            echo  'expense_data <pre>';print_r($expense_data);
+            $this->ProformaInvoiceExpenseModel->insert($expense_data);
+          }  
+        }
       }
-      $booking['freight'] = $post['total_freight'];
-      // echo  $post['booking_id'].' booking <pre>';print_r($booking);exit;
-      $this->BookingsModel->update($post['booking_id'],$booking); 
+        
     } 
 
-    function edit($id){  
-      $this->view['bookings'] = $this->getBooking();  
-      $this->view['vehicles'] =  $this->getvehicles();
+    function edit($id){       
       $this->view['token'] = $id; 
       $this->view['proforma_invoice'] = $this->ProformaInvoiceModel->where(['id' => $id])->first(); 
-      
+      $this->view['bookings'] = $this->getBooking($id);  
+      $this->view['vehicles'] =  $this->getvehicles($id);
       if($this->request->getPost()){
         $error = $this->validate([ 
           'booking_id'   =>  'required',
@@ -154,38 +189,58 @@ class Proformainvoices extends BaseController
     public function delete($id = null)
     {   
         $this->ProformaInvoiceModel->where('id', $id)->delete($id); 
+        $this->ProformaInvoiceExpenseModel->where('proforma_invoice_id', $id)->delete($id); 
         $this->session->setFlashdata('success', 'Proforma Invoice has been deleted successfully');
         return $this->response->redirect(base_url('/proformainvoices')); 
     }
-  
+   
     function preview($id){ 
       $this->view['proforma_invoice'] = $this->ProformaInvoiceModel
-      ->select('proforma_invoices.*,b.*,p.*,v.rc_number,s.state_name,bps.state_name pickup_state,bds.state_name drop_state')
+      ->select('proforma_invoices.*,b.*,p.*,v.rc_number,s.state_name,bps.state_name pickup_state,bds.state_name drop_state,c.party_type_id')
       ->join('bookings b','b.id=proforma_invoices.booking_id')
-      ->join('party p','p.id = proforma_invoices.bill_to_party_id')
+      // ->join('party p','p.id = proforma_invoices.bill_to_party_id')
+      ->join('customer c', 'c.id = proforma_invoices.bill_to_party_id','left')
+      ->join('party p', 'p.id = c.party_id','left')
       ->join('booking_pickups bp','b.id=bp.booking_id')
       ->join('booking_drops bd','b.id=bd.booking_id')
       ->join('states bps', 'bp.state = bps.state_id','left')
       ->join('states bds', 'bd.state = bds.state_id','left')
       ->join('vehicle v', 'v.id = b.vehicle_id','left')
       ->join('states s', 'p.state_id = s.state_id','left')
-      ->where(['proforma_invoices.id' => $id])->first();//echo '<pre>'.$this->ProformaInvoiceModel->getLastQuery();die;
-
-      $this->view['booking_expences'] = $this->BEModel->select('booking_expenses.*,eh.*')
-      ->join('expense_heads eh','eh.id = booking_expenses.expense')
-      ->where('booking_expenses.booking_id', $this->view['proforma_invoice']['booking_id'])
-      ->where('booking_expenses.bill_to_party',1)
-      ->findAll();//echo '<pre>'.$this->BEModel->getLastQuery().'<pre>';print_r($this->view['booking_expences']);exit;
+      ->where(['proforma_invoices.id' => $id])->first();
+      // echo '<pre>'.$this->ProformaInvoiceModel->getLastQuery().'<pre>';print_r($this->view['proforma_invoice']); die; 
+      
+      if(isset($this->view['proforma_invoice']['party_type_id']) && !empty($this->view['proforma_invoice']['party_type_id'])){
+        $this->view['is_tax_applicable'] = $this->PTModel->select('count(id) cnt')->whereIn('id', explode(',',$this->view['proforma_invoice']['party_type_id']))
+                                            ->where('tax_applicable',1)
+                                            ->first(); 
+      }
+      // echo '<pre>'.$this->ProformaInvoiceModel->getLastQuery().'<pre>';print_r($this->view['is_tax_applicable']);die; 
+      $this->view['booking_expences'] = $this->ProformaInvoiceExpenseModel->select('proforma_invoice_expenses.*,eh.*')
+      ->join('expense_heads eh','eh.id = proforma_invoice_expenses.expense')
+      ->where('proforma_invoice_expenses.proforma_invoice_id', $id)
+      ->where('proforma_invoice_expenses.bill_to_party',1)
+      ->findAll();
+      // echo '<pre>'.$this->ProformaInvoiceExpenseModel->getLastQuery().'<pre>';print_r($this->view['booking_expences']);exit;
+ 
+      
       return view('ProformaInvoice/preview', $this->view); 
     }
 
-    function getBookingExpense($id){ 
-      $this->view['booking_details'] = $this->BookingsModel->where(['id'=> $id])->first();  
-      $this->view['booking_expences'] = $this->BEModel->where(['booking_id'=>$id])->findAll();  
-      $this->view['expense_heads'] =  $this->ExpenseHeadModel->orderBy('head_name', 'asc')->findAll(); 
-      // echo 'expense_heads <pre>';print_r($this->view['expense_heads']);
+    function getBookingExpense($booking_id,$id= 0){  
+      if($id > 0){ 
+        $this->view['booking_expences'] = $this->ProformaInvoiceExpenseModel->where(['proforma_invoice_id'=>$id])->where('((expense > 0) or (value > 0) or (bill_to_party=1))')->findAll();  
+        $this->view['booking_details'] = $this->ProformaInvoiceModel->where(['id'=> $id])->first();  
+      }else{ 
+        $this->view['booking_details'] = $this->BookingsModel->where(['id'=> $booking_id])->first();  
+        $this->view['booking_expences'] = $this->BEModel->where(['booking_id'=>$booking_id])->where('((expense > 0) or (value > 0))')->findAll();  
+      }
+     
+      // echo 'booking_details <pre>';print_r($this->view['booking_details']);  
       // echo 'booking_expences <pre>';print_r($this->view['booking_expences']);
       // exit;
+      $this->view['expense_heads'] =  $this->ExpenseHeadModel->orderBy('head_name', 'asc')->findAll(); 
+    
       echo view('ProformaInvoice/expense_block', $this->view);
     } 
 
@@ -210,16 +265,27 @@ class Proformainvoices extends BaseController
       
       $all_customers = array_merge($Customers,$Customers2,$Customers3,$Customers4,$Customers5); 
       $unique_customers =  array_unique(array_column($all_customers, 'c_id'));
-      //echo 'all_customers<pre>';print_r($unique_customers);  
+      // echo 'all_customers<pre>';print_r($unique_customers);  
       $customers = [];
       if(!empty($unique_customers)){
-        $customer = $this->CModel->whereIN('customer.id',$unique_customers)->join('party', 'customer.party_id = party.id')->orderBy('party.party_name')->findAll();
+        $customer = $this->CModel->select('customer.id,party.id pid,party.party_name')->whereIN('customer.id',$unique_customers)->join('party', 'customer.party_id = party.id')->orderBy('party.party_name')->findAll();
       }
+      // echo 'customer<pre>';print_r($customer); exit;
       echo json_encode($customer);exit;
     }
 
     function getBookingDetails($id){
       $bookings = $this->BookingsModel->where('id', $id)->first();       
       echo json_encode($bookings);exit;
+    }
+
+    function checkTaxApplicable($customer_id){
+      $customer = $this->CModel->where('id',$customer_id)->first();
+      $customerPartyIds = isset($customer['party_type_id']) && ($customer['party_type_id']!='') ? explode(',',$customer['party_type_id']) : [];
+      if(!empty($customerPartyIds)){
+        $partyCount  = $this->PTModel->select('count(id) cnt')->whereIn('id',$customerPartyIds)->where('tax_applicable',1)->first();
+      }
+      // echo '<pre>';print_r($partyCount);exit;
+      return isset($partyCount['cnt']) && ($partyCount['cnt'] > 0) ? $partyCount['cnt'] : 0;
     }
 }

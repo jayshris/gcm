@@ -10,6 +10,10 @@
 		.tr-block{
 			pointer-events: visible;
 		}
+		.per-lbl{
+			font-size: large;
+    		padding-top: 5px;
+		}
 	</style>
 </head>
 <body>
@@ -75,7 +79,7 @@
 
 													<div class="col-md-4">
 														<label class="col-form-label">Bill to Party<span class="text-danger">*</span></label>
-														<select class="form-select select2" required name="bill_to_party_id" id="bill_to_party_id" aria-label="Default select example">
+														<select class="form-select select2" required name="bill_to_party_id" id="bill_to_party_id" onchange="checkTaxApplicable()">
 															<option value="">Select Bill to Party</option> 
 														</select>
 														<input type="hidden" id="selecected_bill_to_party_id" value="<?= isset($proforma_invoice['bill_to_party_id']) && ($proforma_invoice['bill_to_party_id'] > 0) ? $proforma_invoice['bill_to_party_id'] : 0 ?>"/>
@@ -87,6 +91,49 @@
 													</div>	  
 
 													<div class="col-md-12"  id="expense_div_body"></div>
+
+													<div class="row g-3"  id="tax_applicable_div" hidden>
+														<div class="row g-3 tax_div" >
+															<div class="col-md-6"></div>
+															<div class="col-md-1">
+																<label class="col-form-label">SGST@</label>
+															</div>
+															<div class="col-md-2">
+																<input type="number" step="0.01"  min="0" max="100" class="form-control" name="sgst_percent" id="SGST_percent"  onchange="calculate_tax_percent('SGST')" value="<?= isset($proforma_invoice['sgst_percent']) && ($proforma_invoice['sgst_percent'] > 0) ? $proforma_invoice['sgst_percent'] : 0 ?>"/>
+															</div>
+															<div class="col-md-1"><label class="col-form-label per-lbl">%</label></div>
+															<div class="col-md-2">
+																<input type="number" step="0.01" class="form-control" id="SGST_total" name="sgst_total" value="<?= isset($proforma_invoice['sgst_total']) && ($proforma_invoice['sgst_total'] > 0) ? $proforma_invoice['sgst_total'] : 0 ?>"/>
+															</div>
+														</div>
+														<div class="row g-3 tax_div" >
+															<div class="col-md-6"></div>
+															<div class="col-md-1"> 
+																<label class="col-form-label">CGST@</label>
+															</div>
+															<div class="col-md-2">
+																<input type="number" step="0.01" min="0" max="100" class="form-control" name="cgst_percent" id="CGST_percent"  onchange="calculate_tax_percent('CGST')"  value="<?= isset($proforma_invoice['cgst_percent']) && ($proforma_invoice['cgst_percent'] > 0) ? $proforma_invoice['cgst_percent'] : 0 ?>"/> 
+															</div>
+															<div class="col-md-1"><label class="col-form-label per-lbl">%</label></div>
+															<div class="col-md-2">
+																<input type="number" step="0.01" class="form-control" name="cgst_total" id="CGST_total" value="<?= isset($proforma_invoice['cgst_total']) && ($proforma_invoice['cgst_total'] > 0) ? $proforma_invoice['cgst_total'] : 0 ?>"/>
+															</div>
+														</div>
+														<div class="row g-3 tax_div" >
+															<div class="col-md-6"></div>
+															<div class="col-md-1"> 
+																<label class="col-form-label">IGST@</label>
+															</div>
+															<div class="col-md-2">
+																<input type="number" step="0.01" min="0"  max="100" class="form-control" name="igst_percent" id="IGST_percent"  onchange="calculate_tax_percent('IGST')" value="<?= isset($proforma_invoice['igst_percent']) && ($proforma_invoice['igst_percent'] > 0) ? $proforma_invoice['igst_percent'] : 0 ?>"/>
+															</div>
+															<div class="col-md-1"><label class="col-form-label per-lbl">%</label></div>
+															<div class="col-md-2">
+																<input type="number" step="0.01" class="form-control" id="IGST_total"  name="igst_total" value="<?= isset($proforma_invoice['igst_total']) && ($proforma_invoice['igst_total'] > 0) ? $proforma_invoice['igst_total'] : 0 ?>"/>
+															</div>
+														</div>
+													</div> 
+
 												</div>
 												<br>
 											</div> 
@@ -150,7 +197,7 @@
 		if(booking_id){
 			$.ajax({
 				method: "POST",
-				url: '<?php echo base_url('proformainvoices/getBookingExpense/'); ?>'+booking_id, 
+				url: '<?php echo base_url('proformainvoices/getBookingExpense/'); ?>'+booking_id+'/'+$('#id').val(), 
 				success: function(res) { 
 					$('#expense_div_body').html(res);
 				}
@@ -170,6 +217,7 @@
 						});
 					}
 					$('#bill_to_party_id').html(html);
+					$('#bill_to_party_id').trigger('change');
 				}
 			});
 
@@ -239,6 +287,7 @@
 		// alert(freight + advance +discount + '= '+balance);
         $('#balance').val(balance); 
       }
+	  calculate_tax_percent('all');
     }
 
 	$.delete = function(index, str) {
@@ -262,6 +311,45 @@
       })
     }
 
+	function checkTaxApplicable(){
+		var bill_to_party_id = $('#bill_to_party_id').val();
+		if(bill_to_party_id> 0){
+			$.ajax({
+				type: "POST",
+				url: "<?php echo base_url('proformainvoices/checkTaxApplicable/'); ?>"+bill_to_party_id, 
+				success: function(tax_applicable_cnt) {
+					if(tax_applicable_cnt > 0){
+						$('#tax_applicable_div').removeAttr('hidden');
+					}else{
+						$('#tax_applicable_div').attr('hidden','hidden');
+					}	
+				}
+			})
+		}      
+	}
+	function calculate_tax_percent(id){ 
+		if(id == 'all'){
+			$.each(['SGST','CGST','IGST'], function(i, idval) { 
+				calculateTax(idval);
+			});
+		}else{
+			calculateTax(id);
+		}
+		
+	}
+	function calculateTax(id){
+		var tax_percent = parseFloat($('#'+id+'_percent').val());  
+		// alert(tax_percent);
+		if(tax_percent > 0){
+			var freight  =  parseFloat($('#freight').val());
+			var tax_total = (freight*tax_percent)/100;
+			// alert('#'+id+'_total'+' / freight ='+freight+' / tax_total ='+tax_total);
+			$('#'+id+'_total').val(tax_total.toFixed(2));
+		}else{
+			$('#'+id+'_total').val(0);
+		}
+	}
+ 
 	</script>
 </body>
 

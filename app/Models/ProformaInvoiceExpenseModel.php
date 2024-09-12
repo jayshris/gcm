@@ -4,15 +4,15 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class ProformaInvoiceModel extends Model
+class ProformaInvoiceExpenseModel extends Model
 {
-    protected $table            = 'proforma_invoices';
+    protected $table            = 'proforma_invoice_expenses';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['proforma_invoices_no','booking_id','bill_to_party_id','total_freight','created_by','updated_by','sgst_percent','sgst_total','cgst_percent','cgst_total','igst_percent','igst_total','discount','balance','guranteed_wt','advance','rate','rate_type'];
+    protected $allowedFields    = ['proforma_invoice_id','expense','value','bill_to_party'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

@@ -80,7 +80,7 @@
                                     </p>
                                     <p style="padding-left: 29pt;padding-right: 28pt;text-indent: 0pt;line-height: 9pt;text-align: center;">
                                         <a href="mailto:gaecargo21@yahoo.com" class="s4" target="_blank">
-                                            Mobile : 7669027902, EMail :gaecargo21@yahoo.com
+                                            Mobile : 7669027900, EMail :gaecargo21@yahoo.com
                                         </a>
                                     </p>
                                     <p class="s5" style="padding-left: 214pt;padding-right: 213pt;text-indent: 0pt;line-height: 9pt;text-align: center;">PAN NO AAICG9037G GSTIN 07AAICG9037G1ZF <span class="s3">CIN U63030DL2021PTC378353</span></p>
