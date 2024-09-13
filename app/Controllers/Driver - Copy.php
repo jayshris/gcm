@@ -157,7 +157,7 @@ class Driver extends BaseController
 
       ->join('party' . ' t4', 't4.id = t3.party_id', 'left')
 
-      ->join('driver_vehicle_map  dvm', 'driver.id = dvm.driver_id and (dvm.unassign_date="" or dvm.unassign_date IS NULL or UNIX_TIMESTAMP(dvm.unassign_date) = 0)', 'left')
+      ->join('driver_vehicle_map  dvm', 'driver.id = dvm.driver_id and (dvm.unassign_date IS NULL or UNIX_TIMESTAMP(dvm.unassign_date) = 0)', 'left')
 
       ->join('vehicle  v', 'v.id = dvm.vehicle_id', 'left')
 
@@ -198,7 +198,7 @@ class Driver extends BaseController
 
 
 
-    // echo  $driverModel->getLastQuery().'<pre>';print_r( $this->view['driver_data']);exit;
+    // echo '<pre>';print_r( $this->view['driver_data']);exit;
 
 
 
@@ -1002,8 +1002,6 @@ class Driver extends BaseController
   public function unassign_vehicle($id)
   {
     $this->view['assignment_details'] = $this->DVAModel->where('driver_id', $id)->where('(unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date) = 0)')->first();
-
-    // $this->view['assignment_details'] = $this->DVAModel->where('driver_id', $id)->where('unassign_date', '')->first();
 
     $vehicle_id = isset($this->view['assignment_details']['vehicle_id']) && ($this->view['assignment_details']['vehicle_id'] > 0) ? $this->view['assignment_details']['vehicle_id'] : 0;
 

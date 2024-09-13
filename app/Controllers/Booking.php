@@ -853,7 +853,7 @@ class Booking extends BaseController
             'booking_id' => $id,
             'vehicle_id' => $post['vehicle_rc'],
             'assign_by' => $this->added_by,
-            'assign_date' => isset($post['assign_date']) && !empty($post['assign_date']) ? $post['assign_date'] : date('Y-m-d'),
+            'assign_date' => isset($post['assign_date']) && !empty($post['assign_date']) ? $post['assign_date'] : date('Y-m-d H:i:s'),
             'vehicle_location' => isset($post['vehicle_location']) ? $post['vehicle_location'] : '',
         ]);
 
@@ -1523,7 +1523,10 @@ class Booking extends BaseController
 
     function free_vehivle($id){
         //Change vehile status not assigned and vehicle log as unassign vehicle
-        $result = $this->BVLModel->where('booking_id', $id)->where('unassign_date IS NULL or ((UNIX_TIMESTAMP(unassign_date)) = 0)')->first();
+        $result = $this->BVLModel->where('booking_id', $id)->where('(unassign_date IS NULL or ((UNIX_TIMESTAMP(unassign_date)) = 0))')->first();
+        // $db = \Config\Database::connect();  
+        // echo  $db->getLastQuery()->getQuery(); 
+        // echo $id.' $result<pre>';print_r($result);exit;
         // echo '$result<pre>';print_r($result);exit;
         if ($result) {
             //update old vehicle status  
@@ -1549,8 +1552,8 @@ class Booking extends BaseController
             if (!$error) { 
                 $this->view['error'] = $this->validator; 
             } else { 
-                //update booking status 6 - upload again pod
-                $status =6;
+                //update booking status 10 - upload again pod
+                $status =10;
                 $booking_data['status'] = $status;
                 $booking_details =  $this->BModel->where('id', $booking_id)->first();
                 //get assigned vehicle_id and driver id
@@ -1563,7 +1566,7 @@ class Booking extends BaseController
                     $booking_data['status'] = $status;
                     $booking_data['is_vehicle_assigned'] = 0;
                     $booking_data['vehicle_id'] = 0; 
-        
+                   
                     // free vehicles
                     $this->free_vehivle($booking_id);
 

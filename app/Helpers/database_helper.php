@@ -131,7 +131,7 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 							if ($secLink == 'trip_restart' &&  ($row['status'] != 8))	$makeButton = 0;
 
 							//if status is 11 means trip end then only show 
-							if ($secLink == 'trip_end' &&  ($row['status'] != 11))	$makeButton = 0;
+							if ($secLink == 'trip_end')	$makeButton = 0;
 						}
 
 						if ($module == 'driver') {
