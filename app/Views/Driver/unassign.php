@@ -62,7 +62,7 @@
 
                                                         <div class="col-md-3">
                                                             <label class="col-form-label">Unassigned Date<span class="text-danger">*</span></label>
-                                                            <input type="datetime-local" required name="unassigned_date" min="<?= (isset($assignment_details["assign_date"]) && strtotime($assignment_details["assign_date"])>0)  ? date('Y-m-d H:i',strtotime($assignment_details["assign_date"]. ' +1 day')) : '' ?>" value="<?= isset($assignment_details["assign_date"]) && (strtotime($assignment_details["assign_date"]) > 0)  ? date('Y-m-d H:i',strtotime($assignment_details["assign_date"]. ' +1 day')) : ''; ?>" class="form-control">
+                                                            <input type="datetime-local" required name="unassigned_date" min="<?= (isset($assignment_details["assign_date"]) && strtotime($assignment_details["assign_date"])>0)  ? date('Y-m-d H:i',strtotime($assignment_details["assign_date"])) : '' ?>" value="<?= isset($assignment_details["assign_date"]) && (strtotime($assignment_details["assign_date"]) > 0)  ? date('Y-m-d H:i',strtotime($assignment_details["assign_date"]. ' +1 day')) : ''; ?>" class="form-control">
                                                             <?php
                                                             if ($validation->getError('assigned_date')) {
                                                                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('assigned_date') . '</div>';

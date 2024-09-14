@@ -21,7 +21,7 @@ use App\Models\ForemanModel;
 use App\Models\AadhaarNumberMapModule;
 
 use App\Models\BookingsModel;
-
+use App\Models\BookingVehicleLogModel;
 use App\Models\DriverSchemeMapModel;
 
 use App\Models\DriverVehicleAssignModel;
@@ -55,7 +55,7 @@ class Driver extends BaseController
   public $session;
 
   public $VModel;
-
+  public $BVLModel;
   public function __construct()
 
   {
@@ -101,6 +101,7 @@ class Driver extends BaseController
 
 
     $this->BookingModel = new BookingsModel();
+    $this->BVLModel =  new BookingVehicleLogModel();
   }
 
 
@@ -936,7 +937,7 @@ class Driver extends BaseController
 
       if ($result) {
 
-        $this->VModel->update($result['vehicle_id'], ['is_driver_assigned' => 0]);
+        $this->VModel->update($result['vehicle_id'], ['is_driver_assigned' => 0,'working_status'=>1]);
 
         $this->DVAModel->update($result['id'], ['unassign_date' => date('Y-m-d h:i:s'), 'unassigned_by' => $this->added_by]);
       }
@@ -969,7 +970,7 @@ class Driver extends BaseController
 
       // change driver and vehicle status
 
-      $this->VModel->update($this->request->getPost('vehicle_id'), ['is_driver_assigned' => '1']);
+      $this->VModel->update($this->request->getPost('vehicle_id'), ['is_driver_assigned' => '1','working_status'=>2]);
 
       $this->DModel->update($id, ['working_status' => 2]);
 
@@ -1001,8 +1002,8 @@ class Driver extends BaseController
 
   public function unassign_vehicle($id)
   {
-    $this->view['assignment_details'] = $this->DVAModel->where('driver_id', $id)->where('(unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date) = 0)')->first();
-
+    $this->view['assignment_details'] = $this->DVAModel->where('driver_id', $id)->where('(unassign_date="" or unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date) = 0)')->first();
+    // echo $this->DVAModel->getLastQuery().'<pre>';print_r($this->view['assignment_details']);  
     // $this->view['assignment_details'] = $this->DVAModel->where('driver_id', $id)->where('unassign_date', '')->first();
 
     $vehicle_id = isset($this->view['assignment_details']['vehicle_id']) && ($this->view['assignment_details']['vehicle_id'] > 0) ? $this->view['assignment_details']['vehicle_id'] : 0;
@@ -1013,6 +1014,13 @@ class Driver extends BaseController
       $this->session->setFlashdata('danger', 'Vehicle is assigned to booking, can not unassign vehicle');
       return $this->response->redirect(base_url('driver'));
     }
+
+    $this->view['driverAllowedVehicleTypes'] = $this->vehicletypeDriver
+    ->select('t2.id, t2.rc_number,t2.working_status')->join('vehicle as t2', 't2.vehicle_type_id=driver_vehicle_type_map.vehicle_type_id', 'inner')
+    ->where('driver_id', $id)
+    // ->where('t2.working_status', '2')
+    ->orderBy('t2.rc_number', 'ASC')->findAll();
+    // echo $this->vehicletypeDriver->getLastQuery().'<pre>';print_r($this->view['driverAllowedVehicleTypes']);exit;
 
     if ($this->request->getPost()) {
 
@@ -1029,10 +1037,10 @@ class Driver extends BaseController
         $this->view['error']   = $this->validator;
       } else {
 
-        $link = $this->DVAModel->where('driver_id', $id)->where('(unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date) = 0)')->first();
+        $link = $this->DVAModel->where('driver_id', $id)->where('(unassign_date="" or unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date) = 0)')->first();
 
-
-
+        // echo $this->DVAModel->getLastQuery().'<pre>';print_r($link);  
+       
         if ($link) {
 
           $this->DVAModel->update(
@@ -1055,11 +1063,22 @@ class Driver extends BaseController
 
           );
 
-          $this->VModel->update($link['vehicle_id'], ['is_driver_assigned' => '0']);
+          $vehicleWorkingStatus['is_driver_assigned']= 0;
+          $vehicleWorkingStatus['working_status']= 1;
 
+          //Check Booking is assigned to this vehicle
+          $bookingVehicle = $this->BVLModel->where('vehicle_id', $link['vehicle_id'])->where('(unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date = 0))')->first();
+        // echo $this->BVLModel->getLastQuery().'<pre>';print_r($bookingVehicle); exit;
+          if(isset($bookingVehicle['id']) && ($bookingVehicle['id'] > 0)){
+            $vehicleWorkingStatus['working_status']= 3;
+            $vehicleWorkingStatus['is_driver_assigned']= 1;
+            $this->BookingModel->update($bookingVehicle['booking_id'],['status'=>8]);
+            // echo $this->BookingModel->getLastQuery().'<pre>';print_r($bookingVehicle); 
+          }  
+
+          $this->VModel->update($link['vehicle_id'], $vehicleWorkingStatus); 
           $this->DModel->update($id, ['working_status' => 1]);
-
-
+ 
 
           $this->session->setFlashdata('success', 'Vehicle Unassigned From Driver');
         } else $this->session->setFlashdata('success', 'No Vehicle Assigned');
@@ -1075,8 +1094,7 @@ class Driver extends BaseController
     $this->view['driver_detail'] = $this->DModel->select('driver.*, party.party_name')->join('party', 'party.id = driver.party_id')->where('driver.id', $id)->first();
 
 
-    $this->view['driverAllowedVehicleTypes'] = $this->vehicletypeDriver->select('t2.id, t2.rc_number')->join('vehicle as t2', 't2.vehicle_type_id=driver_vehicle_type_map.vehicle_type_id', 'inner')->where('driver_id', $id)->where('t2.is_driver_assigned', '1')->orderBy('t2.rc_number', 'ASC')->findAll();
-
+  
     return view('Driver/unassign', $this->view);
   }
 

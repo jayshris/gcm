@@ -8,6 +8,7 @@ use App\Models\CustomersModel;
 use App\Models\PartytypeModel;
 use App\Models\ExpenseHeadModel;
 use App\Controllers\BaseController;
+use App\Models\PartyDocumentsModel;
 use App\Models\BookingExpensesModel;
 use App\Models\ProformaInvoiceModel; 
 use CodeIgniter\HTTP\ResponseInterface;
@@ -25,6 +26,7 @@ class Proformainvoices extends BaseController
     public $profile;
     public $PTModel;
     public $ProformaInvoiceExpenseModel;
+    public $partyDocModel;
     public function __construct()
     { 
       $this->session = \Config\Services::session(); 
@@ -37,6 +39,7 @@ class Proformainvoices extends BaseController
       $this->profile = new ProfileModel();
       $this->PTModel = new PartytypeModel();
       $this->ProformaInvoiceExpenseModel = new ProformaInvoiceExpenseModel();
+      $this->partyDocModel = new PartyDocumentsModel();
     }
   
     public function index()
@@ -194,21 +197,21 @@ class Proformainvoices extends BaseController
         return $this->response->redirect(base_url('/proformainvoices')); 
     }
    
-    function preview($id){ 
+    function preview($id){   
       $this->view['proforma_invoice'] = $this->ProformaInvoiceModel
-      ->select('proforma_invoices.*,b.*,p.*,v.rc_number,s.state_name,bps.state_name pickup_state,bds.state_name drop_state,c.party_type_id')
+      ->select('proforma_invoices.*,b.*,b.status booking_status,p.*,v.rc_number,s.state_name,bps.state_name pickup_state,bds.state_name drop_state,c.party_type_id,c.party_id')
       ->join('bookings b','b.id=proforma_invoices.booking_id')
       // ->join('party p','p.id = proforma_invoices.bill_to_party_id')
-      ->join('customer c', 'c.id = proforma_invoices.bill_to_party_id','left')
-      ->join('party p', 'p.id = c.party_id','left')
+      ->join('customer c', 'c.id = proforma_invoices.bill_to_party_id','left') 
+      ->join('party p', 'p.id = c.party_id','left') 
       ->join('booking_pickups bp','b.id=bp.booking_id')
       ->join('booking_drops bd','b.id=bd.booking_id')
       ->join('states bps', 'bp.state = bps.state_id','left')
       ->join('states bds', 'bd.state = bds.state_id','left')
       ->join('vehicle v', 'v.id = b.vehicle_id','left')
-      ->join('states s', 'p.state_id = s.state_id','left')
+      ->join('states s', 'p.state_id = s.state_id','left') 
       ->where(['proforma_invoices.id' => $id])->first();
-      // echo '<pre>'.$this->ProformaInvoiceModel->getLastQuery().'<pre>';print_r($this->view['proforma_invoice']); die; 
+      // echo '<pre>'.$this->ProformaInvoiceModel->getLastQuery().'<pre>';print_r($this->view['proforma_invoice']); //die; 
       
       if(isset($this->view['proforma_invoice']['party_type_id']) && !empty($this->view['proforma_invoice']['party_type_id'])){
         $this->view['is_tax_applicable'] = $this->PTModel->select('count(id) cnt')->whereIn('id', explode(',',$this->view['proforma_invoice']['party_type_id']))
@@ -223,7 +226,19 @@ class Proformainvoices extends BaseController
       ->findAll();
       // echo '<pre>'.$this->ProformaInvoiceExpenseModel->getLastQuery().'<pre>';print_r($this->view['booking_expences']);exit;
  
-      
+      if($this->view['proforma_invoice']['booking_status'] == 11){
+        $lastBookingVehicle = $this->BookingsModel->select('btrs.*,v.rc_number')
+        ->join('booking_transactions btrs', 'btrs.booking_id = bookings.id')
+        ->join('vehicle v', 'btrs.vehicle_id = v.id')
+        ->where(['booking_status_id'=> 11,'bookings.id' =>$this->view['proforma_invoice']['booking_id']])
+        ->orderBy('btrs.id','desc')
+        ->first();
+        $this->view['proforma_invoice']['rc_number'] = isset($lastBookingVehicle['rc_number']) ? $lastBookingVehicle['rc_number'] : '';
+      }
+      // echo '<pre>';print_r($this->view['proforma_invoice']);exit;
+
+      $this->view['party_doc'] =  $this->partyDocModel->select('number as gst')->where(['party_id'=>$this->view['proforma_invoice']['party_id'], 'flag_id'=>'3'])->first();
+      // echo $this->partyDocModel->getLastQuery().'<pre>';print_r($this->view['gstn']);exit;
       return view('ProformaInvoice/preview', $this->view); 
     }
 

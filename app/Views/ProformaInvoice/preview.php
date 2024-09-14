@@ -157,7 +157,7 @@
 															<p class="s10 p14" >EMAIL:- <?= $proforma_invoice['email'] ?></p>
 														</td> 
 														<td class="td29" colspan="4">
-															<p class="s10 p14" >Pickup Place - <?= $proforma_invoice['pickup_state'] ?></p>
+															<p class="s10 p14" >PICKUP PLACE - <?= $proforma_invoice['pickup_state'] ?></p>
 														</td>
 													</tr>
 
@@ -172,7 +172,7 @@
 
 													<tr style="height:21pt"> 
 														<td class="td27" colspan="3">
-														<p class="s10 p14" >TERMS -</p>
+														<p class="s10 p14" ><?= isset($party_doc['gst']) && ($party_doc['gst'] != '') ? $party_doc['gst'] : '-' ?></p>
 														</td> 
 														<td class="td29" colspan="4">
 															<p class="s10 p14" >WEIGHT- <?= ($proforma_invoice['guranteed_wt'] >0) ? $proforma_invoice['guranteed_wt'].' KG' : 0 .' KG' ?></p>
@@ -239,7 +239,8 @@
 														<?php }
 													}
 													?>
-													<?php if(isset($is_tax_applicable['cnt']) && ($is_tax_applicable['cnt'] > 0)){ ?>														
+													<?php if(isset($is_tax_applicable['cnt']) && ($is_tax_applicable['cnt'] > 0)){ ?>			
+													<?PHP if($proforma_invoice['sgst_percent'] >0){ ?>											
 													<tr style="height:11pt">
 														<td class="b-bt-none b-lt1" colspan="6">
 															<p class="s10 p12 prtds10">SGST @ <?= ($proforma_invoice['sgst_percent'] >0) ? number_format($proforma_invoice['sgst_percent'],2) : 0 ?>%</p>
@@ -248,6 +249,8 @@
 															<p class="s11 p12 fntb" style="padding-left: 44pt;"><?= ($proforma_invoice['sgst_total'] >0) ? number_format($proforma_invoice['sgst_total'],2) : 0 ?></p>
 														</td>
 													</tr> 
+													<?PHP if($proforma_invoice['cgst_percent'] >0){ ?>
+													<?php } ?>  
 													<tr style="height:11pt">
 														<td class="b-bt-none b-lt1" colspan="6">
 															<p class="s10 p12 prtds10">CGST @ <?= ($proforma_invoice['cgst_percent'] >0) ? number_format($proforma_invoice['cgst_percent'],2) : 0 ?>%</p>
@@ -256,6 +259,8 @@
 															<p class="s11 p12 fntb" style="padding-left: 44pt;"><?= ($proforma_invoice['cgst_total'] >0) ? number_format($proforma_invoice['cgst_total'],2) : 0 ?></p>
 														</td>
 													</tr> 
+													<?php } ?>  
+													<?PHP if($proforma_invoice['igst_percent'] >0){ ?>
 													<tr style="height:11pt">
 														<td class="b-bt-none b-lt1" colspan="6">
 															<p class="s10 p12 prtds10">IGST @ <?= ($proforma_invoice['igst_percent'] >0) ? number_format($proforma_invoice['igst_percent'],2) : 0 ?>%</p>
@@ -264,13 +269,15 @@
 															<p class="s11 p12 fntb" style="padding-left: 44pt;"><?= ($proforma_invoice['igst_total'] >0) ? number_format($proforma_invoice['igst_total'],2) : 0 ?></p>
 														</td>
 													</tr> 
+													<?php } ?>  
 													<?php } ?>
 													<tr style="height:11pt">
 														<td class="td46" colspan="6">
 															<p class="s10 p12 prtds10">Total Invoice Value</p>
 														</td> 
 														<td class="td48" colspan="1">
-															<p class="s11 p12 fntb" style="padding-left: 44pt;"><?= $proforma_invoice['total_freight'] ?></p>
+															<?php $total = $proforma_invoice['total_freight']+ $proforma_invoice['sgst_total'] + $proforma_invoice['cgst_total']  +$proforma_invoice['igst_total'] ;?>
+															<p class="s11 p12 fntb" style="padding-left: 44pt;"><?= number_format($total,2) ?></p>
 														</td>
 													</tr>  
 													<!-- <tr style="height:11pt">
@@ -336,8 +343,7 @@
 															<p class="s9 pdl12 pdl8">
 															Terms & Conditions:  
 															</p> 
-															<p class="s9 pdl12 pdl8">
-															E. & OE.<br/>
+															<p class="s9 pdl12 pdl8"> 
 															1.Description of service : Transport of Goods by Road <br/>
 															2.The Total Freight Charges have been agreed an represent the Total Amount Due and Payable to GAE Cargo & Movers Pvt Ltd without any deductions on any account whatsoever.<br/>
 															3.Advance against Freight Charges, as agreed, shall be required to be paid within 24 hours from truck load.<br/>
