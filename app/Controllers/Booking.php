@@ -515,7 +515,7 @@ class Booking extends BaseController
             ]); 
 
             //assign vehicle
-            if($this->request->getPost('vehicle_type') > 0  && $this->request->getPost('vehicle_rc') > 0){
+            if($this->request->getPost('vehicle_type') > 0  && $this->request->getPost('vehicle_rc') > 0 && ($booking_details['vehicle_id'] != $this->request->getPost('vehicle_rc'))){
                 $this->assignVehicleBooking($id,$this->request->getPost(),$booking_status);                   
             }else{ 
                 //update booking status 
@@ -1573,8 +1573,8 @@ class Booking extends BaseController
             if (!$error) { 
                 $this->view['error'] = $this->validator; 
             } else { 
-                //update booking status 10 - upload again pod
-                $status =10;
+                //update booking status 9 for UNLOADING done - upload again pod
+                $status =9;
                 $booking_data['status'] = $status;
                 $booking_details =  $this->BModel->where('id', $booking_id)->first();
                 //get assigned vehicle_id and driver id

@@ -67,7 +67,7 @@
 
                             <div class="col-md-3">
                               <label class="col-form-label">Vehicle Type<span class="text-danger">*</span></label>
-                              <select class="form-select" name="vehicle_type" id="vehicle_type" aria-label="Default select example" onchange="$.getVehicles();">
+                              <select class="form-select" name="vehicle_type" required id="vehicle_type" onchange="$.getVehicles();">
                                 <option value="">Select Vehicle Type</option>
                                 <?php foreach ($vehicle_types as $vt) {
                                   echo '<option value="' . $vt['id'] . '"  ' . ($booking_details['vehicle_type_id'] == $vt['id'] ? 'selected' : '') . '>' . $vt['name'] . '</option>';
@@ -76,8 +76,8 @@
                             </div>
 
                             <div class="col-md-3">
-                              <label class="col-form-label">Vehicle RC</label>
-                              <select class="form-select select2" name="vehicle_rc" id="vehicle_rc" aria-label="Default select example">
+                              <label class="col-form-label">Vehicle RC<span class="text-danger">*</span></label>
+                              <select class="form-select select2" name="vehicle_rc" required id="vehicle_rc">
                                 <option value="">Select RC</option>
                                 <?php foreach ($vehicle_rcs as $rc) {
                                   echo '<option value="' . $rc['id'] . '" ' . ($booking_details['vehicle_id'] == $rc['id'] ? 'selected' : '') . '>' . $rc['rc_number'] . '</option>';
@@ -469,8 +469,12 @@
           vehicle_type: vehicle_type,
           booking_id:<?= $booking_details['id'] ?>
         },
+        beforeSend: function() { 
+            $('#save-btn').attr('disabled','disabled'); 
+        }, 
         success: function(response) {
           $('#vehicle_rc').html(response);
+          $('#save-btn').removeAttr('disabled'); 
         }
       });
     }
