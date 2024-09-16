@@ -520,6 +520,8 @@ class Booking extends BaseController
             }else{ 
                 //update booking status 
                 $this->update_booking_status($id,$booking_status);
+                //update PTL booking
+                $this->update_PTLBookings($id,$booking_status,0,0,'',[]);
             }
             // update Drops, Pickups and delete Expences 
             $this->BEModel->where('booking_id', $id)->delete();
@@ -1887,6 +1889,8 @@ class Booking extends BaseController
         //update booking status 
         $this->update_booking_status($id,$booking_status,0,0,$this->request->getPost('status_date'));
         $this->update_PTLBookings($id,$booking_status,0,0,$this->request->getPost('status_date'));
+        //Unlink PTL Bookings
+        $this->unlinkPTLBookings($id);
         $this->session->setFlashdata('success', 'Unloading is done successfully');
         return $this->response->redirect(base_url('booking'));
     }
@@ -1896,7 +1900,8 @@ class Booking extends BaseController
         $this->BModel->update($id, ['status' => $booking_status]);
         //update booking status 
         $this->update_booking_status($id,$booking_status,0,0,$this->request->getPost('status_date'));
-        $this->update_PTLBookings($id,$booking_status,0,0,$this->request->getPost('status_date'));
+        $this->update_PTLBookings($id,$booking_status,0,0,$this->request->getPost('status_date')); 
+
         $this->session->setFlashdata('success', 'Trip has been running');
         return $this->response->redirect(base_url('booking'));
     }
