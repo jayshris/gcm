@@ -12,6 +12,7 @@ use App\Models\AadhaarNumberMapModule;
 use App\Models\DepartmentModel;
 use App\Models\EmployeeDepartment;
 use App\Models\EmployeeDepartmentModel;
+
 class Employee extends BaseController
 {
   public $_access;
@@ -26,6 +27,7 @@ class Employee extends BaseController
   public $added_ip;
   public $EmployeeDepartmentModel;
   public $session;
+
   public function __construct()
   {
     $u = new UserModel();
@@ -652,31 +654,24 @@ class Employee extends BaseController
 
   public function status($id = null)
   {
-    $access = $this->_access;
-    if ($access === 'false') {
-      $session = \Config\Services::session();
-      $session->setFlashdata('error', 'You are not permitted to access this page');
-      return $this->response->redirect(base_url('/dashboard'));
-    } else {
-      $status = '';
-      $emeModel = new EmployeeModel();
-      $eModel = $emeModel->where('id', $id)->first();
-      if (isset($eModel)) {
-        if ($eModel['status'] == '1') {
-          $status = '0';
-        } else {
-          $status = '1';
-        }
-      }
+    $status = '';
 
-      $emeModel->update($id, [
-        'status' => $status,
-        'updated_at' =>  date("Y-m-d h:i:sa"),
-      ]);
-      $session = \Config\Services::session();
-      $session->setFlashdata('success', 'Employee Status Updated');
-      return $this->response->redirect(base_url('employee'));
+    $eModel = $this->employeeModel->where('id', $id)->first();
+    if (isset($eModel)) {
+      if ($eModel['status'] == '1') {
+        $status = '0';
+      } else {
+        $status = '1';
+      }
     }
+
+    $this->employeeModel->update($id, [
+      'status' => $status,
+      'updated_at' =>  date("Y-m-d h:i:sa"),
+    ]);
+    $session = \Config\Services::session();
+    $session->setFlashdata('success', 'Employee Status Updated');
+    return $this->response->redirect(base_url('employee'));
   }
 
 
@@ -698,45 +693,45 @@ class Employee extends BaseController
     return view('Employee/preview', $this->view);
   }
 
-  
-  function assign_department($id){
+
+  function assign_department($id)
+  {
     $this->view['token'] = $id;
     $this->view['last_emp_dept_data'] = $this->EmployeeDepartmentModel->where(['employee_id' => $id])->orderBy('id', 'DESC')->first();
     //  echo ' last_emp_dept_data <pre>';print_r($this->view['last_emp_dept_data']);exit;
-    if($this->request->getPost()){
-      $error = $this->validate([ 
+    if ($this->request->getPost()) {
+      $error = $this->validate([
         'department_id' => 'required',
         'start_date' => 'required',
       ]);
       if (!$error) {
         $this->view['error'] = $this->validator;
-      } else {        
+      } else {
         // echo '<pre>';print_r($this->request->getPost());
         // echo ' last_emp_dept_data <pre>';print_r($this->view['last_emp_dept_data']);
-        
-        if(!empty($this->view['last_emp_dept_data'])) {
+
+        if (!empty($this->view['last_emp_dept_data'])) {
           $last_date = (strtotime($this->request->getPost('start_date')) > 0) ? date('Y-m-d', strtotime($this->request->getPost('start_date') . ' -1 day')) : '';
           $udata['last_date'] = $last_date;
           $udata['updated_by'] = $this->added_by;
-          $this->EmployeeDepartmentModel->update($this->view['last_emp_dept_data']['id'],$udata);
+          $this->EmployeeDepartmentModel->update($this->view['last_emp_dept_data']['id'], $udata);
           // echo ' udata <pre>';print_r($udata);
         }
-        
+
         $data['employee_id'] = $id;
         $data['department_id'] = $this->request->getPost('department_id');
-        $data['start_date'] = $this->request->getPost('start_date');        
+        $data['start_date'] = $this->request->getPost('start_date');
         $data['created_by'] = $this->added_by;
-        $this->EmployeeDepartmentModel->insert($data);  
+        $this->EmployeeDepartmentModel->insert($data);
 
         // echo ' data <pre>';print_r($data);exit; 
-       //change employee status
-       $this->employeeModel->update($id,['status' => 0,'approved'=> 0]);
+        //change employee status
+        $this->employeeModel->update($id, ['status' => 0, 'approved' => 0]);
         $this->session->setFlashdata('success', 'Employee Department Assigned Successfully');
         return $this->response->redirect(base_url('employee'));
       }
-    } 
+    }
     $this->view['departments'] = $this->departmentModel->where(['status' => '1'])->orderBy('dept_name', 'ASC')->findAll();
     return view('Employee/assign_department', $this->view);
   }
-  
 }

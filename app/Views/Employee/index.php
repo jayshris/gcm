@@ -55,6 +55,7 @@
                   <table class="table" id="employeeTable">
                     <thead class="thead-light">
                       <tr>
+                        <th>#</th>
                         <th>Action</th>
                         <th>Employee Name</th>
                         <th>Added</th>
@@ -64,6 +65,7 @@
                     </thead>
                     <tbody>
                       <?php
+                      $i = 1;
                       if ($employee_data) {
                         foreach ($employee_data as $employee) {
                           if (!$employee['approved']) {
@@ -84,6 +86,7 @@
 
                           echo '
                                 <tr>
+                                    <td>' . $i++ . '.</td>
                                     <td>' . makeListActions($currentController, $Action, $employee['id'], 2) . '</td>
                                     <td>' . $employee["name"] . '</td>
                                     <td>' . (isset($employee['created_at']) ? date('d-m-Y', strtotime($employee["created_at"])) : '') . '</td>
