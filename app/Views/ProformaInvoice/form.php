@@ -199,8 +199,7 @@
 		
 	}
 
-	$.getBookingDetails = function(id = 0) { 
-		alert('booking id ='+id);
+	$.getBookingDetails = function(id = 0) {
 		var booking_id = $('#booking_id').val();  
 		if(booking_id){
 			$.ajax({

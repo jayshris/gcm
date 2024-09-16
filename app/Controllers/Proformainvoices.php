@@ -62,7 +62,8 @@ class Proformainvoices extends BaseController
         $this->view['customers'] = $this->getCustomers();
         $this->view['bookings'] = $this->BookingsModel
         ->select('bookings.id,bookings.booking_number')
-        ->where(['status >'=> '3'])   
+        ->where(['status >'=> 3])   
+        ->where(['status != '=> 11])   
         ->findAll();  
         return view('ProformaInvoice/index', $this->view); 
     } 
@@ -88,6 +89,7 @@ class Proformainvoices extends BaseController
                 FROM   proforma_invoices
                 WHERE  proforma_invoices.booking_id = bookings.id '.$condition.')')
         ->where(['bookings.status >'=> '3']) 
+        ->where(['bookings.status != '=> 11]) 
         ->orderBy('v.id', 'desc')
         ->groupBy('bookings.vehicle_id')
         ->findAll();
@@ -97,6 +99,7 @@ class Proformainvoices extends BaseController
     function getBooking($id = 0){
       $condition = $id> 0 ? ' and proforma_invoices.id != '.$id: '';  
       return $this->BookingsModel->where(['status >'=> '3'])  
+      ->where(['status != '=> 11]) 
       ->where('NOT EXISTS (SELECT 1 
                 FROM   proforma_invoices
                 WHERE  proforma_invoices.booking_id = bookings.id '.$condition.')')
@@ -132,6 +135,7 @@ class Proformainvoices extends BaseController
         $this->BookingsModel->where('vehicle_id', $this->request->getPost('vehicle_id'));
       }
       $bookings = $this->BookingsModel->where(['status >'=> '3'])
+      ->where(['status != '=> 11]) 
       ->where('NOT EXISTS (SELECT 1 
       FROM   proforma_invoices
       WHERE  proforma_invoices.booking_id = bookings.id)')

@@ -277,7 +277,8 @@
 														</td> 
 														<td class="td48" colspan="1">
 															<?php $total = $proforma_invoice['total_freight']+ $proforma_invoice['sgst_total'] + $proforma_invoice['cgst_total']  +$proforma_invoice['igst_total'] ;?>
-															<p class="s11 p12 fntb" style="padding-left: 44pt;"><?= number_format($total,2) ?></p>
+															<?php $invoice_total = ($proforma_invoice['invoice_total_amount'] > 0) ? $proforma_invoice['invoice_total_amount'] : 0;?>
+															<p class="s11 p12 fntb" style="padding-left: 44pt;"><?= number_format($invoice_total,2) ?></p>
 														</td>
 													</tr>  
 													<!-- <tr style="height:11pt">
