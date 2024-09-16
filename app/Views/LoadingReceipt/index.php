@@ -74,6 +74,7 @@
 											<!-- <th>Branch Name</th> -->
 											<th>Booking Date</th> 
 											<th>Status</th>
+											<th>Approved</th>
 										</tr>
 										</thead>
 										<tbody>
@@ -95,6 +96,9 @@
 												<!-- <td><?= $b['branch_name'] ?></td> -->
 												<td><?= date('d M Y', strtotime($b['booking_date'])) ?></td> 
 												<td><span class="badge badge-pill <?= $b['status'] != 1 ? 'bg-danger' : 'bg-success' ?>"> <?= $status ?></span></td>
+												<td>
+													<?= ($b['approved'] == 1) ? '<span class="badge badge-pill bg-success">Approved</span>' : '<span class="badge badge-pill bg-danger">Not Approved</span>' ?>
+												</td>
 											</td>
 											</tr>
 										<?php } ?>

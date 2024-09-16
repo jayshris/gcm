@@ -44,11 +44,41 @@ class Proformainvoices extends BaseController
   
     public function index()
     {    
-        $this->ProformaInvoiceModel->select('*');  
-        $this->view['proforma_invoices']  = $this->ProformaInvoiceModel->select('proforma_invoices.*,b.booking_number')
-        ->join('bookings b','b.id=proforma_invoices.booking_id')->findAll();
+        $this->ProformaInvoiceModel->select('proforma_invoices.*,b.booking_number,p.party_name,p.primary_phone')
+        ->join('bookings b','b.id=proforma_invoices.booking_id')
+        ->join('customer c', 'c.id = proforma_invoices.bill_to_party_id','left') 
+        ->join('party p', 'p.id = c.party_id','left');  
+        if ($this->request->getPost('customer_id') != '') {
+            $this->ProformaInvoiceModel->where('proforma_invoices.bill_to_party_id', $this->request->getPost('customer_id'));
+        }  
+
+        if ($this->request->getPost('booking_id') != '') {
+          $this->ProformaInvoiceModel->where('proforma_invoices.booking_id', $this->request->getPost('booking_id'));
+        }
+
+        $this->view['proforma_invoices']  = $this->ProformaInvoiceModel->orderBy('p.party_name','ASC')->findAll();
+        // echo '<pre>'.$this->ProformaInvoiceModel->getLastQuery().'<pre>';print_r( $this->view['proforma_invoices']);exit;
+
+        $this->view['customers'] = $this->getCustomers();
+        $this->view['bookings'] = $this->BookingsModel
+        ->select('bookings.id,bookings.booking_number')
+        ->where(['status >'=> '3'])   
+        ->findAll();  
         return view('ProformaInvoice/index', $this->view); 
     } 
+
+    function getCustomers(){
+      $party_type_ids = $this->PTModel->select("(GROUP_CONCAT(id)) party_type_ids") 
+      ->where('sale', '1') 
+      ->first(); 
+       $party_type_ids = str_replace([',',', '],'|', $party_type_ids );
+     
+     return $this->CModel->select('customer.*, party.party_name')
+          ->join('party', 'party.id = customer.party_id')
+          ->where('customer.status', '1')
+          ->where('CONCAT(",", party_type_id, ",") REGEXP ",('.$party_type_ids['party_type_ids'].'),"')
+          ->findAll();
+    }
 
     function getvehicles($id = 0){ 
         $condition = $id> 0 ? ' and proforma_invoices.id != '.$id: ''; 
@@ -61,6 +91,7 @@ class Proformainvoices extends BaseController
         ->orderBy('v.id', 'desc')
         ->groupBy('bookings.vehicle_id')
         ->findAll();
+        
     }
 
     function getBooking($id = 0){
@@ -134,6 +165,7 @@ class Proformainvoices extends BaseController
       $data['advance'] = $post['advance']; 
       $data['rate'] = $post['rate'];
       $data['rate_type'] = $post['rate_type'];
+      $data['invoice_total_amount'] = $post['invoice_total_amount'];
       // echo  'ProformaInvoice <pre>';print_r($data); 
       // echo  'post <pre>';print_r($post);exit;
       
@@ -211,7 +243,7 @@ class Proformainvoices extends BaseController
       ->join('vehicle v', 'v.id = b.vehicle_id','left')
       ->join('states s', 'p.state_id = s.state_id','left') 
       ->where(['proforma_invoices.id' => $id])->first();
-      // echo '<pre>'.$this->ProformaInvoiceModel->getLastQuery().'<pre>';print_r($this->view['proforma_invoice']); //die; 
+      // echo '<pre>'.$this->ProformaInvoiceModel->getLastQuery().'<pre>';print_r($this->view['proforma_invoice']);die; 
       
       if(isset($this->view['proforma_invoice']['party_type_id']) && !empty($this->view['proforma_invoice']['party_type_id'])){
         $this->view['is_tax_applicable'] = $this->PTModel->select('count(id) cnt')->whereIn('id', explode(',',$this->view['proforma_invoice']['party_type_id']))
@@ -289,9 +321,16 @@ class Proformainvoices extends BaseController
       echo json_encode($customer);exit;
     }
 
-    function getBookingDetails($id){
-      $bookings = $this->BookingsModel->where('id', $id)->first();       
-      echo json_encode($bookings);exit;
+    function getBookingDetails($booking_id,$id= 0){
+      if($id > 0){
+        $proformaInvoice = $this->ProformaInvoiceModel->where('id', $id)->first();     
+        $total_freight = isset($proformaInvoice['invoice_total_amount']) && ($proformaInvoice['invoice_total_amount'] > 0) ? $proformaInvoice['invoice_total_amount'] : 0;  
+      }else{
+        $bookings = $this->BookingsModel->where('id', $booking_id)->first();     
+        $total_freight = isset($bookings['total_freight']) && ($bookings['total_freight'] > 0) ? $bookings['total_freight'] : 0;
+      }
+      
+      echo json_encode($total_freight);exit;
     }
 
     function checkTaxApplicable($customer_id){

@@ -29,15 +29,44 @@
 						</div>
 						<!-- /Page Header -->
 						 
+						<form method="post" enctype="multipart/form-data" action="<?php echo base_url($currentController); ?>">
 						<div class="card main-card">
 							<div class="card-body"> 
-								<div class="row">  
+								<h4>Search / Filter</h4>
+								<hr>
+								<div class="row">    
 									<div class="col-md-3">
+										<label class="col-form-label">Customer Name</label>
+										<select class="form-select select2" name="customer_id" id="customer_id">
+											<option value="">Select Customer</option>
+											<?php foreach ($customers as $c) { ?>
+											<option value="<?= $c['id'] ?>" <?= (set_value('customer_id') == $c['id']) ? 'selected' : '' ?> ><?= $c['party_name'] ?></option>
+										<?php } ?>
+										</select> 
+									</div>
+									
+									<div class="col-md-3">
+										<label class="col-form-label">Booking No.</label>
+										<select class="form-select select2" name="booking_id" id="booking_id">
+											<option value="">Select Booking No.</option>
+											<?php foreach ($bookings as $v) { ?>
+											<option value="<?= $v['id'] ?>" <?= (set_value('booking_id') == $v['id']) ? 'selected' : '' ?>  ><?= $v['booking_number'] ?></option> 
+											<?php } ?>
+										</select>
+									</div>
+									
+									<div class="col-md-3">
+										<button class="btn btn-info mt-4">Search</button>&nbsp;&nbsp;
+										<a href="<?php echo base_url($currentController); ?>" class="btn btn-warning mt-4">Reset</a>&nbsp;&nbsp;
+									</div>
+
+									<div class="col-md-2 text-end mt-3">
 										<?php echo makeListActions($currentController, $Action, 0, 1); ?>
 									</div>
 								</div>
 							</div>
 						</div> 
+						</form>
 
 						<div class="card main-card">
 							<div class="card-body">
@@ -66,6 +95,9 @@
 											<th>Action</th>
 											<th>Invoice No.</th> 
 											<th>Booking No.</th>
+											<th>Customer Name</th>
+											<th>Invoice Amount</th>
+											<th>Customer Contact No.</th>
 										</tr>
 										</thead>
 										<tbody>
@@ -78,6 +110,9 @@
 												<td><?= makeListActions($currentController, $Action, $b['id'], 2, false, $b) ?></td>
 												<td><?= $b['proforma_invoices_no'] ?></td>
 												<td><?= $b['booking_number'] ?></td>
+												<td><?= isset($b['party_name']) ? $b['party_name'] : '-' ?></td>
+												<td><?= number_format($b['invoice_total_amount'],2) ?></td>
+												<td><?= isset($b['primary_phone']) ? $b['primary_phone'] : '-' ?></td> 
 											</td>
 											</tr>
 										<?php } ?>

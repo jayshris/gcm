@@ -1904,7 +1904,7 @@ class Booking extends BaseController
     function trip_update($id){
         $this->view['employees'] = $this->EmployeeModel->select('employee.id,employee.name')
         ->join('departments d','d.id= employee.dept_id')
-        ->where(['d.booking'=> 1,'d.status'=> 1])
+        ->where(['d.booking'=> 1,'d.status'=> 1,'employee.status' =>1])
         ->findall();
         $this->view['data'] = $this->BookingsTripUpdateModel->select('bookings_trip_updates.*,e.name e_name')
         ->join('employee e','e.id = bookings_trip_updates.updated_by')

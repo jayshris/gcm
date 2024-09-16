@@ -92,8 +92,8 @@
 
 													<div class="col-md-12"  id="expense_div_body"></div>
 
-													<div class="row g-3"  id="tax_applicable_div" hidden>
-														<div class="row g-3 tax_div" >
+													<div class="row g-3"  id="tax_applicable_div" >
+														<div class="row g-3 tax_div" hidden>
 															<div class="col-md-6"></div>
 															<div class="col-md-1">
 																<label class="col-form-label">SGST@</label>
@@ -103,10 +103,10 @@
 															</div>
 															<div class="col-md-1"><label class="col-form-label per-lbl">%</label></div>
 															<div class="col-md-2">
-																<input type="number" step="0.01" class="form-control" id="SGST_total" name="sgst_total" value="<?= isset($proforma_invoice['sgst_total']) && ($proforma_invoice['sgst_total'] > 0) ? $proforma_invoice['sgst_total'] : 0 ?>"/>
+																<input type="number" step="0.01" readonly class="form-control" id="SGST_total" name="sgst_total" value="<?= isset($proforma_invoice['sgst_total']) && ($proforma_invoice['sgst_total'] > 0) ? $proforma_invoice['sgst_total'] : 0 ?>"/>
 															</div>
 														</div>
-														<div class="row g-3 tax_div" >
+														<div class="row g-3 tax_div" hidden>
 															<div class="col-md-6"></div>
 															<div class="col-md-1"> 
 																<label class="col-form-label">CGST@</label>
@@ -116,10 +116,10 @@
 															</div>
 															<div class="col-md-1"><label class="col-form-label per-lbl">%</label></div>
 															<div class="col-md-2">
-																<input type="number" step="0.01" class="form-control" name="cgst_total" id="CGST_total" value="<?= isset($proforma_invoice['cgst_total']) && ($proforma_invoice['cgst_total'] > 0) ? $proforma_invoice['cgst_total'] : 0 ?>"/>
+																<input type="number" step="0.01" readonly class="form-control" name="cgst_total" id="CGST_total" value="<?= isset($proforma_invoice['cgst_total']) && ($proforma_invoice['cgst_total'] > 0) ? $proforma_invoice['cgst_total'] : 0 ?>"/>
 															</div>
 														</div>
-														<div class="row g-3 tax_div" >
+														<div class="row g-3 tax_div" hidden>
 															<div class="col-md-6"></div>
 															<div class="col-md-1"> 
 																<label class="col-form-label">IGST@</label>
@@ -129,7 +129,14 @@
 															</div>
 															<div class="col-md-1"><label class="col-form-label per-lbl">%</label></div>
 															<div class="col-md-2">
-																<input type="number" step="0.01" class="form-control" id="IGST_total"  name="igst_total" value="<?= isset($proforma_invoice['igst_total']) && ($proforma_invoice['igst_total'] > 0) ? $proforma_invoice['igst_total'] : 0 ?>"/>
+																<input type="number" step="0.01" readonly class="form-control" id="IGST_total"  name="igst_total" value="<?= isset($proforma_invoice['igst_total']) && ($proforma_invoice['igst_total'] > 0) ? $proforma_invoice['igst_total'] : 0 ?>"/>
+															</div>
+														</div>
+														<div class="row g-3 invoice_total_amount_div" hidden>
+															<div class="col-md-7"></div> 
+															<div class="col-md-3"><label class="col-form-label per-lbl">Invoice Total Amount:</label></div>
+															<div class="col-md-2">
+																<input type="number" step="0.01" readonly class="form-control" id="invoice_total_amount"  name="invoice_total_amount" value="<?= isset($proforma_invoice['invoice_total_amount']) && ($proforma_invoice['invoice_total_amount'] > 0) ? $proforma_invoice['invoice_total_amount'] : 0 ?>"/>
 															</div>
 														</div>
 													</div> 
@@ -164,7 +171,7 @@
 	<script>
 	$(document).ready(function() {
 		if($('#id').val()){
-			$.getBookingDetails();
+			$.getBookingDetails($('#id').val());
 		}		
     });
 	$.getVehicleBookings = function() {
@@ -192,14 +199,19 @@
 		
 	}
 
-	$.getBookingDetails = function() { 
+	$.getBookingDetails = function(id = 0) { 
+		alert('booking id ='+id);
 		var booking_id = $('#booking_id').val();  
 		if(booking_id){
 			$.ajax({
 				method: "POST",
-				url: '<?php echo base_url('proformainvoices/getBookingExpense/'); ?>'+booking_id+'/'+$('#id').val(), 
+				url: '<?php echo base_url('proformainvoices/getBookingExpense/'); ?>'+booking_id+'/'+id, 
 				success: function(res) { 
-					$('#expense_div_body').html(res);
+					$('#expense_div_body').html(res);  
+					$('.invoice_total_amount_div').removeAttr('hidden'); 
+					if(id == 0){
+						$.calculation();	
+					}
 				}
 			});
 
@@ -211,8 +223,8 @@
 					var html = '<option value="">Select Bill to Party</option>';
 					if(res){
 						var selecected_bill_to_party_id = $('#selecected_bill_to_party_id').val();
-						$.each(res, function(i, val) {
-							var selected = (selecected_bill_to_party_id > 0) && (selecected_bill_to_party_id == val.id) ? 'selected' : '';
+						$.each(res, function(i, val) {  
+							var selected = (selecected_bill_to_party_id > 0) && (selecected_bill_to_party_id == val.id) && (id > 0) ? 'selected' : '';
 							html += '<option value="'+val.id+'" '+selected+'>'+val.party_name+'</option>';
 						});
 					}
@@ -221,21 +233,25 @@
 				}
 			});
 
-			$.ajax({
-				method: "POST",
-				url: '<?php echo base_url('proformainvoices/getBookingDetails/'); ?>'+booking_id, 
-				dataType:'json',
-				success: function(res) {  
-					if(res){
-						$('#total_freight').val(res.freight);
-					} 
-				}
-			});
+			// $.ajax({
+			// 	method: "POST",
+			// 	url: '<?php echo base_url('proformainvoices/getBookingDetails/'); ?>'+booking_id, 
+			// 	dataType:'json',
+			// 	success: function(res) {  
+			// 		if(id <1){
+			// 			$('#invoice_total_amount').val(res);
+			// 		}
+			// 		alert(' invoice_total_amount '+res); 
+					
+			// 	}
+			// });
+			
 		}else{
 			$('#expense_div_body').html('');
-			$('#bill_to_party_id').val('');
-			$('#total_freight').val('');
-		} 			
+			$('#bill_to_party_id').val(''); 
+			$('.invoice_total_amount_div').attr('hidden','hidden');
+		} 	
+			
 	}	
 
 	$.billToParty = function(index) {
@@ -280,14 +296,14 @@
         }
 
         $('#freight').val(freight.toFixed(2));
-
+		
         var advance = ($('#advance').val());
         var discount = ($('#discount').val());
         var balance = (freight - advance - discount).toFixed(2); 
 		// alert(freight + advance +discount + '= '+balance);
         $('#balance').val(balance); 
       }
-	  calculate_tax_percent('all');
+	  calculate_tax_percent('all'); 
     }
 
 	$.delete = function(index, str) {
@@ -311,21 +327,28 @@
       })
     }
 
-	function checkTaxApplicable(){
+	function checkTaxApplicable(){  
 		var bill_to_party_id = $('#bill_to_party_id').val();
 		if(bill_to_party_id> 0){
 			$.ajax({
 				type: "POST",
 				url: "<?php echo base_url('proformainvoices/checkTaxApplicable/'); ?>"+bill_to_party_id, 
 				success: function(tax_applicable_cnt) {
-					if(tax_applicable_cnt > 0){
-						$('#tax_applicable_div').removeAttr('hidden');
+					if(tax_applicable_cnt > 0){ 
+						$('.tax_div').removeAttr('hidden');
 					}else{
-						$('#tax_applicable_div').attr('hidden','hidden');
-					}	
+						updateTaxDiv();
+					}
 				}
 			})
-		}      
+		}else{
+			updateTaxDiv();
+		}    
+	}
+	function updateTaxDiv(){
+		$('.tax_div').attr('hidden','hidden');
+		$('.tax_div input').val(0);
+		calculate_tax_percent('all'); 
 	}
 	function calculate_tax_percent(id){ 
 		if(id == 'all'){
@@ -335,7 +358,12 @@
 		}else{
 			calculateTax(id);
 		}
-		
+		var freight = parseFloat($('#freight').val());
+		var SGST_total = parseFloat($('#SGST_total').val());
+		var CGST_total = parseFloat($('#CGST_total').val());
+		var IGST_total = parseFloat($('#IGST_total').val());
+		var invoice_total_amount = (freight+SGST_total+CGST_total+IGST_total); 
+		$('#invoice_total_amount').val(invoice_total_amount.toFixed(2)); 
 	}
 	function calculateTax(id){
 		var tax_percent = parseFloat($('#'+id+'_percent').val());  
