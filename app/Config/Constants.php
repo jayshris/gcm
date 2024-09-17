@@ -95,3 +95,12 @@ define('EVENT_PRIORITY_HIGH', 10);
 
 define('VEHICLE_CLASSES', [1=>'Goods Carrier',2=>'Commercial Carrier',3=>'Carrier 3']);
 
+
+$purpose_of_updates[1] = 'Status';
+$purpose_of_updates[2] = 'Fuel';
+$purpose_of_updates[3] = 'Money';
+$purpose_of_updates[4] = 'Urea';
+$purpose_of_updates[5] = 'Repair';
+$purpose_of_updates[6] = 'Tyre';
+$purpose_of_updates[7] = 'Other'; 
+define('PURPOSE_OF_UPDATES',$purpose_of_updates);

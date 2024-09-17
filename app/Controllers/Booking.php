@@ -2069,4 +2069,74 @@ class Booking extends BaseController
         }
         // exit;
     }
+
+    function booking_details($id){        
+        $this->view['token'] = $id;
+        $this->view['booking_details'] = $this->BModel->select('bookings.*,cb.office_name,cb.city cb_city,e.name booking_by_name,vt.name vehicle_type_name,v.rc_number,p.party_name bill_to_party_name,party.party_name as customer,v.id v_id,party.contact_person,party.primary_phone')
+        ->join('vehicle v', 'v.id = bookings.vehicle_id','left')
+        ->join('vehicle_type vt', 'vt.id = bookings.vehicle_type_id','left')
+        ->join('employee e', 'e.id = bookings.booking_by','left')
+        ->join('customer_branches cb', 'cb.id = bookings.customer_branch','left')
+        ->join('customer c', 'c.id = bookings.bill_to_party','left')
+        ->join('party p', 'p.id = c.party_id','left')
+        ->join('customer cust', 'cust.id = bookings.customer_id','left')
+        ->join('party', 'party.id = cust.party_id','left')
+        ->where('bookings.id', $id)->first();
+        // echo '  <pre>';print_r($this->view['booking_details'] );exit;  
+        
+        $this->view['booking_pickups'] = $this->BPModel->where('booking_id', $id)->first();
+        $this->view['booking_drops'] = $this->BDModel->where('booking_id', $id)->first();
+        $pickup_state = isset($this->view['booking_pickups']['state']) ? $this->view['booking_pickups']['state'] : 0;
+        $drop_state = isset($this->view['booking_drops']['state']) ? $this->view['booking_drops']['state'] : 0;
+        $this->view['booking_pickups_state'] = ($pickup_state>0) ? $this->SModel->where('state_id', $pickup_state)->first() : [];
+        $this->view['booking_drops_state'] =  ($drop_state>0) ? $this->SModel->where('state_id', $drop_state)->first() : []; 
+        
+        $this->view['booking_expences'] = $this->BEModel->select('eh.id eh_id,eh.*,booking_expenses.*')
+        ->join('expense_heads eh','eh.id= booking_expenses.expense')
+        ->where('booking_expenses.booking_id', $id)->findAll();   
+
+        
+        $this->view['driver'] = [];
+        $this->view['getPTLBookings'] =[];
+        $vehicle_id = isset($this->view['booking_details']['v_id']) && ($this->view['booking_details']['v_id'] > 0) ? $this->view['booking_details']['v_id'] : 0;
+        if($vehicle_id > 0 ){
+            $this->view['driver'] = $this->DModel->select('driver.id, party.party_name as driver_name,party.primary_phone')
+            ->join('driver_vehicle_map dvp', 'driver.id = dvp.driver_id')
+            ->join('party', 'party.id = driver.party_id')
+            ->where('dvp.vehicle_id',$vehicle_id) 
+            ->first();
+
+            $this->view['ptl_bookings'] = $this->getPTLBookings($id,$vehicle_id);
+            $this->view['booking_total'] = $this->getTotalPTLBookings($id,$vehicle_id); 
+        }
+ 
+       
+        $this->view['trip_start_details'] = $this->getBookingTransactions($id,4);
+
+        $this->view['loading_details'] = $this->getBookingTransactions($id,5); 
+
+        $this->view['trip_running_details'] = $this->getBookingTransactions($id,7);
+
+        $this->view['unloading_details'] = $this->getBookingTransactions($id,9);;
+
+        $this->view['pod_details'] = $this->getBookingTransactions($id,10);;
+
+        $this->view['kanta_parchi_details'] = $this->BookingUploadedKantaParchiModel->where(['booking_id' => $id])->findAll(); 
+        
+        $this->view['uploaded_pods_details'] = $this->BUPModel->where(['booking_id' => $id])->findAll();
+        // echo 'trip_start_details  <pre>';print_r($this->view['trip_start_details'] );exit; 
+
+        $this->view['trip_update_details'] = $this->BookingsTripUpdateModel->where(['booking_id' => $id])->findAll();
+
+        return view('Booking/booking_details', $this->view); 
+    }
+    
+    function getBookingTransactions($id,$status){
+        return $this->BookingTransactionModel
+        ->select('booking_transactions.*,party.party_name driver,v.rc_number')
+        ->join('driver d', 'd.id = booking_transactions.driver_id','left')
+        ->join('party', 'party.id = d.party_id','left')
+        ->join('vehicle v', 'v.id = booking_transactions.vehicle_id','left')
+        ->where(['booking_id' => $id,'booking_status_id' => $status])->findAll(); 
+    }
 }

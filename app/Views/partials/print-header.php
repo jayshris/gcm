@@ -9,6 +9,7 @@
           </p>
         </div>
       </div> 
+      <?php if($currentMethod != 'booking_details'){?>
       <div class="col-md-12 col-sm-12">
         <p class="sub-headerpr">
             A-131/2, 2nd Floor, Wazirpur Industrial Area, Delhi- 110052
@@ -23,6 +24,7 @@
             <span>CIN - U63030DL2021PTC378353</span> &nbsp;&nbsp; <span>MSME - UDYAM-DL-06-0016237</span>
         </p>
       </div>
+      <?php }?>
     </div> 
   </div>
 </div>

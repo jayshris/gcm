@@ -42,17 +42,8 @@
                                                         <div class="col-md-4">
                                                             <label class="col-form-label">Purpose Of Update<span class="text-danger">*</span></label>
                                                             <select name="purpose_of_update" id="purpose_of_update" class="form-select" required onchange="validateFuelMoney()">
-                                                                <option value="">Select Purpose Of Update</option>
-                                                                <?php 
-                                                                    $purpose_of_updates[1] = 'Status';
-                                                                    $purpose_of_updates[2] = 'Fuel';
-                                                                    $purpose_of_updates[3] = 'Money';
-                                                                    $purpose_of_updates[4] = 'Urea';
-                                                                    $purpose_of_updates[5] = 'Repair';
-                                                                    $purpose_of_updates[6] = 'Tyre';
-                                                                    $purpose_of_updates[7] = 'Other'; 
-                                                                ?>
-                                                                <?php if(!empty($purpose_of_updates)) {foreach($purpose_of_updates as $key => $purpose_ofupdate){ ?>
+                                                                <option value="">Select Purpose Of Update</option> 
+                                                                <?php if(!empty(PURPOSE_OF_UPDATES)) {foreach(PURPOSE_OF_UPDATES as $key => $purpose_ofupdate){ ?>
                                                                 <option value="<?= $key?>" <?= (set_value('purpose_of_update')) && (set_value('purpose_of_update') == $key) ? 'selected' : '' ?>><?= ucfirst($purpose_ofupdate) ?></option>
                                                                 <?php }}?>
                                                             </select>
