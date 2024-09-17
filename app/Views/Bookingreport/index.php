@@ -95,11 +95,12 @@
 
 								<!-- Product Type List -->
 								<div class="table-responsive custom-table">
-									<table class="table" id="loading-receipt-table">
+									<table class="table" id="data-table">
 										<thead class="thead-light">
 										<tr>
 											<th>#</th>
-											<th>Action</th> 
+											<!-- <th>Action</th>  -->
+                      <th>Date</th>
 											<th>Booking No.</th>
                       <th>Driver Name</th> 
 											<th>Vehicle No.</th>
@@ -115,17 +116,17 @@
                         ?>
                         <tr>
                           <td><?= $i++; ?>.</td> 
-                          <td><?= makeListActions($currentController, $Action, $b['id'], 2) ?></td>
+                          <!-- <td><?= makeListActions($currentController, $Action, $b['id'], 2) ?></td> -->
+                           <td><?= date('d/m/Y H:i A',strtotime($b['status_date'])) ?></td>
                           <td><?= $b['booking_number'] ?></td>
                           <td><?= $b['party_name'] ?></td>
-                          <td><?= $b['branch_name'] ?></td>
-                          <td><?= date('d M Y', strtotime($b['booking_date'])) ?></td> 
+                          <td><?= $b['rc_number'] ?></td>
+                          <td><?= $b['status_name'] ?></td>
+                          <td><?= $b['resaon'] ?></td> 
                         </td>
                         </tr>
                       <?php } ?>
-                      <?php }else{ ?>
-                        <tr><td colspan="6">Records not found!</td></tr>
-                      <?php } ?>
+                      <?php } ?> 
 											
 										</tbody>
 									</table>
@@ -155,7 +156,32 @@
 
     <!-- scripts link  -->
     <?= $this->include('partials/vendor-scripts') ?>
- 
+                        
+    <script>
+      // datatable init
+    if ($('#data-table').length > 0) {
+      $('#data-table').DataTable({
+        "bFilter": false,
+        "bInfo": false,
+        "autoWidth": true,
+        "language": {
+          search: ' ',
+          sLengthMenu: '_MENU_',
+          searchPlaceholder: "Search",
+          info: "_START_ - _END_ of _TOTAL_ items",
+          "lengthMenu": "Show _MENU_ entries",
+          paginate: {
+            next: 'Next <i class=" fa fa-angle-right"></i> ',
+            previous: '<i class="fa fa-angle-left"></i> Prev '
+          },
+        },
+        initComplete: (settings, json) => {
+          $('.dataTables_paginate').appendTo('.datatable-paginate');
+          $('.dataTables_length').appendTo('.datatable-length');
+        }
+      });
+    }
+    </script>
 </body>
 
 </html>

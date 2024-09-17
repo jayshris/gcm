@@ -481,11 +481,13 @@ class Booking extends BaseController
                 $booking_status = 3;
              }else{
                  $booking_status = ($this->request->getPost('approve')) ? 2 : 1;
-             }
-            //  echo  $booking_status.'<pre>';
-            //  print_r($booking_details); 
-             //die; 
+             } 
 
+            //get last booking status before pause booking
+            $last_booking_status_id = $this->BookingTransactionModel->where(['booking_id'=>$id])->orderBy('id', 'desc')->findAll(1,1);   
+            $last_booking_status = isset($last_booking_status_id[0]['booking_status_id']) && ($last_booking_status_id[0]['booking_status_id'] > 0) ? $last_booking_status_id[0]['booking_status_id']: 0;
+            $booking_status = ($last_booking_status > 3) ? $last_booking_status :  $booking_status;
+            // echo '$booking_status = '.' / $last_booking_status = '.$last_booking_status;exit;
             // update booking
             $this->BModel->update($id, [
                 'booking_for' => $this->request->getPost('booking_for'),
@@ -512,7 +514,7 @@ class Booking extends BaseController
                 'approved_ip' => $this->added_ip,
                 'approved_date' => date('Y-m-d h:i:s'),
                 'approved' => $this->request->getPost('approve'),
-            ]); 
+            ]);  
 
             //assign vehicle
             if($this->request->getPost('vehicle_type') > 0  && $this->request->getPost('vehicle_rc') > 0 && ($booking_details['vehicle_id'] != $this->request->getPost('vehicle_rc'))){
@@ -1034,12 +1036,12 @@ class Booking extends BaseController
                 ];//echo __LINE__.'<pre>';print_r($bookingData);die;
 
                 //update status only when booking status is created i.e 0 
-                if($booking_details['status'] == 0){
+                //after edit booking, booking will goes for waiting for approval every time
+                // if($booking_details['status'] == 0){
                     $bookingData['status'] = 1;
                     //update booking status 
                     $this->update_booking_status($id,$bookingData['status']); 
-
-                }
+                // } 
 
                 $this->BModel->update($id,$bookingData); 
 
@@ -1989,8 +1991,7 @@ class Booking extends BaseController
     }
 
     function trip_restart($id){
-        // echo '  <pre>';print_r($this->request->getPost());  
-        
+        // echo '  <pre>';print_r($this->request->getPost());          
         //get last booking status before pause booking
         $last_booking_status = $this->BookingTransactionModel->where(['booking_id'=>$id,'booking_status_id < '=>8])->orderBy('id', 'desc')->first();  
         $booking_status = isset($last_booking_status['booking_status_id']) && ($last_booking_status['booking_status_id'] > 0) ? $last_booking_status['booking_status_id']: 16;

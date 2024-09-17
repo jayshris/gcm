@@ -92,8 +92,8 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 					} else {
 						$makeButton = 1;
 						if ($module == 'booking') {
-							//if status is in 0, 1, 2, 3 then only show
-							if ($secLink == 'edit' && ($row['status'] >= 3))	$makeButton = 0;
+							//if status is in 0, 1, 2, 3,4,5 then only show
+							if ($secLink == 'edit' && ($row['status'] > 5))	$makeButton = 0;
 							//if status less than equal to 5 then only show
 							if ($secLink == 'cancel' && ($row['status'] == 14 || $row['status'] >= 5))	$makeButton = 0;
 							//if status is waiting for approval then only show

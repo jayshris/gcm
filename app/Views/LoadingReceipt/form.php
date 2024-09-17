@@ -863,10 +863,15 @@
 
                         <div class="col-md-4" id="e_way_bill_number_div" <?= isset($loading_receipts['transporter_id']) && ($loading_receipts['transporter_id'] > 0) ? 'Hidden' : '' ?>>
                             <?php 
+                            $inptData = ['name'=>'e_way_bill_number','id'=>'e_way_bill_number','value'=>set_value('e_way_bill_number', (isset($loading_receipts['e_way_bill_number']) ? $loading_receipts['e_way_bill_number'] : '')),'class'=>'form-control '.(($validation->getError('e_way_bill_number')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off'];
                             $label = 'E-Way Bill No';
-                            $isdisabled= isset($loading_receipts['transporter_id']) && ($loading_receipts['transporter_id'] > 0) ? 'disabled' : '';
+                            $transporter_id = isset($loading_receipts['transporter_id']) && ($loading_receipts['transporter_id'] > 0) ? $loading_receipts['transporter_id'] : 0;
+                            if($transporter_id > 0){
+                                $inptData['disabled'] = 'disabled';
+                            }
+                            
                             echo '<label class="col-form-label">'.$label.' </label>';
-                            echo form_input(['name'=>'e_way_bill_number','id'=>'e_way_bill_number','value'=>set_value('e_way_bill_number', (isset($loading_receipts['e_way_bill_number']) ? $loading_receipts['e_way_bill_number'] : '')),'class'=>'form-control '.(($validation->getError('e_way_bill_number')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off','disabled' => $isdisabled]);
+                            echo form_input($inptData);
                             echo ($validation->getError('e_way_bill_number')) ? '<div class="invalid-feedback">'.$validation->getError('e_way_bill_number').'</div>' : '';
                             ?>
                         </div>
