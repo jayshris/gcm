@@ -150,4 +150,18 @@ class Customers extends BaseController
 
         echo json_encode($party);
     }
+
+    public function preview($id)
+    {  
+        $this->view['customer_detail'] = $this->CModel->select('customer.*,p.party_name,s.state_name')
+        ->join('party p','p.id = customer.party_id')
+        ->join('party_type pt','pt.id = customer.party_type_id')
+        ->join('states s','s.state_id = customer.state_id','left')
+        ->where('customer.id', $id)
+        ->first();        
+        $party_type_ids = isset($this->view['customer_detail']['party_type_id']) && ($this->view['customer_detail']['party_type_id']) ? explode(',',$this->view['customer_detail']['party_type_id']) : [];
+        $this->view['party_types'] = ($party_type_ids) ? $this->PTModel->select('group_concat(name) pt')->whereIn('id',$party_type_ids)->first() : '';
+        
+        return view('Customers/preview', $this->view);
+    }
 }
