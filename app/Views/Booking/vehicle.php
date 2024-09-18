@@ -330,6 +330,7 @@
           success: function(response) {
             var booking_details = '';
             $.each(response, function(i, val) {
+              booking_details +='<div class="col-md-12"><label class="col-form-label"><b>Booking Number :</b>  '+val.booking_number+'</label></div>';
               booking_details +='<div class="col-md-12"><label class="col-form-label"><b>Customer Name :</b>  '+val.party_name+'</label></div>';
 
               booking_details +='<div class="col-md-6">'; 

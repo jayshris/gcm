@@ -791,7 +791,7 @@ class Booking extends BaseController
 
     public function getBookingVehicleDetails()
     {
-        $bookings = $this->BVLModel->select('p.party_name,bp.city bpcity,bpstates.state_name bpstate,bp.pincode bppin,,bd.*,bdstates.state_name bdstate')
+        $bookings = $this->BVLModel->select('p.party_name,bp.city bpcity,bpstates.state_name bpstate,bp.pincode bppin,,bd.*,bdstates.state_name bdstate,b.booking_number')
         ->join('bookings b', 'b.id = booking_vehicle_logs.booking_id')
         ->join('customer c', 'c.id = b.customer_id','left')
         ->join('party p', 'p.id = c.party_id','left')
@@ -802,6 +802,7 @@ class Booking extends BaseController
         ->where('b.id !=', $this->request->getPost('booking_id'))
         ->where('booking_vehicle_logs.unassign_date is NULL')
         ->where('booking_vehicle_logs.vehicle_id', $this->request->getPost('vehicle_id'))
+        ->where('b.status !=', 11)
         ->groupBy('b.id')
         ->findAll();
         echo json_encode($bookings);exit;
