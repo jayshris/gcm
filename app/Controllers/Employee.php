@@ -325,7 +325,7 @@ class Employee extends BaseController
             'bank_ifsc_code' => $this->request->getPost('bank_ifsc_code'),
             'upi_id' => $this->request->getPost('upi'),
             'joining_date' => $this->request->getPost('joiningdate'),
-            'status' => '0',
+            'status' => $this->request->getPost('status'),
             'approved' => '0',
             'updated_at' => date('Y-m-d'),
             'updated_by' =>  $this->added_by,

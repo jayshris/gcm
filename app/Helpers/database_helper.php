@@ -157,7 +157,9 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 							if ($secLink == 'edit' && ($row['status'] != 1))	$makeButton = 0;
 							if ($secLink == 'update_vehicle' && ($row['is_update_vehicle'] != 1))	$makeButton = 0;
 						} 	 
-
+						if ($module == 'party') {
+							if ($secLink == 'status')	$makeButton = 0;
+						}
 						if ($makeButton == 1) {
 							if ($module == 'booking' && ($secLink == 'trip_start' || $secLink == 'trip_restart' || $secLink == 'cancel' || $secLink == 'unloading' || $secLink == 'trip_running')) {		
 								switch($secLink){

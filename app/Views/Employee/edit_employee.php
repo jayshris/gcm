@@ -476,7 +476,7 @@
                                 <div class="form-wrap">
                                   <label class="col-form-label">Status</label>
                                   <br>
-                                  <select class="form-select" name="c">
+                                  <select class="form-select" name="status">
                                     <option>Select Status</option>
                                     <option value="1" <?= ($employee_detail['status'] == 1) ? 'selected' : '' ?>>Active</option>
                                     <option value="0" <?= ($employee_detail['status'] == 0) ? 'selected' : '' ?>>Inactive</option>

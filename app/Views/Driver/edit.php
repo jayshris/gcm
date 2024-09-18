@@ -313,6 +313,23 @@
                               </div>
                             </div>
 
+                            <div class="col-md-2">
+                              <div class="form-wrap">
+                                <label class="col-form-label">Status</label>
+                                <br>
+                                <select class="form-select" name="party_status">
+                                  <option>Select Status</option>
+                                  <option value="1" <?= ($driver_data['party_status'] == 1) ? 'selected' : '' ?>>Active</option>
+                                  <option value="0" <?= ($driver_data['party_status'] == 0) ? 'selected' : '' ?>>Inactive</option>
+                                </select>
+                                <?php
+                                if ($validation->getError('party_status')) {
+                                  echo '<div class="alert alert-danger mt-2">' . $validation->getError('party_status') . '</div>';
+                                }
+                                ?>
+                              </div>
+                            </div>
+
                             <div class="col-md-3">
                               <div class="form-wrap">
                                 <label class="col-form-label">Vehicle Type</label><br>

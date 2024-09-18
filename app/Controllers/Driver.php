@@ -540,7 +540,7 @@ class Driver extends BaseController
 
     $driverModel = new DriverModel();
 
-    $this->view['driver_data'] = $driverModel->select('driver.*,party.email,party.primary_phone')
+    $this->view['driver_data'] = $driverModel->select('driver.*,party.email,party.primary_phone,party.status party_status')
 
       ->join('party', 'party.id = driver.party_id')
 
@@ -577,11 +577,32 @@ class Driver extends BaseController
 
 
     if ($this->request->getMethod() == 'POST') {
+       //driver inactive changes -18-09-2024
+       //Get assigned vehicle of this driver
+       $driverVehicle = $this->DVAModel->where('driver_id', $id)->where('(unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date) = 0)')->first();
+      //  echo $this->request->getVar('party_status').$this->DVAModel->getLastQuery().' <pre>';print_r($driverVehicle); exit;
 
-      $driverModel = new DriverModel();
+       if(isset($driverVehicle['vehicle_id']) && ($driverVehicle['vehicle_id'] > 0) && $this->request->getVar('party_status') == 0){
+          if(!empty($driverVehicle)){
+            $this->session->setFlashdata('danger', 'Driver is assigned to vehicle, you can not able to change status of driver to inactive');
+            return $this->response->redirect(base_url('driver'));
+          }
 
+          //Check Booking is assigned to this driver vehicle
+          $bookingVehicle = $this->BVLModel->where('vehicle_id', $driverVehicle['vehicle_id'])->where(' (unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date) = 0) ')->first();
+          //  echo $this->BVLModel->getLastQuery().' <pre>';print_r($bookingVehicle);  
+          
+          if(!empty($bookingVehicle)){
+            $this->session->setFlashdata('danger', 'Driver is assigned to booking, you can not able to change status of driver to inactive');
+            return $this->response->redirect(base_url('driver'));
+          }
+        } 
+        if($this->request->getVar('party_id') > 0){
+          $this->partyModel->update($this->request->getVar('party_id'), ['status' => $this->request->getVar('party_status')]);
+        }
+        
 
-
+      $driverModel = new DriverModel(); 
       $driverModel->update($id, [
 
         'party_id'  =>  $this->request->getVar('party_id'),
@@ -614,7 +635,7 @@ class Driver extends BaseController
 
         'zip'  =>  $this->request->getPost('zip'),
 
-        'working_status' =>  '1',
+        // 'working_status' =>  '1', //driver inactive changes -18-09-2024
 
         'updated_at' =>  date("Y-m-d h:i:sa"),
 
