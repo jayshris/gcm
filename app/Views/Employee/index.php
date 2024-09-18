@@ -59,6 +59,7 @@
                         <th>Action</th>
                         <th>Employee Name</th>
                         <th>Added</th>
+                        <th>Relieving Date</th>
                         <th>Updated</th>
                         <th>Status</th>
                       </tr>
@@ -90,6 +91,7 @@
                                     <td>' . makeListActions($currentController, $Action, $employee['id'], 2) . '</td>
                                     <td>' . $employee["name"] . '</td>
                                     <td>' . (isset($employee['created_at']) ? date('d-m-Y', strtotime($employee["created_at"])) : '') . '</td>
+                                    <td>' . (isset($employee['releaveing_date']) && ($employee['releaveing_date'] != '0000-00-00') ? date('d-m-Y', strtotime($employee["releaveing_date"])) : '') . '</td>
                                     <td>' . (isset($employee['updated_at']) ? date('d-m-Y', strtotime($employee["updated_at"])) : '') . '</td>
                                     <td>' . $status . '</td>
                                 </tr>';

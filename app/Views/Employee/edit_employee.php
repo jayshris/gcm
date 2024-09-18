@@ -429,8 +429,8 @@
 
                               <div class="col-md-6">
                                 <div class="form-wrap">
-                                  <label class="col-form-label">Releaveing Date<span class="text-danger">*</span></label>
-                                  <input class="form-control" name="releaveing_date" id="releaveing_date" type="date" value="<?= $employee_detail['releaveing_date'] ?>" <?= set_value('releaveing_date') ?>required>
+                                  <label class="col-form-label">Relieving Date</label>
+                                  <input class="form-control" name="releaveing_date" id="releaveing_date" type="date" value="<?= $employee_detail['releaveing_date'] ?>" <?= set_value('releaveing_date') ?>>
                                   <?php if ($validation->getError('releaveing_date')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('releaveing_date') . '</div>';
                                   } ?>
@@ -469,6 +469,23 @@
                                   <?php if ($validation->getError('upi_id')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('upi_id') . '</div>';
                                   } ?>
+                                </div>
+                              </div>
+
+                              <div class="col-md-4">
+                                <div class="form-wrap">
+                                  <label class="col-form-label">Status</label>
+                                  <br>
+                                  <select class="form-select" name="c">
+                                    <option>Select Status</option>
+                                    <option value="1" <?= ($employee_detail['status'] == 1) ? 'selected' : '' ?>>Active</option>
+                                    <option value="0" <?= ($employee_detail['status'] == 0) ? 'selected' : '' ?>>Inactive</option>
+                                  </select>
+                                  <?php
+                                  if ($validation->getError('status')) {
+                                    echo '<div class="alert alert-danger mt-2">' . $validation->getError('status') . '</div>';
+                                  }
+                                  ?>
                                 </div>
                               </div>
 
