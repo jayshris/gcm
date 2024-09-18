@@ -58,6 +58,8 @@ define('ROLE_MODULE', TABLE_PRE . 'role_modules' . TABLE_SUF);
 define('USER', TABLE_PRE . 'users' . TABLE_SUF);
 define('USER_MODULE', TABLE_PRE . 'user_modules' . TABLE_SUF);
 
+define('GST_DETAIL', TABLE_PRE . 'gst_details' . TABLE_SUF);
+
 function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $dropdown = false, $row = [])
 {
 	$menu = '';
@@ -132,18 +134,30 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 
 							//if status is 11 means trip end then only show 
 							if ($secLink == 'trip_end')	$makeButton = 0;
-						}
-
+						} 
+						
 						if ($module == 'driver') {
-							if ($secLink == 'unassign_vehicle' && $row['working_status'] != 2)	$makeButton = 0;
+							// 17-09-2024 change - Driver reassign to vehicle evenif booking is assigned and trip paused 
+							// Check Trip restart vehicle is assigned to driver
+							//If booking is assign and booking status is paused i.e 8 then driver can be unassign vehicle
+							// if ($secLink == 'unassign_vehicle' && $row['working_status'] != 2)	$makeButton = 0;
+							// if($secLink == 'unassign_vehicle' && ($row['working_status'] != 2  || ($row['booking_status'] != 8 && $row['working_status'] != 3))) $makeButton = 0; 
+
+							if($secLink == 'unassign_vehicle'){
+								if($row['working_status'] == 2 || ($row['booking_status'] == 8 && $row['working_status'] == 3)){
+									$makeButton = 1; 
+								}else{
+									$makeButton = 0; 
+								}
+							}
 							if ($secLink == 'assign_vehicle' && $row['working_status'] != 1)	$makeButton = 0;
 						}
-
 						if ($module == 'loadingreceipt') {
 							if ($secLink == 'approve' && ($row['approved'] == 1 || $row['status'] != 1))	$makeButton = 0;
 							if ($secLink == 'edit' && ($row['status'] != 1))	$makeButton = 0;
 							if ($secLink == 'update_vehicle' && ($row['is_update_vehicle'] != 1))	$makeButton = 0;
-						}
+						} 	 
+
 						if ($makeButton == 1) {
 							if ($module == 'booking' && ($secLink == 'trip_start' || $secLink == 'trip_restart' || $secLink == 'cancel' || $secLink == 'unloading' || $secLink == 'trip_running')) {		
 								switch($secLink){

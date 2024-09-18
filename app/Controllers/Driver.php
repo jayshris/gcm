@@ -150,7 +150,7 @@ class Driver extends BaseController
 
 
 
-    $driverModel->select('driver.*, t2.party_name,t2.primary_phone, t2.status, t4.party_name as foreman_name,v.rc_number,b.booking_number,dvm.unassign_date, ' . $query . '')
+    $driverModel->select('driver.*, t2.party_name,t2.primary_phone, t2.status, t4.party_name as foreman_name,v.rc_number,b.booking_number,b.status booking_status,dvm.unassign_date, ' . $query . '')
 
       ->join('party' . ' t2', 't2.id = driver.party_id')
 
@@ -190,16 +190,14 @@ class Driver extends BaseController
 
 
     $driverModel->where('t2.approved', '1');
-
+    $driverModel->where('t2.status', '1');
     $driverModel->groupBy('driver.id');
 
 
 
     $this->view['driver_data'] = $driverModel->orderBy('t2.party_name', 'asc')->findAll();
-
-
-
-    // echo  $driverModel->getLastQuery().'<pre>';print_r( $this->view['driver_data']);exit;
+ 
+    // echo  $makeButton.'<pre>';print_r( $this->view['driver_data']);exit;
 
 
 
@@ -966,13 +964,19 @@ class Driver extends BaseController
 
       $this->session->setFlashdata('success', 'Vehicle assigned to driver');
 
-
-
+      //Check Booking is assigned to this vehicle
+      $bookingVehicle = $this->BVLModel->where('vehicle_id', $this->request->getPost('vehicle_id'))->where(' (unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date) = 0) ')->first();
+      // echo $this->BVLModel->getLastQuery().' <pre>';print_r($bookingVehicle);    
+      $working_status = 2;
+      if(!empty($bookingVehicle)){
+        $working_status = 3;
+      }
       // change driver and vehicle status
 
-      $this->VModel->update($this->request->getPost('vehicle_id'), ['is_driver_assigned' => '1','working_status'=>2]);
+      $this->VModel->update($this->request->getPost('vehicle_id'), ['is_driver_assigned' => '1','working_status'=>$working_status]);
 
-      $this->DModel->update($id, ['working_status' => 2]);
+      $this->DModel->update($id, ['working_status' => $working_status]);
+      // echo  'working_status <pre>';print_r($working_status);exit;
 
       return $this->response->redirect(base_url('driver'));
     }
@@ -1008,9 +1012,9 @@ class Driver extends BaseController
 
     $vehicle_id = isset($this->view['assignment_details']['vehicle_id']) && ($this->view['assignment_details']['vehicle_id'] > 0) ? $this->view['assignment_details']['vehicle_id'] : 0;
 
-    $bookingVehicle =  $this->BookingModel->where('vehicle_id', $vehicle_id)->where('status', '8')->first();
+    $bookingVehicle =  $this->BookingModel->where('vehicle_id', $vehicle_id)->first();
 
-    if (isset($bookingVehicle['vehicle_id']) && $bookingVehicle['vehicle_id'] > 0) {
+    if (isset($bookingVehicle['status']) && $bookingVehicle['status'] != 8) {
       $this->session->setFlashdata('danger', 'Vehicle is assigned to booking, can not unassign vehicle');
       return $this->response->redirect(base_url('driver'));
     }
@@ -1066,12 +1070,16 @@ class Driver extends BaseController
           $vehicleWorkingStatus['is_driver_assigned']= 0;
           $vehicleWorkingStatus['working_status']= 1;
 
+          // 17-09-2024 change - Driver reassign to vehicle evenif booking is assigned and trip paused 
+          // Check Trip restart vehicle is assigned to driver
+          //If booking is assign and booking status is paused i.e 8 then driver can be unassign vehicle
+              
           //Check Booking is assigned to this vehicle
           $bookingVehicle = $this->BVLModel->where('vehicle_id', $link['vehicle_id'])->where('(unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date = 0))')->first();
-        // echo $this->BVLModel->getLastQuery().'<pre>';print_r($bookingVehicle); exit;
+          // echo $this->BVLModel->getLastQuery().'<pre>';print_r($bookingVehicle); exit;
           if(isset($bookingVehicle['id']) && ($bookingVehicle['id'] > 0)){
-            $vehicleWorkingStatus['working_status']= 3;
-            $vehicleWorkingStatus['is_driver_assigned']= 1;
+            // $vehicleWorkingStatus['working_status']= 3;
+            // $vehicleWorkingStatus['is_driver_assigned']= 1;
             $this->BookingModel->update($bookingVehicle['booking_id'],['status'=>8]);
             // echo $this->BookingModel->getLastQuery().'<pre>';print_r($bookingVehicle); 
           }  

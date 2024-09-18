@@ -773,7 +773,7 @@ class Booking extends BaseController
         $this->view['expense_heads'] =  $this->ExpenseHeadModel->orderBy('head_name', 'asc')->findAll();
         
        //get last log i.e unassign_date = ''
-       $this->view['booking_vehicle'] = $this->BVLModel->where('booking_id', $id)->where('(unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date = 0))')->first();
+       $this->view['booking_vehicle'] = $this->BVLModel->where('booking_id', $id)->where('(unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date) = 0)')->first();
         //   echo '<pre>';print_r($this->view['booking_vehicle']);exit;
        if ($this->request->getPost()) {
             $result = $this->assignVehicleBooking($id,$this->request->getPost(),-1);
@@ -835,7 +835,7 @@ class Booking extends BaseController
         ]);
 
         //if already assign vehicle to booking then change vehile status not assigned and vehicle log as unassign vehicle
-        $result = $this->BVLModel->where('booking_id', $id)->where('(unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date = 0))')->first();
+        $result = $this->BVLModel->where('booking_id', $id)->where('(unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date) = 0)')->first();
         //echo $this->BVLModel->getLastQuery().'<pre>';print_r($result);exit;
         if ($result) {
             //update old driver status
@@ -892,7 +892,7 @@ class Booking extends BaseController
     }
     
     function updateDriverWorkingStatus($vehicle_id,$working_status){
-        $driverVehicle = $this->DVLModel->where('vehicle_id', $vehicle_id)->where('(unassign_date="" or unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date = 0))')->first();
+        $driverVehicle = $this->DVLModel->where('vehicle_id', $vehicle_id)->where('(unassign_date="" or unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date) = 0)')->first();
         // echo $working_status.' == '.$this->DVLModel->getLastQuery().'<pre>';print_r($driverVehicle);
         if(isset($driverVehicle['driver_id']) && ($driverVehicle['driver_id'] > 0)){
                 //update old driver working status  3- On trip to 2 assigned
@@ -1269,7 +1269,7 @@ class Booking extends BaseController
             }    
             if($this->request->getPost('approval_for_cancellation') == 15){
                 //Change vehile status not assigned and vehicle log as unassign vehicle
-                $result = $this->BVLModel->where('booking_id', $id)->where('(unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date = 0))')->first();
+                $result = $this->BVLModel->where('booking_id', $id)->where('(unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date) = 0)')->first();
                 if ($result) {
                     //Driver working status change to assigned
                     $this->updateDriverWorkingStatus($result['vehicle_id'],2);
@@ -1991,7 +1991,21 @@ class Booking extends BaseController
     }
 
     function trip_restart($id){
-        // echo '  <pre>';print_r($this->request->getPost());          
+        // echo '  <pre>';print_r($this->request->getPost());    
+        
+        // 17-09-2024 change - Driver reassign to vehicle evenif booking is assigned and trip paused 
+        // Check Trip restart vehicle is assigned to driver
+        //If booking is assign and booking status is paused i.e 8 then driver can be unassign vehicle
+        $bookingVehicle = $this->BModel->select('v.working_status')    
+        ->join('vehicle v','v.id = bookings.vehicle_id')
+        ->first();
+        
+        //If vehicle not assign to driver then not able to restart trip
+        if(isset($bookingVehicle['working_status']) && ($bookingVehicle['working_status'] == 1)){
+            $this->session->setFlashdata('danger',"Driver is not assign to vehicle, please assign driver");
+            return $this->response->redirect(base_url('booking'));  
+        }
+        // echo ' <pre>';print_r($bookingVehicle);exit;   
         //get last booking status before pause booking
         $last_booking_status = $this->BookingTransactionModel->where(['booking_id'=>$id,'booking_status_id < '=>8])->orderBy('id', 'desc')->first();  
         $booking_status = isset($last_booking_status['booking_status_id']) && ($last_booking_status['booking_status_id'] > 0) ? $last_booking_status['booking_status_id']: 16;
