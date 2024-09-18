@@ -334,8 +334,9 @@ class Booking extends BaseController
         $this->view['vehicle_types'] = $this->VTModel->where('status', 'Active')->findAll();
         $this->view['employees'] = $this->EmployeeModel->select('employee.id,employee.name')
         ->join('departments d','d.id= employee.dept_id')
-        ->where(['d.booking'=> 1,'d.status'=> 1])
+        ->where(['d.booking'=> 1,'d.status'=> 1,'employee.status' =>1])
         ->findall();
+        // echo  $this->EmployeeModel->getLastQuery().'<pre>';print_r($this->view['employees'] );exit; 
         $this->view['states'] =  $this->SModel->orderBy('state_name', 'asc')->findAll();
         $this->view['expense_heads'] =  $this->ExpenseHeadModel->orderBy('head_name', 'asc')->findAll();
         
@@ -572,7 +573,7 @@ class Booking extends BaseController
         $this->view['vehicle_types'] = $this->VTModel->where('status', 'Active')->findAll();
         $this->view['employees'] = $this->EmployeeModel->select('employee.id,employee.name')
         ->join('departments d','d.id= employee.dept_id')
-        ->where(['d.booking'=> 1,'d.status'=> 1])
+        ->where(['d.booking'=> 1,'d.status'=> 1,'employee.status' =>1])
         ->findall();
         $this->view['states'] =  $this->SModel->orderBy('state_name', 'asc')->findAll();
 
@@ -1153,7 +1154,7 @@ class Booking extends BaseController
         $this->view['vehicle_types'] = $this->VTModel->where('status', 'Active')->findAll();
         $this->view['employees'] = $this->EmployeeModel->select('employee.id,employee.name')
         ->join('departments d','d.id= employee.dept_id')
-        ->where(['d.booking'=> 1,'d.status'=> 1])
+        ->where(['d.booking'=> 1,'d.status'=> 1,'employee.status' =>1])
         ->findall();
         // echo ' employees <pre>';print_r($this->view['employees'] );exit; 
         $this->view['vehicle_rcs'] = [];
@@ -1308,7 +1309,7 @@ class Booking extends BaseController
         $this->view['vehicle_types'] = $this->VTModel->where('status', 'Active')->findAll();
         $this->view['employees'] = $this->EmployeeModel->select('employee.id,employee.name')
         ->join('departments d','d.id= employee.dept_id')
-        ->where(['d.booking'=> 1,'d.status'=> 1])
+        ->where(['d.booking'=> 1,'d.status'=> 1,'employee.status' =>1])
         ->findall();
         $this->view['states'] =  $this->SModel->orderBy('state_name', 'asc')->findAll();
 
@@ -1909,9 +1910,8 @@ class Booking extends BaseController
     }
 
     function trip_update($id){
-        $this->view['employees'] = $this->EmployeeModel->select('employee.id,employee.name')
-        ->join('departments d','d.id= employee.dept_id')
-        ->where(['d.booking'=> 1,'d.status'=> 1,'employee.status' =>1])
+        $this->view['employees'] = $this->EmployeeModel->select('employee.id,employee.name') 
+        ->where(['employee.status' =>1])
         ->findall();
         $this->view['data'] = $this->BookingsTripUpdateModel->select('bookings_trip_updates.*,e.name e_name')
         ->join('employee e','e.id = bookings_trip_updates.updated_by')

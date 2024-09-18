@@ -726,7 +726,7 @@ class Employee extends BaseController
 
         // echo ' data <pre>';print_r($data);exit; 
         //change employee status
-        $this->employeeModel->update($id, ['status' => 0, 'approved' => 0]);
+        $this->employeeModel->update($id, ['status' => 0, 'approved' => 0,'dept_id'=>$this->request->getPost('department_id')]);
         $this->session->setFlashdata('success', 'Employee Department Assigned Successfully');
         return $this->response->redirect(base_url('employee'));
       }
