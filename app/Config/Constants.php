@@ -103,4 +103,5 @@ $purpose_of_updates[4] = 'Urea';
 $purpose_of_updates[5] = 'Repair';
 $purpose_of_updates[6] = 'Tyre';
 $purpose_of_updates[7] = 'Other'; 
+$purpose_of_updates[8] = 'Fooding'; 
 define('PURPOSE_OF_UPDATES',$purpose_of_updates);
