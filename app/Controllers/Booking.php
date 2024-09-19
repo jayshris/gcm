@@ -284,7 +284,8 @@ class Booking extends BaseController
                         'remarks' => $this->request->getPost('remarks'),
                         'status' => '1',
                         'added_by' => $this->added_by,
-                        'added_ip' => $this->added_ip
+                        'added_ip' => $this->added_ip,
+                        'commission' => $this->request->getPost('commission'),
                     ];
 
                     $this->BModel->update($booking_id,$bookingPTLData);
@@ -1035,6 +1036,7 @@ class Booking extends BaseController
                     'added_by' => $this->added_by,
                     'added_ip' => $this->added_ip,
                     'booking_type' => $this->request->getPost('booking_type'),
+                    'commission' => $this->request->getPost('commission'),
                 ];//echo __LINE__.'<pre>';print_r($bookingData);die;
 
                 //update status only when booking status is created i.e 0 

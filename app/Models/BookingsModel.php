@@ -12,5 +12,5 @@ class BookingsModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['booking_number', 'booking_for', 'office_id', 'customer_id', 'customer_branch', 'customer_type', 'vehicle_type_id', 'vehicle_id', 'pickup_date', 'drop_date', 'booking_by', 'booking_date', 'rate_type', 'rate', 'guranteed_wt', 'freight', 'advance', 'balance', 'discount', 'bill_to_party', 'remarks', 'status', 'added_by', 'added_ip', 'added_date', 'approved', 'approved_date', 'approved_by', 'approved_ip','booking_type','lr_first_party','is_vehicle_assigned','loading_date_time','loading_doc','parent_id','loading_doc_2','loading_doc_3'];
+    protected $allowedFields    = ['booking_number', 'booking_for', 'office_id', 'customer_id', 'customer_branch', 'customer_type', 'vehicle_type_id', 'vehicle_id', 'pickup_date', 'drop_date', 'booking_by', 'booking_date', 'rate_type', 'rate', 'guranteed_wt', 'freight', 'advance', 'balance', 'discount', 'bill_to_party', 'remarks', 'status', 'added_by', 'added_ip', 'added_date', 'approved', 'approved_date', 'approved_by', 'approved_ip','booking_type','lr_first_party','is_vehicle_assigned','loading_date_time','loading_doc','parent_id','loading_doc_2','loading_doc_3','commission'];
 }
