@@ -149,7 +149,7 @@
                             
                             <div class="col-md-6">
                               <label class="col-form-label">Unassign Date<span class="text-danger">*</span></label> 
-                              <input type="datetime-local" required name="unassign_date" min="<?= date('Y-m-d H:i',strtotime($booking_vehicle['assign_date']. ' +1 day')) ?>" value="<?= date('Y-m-d H:i',strtotime($booking_vehicle['assign_date']. ' +1 day')) ?>" class="form-control">
+                              <input type="datetime-local" required name="unassign_date" min="<?= date('Y-m-d H:i',strtotime($booking_vehicle['assign_date'])) ?>" value="<?= date('Y-m-d H:i',strtotime($booking_vehicle['assign_date']. ' +1 day')) ?>" class="form-control">
                               <?php
                               if ($validation->getError('unassign_date')) {
                                   echo '<div class="alert alert-danger mt-2">' . $validation->getError('unassign_date') . '</div>';

@@ -25,6 +25,7 @@ use App\Models\BookingPickupsModel;
 use App\Models\CustomerBranchModel;
 use App\Models\LoadingReceiptModel;
 use App\Models\BookingExpensesModel;
+use App\Models\ProformaInvoiceModel;
 use App\Models\TripPausedReasonModel;
 use App\Models\BookingVehicleLogModel;
 use App\Models\BookingLoadingDocsModel;
@@ -73,6 +74,7 @@ class Booking extends BaseController
     public $TripPausedReasonModel;
     public $BookingsTripUpdateModel; 
     public $DVLModel; 
+    public $ProformaInvoiceModel;
     public function __construct()
     {
         // date_default_timezone_set("Asia/Kolkata");
@@ -114,6 +116,7 @@ class Booking extends BaseController
         $this->TripPausedReasonModel = new TripPausedReasonModel();
         $this->BookingsTripUpdateModel = new BookingsTripUpdateModel(); 
         $this->DVLModel = new DriverVehicleAssignModel();
+        $this->ProformaInvoiceModel = new ProformaInvoiceModel();
     }
 
     public function index()
@@ -882,7 +885,7 @@ class Booking extends BaseController
         //update vevhicle status assigned as 2
 
         //Check if LR is generated then update flag
-        $lrResult = $this->LoadingReceiptModel->where(['booking_id'=> $id,'vehicle_id'=>$post['vehicle_rc']])->findAll();
+        $lrResult = $this->LoadingReceiptModel->where(['booking_id'=> $id])->findAll();
         // echo '<pre>';print_r($lrResult);exit;
         if(!empty($lrResult)){
             foreach($lrResult as $val){
@@ -1581,6 +1584,14 @@ class Booking extends BaseController
             if (!$error) { 
                 $this->view['error'] = $this->validator; 
             } else { 
+                //Check proforma invoice is generated or not, if generated then only allow to approve for trip end
+                $isProformaInvoice = $this->ProformaInvoiceModel->where('booking_id',$booking_id)->first();
+
+                if(empty($isProformaInvoice)){
+                    $this->session->setFlashdata('danger', 'Proforma invoice is not generated');
+                    return $this->response->redirect(base_url('booking'));  
+                }
+
                 //update booking status 9 for UNLOADING done - upload again pod
                 $status =9;
                 $booking_data['status'] = $status;
