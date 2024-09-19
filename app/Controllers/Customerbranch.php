@@ -50,11 +50,22 @@ class Customerbranch extends BaseController
             return $this->response->redirect(base_url('dashboard'));
         } else {
 
+            $this->view['customers'] = $this->CModel->select('customer.*, party.party_name')
+            ->join('party', 'party.id = customer.party_id')
+            ->orderBy('party.party_name','ASC')
+            ->findAll();
+
+            // echo '<pre>';
+            // print_r($this->request->getPost());exit;
+
             if ($this->request->getPost('status') != '') {
                 $this->CBModel->where('customer_branches.status', $this->request->getPost('status'));
             } else {
                 $this->CBModel->where('customer_branches.status', '1');
             }
+            if ($this->request->getPost('party_id') != '') {
+                $this->CBModel->where('customer.id', $this->request->getPost('party_id'));
+            } 
             $this->view['branches'] = $this->CBModel->select('customer_branches.*, customer.phone, party.party_name')
                 ->join('customer', 'customer.id = customer_branches.customer_id')
                 ->join('party', 'party.id = customer.party_id')

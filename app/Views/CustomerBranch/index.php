@@ -44,7 +44,17 @@
                   <hr>
                   <div class="row mt-2">
 
-                    <div class="col-md-2">
+                    <div class="col-md-3">
+                      <label class="col-form-label">Customers<span class="text-danger">*</span></label>
+                      <select class="form-select select2" required name="party_id">
+                        <option value="">Select Customer</option>
+                        <?php foreach ($customers as $c) { ?>
+                           <option value="<?= $c['id'] ?>" <?= set_value('party_id') == $c['id'] ? 'selected' : '' ?>><?= $c['party_name'] ?></option>
+                        <?php } ?>
+                      </select>
+                    </div>
+                    
+                    <div class="col-md-3">
                       <div class="form-wrap">
                         <label class="col-form-label">Status</label>
                         <select class="form-select" name="status" aria-label="Default select example">
@@ -55,12 +65,12 @@
                       </div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-3">
                       <button class="btn btn-info mt-4">Search</button>&nbsp;&nbsp;
                       <a href="./customerbranch" class="btn btn-warning mt-4">Reset</a>&nbsp;&nbsp;
                     </div>
 
-                    <div class="col-md-4 text-end">
+                    <div class="col-md-3" style="margin-top: 23px;">
                       <?php echo makeListActions($currentController, $Action, 0, 1); ?>
                     </div>
                   </div>
