@@ -53,10 +53,7 @@ class Customerbranch extends BaseController
             $this->view['customers'] = $this->CModel->select('customer.*, party.party_name')
             ->join('party', 'party.id = customer.party_id')
             ->orderBy('party.party_name','ASC')
-            ->findAll();
-
-            // echo '<pre>';
-            // print_r($this->request->getPost());exit;
+            ->findAll(); 
 
             if ($this->request->getPost('status') != '') {
                 $this->CBModel->where('customer_branches.status', $this->request->getPost('status'));
