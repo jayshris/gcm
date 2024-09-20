@@ -244,15 +244,15 @@
                               <input type="number" name="rate" id="rate" disabled onchange="$.calculation()" class="form-control" value="<?= $booking_details['rate'] ?>" required>
                             </div>
 
-                            <div class="col-md-3">
+                            <!-- <div class="col-md-3">
                               <label class="col-form-label">Commission</label>
                               <input type="number" step="0.01"  min="0" disabled name="commission" id="commission" class="form-control"  value="<?= isset($booking_details['commission']) ? $booking_details['commission'] : '' ?>">
                               <?php
-                              if ($validation->getError('commission')) {
-                                  echo '<div class="alert alert-danger mt-2">' . $validation->getError('commission') . '</div>';
-                              }   
+                              // if ($validation->getError('commission')) {
+                              //     echo '<div class="alert alert-danger mt-2">' . $validation->getError('commission') . '</div>';
+                              // }   
                               ?>
-                            </div>
+                            </div> -->
 
                             <div class="col-md-12"></div>
 
