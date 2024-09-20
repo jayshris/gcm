@@ -240,7 +240,7 @@
 
                             <div class="col-md-3">
                               <label class="col-form-label">Rate (Rs) <span class="text-danger">*</span> <span id="rate_msg"></span></label>
-                              <input type="number" name="rate" id="rate" onchange="$.calculation()" class="form-control" value="<?= $booking_details['rate'] ?>" required>
+                              <input type="number" step="0.01"  name="rate" id="rate" onchange="$.calculation()" class="form-control" value="<?= $booking_details['rate'] ?>" required>
                             </div>
 
                             <!-- <div class="col-md-3">

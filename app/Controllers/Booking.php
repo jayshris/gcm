@@ -522,6 +522,7 @@ class Booking extends BaseController
                 'approved_ip' => $this->added_ip,
                 'approved_date' => date('Y-m-d h:i:s'),
                 'approved' => $this->request->getPost('approve'),
+                'rate' => $this->request->getPost('rate'),
             ]);  
 
             //assign vehicle
