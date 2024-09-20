@@ -1571,7 +1571,7 @@ class Booking extends BaseController
             $this->BVLModel->update($result['id'], ['unassign_date' =>date('Y-m-d'), 'unassigned_by' => $this->added_by]);
         } 
     }
-
+ 
     function approval_for_pod($booking_id){ 
         if ($this->request->getPost()) {     
             // echo '$result<pre>';print_r($this->request->getPost());//exit;       
@@ -1587,13 +1587,23 @@ class Booking extends BaseController
             if (!$error) { 
                 $this->view['error'] = $this->validator; 
             } else { 
+                //19-09-2024
                 //Check proforma invoice is generated or not, if generated then only allow to approve for trip end
-                $isProformaInvoice = $this->ProformaInvoiceModel->where('booking_id',$booking_id)->first();
-                // echo '<pre>';print_r($isProformaInvoice);exit;
-                if(empty($isProformaInvoice)){
-                    $this->session->setFlashdata('danger', 'Proforma invoice is not generated, you can not able to end trip');
-                    return $this->response->redirect(base_url('booking'));  
-                }
+                if($this->request->getPost('trip_end_approved') && $this->request->getPost('trip_end_approved')  == 1){
+                    $isProformaInvoice = $this->ProformaInvoiceModel->where('booking_id',$booking_id)->first();
+                    // echo '<pre>';print_r($isProformaInvoice);exit;
+                    if(empty($isProformaInvoice)){
+                        $this->session->setFlashdata('danger', 'Proforma invoice is not generated, you can not able to end trip');
+                        return $this->response->redirect(base_url('booking'));  
+                    }
+    
+                    //Check loadingreceipt is generated or not, if generated then only allow to approve for trip end
+                    $isLR = $this->LoadingReceiptModel->where('booking_id',$booking_id)->first();
+                    if(empty($isLR)){
+                        $this->session->setFlashdata('danger', 'Loading Receipt is not generated, you can not able to end trip');
+                        return $this->response->redirect(base_url('booking'));  
+                    }
+                }               
 
                 //update booking status 9 for UNLOADING done - upload again pod
                 $status =9;
