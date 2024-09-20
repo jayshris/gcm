@@ -136,6 +136,7 @@
                         <th>Vehicle Owner</th>
                         <th>Vehicle Type</th>
                         <th>RC No</th>
+                        <th>No. Of Trips</th>
                         <th>Status</th>
                         <th>Working Status</th>
                       </tr>
@@ -198,7 +199,8 @@
                                     <td>' . makeListActions($currentController, $Action, $row['id'], 2) . '</td>
                                     <td>' . ucwords($row["owner"]) . '</td>
                                     <td>' . ucwords($row["vehiclename"]) . '</td>
-                                    <td>' . ucwords($row["rc_number"]) . '</td>
+                                     <td>' . ucwords($row["rc_number"]) . '</td>
+                                    <td><a href="'.base_url('/vehicle/assigned_booking_vehicle_list/').$row['id'].'"><span class="badge badge-pill bg-success">' . $row["total_completed_trips"] . '</span></a></td>
                                     <td>' . $status . '</td>
                                     <td>' . $ws . '</td>
                                 </tr>';

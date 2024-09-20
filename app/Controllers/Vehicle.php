@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Models\BookingsModel;
+use App\Models\BookingVehicleLogModel;
 use App\Models\CustomersModel;
 use App\Models\VehicleModel;
 use App\Models\VehicleTyreDetailsMapModel;
@@ -23,6 +25,8 @@ class Vehicle extends BaseController
   public $PModel;
   public $SModel;
   public $CModel;
+  public $BVLModel;
+  public $BModel;
   public function __construct()
 
   {
@@ -40,6 +44,8 @@ class Vehicle extends BaseController
     $this->SModel = new StateModel();
     $this->PModel = new PartyModel();
     $this->CModel = new CustomersModel();
+    $this->BVLModel = new BookingVehicleLogModel();
+    $this->BModel = new BookingsModel();
   }
 
   public function index()
@@ -55,7 +61,8 @@ class Vehicle extends BaseController
 
       return $this->response->redirect(site_url('/dashboard'));
     } else {
-      $this->vehicleModel->select('vehicle.*, GROUP_CONCAT(vehicle_tyre_details_map.tyre_serial_text) as tyre_serial_text, vehicle_type.name as vehiclename,vehicle_model.model_no as model_no', false)
+      $query = "(SELECT COUNT(bt.id) FROM booking_transactions bt WHERE booking_status_id = 11 and vehicle_id = vehicle.id) total_completed_trips";
+      $this->vehicleModel->select('vehicle.*, GROUP_CONCAT(vehicle_tyre_details_map.tyre_serial_text) as tyre_serial_text, vehicle_type.name as vehiclename,vehicle_model.model_no as model_no, ' . $query . '', false)
 
         ->join('vehicle_tyre_details_map', 'vehicle_tyre_details_map.vehicle_id = vehicle.id', 'left')
         ->join('vehicle_type', 'vehicle_type.id = vehicle.vehicle_type_id', 'left')
@@ -88,6 +95,8 @@ class Vehicle extends BaseController
       $this->view['vehicle_data'] = $this->vehicleModel->groupBy('vehicle.id')
         ->orderBy('vehicle.id', 'DESC')
         ->findAll();
+
+      // echo $this->vehicleModel->getLastQuery().'<pre>';print_r($this->view['vehicle_data']);exit; 
 
       $this->view['vehicle_types'] = $this->vehicletypeModel->where('status', 'Active')->orderBy('name')->findAll();
 
@@ -519,4 +528,25 @@ class Vehicle extends BaseController
 
     echo  $row ? '1' : '0';
   }
+
+   //Assigned Booking Vehicle List
+   function assigned_booking_vehicle_list($id){
+      $this->view['vehicle'] =  $this->vehicleModel->where('id', $id)->first();
+      $this->BVLModel->select('booking_vehicle_logs.*,b.booking_number , vehicle.rc_number, vt.name vehicle_type_nm')
+
+        ->join('vehicle', 'vehicle.id = booking_vehicle_logs.vehicle_id')
+
+        ->join('vehicle_type vt', 'vt.id = vehicle.vehicle_type_id')
+
+        ->join('bookings b', 'b.id = booking_vehicle_logs.booking_id') 
+        
+        ->where(['vehicle.id'=>$id,'b.status'=>11]);
+  
+      $this->view['assigned_list'] = $this->BVLModel->groupBy('b.id,vehicle.id')->orderBy('booking_vehicle_logs.assign_date', 'descs')->findAll();
+
+      // echo $this->BVLModel->getLastQuery().'<pre>';print_r($this->view['assigned_list']);exit;
+
+      return view('Vehicle/assigned_list', $this->view);
+  } 
+
 }
