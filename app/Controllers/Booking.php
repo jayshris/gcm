@@ -121,7 +121,9 @@ class Booking extends BaseController
 
     public function index()
     { 
-        $this->BModel->select('bookings.*, party.party_name, vehicle.rc_number, 
+        $query = "(SELECT vehicle.rc_number FROM booking_transactions bt join vehicle on vehicle.id = bt.vehicle_id  WHERE booking_status_id = 11 and booking_id = bookings.id)";
+        $this->BModel->select('bookings.*, party.party_name , 
+         IF(bookings.status = 11,'.$query .', vehicle.rc_number) as rc_number,
           IF(bookings.status = 0, "Created", booking_status.status_name) as status_name,
           IF(bookings.status = 0, "bg-success", booking_status.status_bg) as status_bg,
           lr.id as lr_id,lr.status lr_Status,lr.approved lr_approved')
@@ -146,6 +148,7 @@ class Booking extends BaseController
         }
 
         $this->view['bookings'] = $this->BModel->orderBy('bookings.id', 'desc')->groupBy('bookings.id')->findAll();
+        // echo $this->BModel->getLastQuery().'<pre>';print_r($this->view['bookings']);exit;
 
         $this->view['statuses'] = $this->BSModel->where('status_name !=','')->findAll();
         $this->view['pickup'] = $this->BPModel;
@@ -1586,9 +1589,9 @@ class Booking extends BaseController
             } else { 
                 //Check proforma invoice is generated or not, if generated then only allow to approve for trip end
                 $isProformaInvoice = $this->ProformaInvoiceModel->where('booking_id',$booking_id)->first();
-
+                // echo '<pre>';print_r($isProformaInvoice);exit;
                 if(empty($isProformaInvoice)){
-                    $this->session->setFlashdata('danger', 'Proforma invoice is not generated');
+                    $this->session->setFlashdata('danger', 'Proforma invoice is not generated, you can not able to end trip');
                     return $this->response->redirect(base_url('booking'));  
                 }
 
