@@ -1507,6 +1507,7 @@ class Booking extends BaseController
             if (!$error) { 
                 $this->view['error'] = $this->validator; 
             } else {
+                // echo '$result<pre>';print_r($this->request->getPost());exit;
                 $result = $this->BUPModel->where('booking_id', $booking_id)->where('status',1)->first();
                 // echo '$result<pre>';print_r($result);exit;
                 if($result){ 
@@ -1535,13 +1536,34 @@ class Booking extends BaseController
                     'upload_doc' => $image_name,
                     'received_by' => $this->request->getPost('received_by'),
                     'pod_date' => $this->request->getPost('pod_date'),
+                    'remarks' => $this->request->getPost('remarks'),
                     'created_by' => $this->added_by
                 ]);
 
                 //update booking status 10 - uploaded 
                 $this->BModel->update($booking_id, [ 
+                    'guranteed_wt' => $this->request->getPost('guranteed_wt'),
+                    'freight' => $this->request->getPost('freight'),
+                    'advance' => $this->request->getPost('advance'),
+                    'discount' => $this->request->getPost('discount'),
+                    'balance' => $this->request->getPost('balance'),
                     'status' => 10 
                 ]); 
+
+                // update Drops, Pickups and delete Expences 
+                $this->BEModel->where('booking_id', $booking_id)->delete();
+
+                // save expenses
+                foreach ($this->request->getPost('expense') as $key => $val) {
+                    $expense_data = [
+                        'booking_id' => $booking_id,
+                        'expense' => $this->request->getPost('expense')[$key],
+                        'value' => $this->request->getPost('expense_value')[$key],
+                        'bill_to_party' => ($this->request->getPost('expense_flag_' . $key +1) == 'on') ? '1' : '0'
+                    ]; 
+                    $this->BEModel->insert($expense_data);
+                }   
+                
                 //update booking status 
                 $this->update_booking_status($booking_id,10);
                 $this->update_PTLBookings($booking_id,10);
@@ -1550,7 +1572,9 @@ class Booking extends BaseController
             }            
                     
         }
-        $this->view['booking_details'] = $this->BModel->select('booking_date')->where('id',$booking_id)->first();
+        $this->view['booking_details'] = $this->BModel->where('id',$booking_id)->first();
+        $this->view['booking_expences'] = $this->BEModel->where('booking_id', $booking_id)->findAll();  
+        $this->view['expense_heads'] =  $this->ExpenseHeadModel->orderBy('head_name', 'asc')->findAll();
         return view('Booking/upload_pod', $this->view);
     }
 

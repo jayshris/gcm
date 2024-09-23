@@ -4,15 +4,34 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class BookingUploadedPodModel extends Model
+class PaymentModel extends Model
 {
-    protected $table            = 'booking_uploaded_pods';
+    protected $table            = 'payments';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['booking_id','upload_doc','received_by','pod_date','created_by','status','remarks'];
+    protected $allowedFields    = [
+        'fuel_fill_type',
+        'vehicle_id',
+        'driver_id',
+        'transfer_from_vehicle_id',
+        'km_reading',
+        'quantity',
+        'fuel_pump_brand_id',
+        'vendor_id',
+        'amount',
+        'payment_type_id',
+        'payment_mode',
+        'card_no',
+        'upi_no',
+        'account_no',
+        'transaction_no',
+        'reason_id',
+        'created_by',
+        'updated_by'
+    ];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

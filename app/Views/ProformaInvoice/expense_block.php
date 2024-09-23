@@ -61,7 +61,7 @@
     <div class="col-md-6">
         <label class="col-form-label">Rate Type</label>
         <input type="hidden" name="rate_type" value="<?= isset($booking_details['rate_type']) ? $booking_details['rate_type'] : 0; ?>"/>
-        <select class="form-select" name="rate_type" disabled id="rate_type" onchange="$.calculation()">
+        <select class="form-select" name="rate_type" id="rate_type" onchange="$.calculation()">
         <option value="">Select Rate Type</option>
         <option value="1" <?= isset($booking_details['rate_type']) && ($booking_details['rate_type'] == 1) ? 'selected' : '' ?> >By Weight</option>
         <option value="2" <?= isset($booking_details['rate_type']) && ($booking_details['rate_type'] == 2) ? 'selected' : '' ?> >Aggregate</option>
@@ -70,7 +70,7 @@
 
     <div class="col-md-6">
         <label class="col-form-label">Rate (Rs)</label>
-        <input type="number" step="0.01"  name="rate" id="rate" readonly onchange="$.calculation()" class="form-control"  value="<?= isset($booking_details['rate']) ? $booking_details['rate'] : '' ?>">     
+        <input type="number" step="0.01"  name="rate" id="rate" onchange="$.calculation()" class="form-control"  value="<?= isset($booking_details['rate']) ? $booking_details['rate'] : '' ?>">     
     </div>
     <div class="col-md-3">
         <label class="col-form-label">Guaranteed / Charged Weight</label>

@@ -4,15 +4,15 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class BookingUploadedPodModel extends Model
+class PaymentTypeModel extends Model
 {
-    protected $table            = 'booking_uploaded_pods';
+    protected $table            = 'payment_types';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['booking_id','upload_doc','received_by','pod_date','created_by','status','remarks'];
+    protected $allowedFields    = ['name'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
