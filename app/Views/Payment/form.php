@@ -88,12 +88,13 @@
 															<label class="col-form-label">
 															Vehicle<span class="text-danger payment_types_fuel_urea_html" hidden>*</span>
 															</label>
-															<select class="form-class select2 payment_types_fuel_urea_inpt" id="vehicle_id" name="vehicle_id">
+															<select class="form-class select2 payment_types_fuel_urea_inpt" id="vehicle_id" name="vehicle_id" onchange="duplicateVehicle('vehicle_id','transfer_from_vehicle_id')">
 															<option value="">Select</option>
 															<?php foreach($vehicles as $val){?>
 																<option value="<?= $val['id'] ?>"><?= $val['rc_number'] ?></option>
 															<?php }?>
 															</select>
+															<span class="text-danger duplicate_vehicle_spn" id="vehicle_id_spn" hidden>Vehicle No. is duplicate, please select another vehicle</span>
 															<?php
 															if ($validation->getError('vehicle_id')) {
 																echo '<div class="alert alert-danger mt-2">' . $validation->getError('vehicle_id') . '</div>';
@@ -125,12 +126,13 @@
 															<label class="col-form-label">
 															Transfer From Vehicle<span class="text-danger fuel_fill_type_transfer" hidden>*</span>
 															</label>
-															<select class="form-class select2" id="transfer_from_vehicle_id" name="transfer_from_vehicle_id">
+															<select class="form-class select2" id="transfer_from_vehicle_id" name="transfer_from_vehicle_id" onchange="duplicateVehicle('transfer_from_vehicle_id','vehicle_id')">
 															<option value="">Select</option>
 															<?php foreach($vehicles as $val){?>
 																<option value="<?= $val['id'] ?>"><?= $val['rc_number'] ?></option>
 															<?php }?>
 															</select>
+															<span class="text-danger duplicate_vehicle_spn" id="transfer_from_vehicle_id_spn" hidden>Vehicle No. is duplicate, please select another vehicle</span>
 															<?php
 															if ($validation->getError('transfer_from_vehicle_id')) {
 																echo '<div class="alert alert-danger mt-2">' . $validation->getError('transfer_from_vehicle_id') . '</div>';
@@ -397,7 +399,17 @@
 			}
 		}
  
-
+		function duplicateVehicle(id,other_id){
+			var selected_inpt = $('#'+id).val();
+			var selected_other_inpt = $('#'+other_id).val();
+			$('.duplicate_vehicle_spn').attr('hidden','hidden');
+			// alert('selected_inpt '+selected_inpt+' / selected_other_inpt = '+selected_other_inpt);
+			if(selected_inpt == selected_other_inpt){  
+				$('#'+id).val("");
+				$('#'+id).select2();
+				$('#'+id+'_spn').removeAttr('hidden');
+			}
+		}
 	</script>
 </body>
 
