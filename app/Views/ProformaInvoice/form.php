@@ -92,7 +92,7 @@
 
 													<div class="col-md-3">
 														<label class="col-form-label">Customer Name</label>
-														<input type="text" readonly class="form-control" value="<?= isset($proforma_invoice['party_name']) && ($proforma_invoice['party_name']) ? $proforma_invoice['party_name'] : '' ?>"/>
+														<input type="text" readonly id="customer_name" class="form-control" value="<?= isset($proforma_invoice['party_name']) && ($proforma_invoice['party_name']) ? $proforma_invoice['party_name'] : '' ?>"/>
 													</div>	  
 
 													<div class="col-md-12"  id="expense_div_body"></div>
@@ -225,15 +225,19 @@
 				dataType:'json',
 				success: function(res) { 
 					var html = '<option value="">Select Bill to Party</option>';
-					if(res){
+					if(res.customers){
 						var selecected_bill_to_party_id = $('#selecected_bill_to_party_id').val();
-						$.each(res, function(i, val) {  
+						$.each(res.customers, function(i, val) {  
 							var selected = (selecected_bill_to_party_id > 0) && (selecected_bill_to_party_id == val.id) && (id > 0) ? 'selected' : '';
 							html += '<option value="'+val.id+'" '+selected+'>'+val.party_name+'</option>';
 						});
 					}
 					$('#bill_to_party_id').html(html);
 					$('#bill_to_party_id').trigger('change');
+
+					if(res.booking_customer){
+						$('#customer_name').val(res.booking_customer);
+					}
 				}
 			});
 
@@ -254,6 +258,7 @@
 			$('#expense_div_body').html('');
 			$('#bill_to_party_id').val(''); 
 			$('.invoice_total_amount_div').attr('hidden','hidden');
+			$('#customer_name').val('');
 		} 	
 			
 	}	

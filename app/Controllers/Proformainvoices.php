@@ -304,7 +304,7 @@ class Proformainvoices extends BaseController
     } 
 
     function getBookingCustomers($id){ 
-      $Customers =  $this->BookingsModel->select('bookings.id, c.id c_id ') 
+      $Customers =  $this->BookingsModel->select('bookings.id, c.id c_id') 
       ->join('customer c','bookings.customer_id = c.id')->where(['bookings.id'=> $id])->findAll();  
 
       $Customers2 =  $this->BookingsModel->select('bookings.id,c.id c_id') 
@@ -329,8 +329,14 @@ class Proformainvoices extends BaseController
       if(!empty($unique_customers)){
         $customer = $this->CModel->select('customer.id,party.id pid,party.party_name')->whereIN('customer.id',$unique_customers)->join('party', 'customer.party_id = party.id')->orderBy('party.party_name')->findAll();
       }
+      $data['customers'] = $customer;
+      $booking_customer = $this->BookingsModel->select('bookings.id, c.id c_id,p.party_name ') 
+      ->join('customer c','bookings.customer_id = c.id') 
+      ->join('party p', 'c.party_id = p.id') 
+      ->where(['bookings.id'=> $id])->first();
+      $data['booking_customer'] = isset($booking_customer['party_name']) ? $booking_customer['party_name'] : '';
       // echo 'customer<pre>';print_r($customer); exit;
-      echo json_encode($customer);exit;
+      echo json_encode($data);exit;
     }
 
     function getBookingDetails($booking_id,$id= 0){
