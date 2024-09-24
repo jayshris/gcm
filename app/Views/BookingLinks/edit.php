@@ -251,7 +251,7 @@
    
                             <div class="col-md-12"></div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-3"> 
                               <label class="col-form-label">Rate Type <span class="text-danger">*</span></label>
                               <select class="form-select" name="rate_type" id="rate_type" onchange="$.calculation()" required>
                                 <option value="">Select Rate Type</option>

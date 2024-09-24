@@ -68,7 +68,7 @@
         </select> 
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-6"> 
         <label class="col-form-label">Rate (Rs)</label>
         <input type="number" step="0.01"  name="rate" id="rate" onchange="$.calculation()" class="form-control"  value="<?= isset($booking_details['rate']) ? $booking_details['rate'] : '' ?>">     
     </div>

@@ -194,7 +194,7 @@
         $('#expense_' + index).removeClass('bill');
       }
 
-      $.calculation();
+      $.calculation(); 
     }
 
     $.calculation = function() {

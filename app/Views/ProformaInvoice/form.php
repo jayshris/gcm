@@ -272,7 +272,7 @@
         $('#expense_' + index).removeClass('bill');
       }
 
-      $.calculation();
+      $.calculation(); 
     }
 
     $.calculation = function() {
@@ -335,7 +335,7 @@
         }
       })
     }
-	
+
 	function checkTaxApplicable(){  
 		var bill_to_party_id = $('#bill_to_party_id').val();
 		if(bill_to_party_id> 0){

@@ -238,7 +238,7 @@
                               </select>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-3"> 
                               <label class="col-form-label">Rate (Rs) <span class="text-danger">*</span> <span id="rate_msg"></span></label>
                               <input type="number" step="0.01"  name="rate" id="rate" onchange="$.calculation()" class="form-control" value="<?= $booking_details['rate'] ?>" required>
                             </div>
@@ -332,7 +332,7 @@
                                 <input type="decimal" step="0.01" id="other_expenses" class="form-control" required name="other_expenses" readonly value="<?= isset($booking_details['other_expenses'])  ? $booking_details['other_expenses'] : 0  ?>" >
                             </div>
                             
-                            <div class="col-md-3">
+                            <div class="col-md-3"> 
                               <label class="col-form-label">Advance</label>
                               <input type="number" name="advance" id="advance" onchange="$.calculation()" class="form-control" value="<?= $booking_details['advance'] ?>">
                             </div>

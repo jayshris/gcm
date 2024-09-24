@@ -231,7 +231,7 @@
                             <div class="col-md-12"></div>
 
                             <div class="col-md-3">
-                              <label class="col-form-label">Rate Type <span class="text-danger">*</span></label>
+                              <label class="col-form-label">Rate Type <span class="text-danger">*</span></label> 
                               <select class="form-select" name="rate_type" disabled id="rate_type" onchange="$.calculation()" required>
                                 <option value="">Select Rate Type</option>
                                 <option value="1" <?= $booking_details['rate_type'] == '1' ? 'selected' : '' ?>>By Weight</option>

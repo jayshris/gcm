@@ -125,7 +125,7 @@
                                                         <div class="col-md-12"></div>
 
 <div class="col-md-6">
-    <label class="col-form-label">Rate Type</label>
+    <label class="col-form-label">Rate Type</label> 
     <input type="hidden" name="rate_type" value="<?= isset($booking_details['rate_type']) ? $booking_details['rate_type'] : 0; ?>"/>
     <select class="form-select" name="rate_type" disabled id="rate_type" onchange="$.calculation()">
     <option value="">Select Rate Type</option>
