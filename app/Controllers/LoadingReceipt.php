@@ -487,15 +487,22 @@ class LoadingReceipt extends BaseController
      , IF(UNIX_TIMESTAMP(loading_receipts.booking_date) > 0, loading_receipts.booking_date, "") booking_date
      , IF(UNIX_TIMESTAMP(loading_receipts.e_way_expiry_date) > 0, loading_receipts.e_way_expiry_date, "") e_way_expiry_date
      , IF(UNIX_TIMESTAMP(loading_receipts.consignment_date) > 0, loading_receipts.consignment_date, "") consignment_date
+     , party.party_name transporter_name
+     , cb.office_name transporter_branch_name
+     , s5.state_name transporter_state_name
     ')
-    ->join('bookings b','loading_receipts.booking_id = b.id')
+    ->join('customer', 'customer.id = loading_receipts.transporter_id','left')
+    ->join('party', 'party.id = customer.party_id','left')
+    ->join('bookings b','loading_receipts.booking_id = b.id','left')
+    ->join('customer_branches cb', 'cb.id = loading_receipts.transporter_office_id','left')
     ->join('vehicle v','b.vehicle_id = v.id','left')
     ->join('office o','loading_receipts.office_id = o.id','left')
     ->join('states s','loading_receipts.consignor_state = s.state_id','left')
     ->join('states s2','loading_receipts.consignee_state = s2.state_id','left')
     ->join('states s3','loading_receipts.place_of_delivery_state = s3.state_id','left')
     ->join('states s4','loading_receipts.place_of_dispatch_state = s4.state_id','left')
-    ->where(['loading_receipts.id' => $id])->first();
+    ->join('states s5','loading_receipts.transporter_state = s5.state_id','left')
+    ->where(['loading_receipts.id' => $id])->first(); 
 
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll(); 
     // echo '<pre>';print_r($this->view['loading_receipts']);exit;

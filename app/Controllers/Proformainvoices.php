@@ -44,8 +44,9 @@ class Proformainvoices extends BaseController
   
     public function index()
     {    
-        $this->ProformaInvoiceModel->select('proforma_invoices.*,b.booking_number,p.party_name,p.primary_phone')
+        $this->ProformaInvoiceModel->select('proforma_invoices.*,b.booking_number,v.rc_number,p.party_name,p.primary_phone')
         ->join('bookings b','b.id=proforma_invoices.booking_id')
+        ->join('vehicle v','v.id = b.vehicle_id')
         ->join('customer c', 'c.id = proforma_invoices.bill_to_party_id','left') 
         ->join('party p', 'p.id = c.party_id','left');  
         if ($this->request->getPost('customer_id') != '') {
@@ -205,7 +206,14 @@ class Proformainvoices extends BaseController
 
     function edit($id){       
       $this->view['token'] = $id; 
-      $this->view['proforma_invoice'] = $this->ProformaInvoiceModel->where(['id' => $id])->first(); 
+      $this->view['proforma_invoice'] = $this->ProformaInvoiceModel
+      ->select('proforma_invoices.*,b.vehicle_id,c.id c_id, p.party_name')
+      ->join('bookings b', 'proforma_invoices.booking_id = b.id') 
+      ->join('customer c', 'b.customer_id = c.id') 
+      ->join('party p', 'c.party_id = p.id') 
+      ->where(['proforma_invoices.id' => $id])->first(); 
+      // echo 'post <pre>';print_r($this->view['proforma_invoice']);exit;
+
       $this->view['bookings'] = $this->getBooking($id);  
       $this->view['vehicles'] =  $this->getvehicles($id);
       if($this->request->getPost()){

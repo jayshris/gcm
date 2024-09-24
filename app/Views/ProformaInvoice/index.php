@@ -95,6 +95,7 @@
 											<th>Action</th>
 											<th>Invoice No.</th> 
 											<th>Booking No.</th>
+											<th>Vehicle No.</th>
 											<th>Customer Name</th>
 											<th>Invoice Amount</th>
 											<th>Customer Contact No.</th>
@@ -110,6 +111,7 @@
 												<td><?= makeListActions($currentController, $Action, $b['id'], 2, false, $b) ?></td>
 												<td><?= $b['proforma_invoices_no'] ?></td>
 												<td><?= $b['booking_number'] ?></td>
+												<td><?= $b['rc_number'] ?></td>
 												<td><?= isset($b['party_name']) ? $b['party_name'] : '-' ?></td>
 												<td><?= number_format($b['invoice_total_amount'],2) ?></td>
 												<td><?= isset($b['primary_phone']) ? $b['primary_phone'] : '-' ?></td> 

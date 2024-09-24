@@ -47,12 +47,12 @@
 											</div>
 											<div class="profile-details">
 												<div class="row g-3">
-													<div class="col-md-4">
+													<div class="col-md-3">
 														<label class="col-form-label">Vehicle Number</label> 
 														<select class="form-select select2" name="vehicle_id" id="vehicle_number" aria-label="Default select example" onchange="$.getVehicleBookings();">
 															<option value="">Select Vehicle</option>
 															<?php foreach ($vehicles as $o) { ?> 
-																<option value="<?= $o['id'] ?>"><?= $o['rc_number'] ?></option> 
+																<option value="<?= $o['id'] ?>"  <?= (isset($proforma_invoice['vehicle_id']) && ($proforma_invoice['vehicle_id'] == $o['id'])) ? 'selected' : ''?> ><?= $o['rc_number'] ?></option> 
 															<?php } ?>
 														</select>
 														<?php
@@ -62,7 +62,7 @@
 														?>
 													</div>
 
-													<div class="col-md-4">
+													<div class="col-md-3">
 														<label class="col-form-label">Booking Order No<span class="text-danger">*</span></label> 
 														<select class="form-select select2" required name="booking_id" id="booking_id" aria-label="Default select example"  onchange="$.getBookingDetails();">
 															<option value="">Select Booking No.</option>
@@ -77,7 +77,7 @@
 														?>
 													</div>
 
-													<div class="col-md-4">
+													<div class="col-md-3">
 														<label class="col-form-label">Bill to Party<span class="text-danger">*</span></label>
 														<select class="form-select select2" required name="bill_to_party_id" id="bill_to_party_id" onchange="checkTaxApplicable()">
 															<option value="">Select Bill to Party</option> 
@@ -88,6 +88,11 @@
 															echo '<div class="alert alert-danger mt-2">' . $validation->getError('bill_to_party_id') . '</div>';
 														}
 														?>
+													</div>	  
+
+													<div class="col-md-3">
+														<label class="col-form-label">Customer Name</label>
+														<input type="text" readonly class="form-control" value="<?= isset($proforma_invoice['party_name']) && ($proforma_invoice['party_name']) ? $proforma_invoice['party_name'] : '' ?>"/>
 													</div>	  
 
 													<div class="col-md-12"  id="expense_div_body"></div>

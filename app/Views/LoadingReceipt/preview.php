@@ -60,6 +60,47 @@
                                                     </div>   														
 
                                                     <hr>
+                                                    <?php if(isset($loading_receipts['transporter_id']) && ($loading_receipts['transporter_id'] > 0)){ ?>   
+                                                    
+                                                    <h6>Transporter Details: </h6>
+                                                    <div class="col-md-4">
+                                                        <label class="col-form-label">Transporter Bilti No.: </label>
+                                                        <label class="col-form-label"><?= ($loading_receipts['transporter_bilti_no']) ? $loading_receipts['transporter_bilti_no'] : '-' ?></label> 
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="col-form-label">E-Way Bill No.: </label>
+                                                        <label class="col-form-label"><?= ($loading_receipts['e_way_bill_number']) ? $loading_receipts['e_way_bill_number'] : '-' ?></label> 
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="col-form-label">Transporter Name: </label>
+                                                        <label class="col-form-label"><?= ($loading_receipts['transporter_name']) ? $loading_receipts['transporter_name'] : '-' ?></label> 
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="col-form-label">Branch Name: </label>
+                                                        <label class="col-form-label"><?= ($loading_receipts['transporter_branch_name']) ? $loading_receipts['transporter_branch_name'] : '-' ?></label> 
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="col-form-label">Address: </label>
+                                                        <label class="col-form-label"><?= ($loading_receipts['transporter_address']) ? $loading_receipts['transporter_address'] : '-' ?></label> 
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="col-form-label">City: </label>
+                                                        <label class="col-form-label"><?= ($loading_receipts['transporter_city']) ? $loading_receipts['transporter_city'] : '-' ?></label> 
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="col-form-label">State: </label>
+                                                        <label class="col-form-label"><?= ($loading_receipts['transporter_state_name']) ? $loading_receipts['transporter_state_name'] : '-' ?></label> 
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="col-form-label">Pincode: </label>
+                                                        <label class="col-form-label"><?= ($loading_receipts['transporter_pincode']) ? $loading_receipts['transporter_pincode'] : '-' ?></label> 
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="col-form-label">GSTN: </label>
+                                                        <label class="col-form-label"><?= ($loading_receipts['transporter_GSTIN']) ? $loading_receipts['transporter_GSTIN'] : '-' ?></label> 
+                                                    </div>
+                                                    <hr>
+                                                    <?php } ?>
 
                                                     <h6>Supplier:</h6>
                                                     <div class="col-md-4">
