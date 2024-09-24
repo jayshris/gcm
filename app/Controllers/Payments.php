@@ -61,17 +61,22 @@ class Payments extends BaseController
     }  
 
     function create(){
-        $this->view['drivers'] = $this->DModel->select('driver.*, party.party_name as driver_name') 
+        $this->view['drivers'] = $this->DModel->select('driver.*, party.party_name as driver_name,b.id b_id,b.booking_number')  
         ->join('party', 'party.id = driver.party_id') 
+        ->join('driver_vehicle_map dvm', 'dvm.driver_id = driver.id and (dvm.unassign_date="" or dvm.unassign_date IS NULL or UNIX_TIMESTAMP(dvm.unassign_date) = 0)')
+        ->join('vehicle v', 'dvm.vehicle_id = v.id')
+        ->join('booking_vehicle_logs bvl', 'bvl.vehicle_id = v.id  and (bvl.unassign_date IS NULL or UNIX_TIMESTAMP(bvl.unassign_date) = 0)')
+        ->join('bookings b', 'bvl.booking_id = b.id')
+        ->where(['b.status >=' => 3,'b.status < '=>11])
+        // ->groupBy('v.id,driver.id')
         ->orderBy('party.party_name', 'asc')
         ->findAll();
-  
-        $this->view['fuel_pump_brands']  = $this->FuelPumpBrandModel->where('status',1)->findAll();
-        $this->view['vehicles']  = $this->VehicleModel->where('status',1)->findAll();
-        $this->view['payment_types']  = $this->PaymentTypeModel->findAll();
+        
+        // echo $this->DModel->getLastQuery().'<pre>';print_r($this->view['drivers']); exit;
 
-        $this->view['bookings'] = $this->BookingsModel->findAll(); 
-
+        $this->view['fuel_pump_brands']  = $this->FuelPumpBrandModel->where('status',1)->findAll(); 
+        $this->view['payment_types']  = $this->PaymentTypeModel->findAll(); 
+        
         //get vendors
         $this->view['vendors'] = $this->CModel
         ->select('customer.id,p.party_name')
@@ -243,5 +248,33 @@ class Payments extends BaseController
           }
 
         return view('Payment/form', $this->view); 
+    }
+
+    function getDriverVehicles(){
+        $driverVehicles = $this->VehicleModel->select('vehicle.id,vehicle.rc_number')   
+        ->join('driver_vehicle_map dvm', 'dvm.vehicle_id = vehicle.id and (dvm.unassign_date="" or dvm.unassign_date IS NULL or UNIX_TIMESTAMP(dvm.unassign_date) = 0)')
+        ->where(['vehicle.status' =>1,'dvm.driver_id' =>  $this->request->getVar('driver_id')])  
+        ->findAll(); 
+        echo json_encode($driverVehicles);exit;
+    }
+    function getSameTypesVehicles(){
+        $vehicleType = $this->VehicleModel->select('vehicle.vehicle_type_id')->where(['id' =>  $this->request->getVar('vehicle_id')])->first();   
+        
+        $vehicles = $this->VehicleModel->select('vehicle.id,vehicle.rc_number')    
+        ->where(['vehicle.status' =>1,'vehicle.vehicle_type_id'=>$vehicleType,'vehicle.id !=' =>  $this->request->getVar('vehicle_id')])  
+        ->findAll();
+        // echo $this->DModel->getLastQuery().'<pre>';print_r($vehicles); exit;
+        echo json_encode($vehicles);exit;
+    }
+
+    function getDriverBookings(){
+        $bookings = $this->DModel->select('b.id b_id,b.booking_number')  
+        ->join('driver_vehicle_map dvm', 'dvm.driver_id = driver.id and (dvm.unassign_date="" or dvm.unassign_date IS NULL or UNIX_TIMESTAMP(dvm.unassign_date) = 0)')
+        ->join('vehicle v', 'dvm.vehicle_id = v.id')
+        ->join('booking_vehicle_logs bvl', 'bvl.vehicle_id = v.id  and (bvl.unassign_date IS NULL or UNIX_TIMESTAMP(bvl.unassign_date) = 0)')
+        ->join('bookings b', 'bvl.booking_id = b.id')
+        ->where(['b.status >=' => 3,'b.status < '=>11,'driver.id' =>$this->request->getVar('driver_id')])  
+        ->findAll();
+        echo json_encode($bookings);exit;
     }
 }

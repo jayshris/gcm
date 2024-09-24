@@ -44,7 +44,7 @@
 														<label class="col-form-label">
 														Driver<span class="text-danger">*</span>
 														</label>
-														<select class="form-control select2" id="driver_id" name="driver_id" required>
+														<select class="form-control select2" id="driver_id" name="driver_id" required onchange="getDriverVehicles();getDriverBookings();">
 														<option value="">Select</option>
 														<?php foreach($drivers as $val){?>
 															<option value="<?= $val['id'] ?>"><?= $val['driver_name'] ?></option>
@@ -77,10 +77,7 @@
 													<div class="col-md-6"> 
 														<label class="col-form-label">Reason</label>
 														<select class="form-control select2" id="reason_id" name="reason_id">
-														<option value="">Select</option>
-														<?php foreach($bookings as $val){?>
-															<option value="<?= $val['id'] ?>"><?= $val['booking_number'] ?></option>
-														<?php }?>
+														<option value="">Select Booking</option> 
 														</select> 
 													</div>
 													<div class="col-md-6 payment_types_fuel_urea_html" hidden>
@@ -88,11 +85,8 @@
 															<label class="col-form-label">
 															Vehicle<span class="text-danger payment_types_fuel_urea_html" hidden>*</span>
 															</label>
-															<select class="form-class select2 payment_types_fuel_urea_inpt" id="vehicle_id" name="vehicle_id" onchange="duplicateVehicle('vehicle_id','transfer_from_vehicle_id')">
-															<option value="">Select</option>
-															<?php foreach($vehicles as $val){?>
-																<option value="<?= $val['id'] ?>"><?= $val['rc_number'] ?></option>
-															<?php }?>
+															<select class="form-class select2 payment_types_fuel_urea_inpt" id="vehicle_id" name="vehicle_id" onchange="duplicateVehicle('vehicle_id','transfer_from_vehicle_id');getSameTypesVehicles();" >
+															<option value="">Select Vehicle</option> 
 															</select>
 															<span class="text-danger duplicate_vehicle_spn" id="vehicle_id_spn" hidden>Vehicle No. is duplicate, please select another vehicle</span>
 															<?php
@@ -127,10 +121,7 @@
 															Transfer From Vehicle<span class="text-danger fuel_fill_type_transfer" hidden>*</span>
 															</label>
 															<select class="form-class select2" id="transfer_from_vehicle_id" name="transfer_from_vehicle_id" onchange="duplicateVehicle('transfer_from_vehicle_id','vehicle_id')">
-															<option value="">Select</option>
-															<?php foreach($vehicles as $val){?>
-																<option value="<?= $val['id'] ?>"><?= $val['rc_number'] ?></option>
-															<?php }?>
+															<option value="">Select Vehicle</option> 
 															</select>
 															<span class="text-danger duplicate_vehicle_spn" id="transfer_from_vehicle_id_spn" hidden>Vehicle No. is duplicate, please select another vehicle</span>
 															<?php
@@ -390,7 +381,7 @@
 			}else{
 				returnval =  "false";
 			}
-			alert('returnval '+returnval); 
+			// alert('returnval '+returnval); 
 			if(returnval == "false"){
 				$('#upi_no').val('');
 				$('.upi_err').removeAttr('hidden');
@@ -409,6 +400,79 @@
 				$('#'+id).select2();
 				$('#'+id+'_spn').removeAttr('hidden');
 			}
+		}
+
+		function getDriverVehicles(){
+			var driver_id = $('#driver_id').val();
+			var html ='<option value="0">Select Vehicle</option>';
+			$('#vehicle_id').html(html);
+			if(driver_id > 0){
+				$.ajax({
+					method: "POST",
+					url: '<?php echo base_url('payments/getDriverVehicles') ?>',
+					data: {
+						driver_id: driver_id
+					},
+					dataType:'json',
+					success: function(response) { 
+						if(response){
+							response.forEach(function(val) {
+								html += '<option value="'+val.id+'">'+val.rc_number+'</option>'
+							});
+							$('#vehicle_id').html(html);
+						} 
+					}
+				});
+			} 
+			
+		}
+
+		function getSameTypesVehicles(){
+			var vehicle_id = $('#vehicle_id').val();
+			var html ='<option value="0">Select Vehicle</option>';
+			$('#transfer_from_vehicle_id').html(html); 
+			if(vehicle_id > 0){
+				$.ajax({
+					method: "POST",
+					url: '<?php echo base_url('payments/getSameTypesVehicles') ?>',
+					data: {
+						vehicle_id: vehicle_id
+					},
+					dataType:'json',
+					success: function(response) { 
+						if(response){
+							response.forEach(function(val) {
+								html += '<option value="'+val.id+'">'+val.rc_number+'</option>'
+							});
+							$('#transfer_from_vehicle_id').html(html);
+						} 
+					}
+				});
+			} 
+		}
+
+		function getDriverBookings(){
+			var driver_id = $('#driver_id').val();
+			var html ='<option value="0">Select Vehicle</option>';
+			$('#reason_id').html(html); 
+			if(driver_id > 0){
+				$.ajax({
+					method: "POST",
+					url: '<?php echo base_url('payments/getDriverBookings') ?>',
+					data: {
+						driver_id: driver_id
+					},
+					dataType:'json',
+					success: function(response) { 
+						if(response){
+							response.forEach(function(val) {
+								html += '<option value="'+val.id+'">'+val.booking_number+'</option>'
+							});
+							$('#reason_id').html(html);
+						} 
+					}
+				});
+			} 
 		}
 	</script>
 </body>

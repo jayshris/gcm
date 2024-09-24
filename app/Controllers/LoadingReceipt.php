@@ -320,7 +320,7 @@ class LoadingReceipt extends BaseController
     ->first(); 
      $party_type_ids = str_replace([',',', '],'|', $party_type_ids );
    
-    $this->view['transporters'] = $this->CustomersModel->select('party.id,party.party_name')
+    $this->view['transporters'] = $this->CustomersModel->select('customer.id,party.party_name')
         ->join('party', 'party.id = customer.party_id')
         ->where('customer.status', '1')
         ->where('CONCAT(",", party_type_id, ",") REGEXP ",('.$party_type_ids['party_type_ids'].'),"')
@@ -576,12 +576,12 @@ class LoadingReceipt extends BaseController
     ->first(); 
      $party_type_ids = str_replace([',',', '],'|', $party_type_ids );
    
-    $this->view['transporters'] = $this->CustomersModel->select('party.id,party.party_name')
+    $this->view['transporters'] = $this->CustomersModel->select('customer.id,party.party_name')
         ->join('party', 'party.id = customer.party_id')
         ->where('customer.status', '1')
         ->where('CONCAT(",", party_type_id, ",") REGEXP ",('.$party_type_ids['party_type_ids'].'),"')
         ->findAll(); 
-
+        // echo $this->CustomersModel->getLastQuery().'<pre>';print_r($this->view['transporters']); exit;
     $this->view['consignor_branches'] = [];
     if($this->view['loading_receipts']['consignor_id'] > 0 ){
       $this->view['consignor_branches']=  $this->CustomerBranchModel->where([
