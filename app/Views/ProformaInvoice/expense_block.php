@@ -72,27 +72,32 @@
         <label class="col-form-label">Rate (Rs)</label>
         <input type="number" step="0.01"  name="rate" id="rate" onchange="$.calculation()" class="form-control"  value="<?= isset($booking_details['rate']) ? $booking_details['rate'] : '' ?>">     
     </div>
-    <div class="col-md-3">
+    <div class="col-md-4">
         <label class="col-form-label">Guaranteed / Charged Weight</label>
         <input type="number" step="0.01" name="guranteed_wt" id="guranteed_wt" onchange="$.calculation()" class="form-control" value="<?= ($booking_details['guranteed_wt'] > 0) ? $booking_details['guranteed_wt'] : (isset($booking_vehicle_details['charge_wt']) ? $booking_vehicle_details['charge_wt'] : '') ?>">
     </div> 
 
-    <div class="col-md-3">
+    <div class="col-md-4">
         <label class="col-form-label">Total Freight<span class="text-danger">*</span></label>
         <input type="decimal" step="0.01" id="freight" class="form-control" required name="total_freight" readonly value="<?= isset($booking_details['total_freight'])  ? $booking_details['total_freight'] : $booking_details['freight'] ?>" >
     </div>	
     
-    <div class="col-md-2">
+    <div class="col-md-4">
+        <label class="col-form-label">Other Expenses<span class="text-danger">*</span></label>
+        <input type="decimal" step="0.01" id="other_expenses" class="form-control" required name="other_expenses" readonly value="<?= isset($booking_details['other_expenses'])  ? $booking_details['other_expenses'] : 0  ?>" >
+    </div>	
+    
+    <div class="col-md-4">
         <label class="col-form-label">Advance</label>
         <input type="number" name="advance" id="advance" readonly onchange="$.calculation()" class="form-control" value="<?= $booking_details['advance'] ?>">
     </div>
 
-    <div class="col-md-2">
+    <div class="col-md-4">
         <label class="col-form-label">Discount</label>
         <input type="number" name="discount" id="discount" readonly onchange="$.calculation()" class="form-control" value="<?= $booking_details['discount'] ?>">
     </div>
 
-    <div class="col-md-2">
+    <div class="col-md-4">
         <label class="col-form-label">Balance</label>
         <input type="number" name="balance" id="balance" readonly onchange="$.calculation()" class="form-control" value="<?= $booking_details['balance'] ?>" >
     </div>

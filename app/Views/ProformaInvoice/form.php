@@ -47,7 +47,7 @@
 											</div>
 											<div class="profile-details">
 												<div class="row g-3">
-													<div class="col-md-3">
+													<div class="col-md-4">
 														<label class="col-form-label">Vehicle Number</label> 
 														<select class="form-select select2" name="vehicle_id" id="vehicle_number" aria-label="Default select example" onchange="$.getVehicleBookings();">
 															<option value="">Select Vehicle</option>
@@ -62,7 +62,7 @@
 														?>
 													</div>
 
-													<div class="col-md-3">
+													<div class="col-md-4">
 														<label class="col-form-label">Booking Order No<span class="text-danger">*</span></label> 
 														<select class="form-select select2" required name="booking_id" id="booking_id" aria-label="Default select example"  onchange="$.getBookingDetails();">
 															<option value="">Select Booking No.</option>
@@ -77,9 +77,9 @@
 														?>
 													</div>
 
-													<div class="col-md-3">
+													<div class="col-md-4">
 														<label class="col-form-label">Bill to Party<span class="text-danger">*</span></label>
-														<select class="form-select select2" required name="bill_to_party_id" id="bill_to_party_id" onchange="checkTaxApplicable()">
+														<select class="form-select select2" required name="bill_to_party_id" id="bill_to_party_id" onchange="checkTaxApplicable();getCustomerBranches()">
 															<option value="">Select Bill to Party</option> 
 														</select>
 														<input type="hidden" id="selecected_bill_to_party_id" value="<?= isset($proforma_invoice['bill_to_party_id']) && ($proforma_invoice['bill_to_party_id'] > 0) ? $proforma_invoice['bill_to_party_id'] : 0 ?>"/>
@@ -90,10 +90,23 @@
 														?>
 													</div>	  
 
-													<div class="col-md-3">
+													<div class="col-md-4">
 														<label class="col-form-label">Customer Name</label>
 														<input type="text" readonly id="customer_name" class="form-control" value="<?= isset($proforma_invoice['party_name']) && ($proforma_invoice['party_name']) ? $proforma_invoice['party_name'] : '' ?>"/>
 													</div>	  
+
+													<div class="col-md-4">
+														<label class="col-form-label">Customer Branch<span class="text-danger">*</span></label> 
+														<select class="form-select select2" required name="customer_branch_id" id="customer_branch_id">
+															<option value="">Select Branch</option> 
+														</select>
+														<input type="hidden" id="selecected_customer_branch_id" value="<?= isset($proforma_invoice['customer_branch_id']) && ($proforma_invoice['customer_branch_id'] > 0) ? $proforma_invoice['customer_branch_id'] : 0 ?>"/>
+														<?php
+														if ($validation->getError('booking_id')) {
+															echo '<div class="alert alert-danger mt-2">' . $validation->getError('booking_id') . '</div>';
+														}
+														?>
+													</div>
 
 													<div class="col-md-12"  id="expense_div_body"></div>
 
@@ -240,20 +253,7 @@
 					}
 				}
 			});
-
-			// $.ajax({
-			// 	method: "POST",
-			// 	url: '<?php echo base_url('proformainvoices/getBookingDetails/'); ?>'+booking_id, 
-			// 	dataType:'json',
-			// 	success: function(res) {  
-			// 		if(id <1){
-			// 			$('#invoice_total_amount').val(res);
-			// 		}
-			// 		alert(' invoice_total_amount '+res); 
-					
-			// 	}
-			// });
-			
+ 
 		}else{
 			$('#expense_div_body').html('');
 			$('#bill_to_party_id').val(''); 
@@ -299,16 +299,16 @@
         // for guranteed weight
         if (rate_type == 1) {
           var guranteed_wt = parseFloat($('#guranteed_wt').val());
-          freight = (rate * guranteed_wt) + billtotal;
+          freight = (rate * guranteed_wt);
         } else {
-          freight = rate + billtotal;
+          freight = rate;
         }
-
+		$('#other_expenses').val(billtotal);
         $('#freight').val(freight.toFixed(2));
 		
         var advance = ($('#advance').val());
         var discount = ($('#discount').val());
-        var balance = (freight - advance - discount).toFixed(2); 
+        var balance = ((freight+billtotal) - advance - discount).toFixed(2); 
 		// alert(freight + advance +discount + '= '+balance);
         $('#balance').val(balance); 
       }
@@ -335,7 +335,7 @@
         }
       })
     }
-
+	
 	function checkTaxApplicable(){  
 		var bill_to_party_id = $('#bill_to_party_id').val();
 		if(bill_to_party_id> 0){
@@ -368,10 +368,11 @@
 			calculateTax(id);
 		}
 		var freight = parseFloat($('#freight').val());
+		var other_expenses = parseFloat($('#other_expenses').val());
 		var SGST_total = parseFloat($('#SGST_total').val());
 		var CGST_total = parseFloat($('#CGST_total').val());
 		var IGST_total = parseFloat($('#IGST_total').val());
-		var invoice_total_amount = (freight+SGST_total+CGST_total+IGST_total); 
+		var invoice_total_amount = (freight+other_expenses+SGST_total+CGST_total+IGST_total); 
 		$('#invoice_total_amount').val(invoice_total_amount.toFixed(2)); 
 	}
 	function calculateTax(id){
@@ -387,6 +388,28 @@
 		}
 	}
  
+	function getCustomerBranches(){
+		var bill_to_party_id = $('#bill_to_party_id').val();
+		var html = "<option value=''>Select Branch</option>"; 
+		$('#customer_branch_id').html(html);
+		if(bill_to_party_id> 0){
+			$.ajax({
+				type: "POST",
+				url: "<?php echo base_url('proformainvoices/getCustomerBranches/'); ?>"+bill_to_party_id, 
+				dataType:'json',
+				success: function(response) {
+					if(response){  
+						var selecected_customer_branch_id = $('#selecected_customer_branch_id').val();
+						response.forEach(function(val) {
+							var selected = (selecected_customer_branch_id > 0) && (selecected_customer_branch_id == val.id) && (id > 0) ? 'selected' : '';
+							html +='<option value="'+val.id+'" '+selected+'>'+val.office_name+'</option>'
+						});
+						$('#customer_branch_id').html(html);
+					} 
+				}
+			})
+		}
+	}
 	</script>
 </body>
 

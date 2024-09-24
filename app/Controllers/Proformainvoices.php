@@ -10,9 +10,11 @@ use App\Models\ExpenseHeadModel;
 use App\Controllers\BaseController;
 use App\Models\PartyDocumentsModel;
 use App\Models\BookingExpensesModel;
+use App\Models\CustomerBranchModel;
 use App\Models\ProformaInvoiceModel; 
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\ProformaInvoiceExpenseModel;
+use App\Models\VehicleModel;
 
 class Proformainvoices extends BaseController
 { 
@@ -27,6 +29,8 @@ class Proformainvoices extends BaseController
     public $PTModel;
     public $ProformaInvoiceExpenseModel;
     public $partyDocModel;
+    public $CBModel;
+    public $VModel;
     public function __construct()
     { 
       $this->session = \Config\Services::session(); 
@@ -40,6 +44,8 @@ class Proformainvoices extends BaseController
       $this->PTModel = new PartytypeModel();
       $this->ProformaInvoiceExpenseModel = new ProformaInvoiceExpenseModel();
       $this->partyDocModel = new PartyDocumentsModel();
+      $this->CBModel = new CustomerBranchModel();
+      $this->VModel = new VehicleModel();
     }
   
     public function index()
@@ -107,8 +113,8 @@ class Proformainvoices extends BaseController
       ->findAll();  
 
       // echo '<pre>'.$this->ProformaInvoiceModel->getLastQuery().'<pre>';print_r($d);exit;
-    }
-
+    } 
+    
     function create(){     
       $this->view['bookings'] = $this->getBooking();  
       $this->view['vehicles'] =  $this->getvehicles();
@@ -171,6 +177,8 @@ class Proformainvoices extends BaseController
       $data['rate'] = $post['rate'];
       $data['rate_type'] = $post['rate_type'];
       $data['invoice_total_amount'] = $post['invoice_total_amount'];
+      $data['customer_branch_id'] = $post['customer_branch_id'];
+      $data['other_expenses'] = $post['other_expenses'];
       // echo  'ProformaInvoice <pre>';print_r($data); 
       // echo  'post <pre>';print_r($post);exit;
       
@@ -215,7 +223,8 @@ class Proformainvoices extends BaseController
       // echo 'post <pre>';print_r($this->view['proforma_invoice']);exit;
 
       $this->view['bookings'] = $this->getBooking($id);  
-      $this->view['vehicles'] =  $this->getvehicles($id);
+      $this->view['vehicles'] =  $this->getvehicles($id); 
+      
       if($this->request->getPost()){
         $error = $this->validate([ 
           'booking_id'   =>  'required',
@@ -292,9 +301,10 @@ class Proformainvoices extends BaseController
         $this->view['booking_details'] = $this->ProformaInvoiceModel->where(['id'=> $id])->first();  
       }else{ 
         $this->view['booking_details'] = $this->BookingsModel->where(['id'=> $booking_id])->first();  
+        $this->view['booking_vehicle_details'] = $this->VModel->where('id',$this->view['booking_details']['vehicle_id'])->first();
         $this->view['booking_expences'] = $this->BEModel->where(['booking_id'=>$booking_id])->where('((expense > 0) or (value > 0))')->findAll();  
       }
-     
+      
       // echo 'booking_details <pre>';print_r($this->view['booking_details']);  
       // echo 'booking_expences <pre>';print_r($this->view['booking_expences']);
       // exit;
@@ -359,5 +369,12 @@ class Proformainvoices extends BaseController
       }
       // echo '<pre>';print_r($partyCount);exit;
       return isset($partyCount['cnt']) && ($partyCount['cnt'] > 0) ? $partyCount['cnt'] : 0;
+    }
+
+    function getCustomerBranches($customer_id = 0){
+      $customer_branches = $this->CBModel->select('id,office_name') 
+      ->where(['customer_branches.status'=>'1','customer_id' =>$customer_id]) 
+      ->findAll();
+      echo json_encode($customer_branches);exit;
     }
 }

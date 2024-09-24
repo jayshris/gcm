@@ -291,6 +291,7 @@ class Booking extends BaseController
                         'status' => '1',
                         'added_by' => $this->added_by,
                         'added_ip' => $this->added_ip,
+                        'other_expenses' => $this->request->getPost('other_expenses'),
                         // 'commission' => $this->request->getPost('commission'),
                     ];
 
@@ -523,6 +524,7 @@ class Booking extends BaseController
                 'approved_date' => date('Y-m-d h:i:s'),
                 'approved' => $this->request->getPost('approve'),
                 'rate' => $this->request->getPost('rate'),
+                'other_expenses' => $this->request->getPost('other_expenses'),
             ]);  
 
             //assign vehicle
@@ -1043,6 +1045,7 @@ class Booking extends BaseController
                     'added_by' => $this->added_by,
                     'added_ip' => $this->added_ip,
                     'booking_type' => $this->request->getPost('booking_type'),
+                    'other_expenses' => $this->request->getPost('other_expenses'),
                     // 'commission' => $this->request->getPost('commission'),
                 ];//echo __LINE__.'<pre>';print_r($bookingData);die;
 
@@ -1262,6 +1265,7 @@ class Booking extends BaseController
                 $data['is_vehicle_assigned'] = 0; 
                 $data['vehicle_id'] = 0; 
             } 
+            $data['other_expenses'] = $this->request->getPost('other_expenses');
             // echo '<pre>';print_r( $data);exit; 
             $this->BModel->update($id,$data); 
 
@@ -1547,7 +1551,8 @@ class Booking extends BaseController
                     'advance' => $this->request->getPost('advance'),
                     'discount' => $this->request->getPost('discount'),
                     'balance' => $this->request->getPost('balance'),
-                    'status' => 10 
+                    'status' => 10 ,
+                    'other_expenses' => $this->request->getPost('other_expenses'),
                 ]); 
 
                 // update Drops, Pickups and delete Expences 

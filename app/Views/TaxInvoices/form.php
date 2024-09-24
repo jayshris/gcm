@@ -221,16 +221,16 @@
         // for guranteed weight
         if (rate_type == 1) {
           var guranteed_wt = parseFloat($('#guranteed_wt').val());
-          freight = (rate * guranteed_wt) + billtotal;
+          freight = (rate * guranteed_wt);
         } else {
-          freight = rate + billtotal;
+          freight = rate;
         }
-
+		$('#other_expenses').val(billtotal.toFixed(2));
         $('#freight').val(freight.toFixed(2));
 
         var advance = ($('#advance').val());
         var discount = ($('#discount').val());
-        var balance = (freight - advance - discount).toFixed(2); 
+        var balance = ((freight+billtotal) - advance - discount).toFixed(2); 
 		// alert(freight + advance +discount + '= '+balance);
         $('#balance').val(balance); 
       }

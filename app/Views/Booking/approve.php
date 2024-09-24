@@ -322,22 +322,27 @@
                               <input type="number" name="guranteed_wt" id="guranteed_wt" onchange="$.calculation()" class="form-control" value="<?= ($booking_details['guranteed_wt'] > 0) ? $booking_details['guranteed_wt'] : (isset($booking_vehicle_details['charge_wt']) ? $booking_vehicle_details['charge_wt'] : '') ?>">
                             </div>
 
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                               <label class="col-form-label">Total Freight</label>
                               <input type="number" name="freight" id="freight" onchange="$.calculation()" class="form-control" value="<?= $booking_details['freight'] ?>" readonly>
                             </div>
-
-                            <div class="col-md-2">
+                                                    
+                            <div class="col-md-3">
+                                <label class="col-form-label">Other Expenses<span class="text-danger">*</span></label>
+                                <input type="decimal" step="0.01" id="other_expenses" class="form-control" required name="other_expenses" readonly value="<?= isset($booking_details['other_expenses'])  ? $booking_details['other_expenses'] : 0  ?>" >
+                            </div>
+                            
+                            <div class="col-md-3">
                               <label class="col-form-label">Advance</label>
                               <input type="number" name="advance" id="advance" onchange="$.calculation()" class="form-control" value="<?= $booking_details['advance'] ?>">
                             </div>
 
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                               <label class="col-form-label">Discount</label>
                               <input type="number" name="discount" id="discount" onchange="$.calculation()" class="form-control" value="<?= $booking_details['discount'] ?>" readonly>
                             </div>
 
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                               <label class="col-form-label">Balance</label>
                               <input type="number" name="balance" id="balance" onchange="$.calculation()" class="form-control" value="<?= $booking_details['balance'] ?>" readonly>
                             </div>
@@ -562,19 +567,19 @@
         if (rate_type == 1) {
 
           var guranteed_wt = parseFloat($('#guranteed_wt').val());
-          freight = (rate * guranteed_wt) + billtotal;
+          freight = (rate * guranteed_wt);
 
         } else {
 
-          freight = rate + billtotal;
+          freight = rate;
         }
-
+        $('#other_expenses').val(billtotal);
         $('#freight').val(freight);
 
         var advance = $('#advance').val();
         var discount = $('#discount').val();
 
-        $('#balance').val(freight - advance - discount);
+        $('#balance').val((freight+billtotal) - advance - discount);
 
 
         console.log(rate_type, rate);

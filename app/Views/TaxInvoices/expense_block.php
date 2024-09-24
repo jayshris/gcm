@@ -82,13 +82,18 @@
         <label class="col-form-label">Total Freight<span class="text-danger">*</span></label>
         <input type="decimal" step="0.01" id="freight" class="form-control" required name="total_freight" readonly value="<?= isset($invoice['total_freight']) && ($invoice['total_freight'] > 0) ? $invoice['total_freight'] : $booking_details['freight'] ?>">
     </div>	
+     
+    <div class="col-md-3">
+        <label class="col-form-label">Other Expenses<span class="text-danger">*</span></label>
+        <input type="decimal" step="0.01" id="other_expenses" class="form-control" required name="other_expenses" readonly value="<?= isset($booking_details['other_expenses'])  ? $booking_details['other_expenses'] : 0  ?>" >
+    </div>
     
-    <div class="col-md-2">
+    <div class="col-md-3">
         <label class="col-form-label">Advance</label>
         <input type="number" name="advance" id="advance" readonly onchange="$.calculation()" class="form-control" value="<?= $booking_details['advance'] ?>">
     </div>
 
-    <div class="col-md-2">
+    <div class="col-md-3">
         <label class="col-form-label">Discount</label>
         <input type="number" name="discount" id="discount" readonly onchange="$.calculation()" class="form-control" value="<?= $booking_details['discount'] ?>">
     </div>

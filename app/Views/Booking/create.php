@@ -211,22 +211,27 @@
                               <input type="number" name="guranteed_wt" id="guranteed_wt" onchange="$.calculation()" value="<?= isset($booking_vehicle_details['charge_wt']) ? $booking_vehicle_details['charge_wt'] : ''; ?>" class="form-control">
                             </div>
 
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                               <label class="col-form-label">Total Freight</label>
                               <input type="number" name="freight" id="freight" onchange="$.calculation()" class="form-control" readonly>
                             </div>
+ 
+                            <div class="col-md-3">
+                                <label class="col-form-label">Other Expenses<span class="text-danger">*</span></label>
+                                <input type="decimal" step="0.01" id="other_expenses" class="form-control" required name="other_expenses" readonly value="" >
+                            </div>
 
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                               <label class="col-form-label">Advance</label>
                               <input type="number" name="advance" id="advance" onchange="$.calculation()" class="form-control">
                             </div>
 
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                               <label class="col-form-label">Discount</label>
                               <input type="number" name="discount" id="discount" onchange="$.calculation()" class="form-control" readonly>
                             </div>
 
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                               <label class="col-form-label">Balance</label>
                               <input type="number" name="balance" id="balance" class="form-control" readonly>
                             </div>
@@ -609,16 +614,16 @@
         // for guranteed weight
         if (rate_type == 1) {
           var guranteed_wt = parseFloat($('#guranteed_wt').val());
-          freight = (rate * guranteed_wt) + billtotal;
+          freight = (rate * guranteed_wt);
         } else {
-          freight = rate + billtotal;
+          freight = rate;
         }
-
+        $('#other_expenses').val(billtotal.toFixed(2));
         $('#freight').val(freight.toFixed(2));
 
         var advance = $('#advance').val();
         var discount = $('#discount').val();
-        var balance = (freight - advance - discount).toFixed(2);
+        var balance = ((freight+billtotal) - advance - discount).toFixed(2);
         $('#balance').val(balance);
 
 
