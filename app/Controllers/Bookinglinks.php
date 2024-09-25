@@ -203,13 +203,15 @@ class Bookinglinks extends BaseController
 
                 // save expenses
                 foreach ($this->request->getPost('expense') as $key => $val) {
-                    $expense_data = [
-                        'booking_id' => $id,
-                        'expense' => $this->request->getPost('expense')[$key],
-                        'value' => $this->request->getPost('expense_value')[$key],
-                        'bill_to_party' => ($this->request->getPost('expense_flag_' . $key +1) == 'on') ? '1' : '0'
-                    ]; 
-                    $this->BEModel->insert($expense_data);
+                    if(($this->request->getPost('expense')[$key] >0) || ($this->request->getPost('expense_value')[$key] > 0) || ($this->request->getPost('expense_flag_' . $key +1) == 'on')){
+                        $expense_data = [
+                            'booking_id' => $id,
+                            'expense' => $this->request->getPost('expense')[$key],
+                            'value' => $this->request->getPost('expense_value')[$key],
+                            'bill_to_party' => ($this->request->getPost('expense_flag_' . $key +1) == 'on') ? '1' : '0'
+                        ]; 
+                        $this->BEModel->insert($expense_data);
+                    }
                 }   
 
                 if($token){

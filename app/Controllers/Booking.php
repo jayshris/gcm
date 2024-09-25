@@ -318,15 +318,19 @@ class Booking extends BaseController
                         'city_id' => $this->request->getPost('drop_city_id'),
                     ]);
 
+
                     // save expenses
                     foreach ($this->request->getPost('expense') as $key => $val) {
-                        $this->BEModel->insert([
-                            'booking_id' => $booking_id,
-                            'expense' => $this->request->getPost('expense')[$key],
-                            'value' => $this->request->getPost('expense_value')[$key],
-                            'bill_to_party' =>  ($this->request->getPost('expense_flag_' . $key +1) == 'on') ? '1' : '0'
-                        ]);
-                    }
+                        if(($this->request->getPost('expense')[$key] >0) || ($this->request->getPost('expense_value')[$key] > 0) || ($this->request->getPost('expense_flag_' . $key +1) == 'on')){
+                            $this->BEModel->insert([
+                                'booking_id' => $booking_id,
+                                'expense' => $this->request->getPost('expense')[$key],
+                                'value' => $this->request->getPost('expense_value')[$key],
+                                'bill_to_party' =>  ($this->request->getPost('expense_flag_' . $key +1) == 'on') ? '1' : '0'
+                            ]);
+                        }
+                    } 
+                  
 
                     $this->session->setFlashdata('success', 'Booking Successfully Added');
 
@@ -561,13 +565,15 @@ class Booking extends BaseController
             
             // save expenses
             foreach ($this->request->getPost('expense') as $key => $val) {
-                $expense_data = [
-                    'booking_id' => $id,
-                    'expense' => $this->request->getPost('expense')[$key],
-                    'value' => $this->request->getPost('expense_value')[$key],
-                    'bill_to_party' => ($this->request->getPost('expense_flag_' . $key +1) == 'on') ? '1' : '0'
-                ]; 
-                $this->BEModel->insert($expense_data);
+                if(($this->request->getPost('expense')[$key] >0) || ($this->request->getPost('expense_value')[$key] > 0) || ($this->request->getPost('expense_flag_' . $key +1) == 'on')){
+                    $expense_data = [
+                        'booking_id' => $id,
+                        'expense' => $this->request->getPost('expense')[$key],
+                        'value' => $this->request->getPost('expense_value')[$key],
+                        'bill_to_party' => ($this->request->getPost('expense_flag_' . $key +1) == 'on') ? '1' : '0'
+                    ]; 
+                    $this->BEModel->insert($expense_data);
+                }
             }    
 
             $this->session->setFlashdata('success', 'Booking Successfully Updated');
@@ -1028,7 +1034,8 @@ class Booking extends BaseController
             } else {
                 
                 // $id =  $this->request->getPost('id');
-                // echo $id.$token.'<pre>';print_r($post);exit;  
+                // echo $id.$token.'<pre>';print_r($post); 
+
                 $booking_details =  $this->BModel->where('id', $id)->first(); 
                 $bookingData = [     
                     'pickup_date' => $this->request->getPost('pickup_date'),
@@ -1098,13 +1105,15 @@ class Booking extends BaseController
 
                 // save expenses
                 foreach ($this->request->getPost('expense') as $key => $val) {
-                    $expense_data = [
-                        'booking_id' => $id,
-                        'expense' => $this->request->getPost('expense')[$key],
-                        'value' => $this->request->getPost('expense_value')[$key],
-                        'bill_to_party' => ($this->request->getPost('expense_flag_' . $key +1) == 'on') ? '1' : '0'
-                    ]; 
-                    $this->BEModel->insert($expense_data);
+                    if(($this->request->getPost('expense')[$key] >0) || ($this->request->getPost('expense_value')[$key] > 0) || ($this->request->getPost('expense_flag_' . $key +1) == 'on')){
+                        $expense_data = [
+                            'booking_id' => $id,
+                            'expense' => $this->request->getPost('expense')[$key],
+                            'value' => $this->request->getPost('expense_value')[$key],
+                            'bill_to_party' => ($this->request->getPost('expense_flag_' . $key +1) == 'on') ? '1' : '0'
+                        ]; 
+                        $this->BEModel->insert($expense_data);    
+                    }  
                 }   
 
                 if($token){
@@ -1274,13 +1283,15 @@ class Booking extends BaseController
           
             // save expenses
             foreach ($this->request->getPost('expense') as $key => $val) {
-                $expense_data = [
-                    'booking_id' => $id,
-                    'expense' => $this->request->getPost('expense')[$key],
-                    'value' => $this->request->getPost('expense_value')[$key],
-                    'bill_to_party' => ($this->request->getPost('expense_flag_' . $key +1) == 'on') ? '1' : '0'
-                ]; 
-                $this->BEModel->insert($expense_data);
+                if(($this->request->getPost('expense')[$key] >0) || ($this->request->getPost('expense_value')[$key] > 0) || ($this->request->getPost('expense_flag_' . $key +1) == 'on')){
+                    $expense_data = [
+                        'booking_id' => $id,
+                        'expense' => $this->request->getPost('expense')[$key],
+                        'value' => $this->request->getPost('expense_value')[$key],
+                        'bill_to_party' => ($this->request->getPost('expense_flag_' . $key +1) == 'on') ? '1' : '0'
+                    ]; 
+                    $this->BEModel->insert($expense_data);
+                }
             }    
             if($this->request->getPost('approval_for_cancellation') == 15){
                 //Change vehile status not assigned and vehicle log as unassign vehicle
@@ -1560,13 +1571,15 @@ class Booking extends BaseController
 
                 // save expenses
                 foreach ($this->request->getPost('expense') as $key => $val) {
-                    $expense_data = [
-                        'booking_id' => $booking_id,
-                        'expense' => $this->request->getPost('expense')[$key],
-                        'value' => $this->request->getPost('expense_value')[$key],
-                        'bill_to_party' => ($this->request->getPost('expense_flag_' . $key +1) == 'on') ? '1' : '0'
-                    ]; 
-                    $this->BEModel->insert($expense_data);
+                    if(($this->request->getPost('expense')[$key] >0) || ($this->request->getPost('expense_value')[$key] > 0) || ($this->request->getPost('expense_flag_' . $key +1) == 'on')){
+                        $expense_data = [
+                            'booking_id' => $booking_id,
+                            'expense' => $this->request->getPost('expense')[$key],
+                            'value' => $this->request->getPost('expense_value')[$key],
+                            'bill_to_party' => ($this->request->getPost('expense_flag_' . $key +1) == 'on') ? '1' : '0'
+                        ]; 
+                        $this->BEModel->insert($expense_data);
+                    }
                 }   
                 
                 //update booking status 
