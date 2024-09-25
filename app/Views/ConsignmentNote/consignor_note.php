@@ -68,10 +68,10 @@
         </tr>  
         <tr style="height:21pt">
             <td  class="td14" colspan="3">
-                <p class="s9 p14 txt-center" >Work Order No.</p>
+                <p class="s9 p14 txt-center" >Work Order No.: <?= isset($lr['booking_number']) && (!empty($lr['booking_number'])) ? $lr['booking_number'] : '-' ?></p>
             </td> 
             <td class="td16" colspan="3">
-                <p class="s9 p14 txt-center" >Work Order Date</p>
+                <p class="s9 p14 txt-center" >Work Order Date: <?= isset($lr['booking_date']) && ($lr['booking_date'] != '0000-00-00') ? date('d M Y',strtotime($lr['booking_date'])) : '-' ?></p>
             </td> 
         </tr>
         <tr style="height:auto">

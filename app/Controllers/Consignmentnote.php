@@ -68,10 +68,11 @@ class Consignmentnote extends BaseController
       $this->view['lr'] = $this->LoadingReceiptModel
       ->select('loading_receipts.*,b.booking_number,o.name branch_name,v.rc_number,s.state_name consignor_state,s2.state_name consignee_state,
       s3.state_name place_of_delivery_state,s4.state_name place_of_dispatch_state  ,party.party_name as customer,b.booking_date,bd.city bd_city,
-      bp.city bp_city,p.party_name as bill_to_party_nm,c.address as bill_to_address,c.phone bill_to_phone,CONCAT_WS(",", consignee_address,consignee_city,consignee_state,consignee_pincode) consignee_address_f,
-      CONCAT_WS(",", consignor_address,consignor_city,consignor_state,consignor_pincode) consignor_address_f,
-      CONCAT_WS(",", place_of_delivery_address,place_of_delivery_city,place_of_delivery_state,place_of_delivery_pincode) place_of_delivery_pincode_f ,
-      CONCAT_WS(",", place_of_dispatch_address,place_of_dispatch_city,place_of_dispatch_state,place_of_dispatch_pincode) place_of_dispatch_address_f,
+      bp.city bp_city,p.party_name as bill_to_party_nm,c.address as bill_to_address,c.phone bill_to_phone,
+      CONCAT_WS(",", consignee_address,consignee_city,s2.state_name,consignee_pincode) consignee_address_f,
+      CONCAT_WS(",", consignor_address,consignor_city,s.state_name,consignor_pincode) consignor_address_f,
+      CONCAT_WS(",", place_of_delivery_address,place_of_delivery_city,s3.state_name,place_of_delivery_pincode) place_of_delivery_pincode_f ,
+      CONCAT_WS(",", place_of_dispatch_address,place_of_dispatch_city,s4.state_name,place_of_dispatch_pincode) place_of_dispatch_address_f,
       ')
       ->join('bookings b','loading_receipts.booking_id = b.id')
       ->join('vehicle v','loading_receipts.vehicle_id = v.id','left')

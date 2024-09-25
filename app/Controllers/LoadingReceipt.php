@@ -47,12 +47,31 @@ class LoadingReceipt extends BaseController
   }
 
   public function index()
-  {   
-    $this->view['loading_receipts'] = $this->LoadingReceiptModel->select('loading_receipts.*,v.rc_number,b.booking_number,o.name branch_name')
+  {  
+    $this->view['bookings'] = $this->BookingsModel->select('id,booking_number')     
+                              ->where(['approved'=> '1','is_vehicle_assigned' => 1]) 
+                              ->findAll(); 
+                                      
+    $this->view['vehicles'] =  $this->BookingsModel->select('v.id,v.rc_number') 
+    ->join('vehicle v','bookings.vehicle_id = v.id')->orderBy('v.id', 'desc')
+    ->where(['bookings.approved'=> '1','bookings.is_vehicle_assigned' => 1]) 
+    ->groupBy('bookings.vehicle_id')
+    ->findAll(); 
+
+    $this->LoadingReceiptModel->select('loading_receipts.*,v.rc_number,b.booking_number,o.name branch_name')
     ->join('bookings b','loading_receipts.booking_id = b.id')
     ->join('vehicle v','v.id = loading_receipts.vehicle_id','left')
-    ->join('office o','loading_receipts.office_id = o.id')
-    ->orderBy('id', 'desc')->findAll();
+    ->join('office o','loading_receipts.office_id = o.id');
+
+    if ($this->request->getPost('booking_id') > 0) {
+        $this->LoadingReceiptModel->where('b.id', $this->request->getPost('booking_id'));
+    }
+
+    if ($this->request->getPost('vehicle_id') > 0) {
+      $this->LoadingReceiptModel->where('v.id', $this->request->getPost('vehicle_id'));
+  }
+
+    $this->view['loading_receipts'] = $this->LoadingReceiptModel->orderBy('id', 'desc')->findAll();
     return view('LoadingReceipt/index', $this->view); 
   } 
   

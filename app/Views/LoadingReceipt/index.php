@@ -29,12 +29,48 @@
 						</div>
 						<!-- /Page Header -->
 						
-						<form method="post" enctype="multipart/form-data" action="<?php echo base_url('booking'); ?>">
+						<form method="post" enctype="multipart/form-data" action="<?php echo base_url($currentController); ?>">
 							<div class="card main-card">
 								<div class="card-body"> 
 									<div class="row">  
-										<div class="col-md-3">
+										<div class="col-md-8">
+										<h4>Search / Filter</h4>
+										</div>
+										<div class="col-md-4 text-end ">
 											<?php echo makeListActions($currentController, $Action, 0, 1); ?>
+										</div>
+										<hr>
+										<div class="row mt-2">
+
+											<div class="col-md-3">
+												<div class="form-wrap">
+													<label class="col-form-label">Booking No.</label>
+													<select class="form-select select2" name="booking_id" aria-label="Default select example">
+													<option value="">Select Booking No.</option>
+													<?php foreach ($bookings as $d) {
+														echo '<option value="' . $d['id'] . '"' . (set_value('booking_id') == $d['id'] ? 'selected' : '') . '>' . $d['booking_number'] . '</option>';
+													} ?>
+													</select>
+												</div>
+											</div>
+
+											<div class="col-md-3">
+												<div class="form-wrap">
+													<label class="col-form-label">Vehicle No.</label>
+													<select class="form-select select2" name="vehicle_id" aria-label="Default select example">
+													<option value="">Select Vehicle No.</option>\
+													<?php foreach ($vehicles as $f) {
+														echo '<option value="' . $f['id'] . '"' . (set_value('vehicle_id') == $f['id'] ? 'selected' : '') . '>' . $f['rc_number'] . '</option>';
+													} ?>
+													</select>
+												</div>
+											</div> 
+
+											<div class="col-md-4">
+												<button class="btn btn-info mt-4">Search</button>&nbsp;&nbsp;
+												<a href="<?php echo base_url($currentController); ?>" class="btn btn-warning mt-4">Reset</a>&nbsp;&nbsp; 
+											</div>
+
 										</div>
 									</div>
 								</div>
@@ -69,8 +105,8 @@
 											<th>Consignment No.</th>
 											<th>Booking Number</th>
 											<th>Vehicle Number</th>
-											<th>Consignee Name</th>
 											<th>Consignor Name</th>
+											<th>Consignee Name</th>
 											<!-- <th>Branch Name</th> -->
 											<th>Booking Date</th> 
 											<th>Status</th>
@@ -91,8 +127,8 @@
 												<td><?= $b['consignment_no'] ?></td>
 												<td><?= $b['booking_number'] ?></td>
 												<td><?= $b['rc_number'] ?></td>
-												<td><?= $b['consignee_name'] ?></td>
 												<td><?= $b['consignor_name'] ?></td>
+												<td><?= $b['consignee_name'] ?></td>
 												<!-- <td><?= $b['branch_name'] ?></td> -->
 												<td><?= date('d M Y', strtotime($b['booking_date'])) ?></td> 
 												<td><span class="badge badge-pill <?= $b['status'] != 1 ? 'bg-danger' : 'bg-success' ?>"> <?= $status ?></span></td>

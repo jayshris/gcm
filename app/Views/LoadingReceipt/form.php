@@ -919,7 +919,7 @@
 
                         <div class="col-md-6">
                             <label class="col-form-label">Invoice/BOE Date</label>
-                            <input type="datetime-local" name="invoice_boe_date" id="invoice_boe_date" class="form-control" value="<?= (isset($loading_receipts['invoice_boe_date'])) ?  $loading_receipts['invoice_boe_date'] : ''?>">
+                            <input type="date" name="invoice_boe_date" id="invoice_boe_date" class="form-control" value="<?= (isset($loading_receipts['invoice_boe_date'])) ?  $loading_receipts['invoice_boe_date'] : ''?>">
                             <?php
                             if ($validation->getError('invoice_boe_date')) {
                                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('invoice_boe_date') . '</div>';
