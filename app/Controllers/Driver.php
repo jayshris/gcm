@@ -1211,27 +1211,10 @@ class Driver extends BaseController
 
   function absconding($id){
     if ($this->request->getPost()) {
-      //Get assigned vehicle of this driver
-      $driverVehicle = $this->DVAModel->where('driver_id', $id)->where('(unassign_date = "" or unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date) = 0)')->first();
-      //  echo  $this->DVAModel->getLastQuery().' <pre>';print_r($driverVehicle);  
-       if(isset($driverVehicle['vehicle_id']) && ($driverVehicle['vehicle_id'] > 0)){ 
-        $data['vehicle_id']  = $driverVehicle['vehicle_id'];
-        //Check Booking is assigned to this driver vehicle
-        $bookingVehicle = $this->BVLModel
-        ->select('b.status booking_status,booking_vehicle_logs.*')
-        ->join('bookings b','b.id= booking_vehicle_logs.booking_id')
-        ->where('booking_vehicle_logs.vehicle_id', $driverVehicle['vehicle_id'])
-        ->where(' (booking_vehicle_logs.unassign_date IS NULL or UNIX_TIMESTAMP(booking_vehicle_logs.unassign_date) = 0) ')->first();
-        //  echo $this->BVLModel->getLastQuery().' <pre>';print_r($bookingVehicle);  
-          
-        $data['booking_id'] = isset($bookingVehicle['booking_id']) ? $bookingVehicle['booking_id'] : 0;
-        $data['booking_status_id'] = isset($bookingVehicle['booking_status']) ? $bookingVehicle['booking_status'] : 0;
-      } 
+      $driver = $this->DModel->where('id',$id)->first();
       $data['driver_id'] = $id;
       $data['remarks'] = $this->request->getPost('remarks');
-      $data['status_date'] = $this->request->getPost('status_date');
-
-      $driver = $this->DModel->where('id',$id)->first();
+      $data['status_date'] = $this->request->getPost('status_date'); 
       $data['driver_status_id'] = $driver['working_status'] ;
      
       //Update driver status
@@ -1252,28 +1235,11 @@ class Driver extends BaseController
   }
 
   function blacklist($id){
-    if ($this->request->getPost()) {
-      //Get assigned vehicle of this driver
-      $driverVehicle = $this->DVAModel->where('driver_id', $id)->where('(unassign_date = "" or unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date) = 0)')->first();
-      //  echo  $this->DVAModel->getLastQuery().' <pre>';print_r($driverVehicle);  
-       if(isset($driverVehicle['vehicle_id']) && ($driverVehicle['vehicle_id'] > 0)){ 
-        $data['vehicle_id']  = $driverVehicle['vehicle_id'];
-        //Check Booking is assigned to this driver vehicle
-        $bookingVehicle = $this->BVLModel
-        ->select('b.status booking_status,booking_vehicle_logs.*')
-        ->join('bookings b','b.id= booking_vehicle_logs.booking_id')
-        ->where('booking_vehicle_logs.vehicle_id', $driverVehicle['vehicle_id'])
-        ->where(' (booking_vehicle_logs.unassign_date IS NULL or UNIX_TIMESTAMP(booking_vehicle_logs.unassign_date) = 0) ')->first();
-        //  echo $this->BVLModel->getLastQuery().' <pre>';print_r($bookingVehicle);  
-          
-        $data['booking_id'] = isset($bookingVehicle['booking_id']) ? $bookingVehicle['booking_id'] : 0;
-        $data['booking_status_id'] = isset($bookingVehicle['booking_status']) ? $bookingVehicle['booking_status'] : 0;
-      } 
+    if ($this->request->getPost()) {  
+      $driver = $this->DModel->where('id',$id)->first();
       $data['driver_id'] = $id;
       $data['remarks'] = $this->request->getPost('remarks');
-      $data['status_date'] = $this->request->getPost('status_date');
-
-      $driver = $this->DModel->where('id',$id)->first();
+      $data['status_date'] = $this->request->getPost('status_date'); 
       $data['driver_status_id'] = $driver['working_status'] ;
      
       //Update driver status
