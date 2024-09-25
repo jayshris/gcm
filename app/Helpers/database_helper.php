@@ -151,6 +151,10 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 								}
 							}
 							if ($secLink == 'assign_vehicle' && $row['working_status'] != 1)	$makeButton = 0;
+
+							//25-09-2024 - added abconding and blacklist action in driver
+							if ($secLink == 'absconding' && in_array($row['working_status'],[2,3,4,5,6]))  $makeButton = 0;
+							if ($secLink == 'blacklist' && in_array($row['working_status'],[2,3,4,5,6]))  $makeButton = 0;
 						}
 						if ($module == 'loadingreceipt') {
 							if ($secLink == 'approve' && ($row['approved'] == 1 || $row['status'] != 1))	$makeButton = 0;

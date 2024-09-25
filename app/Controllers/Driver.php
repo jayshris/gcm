@@ -6,41 +6,42 @@ namespace App\Controllers;
 
 
 
-use App\Controllers\BaseController;
-
 use App\Models\UserModel;
-
-use App\Models\DriverModel;
-
-use CodeIgniter\HTTP\ResponseInterface;
-
-use App\Models\StateModel;
-
-use App\Models\ForemanModel;
-
-use App\Models\AadhaarNumberMapModule;
-
-use App\Models\BookingsModel;
-use App\Models\BookingVehicleLogModel;
-use App\Models\DriverSchemeMapModel;
-
-use App\Models\DriverVehicleAssignModel;
 
 use App\Models\PartyModel;
 
-use App\Models\VehicleTypeModel;
+use App\Models\StateModel;
 
-use App\Models\PartytypeModel;
+use App\Models\DriverModel;
 
-use App\Models\PartyTypePartyModel;
-
-use App\Models\DriverVehicleType;
-
-use App\Models\PartyDocumentsModel;
+use App\Models\ForemanModel;
 
 use App\Models\SchemesModel;
 
 use App\Models\VehicleModel;
+
+use App\Models\BookingsModel;
+use App\Models\PartytypeModel;
+use App\Models\VehicleTypeModel;
+
+use App\Models\DriverVehicleType;
+
+use App\Controllers\BaseController;
+
+use App\Models\PartyDocumentsModel;
+
+use App\Models\PartyTypePartyModel;
+
+use App\Models\DriverSchemeMapModel;
+
+use App\Models\AadhaarNumberMapModule;
+
+use App\Models\BookingVehicleLogModel;
+ 
+
+use App\Models\DrivertransactionModel;
+use CodeIgniter\HTTP\ResponseInterface;
+use App\Models\DriverVehicleAssignModel;
 
 
 
@@ -56,6 +57,7 @@ class Driver extends BaseController
 
   public $VModel;
   public $BVLModel;
+  public $DTModel;
   public function __construct()
 
   {
@@ -102,6 +104,7 @@ class Driver extends BaseController
 
     $this->BookingModel = new BookingsModel();
     $this->BVLModel =  new BookingVehicleLogModel();
+    $this->DTModel =  new DriverTransactionModel();
   }
 
 
@@ -1181,13 +1184,13 @@ class Driver extends BaseController
 
       ->join('party t1', 't1.id = driver.party_id')
 
-      ->join('foreman', 'foreman.id = driver.foreman_id')
+      ->join('foreman', 'foreman.id = driver.foreman_id','left')
 
-      ->join('party t2', 't2.id = foreman.party_id')
+      ->join('party t2', 't2.id = foreman.party_id','left')
 
       ->where('driver.id', $id)->first();
 
-
+// echo '<pre>';print_r($this->view['driver_data']);exit;
 
     $this->view['driver_docs'] = $this->PDModel->where('party_id', $this->view['driver_data']['party_id'])->where('flag_id', '1')->first();
 
@@ -1204,5 +1207,102 @@ class Driver extends BaseController
 
 
     return view('Driver/preview', $this->view);
+  }
+
+  function absconding($id){
+    if ($this->request->getPost()) {
+      //Get assigned vehicle of this driver
+      $driverVehicle = $this->DVAModel->where('driver_id', $id)->where('(unassign_date = "" or unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date) = 0)')->first();
+      //  echo  $this->DVAModel->getLastQuery().' <pre>';print_r($driverVehicle);  
+       if(isset($driverVehicle['vehicle_id']) && ($driverVehicle['vehicle_id'] > 0)){ 
+        $data['vehicle_id']  = $driverVehicle['vehicle_id'];
+        //Check Booking is assigned to this driver vehicle
+        $bookingVehicle = $this->BVLModel
+        ->select('b.status booking_status,booking_vehicle_logs.*')
+        ->join('bookings b','b.id= booking_vehicle_logs.booking_id')
+        ->where('booking_vehicle_logs.vehicle_id', $driverVehicle['vehicle_id'])
+        ->where(' (booking_vehicle_logs.unassign_date IS NULL or UNIX_TIMESTAMP(booking_vehicle_logs.unassign_date) = 0) ')->first();
+        //  echo $this->BVLModel->getLastQuery().' <pre>';print_r($bookingVehicle);  
+          
+        $data['booking_id'] = isset($bookingVehicle['booking_id']) ? $bookingVehicle['booking_id'] : 0;
+        $data['booking_status_id'] = isset($bookingVehicle['booking_status']) ? $bookingVehicle['booking_status'] : 0;
+      } 
+      $data['driver_id'] = $id;
+      $data['remarks'] = $this->request->getPost('remarks');
+      $data['status_date'] = $this->request->getPost('status_date');
+
+      $driver = $this->DModel->where('id',$id)->first();
+      $data['driver_status_id'] = $driver['working_status'] ;
+     
+      //Update driver status
+      $this->DModel->update($id,['working_status' => 5]);
+
+      //add driver transaction 
+      $lastId = $this->updateDriverTransactions($data);
+      if($lastId > 0 ){
+        $this->session->setFlashdata('success', 'Driver has been absconded successfully.');  
+      }else{
+        $this->session->setFlashdata('danger', 'Some error has been occured, please try again!!');  
+      }
+      return $this->response->redirect(base_url('driver'));
+    } 
+
+    $this->view['token'] = $id;
+    return view('Driver/absconding', $this->view);
+  }
+
+  function blacklist($id){
+    if ($this->request->getPost()) {
+      //Get assigned vehicle of this driver
+      $driverVehicle = $this->DVAModel->where('driver_id', $id)->where('(unassign_date = "" or unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date) = 0)')->first();
+      //  echo  $this->DVAModel->getLastQuery().' <pre>';print_r($driverVehicle);  
+       if(isset($driverVehicle['vehicle_id']) && ($driverVehicle['vehicle_id'] > 0)){ 
+        $data['vehicle_id']  = $driverVehicle['vehicle_id'];
+        //Check Booking is assigned to this driver vehicle
+        $bookingVehicle = $this->BVLModel
+        ->select('b.status booking_status,booking_vehicle_logs.*')
+        ->join('bookings b','b.id= booking_vehicle_logs.booking_id')
+        ->where('booking_vehicle_logs.vehicle_id', $driverVehicle['vehicle_id'])
+        ->where(' (booking_vehicle_logs.unassign_date IS NULL or UNIX_TIMESTAMP(booking_vehicle_logs.unassign_date) = 0) ')->first();
+        //  echo $this->BVLModel->getLastQuery().' <pre>';print_r($bookingVehicle);  
+          
+        $data['booking_id'] = isset($bookingVehicle['booking_id']) ? $bookingVehicle['booking_id'] : 0;
+        $data['booking_status_id'] = isset($bookingVehicle['booking_status']) ? $bookingVehicle['booking_status'] : 0;
+      } 
+      $data['driver_id'] = $id;
+      $data['remarks'] = $this->request->getPost('remarks');
+      $data['status_date'] = $this->request->getPost('status_date');
+
+      $driver = $this->DModel->where('id',$id)->first();
+      $data['driver_status_id'] = $driver['working_status'] ;
+     
+      //Update driver status
+      $this->DModel->update($id,['working_status' => 6]);
+
+      //add driver transaction 
+      $lastId = $this->updateDriverTransactions($data);
+      if($lastId > 0 ){
+        $this->session->setFlashdata('success', 'Driver has been blacklisted successfully.');  
+      }else{
+        $this->session->setFlashdata('danger', 'Some error has been occured, please try again!!');  
+      }
+      return $this->response->redirect(base_url('driver'));
+    } 
+
+    $this->view['token'] = $id;
+    return view('Driver/blacklist', $this->view);
+  }
+
+  function updateDriverTransactions($post){
+    $data['booking_id'] = isset($post['booking_id']) && ($post['booking_id'] > 0) ? $post['booking_id'] : 0;
+    $data['booking_status_id'] = isset($post['booking_status_id']) && ($post['booking_status_id'] > 0) ? $post['booking_status_id'] : 0;
+    $data['created_by'] = $this->added_by;
+    $data['vehicle_id'] = isset($post['vehicle_id']) && ($post['vehicle_id'] > 0) ? $post['vehicle_id'] : 0;
+    $data['driver_id'] = isset($post['driver_id']) && ($post['driver_id'] > 0) ? $post['driver_id'] : 0;
+    $data['remarks'] = isset($post['remarks']) ? $post['remarks'] : 0;
+    $data['status_date'] = isset($post['status_date']) ? $post['status_date'] : '';
+    $data['driver_status_id'] = isset($post['driver_status_id']) && ($post['driver_status_id'] > 0) ? $post['driver_status_id'] : 0;
+    // echo '<pre>';print_r($data);exit;
+    return  $this->DTModel->insert($data) ? $this->DTModel->getInsertID() : 0; 
   }
 }

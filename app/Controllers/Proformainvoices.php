@@ -255,11 +255,13 @@ class Proformainvoices extends BaseController
    
     function preview($id){   
       $this->view['proforma_invoice'] = $this->ProformaInvoiceModel
-      ->select('proforma_invoices.*,b.*,b.status booking_status,p.*,v.rc_number,s.state_name,bps.state_name pickup_state,bds.state_name drop_state,c.party_type_id,c.party_id')
+      ->select('proforma_invoices.*,b.*,b.status booking_status,p.*,v.rc_number,s.state_name,bps.state_name pickup_state,bds.state_name drop_state,c.party_type_id,c.party_id,bc.party_name customer_party_name')
       ->join('bookings b','b.id=proforma_invoices.booking_id')
       // ->join('party p','p.id = proforma_invoices.bill_to_party_id')
       ->join('customer c', 'c.id = proforma_invoices.bill_to_party_id','left') 
       ->join('party p', 'p.id = c.party_id','left') 
+      ->join('customer c2', 'c2.id = b.customer_id','left') 
+      ->join('party bc', 'bc.id = c2.party_id','left') 
       ->join('booking_pickups bp','b.id=bp.booking_id')
       ->join('booking_drops bd','b.id=bd.booking_id')
       ->join('states bps', 'bp.state = bps.state_id','left')

@@ -63,10 +63,24 @@
                                                     </div>
 
 													<div class="col-md-6">
-                                                        <label class="col-form-label"><b>Total Freight: </b></label>
-                                                        <label class="col-form-label"><?= 'Rs.'.$proforma_invoice['total_freight'] ?></label>
+                                                        <label class="col-form-label"><b>Commission Agent: </b></label>
+                                                        <label class="col-form-label"><?= $proforma_invoice['customer_party_name'] ?></label>
                                                     </div>
 
+													<div class="col-md-6">
+                                                        <label class="col-form-label"><b>Freight Charges: </b></label>
+                                                        <label class="col-form-label"><?= 'Rs.'.number_format($proforma_invoice['total_freight'],2) ?></label>
+                                                    </div>
+
+													<div class="col-md-6">
+                                                        <label class="col-form-label"><b>Other Expenses: </b></label>
+                                                        <label class="col-form-label"><?= 'Rs.'.number_format($proforma_invoice['other_expenses'],2) ?></label>
+                                                    </div>
+
+													<div class="col-md-6">
+                                                        <label class="col-form-label"><b>Invoice Amount: </b></label>
+                                                        <label class="col-form-label"><?= 'Rs.'.number_format($proforma_invoice['invoice_total_amount'],2) ?></label>
+                                                    </div>
 
                                                 </div>
                                                 <br>
@@ -176,6 +190,15 @@
 														</td> 
 														<td class="td29" colspan="4">
 															<p class="s10 p14" >WEIGHT- <?= ($proforma_invoice['guranteed_wt'] >0) ? $proforma_invoice['guranteed_wt'].' KG' : 0 .' KG' ?></p>
+														</td>
+													</tr> 
+
+													<tr style="height:21pt"> 
+														<td class="td27" colspan="3">
+														<p class="s10 p14" >-</p>
+														</td> 
+														<td class="td29" colspan="4">
+															<p class="s10 p14" >COMMISSION AGENT - <?= ($proforma_invoice['customer_party_name'] != '') ? ucwords(strtolower($proforma_invoice['customer_party_name'])) : ' -' ?></p>
 														</td>
 													</tr> 
 
