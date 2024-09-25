@@ -400,8 +400,8 @@
 				success: function(response) {
 					if(response){  
 						var selecected_customer_branch_id = $('#selecected_customer_branch_id').val();
-						response.forEach(function(val) {
-							var selected = (selecected_customer_branch_id > 0) && (selecected_customer_branch_id == val.id) && (id > 0) ? 'selected' : '';
+						response.forEach(function(val) { 
+							var selected = (selecected_customer_branch_id > 0) && (selecected_customer_branch_id == val.id) && ($('#id').val() > 0) ? 'selected' : '';
 							html +='<option value="'+val.id+'" '+selected+'>'+val.office_name+'</option>'
 						});
 						$('#customer_branch_id').html(html);

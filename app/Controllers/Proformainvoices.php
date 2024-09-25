@@ -50,9 +50,12 @@ class Proformainvoices extends BaseController
   
     public function index()
     {    
-        $this->ProformaInvoiceModel->select('proforma_invoices.*,b.booking_number,v.rc_number,p.party_name,p.primary_phone')
+        $query = "(SELECT vehicle.rc_number FROM booking_transactions bt join vehicle on vehicle.id = bt.vehicle_id  WHERE booking_status_id = 11 and booking_id = b.id group by bt.booking_id)";
+        $this->ProformaInvoiceModel->select('proforma_invoices.*,b.booking_number, 
+        IF(b.status = 11,'.$query .', v.rc_number) as rc_number,
+        p.party_name,p.primary_phone,b.status')
         ->join('bookings b','b.id=proforma_invoices.booking_id')
-        ->join('vehicle v','v.id = b.vehicle_id')
+        ->join('vehicle v','v.id = b.vehicle_id','left')
         ->join('customer c', 'c.id = proforma_invoices.bill_to_party_id','left') 
         ->join('party p', 'p.id = c.party_id','left');  
         if ($this->request->getPost('customer_id') != '') {
