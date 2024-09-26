@@ -86,6 +86,7 @@ use App\Models\PartyModel;
                           <option value="3" <?= set_value('working_status') == 3 ? 'selected' : '' ?>>On Trip </option>
                           <option value="4" <?= set_value('working_status') == 4 ? 'selected' : '' ?>>Waiting For Trip </option>
                           <option value="5" <?= set_value('working_status') == 5 ? 'selected' : '' ?>>Absconding </option>
+                          <option value="6" <?= set_value('working_status') == 6 ? 'selected' : '' ?>>Blacklisted </option>
                         </select>
                       </div>
                     </div>
@@ -162,6 +163,9 @@ use App\Models\PartyModel;
                               break;
                             case "5":
                               $ws = '<span class="badge badge-pill bg-warning">Absconding</span>';
+                              break;
+                            case "6":
+                              $ws = '<span class="badge badge-pill bg-warning">Blacklisted</span>';
                               break;
                             default:
                               $ws = '<span class="badge badge-pill bg-warning">N/A</span>';
@@ -240,6 +244,37 @@ use App\Models\PartyModel;
     </div>
   </div>
 
+  <!-- modal  -->
+<div class="modal fade" id="gcmModal" tabindex="-1" aria-labelledby="gcmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <?php echo form_open_multipart('', ['name'=>'actionForm', 'id' => 'form-modal']); ?> 
+        <div class="modal-header">
+          <h5 class="modal-title" id="gcmModalLabel"></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+           <div class="col-md-12">
+              <label class="col-form-label"> <span id="confirmMsg"></span> <span class="text-danger">*</span> </label><br>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="approved" checked id="inlineRadio1" value="1">
+                <label class="form-check-label" for="inlineRadio1">Yes</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="approved"  id="inlineRadio2" value="0">
+                <label class="form-check-label" for="inlineRadio2">No</label>
+              </div>
+          </div> 
+        </div>
+        <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  
 
   <?= $this->include('partials/vendor-scripts') ?>
   <script>
@@ -291,7 +326,19 @@ use App\Models\PartyModel;
           }
         });
       });
-    });
+    }); 
+    $(document).ready(function() { 
+        $(document).on("click", ".action_link", function() {  
+          var id = $(this).attr('token');
+          var title = $(this).attr('title');
+          var msg = $(this).attr('msg');
+          var secLink = $(this).attr('secLink');
+          $('#gcmModalLabel').html(title); 
+          $('#confirmMsg').text(msg);
+          $('form#form-modal').attr('action','<?= base_url($currentController.'/') ?>'+secLink+'/'+id)
+          $('#gcmModal').modal('show'); 
+      });
+    }); 
   </script>
 </body>
 

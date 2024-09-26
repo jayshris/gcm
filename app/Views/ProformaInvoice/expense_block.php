@@ -12,7 +12,8 @@
                 $i = 1;
                 foreach ($booking_expences as $be) { 
                 ?>
-                <tr id="del_expense_<?= $i ?>" class="<?= ($be['bill_to_party'] == 1) ? 'tr-block' : 'tr-readonly'; ?>">
+                <!-- <tr id="del_expense_<?= $i ?>" class="<?= ($be['bill_to_party'] == 1) ? 'tr-block' : 'tr-readonly'; ?>"> -->
+                <tr id="del_expense_<?= $i ?>">
                     <td>
                     <select class="form-select" name="expense[]" aria-label="Default select example">
                         <option value="">Select Expense</option>

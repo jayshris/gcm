@@ -884,7 +884,7 @@ class Driver extends BaseController
 
 
 
-  public function approve($id = null)
+  public function approve_bk($id = null)
 
   {
 
@@ -917,9 +917,9 @@ class Driver extends BaseController
 
     $session = \Config\Services::session();
 
-    $session->setFlashdata('success', 'Driver Approved');
+    $session->setFlashdata('success', 'Driver is approved successfully');
 
-    return $this->response->redirect(base_url('/foreman'));
+    return $this->response->redirect(base_url('/driver'));
   }
 
 
@@ -1218,7 +1218,7 @@ class Driver extends BaseController
       $data['driver_status_id'] = $driver['working_status'] ;
      
       //Update driver status
-      $this->DModel->update($id,['working_status' => 5]);
+      $this->DModel->update($id,['working_status' => 5,'approved' =>0]);
 
       //add driver transaction 
       $lastId = $this->updateDriverTransactions($data);
@@ -1243,7 +1243,7 @@ class Driver extends BaseController
       $data['driver_status_id'] = $driver['working_status'] ;
      
       //Update driver status
-      $this->DModel->update($id,['working_status' => 6]);
+      $this->DModel->update($id,['working_status' => 6,'approved' =>0]);
 
       //add driver transaction 
       $lastId = $this->updateDriverTransactions($data);
@@ -1271,4 +1271,20 @@ class Driver extends BaseController
     // echo '<pre>';print_r($data);exit;
     return  $this->DTModel->insert($data) ? $this->DTModel->getInsertID() : 0; 
   }
+
+  public function approve($id = null){ 
+    // echo $id.'<pre>';print_r($this->request->getPost()); 
+    $data['approved'] = 1;
+    if($this->request->getPost('approved') == 0){      
+      //Get driver transaction data
+      $last_driver_status = $this->DTModel->select('driver_status_id')->where(['driver_id' =>$id])->orderBy('id','DESC')->first();
+      $data['working_status'] = isset($last_driver_status['driver_status_id']) ? $last_driver_status['driver_status_id'] : 1;
+    }
+    // echo $id.'<pre>';print_r($data);exit; 
+    $this->DModel->update($id,$data);
+    $session = \Config\Services::session();
+    $session->setFlashdata('success', 'Approval confirmation submited successfully');
+    return $this->response->redirect(base_url('/driver'));
+  }
+
 }

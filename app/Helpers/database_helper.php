@@ -74,7 +74,6 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 				$menu .= '<div class="dropdown-menu dropdown-menu-right">';
 			}
 		}
-
 		foreach ($actions as $act) {
 			if (isset($act->show_position) && $act->show_position == $pos) {
 				$secName  = isset($act->section_name) ? $act->section_name : '';
@@ -155,6 +154,8 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 							//25-09-2024 - added abconding and blacklist action in driver
 							if ($secLink == 'absconding' && in_array($row['working_status'],[2,3,4,5,6]))  $makeButton = 0;
 							if ($secLink == 'blacklist' && in_array($row['working_status'],[2,3,4,5,6]))  $makeButton = 0;
+
+							if ($secLink == 'approve' && ($row['approved'] == 1)) $makeButton = 0; 
 						}
 						if ($module == 'loadingreceipt') {
 							if ($secLink == 'approve' && ($row['approved'] == 1 || $row['status'] != 1))	$makeButton = 0;
@@ -188,12 +189,25 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 										break;
 									case "cancel":
 									$msg = "Are you sure want to cancel trip?";
-									break;
+										break;
 									default:
 									$msg = "Are you sure want to delete?";
 								}	 
 								$menu .= '<a href="#" class="action_link btn btn-icon btn-outline-primary rounded-pill" token="'.$token.'" msg="'.$msg.'" secLink="' . $secLink . '"  title="'.ucfirst($secName).'"><i class="' . $cssClass . '" data-bs-toggle="tooltip" aria-label="' . $cssClass . '" data-bs-original-title="' . ucfirst($secName) . '"></i></a>';
-							} else{
+							}else if ($module == 'driver' && $secLink == 'approve') { 	 
+								$title = "Approval Confirmation";	 
+								switch($row['working_status']){
+									case 5:
+										$msg = "Are you sure, want to approve this driver for abscond?"; 
+										break;
+									case 6:
+										$msg = "Are you sure, want to approve this driver for blacklist?"; 
+										break;  
+									default:
+									$msg = "Are you sure want to approve this record?";
+								}	 
+								$menu .= '<a href="#" class="action_link btn btn-icon btn-outline-primary rounded-pill" token="'.$token.'" msg="'.$msg.'" secLink="' . $secLink . '"  title="'.$title.'"><i class="' . $cssClass . '" data-bs-toggle="tooltip" aria-label="' . $cssClass . '" data-bs-original-title="' . ucfirst($secName) . '"></i></a>';
+							}else{
 								$menu .= anchor(PANEL . $module . '/' . $secLink . '/' . $token, '<i class="' . $cssClass . '" data-bs-toggle="tooltip" aria-label="' . $cssClass . '" data-bs-original-title="' . ucfirst($secName) . '"></i> ', ['class' => 'btn btn-icon btn-outline-primary rounded-pill', 'onclick' => $confirm, 'title' => ucfirst($secName)]);
 							}
 							$menu .= ' &nbsp; ';

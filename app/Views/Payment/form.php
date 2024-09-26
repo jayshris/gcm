@@ -40,6 +40,17 @@
 											</div>
 											<div class="profile-details">
 												<div class="row g-3"> 
+													<div class="col-md-12">
+														<!-- <label class="col-form-label"> <span id="confirmMsg"></span> <span class="text-danger">*</span> </label><br> -->
+														<div class="form-check form-check-inline">
+															<input class="form-check-input" type="radio" name="payment_for" checked id="inlineRadio1" value="driver">
+															<label class="form-check-label" for="inlineRadio1">Driver</label>
+														</div>
+														<div class="form-check form-check-inline">
+															<input class="form-check-input" type="radio" name="payment_for" disabled id="inlineRadio2" value="vendor">
+															<label class="form-check-label" for="inlineRadio2">Vendor</label>
+														</div>
+													</div> 
 													<div class="col-md-6"> 
 														<label class="col-form-label">
 														Driver<span class="text-danger">*</span>
