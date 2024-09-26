@@ -121,6 +121,8 @@ class Booking extends BaseController
 
     public function index()
     { 
+        $this->view['booking_numbers'] = $this->BModel->select('id,booking_number')->findAll(); 
+
         $query = "(SELECT vehicle.rc_number FROM booking_transactions bt join vehicle on vehicle.id = bt.vehicle_id  WHERE booking_status_id = 11 and booking_id = bookings.id group by bt.booking_id)";
         $this->BModel->select('bookings.*, party.party_name , 
          IF(bookings.status = 11,'.$query .', vehicle.rc_number) as rc_number,
@@ -145,6 +147,10 @@ class Booking extends BaseController
 
         if ($this->request->getPost('vehicle_rc') != '') {
             $this->BModel->where('bookings.vehicle_id', $this->request->getPost('vehicle_rc'));
+        }
+
+        if ($this->request->getPost('booking_id') != '') {
+            $this->BModel->where('bookings.id', $this->request->getPost('booking_id'));
         }
 
         $this->view['bookings'] = $this->BModel->orderBy('bookings.id', 'desc')->groupBy('bookings.id')->findAll();

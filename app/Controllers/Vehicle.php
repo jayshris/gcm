@@ -2,17 +2,19 @@
 
 namespace App\Controllers;
 
-use App\Models\BookingsModel;
-use App\Models\BookingVehicleLogModel;
-use App\Models\CustomersModel;
-use App\Models\VehicleModel;
-use App\Models\VehicleTyreDetailsMapModel;
-use App\Models\VehicleTypeModel;
-use App\Models\VehicleTModel;
 use App\Models\UserModel;
-use App\Models\ModulesModel;
 use App\Models\PartyModel;
 use App\Models\StateModel;
+use App\Models\ModulesModel;
+use App\Models\VehicleModel;
+use App\Models\BookingsModel;
+use App\Models\VehicleTModel;
+use App\Models\CustomersModel;
+use App\Models\VehicleTypeModel;
+use App\Models\BookingDropsModel;
+use App\Models\BookingPickupsModel;
+use App\Models\BookingVehicleLogModel;
+use App\Models\VehicleTyreDetailsMapModel;
 
 class Vehicle extends BaseController
 {
@@ -27,6 +29,8 @@ class Vehicle extends BaseController
   public $CModel;
   public $BVLModel;
   public $BModel;
+  public $BPModel;
+  public $BDModel;
   public function __construct()
 
   {
@@ -46,6 +50,8 @@ class Vehicle extends BaseController
     $this->CModel = new CustomersModel();
     $this->BVLModel = new BookingVehicleLogModel();
     $this->BModel = new BookingsModel();
+    $this->BPModel =  new BookingPickupsModel();
+    $this->BDModel = new BookingDropsModel();
   }
 
   public function index()
@@ -532,14 +538,18 @@ class Vehicle extends BaseController
    //Assigned Booking Vehicle List
    function assigned_booking_vehicle_list($id){
       $this->view['vehicle'] =  $this->vehicleModel->where('id', $id)->first();
-      $this->BVLModel->select('booking_vehicle_logs.*,b.booking_number , vehicle.rc_number, vt.name vehicle_type_nm')
+      $this->BVLModel->select('booking_vehicle_logs.*,b.booking_number , vehicle.rc_number, vt.name vehicle_type_nm,bp.city pickup_city,bd.city drop_city')
 
         ->join('vehicle', 'vehicle.id = booking_vehicle_logs.vehicle_id')
 
         ->join('vehicle_type vt', 'vt.id = vehicle.vehicle_type_id')
 
         ->join('bookings b', 'b.id = booking_vehicle_logs.booking_id') 
+
+        ->join('booking_pickups bp', 'b.id = bp.booking_id','left')
         
+        ->join('booking_drops bd', 'b.id = bd.booking_id','left')
+
         ->where(['vehicle.id'=>$id,'b.status'=>11]);
   
       $this->view['assigned_list'] = $this->BVLModel->groupBy('b.id,vehicle.id')->orderBy('booking_vehicle_logs.assign_date', 'descs')->findAll();
