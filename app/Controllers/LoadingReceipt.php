@@ -44,7 +44,7 @@ class LoadingReceipt extends BaseController
     $this->PTModel = new PartytypeModel();
     $this->CustomerBranchModel = new CustomerBranchModel();
     $this->BVLModel = new BookingVehicleLogModel();  
-  }
+  } 
 
   public function index()
   {  
@@ -68,13 +68,13 @@ class LoadingReceipt extends BaseController
     }
 
     if ($this->request->getPost('vehicle_id') > 0) {
-      $this->LoadingReceiptModel->where('v.id', $this->request->getPost('vehicle_id'));
-  }
+        $this->LoadingReceiptModel->where('v.id', $this->request->getPost('vehicle_id'));
+    }
 
     $this->view['loading_receipts'] = $this->LoadingReceiptModel->orderBy('id', 'desc')->findAll();
     return view('LoadingReceipt/index', $this->view); 
   } 
-  
+
   function create(){  
     $stateModel = new StateModel();
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
@@ -493,7 +493,7 @@ class LoadingReceipt extends BaseController
     $this->LoadingReceiptModel->where('id', $id)->delete($id); 
     $this->session->setFlashdata('success', 'Loading receipt has been deleted successfully');
     return $this->response->redirect(base_url('/loadingreceipt')); 
-  }
+  } 
 
   function preview($id){
     $stateModel = new StateModel();

@@ -33,15 +33,14 @@
 							<div class="card main-card">
 								<div class="card-body"> 
 									<div class="row">  
-										<div class="col-md-8">
+									<div class="col-md-8">
 										<h4>Search / Filter</h4>
 										</div>
 										<div class="col-md-4 text-end ">
 											<?php echo makeListActions($currentController, $Action, 0, 1); ?>
-										</div>
+										</div>										
+										<div class="row mt-2"> 
 										<hr>
-										<div class="row mt-2">
-
 											<div class="col-md-3">
 												<div class="form-wrap">
 													<label class="col-form-label">Booking No.</label>
@@ -70,7 +69,6 @@
 												<button class="btn btn-info mt-4">Search</button>&nbsp;&nbsp;
 												<a href="<?php echo base_url($currentController); ?>" class="btn btn-warning mt-4">Reset</a>&nbsp;&nbsp; 
 											</div>
-
 										</div>
 									</div>
 								</div>
