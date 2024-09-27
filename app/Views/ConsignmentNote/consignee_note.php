@@ -202,7 +202,7 @@
                 <p class="s9 p12" style="padding-left: 59pt;">Invoice/BOENo.</p>
             </td>
             <td class="td54" colspan="2">
-                <p class="s9 p12" style="padding-left: 60pt;">Invoice/BOEDate</p>
+                <p class="s9 p12" style="text-align: center;">Invoice/BOEDate</p>
             </td>
             <td class="td55" colspan="2">
                 <p class="s9 p12 p16" >Invoice Value</p>
@@ -213,7 +213,7 @@
                 <p class="s10 p12" style="padding-left: 60pt;"><?= isset($lr['invoice_boe_no']) && (!empty($lr['invoice_boe_no'])) ? strtoupper($lr['invoice_boe_no']) : '-' ?></p>
             </td>
             <td class="td57" colspan="2">
-                <p class="s10 p12" style="padding-left: 56pt;"><?= isset($lr['invoice_boe_date']) && (strtotime($lr['invoice_boe_date'])>0) ? date('d M y, h:i A',strtotime($lr['invoice_boe_date'])) : '-' ?></p>
+                <p class="s10 p12" style="text-align: center;"><?= isset($lr['invoice_boe_date']) && (strtotime($lr['invoice_boe_date'])>0) ? date('d M y',strtotime($lr['invoice_boe_date'])) : '-' ?></p>
             </td>
             <td class="td58" colspan="2">
                 <p class="s10 p16" ><?= isset($lr['invoice_value']) && (!empty($lr['invoice_value'])) ? strtoupper($lr['invoice_value']) : '-' ?></p>

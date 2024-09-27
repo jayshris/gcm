@@ -43,7 +43,7 @@
 	<?= $this->include('partials/vendor-scripts') ?> 
 
 	<input type="hidden" id="base_url" value="<?php echo base_url() ?>" />
-	<script src="<?php echo base_url(); ?>public/assets/js/loading_receipt.js"></script>
+	<script src="<?php echo base_url(); ?>public/assets/js/loading_receipt.js?<?= time()?>"></script>
  
 </body>
 

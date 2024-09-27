@@ -79,16 +79,8 @@ function changeIdIpt(branch_id,party_id,id,key = 'consignor'){
         pre = 'place_of_dispatch';
     }  
     if(key == 'transporter'){
-        branch_id = (branch_id == 'Select Office') ? '' : branch_id;
         pre = 'transporter';
     }
-    if(key == 'supplier'){
-        pre = 'consignor';
-    }
-    if(key == 'recipient'){
-        pre = 'consignee';
-    }
-    // alert(party_id + ' /branch_id ' +branch_id );
     if((party_id>0) && (branch_id !='')){
         $.ajax({
         method: "POST",
@@ -110,8 +102,8 @@ function changeIdIpt(branch_id,party_id,id,key = 'consignor'){
                 // $("#"+key+"_pincode").val(res.pincode);
                 $("#"+pre+"_pincode").val(res.pincode);
 
-                //$("#"+key+"_GSTIN").val(res.gst); 
-                $("#"+pre+"_GSTIN").val(res.gst);
+                //$("#consignor_GSTIN").val(res.gst); 
+                // $("#"+key+"_GSTIN").val(res.gst); 
             }
         }); 
         
@@ -126,7 +118,7 @@ function changeIdIpt(branch_id,party_id,id,key = 'consignor'){
 
         // $("#"+key+"_pincode").val('');
         $("#"+pre+"_pincode").val('');
-        $("#"+pre+"_GSTIN").val('');
+         
     }
 }
 
@@ -155,15 +147,12 @@ $.getVehicleBookings = function() {
     });
 }
 
-function customerBranches(customer_id,customer_type,supplier_or_recipient){
+function customerBranches(customer_id,customer_type){  
+    alert('customer_type '+customer_type);
     $("#"+customer_type+"_office_id").attr('disabled','disabled');
     $("#"+customer_type+"_office_id").removeAttr('required');
     $('#'+customer_type+'_office_id').val('').attr("selected","selected").trigger('change');
-    $("#"+customer_type+"_branch_span").attr('hidden','hidden');
-
-    $('#'+supplier_or_recipient+'_office_id').val('').attr("selected","selected").trigger('change');
-    $('#'+supplier_or_recipient+'_office_id').attr('disabled','disabled');
-
+    //$("#"+customer_type+"_branch_span").attr('hidden','hidden');
     if(customer_id > 0 ){
         $('#'+customer_type+'_id').val(customer_id); 
         $.ajax({
@@ -174,6 +163,7 @@ function customerBranches(customer_id,customer_type,supplier_or_recipient){
             },
             dataType: "json",
             success: function(res) { 
+                console.log(res);
                 var html  ='<option value="">Select Branch</option>';
                 if(res){
                     $.each(res, function(i, item) { 
@@ -185,64 +175,11 @@ function customerBranches(customer_id,customer_type,supplier_or_recipient){
                 } 
                 $('#'+customer_type+'_office_id').html(html);
                 $('#'+customer_type+'_office_id').val('').attr("selected","selected").trigger('change');   
-                $("#"+customer_type+"_branch_span").removeAttr('hidden');//alert('customer_type');return false;
-
-                if(customer_type=='consignor'){
-                    $("#supplier_office_id").attr('disabled','disabled');
-                    $("#supplier_office_id").removeAttr('required');
-                    $('#supplier_office_id').val('').attr("selected","selected").trigger('change');
-
-                    var htmlS  ='<option value="">Select Branch</option>';
-                    if(res){
-                        $.each(res, function(i, item) { 
-                            var selected = (i==0) ? 'selected' : '';
-                            htmlS += '<option value="'+item.office_name+'" "'+selected+'">'+item.office_name+'</option>'
-                        }); 
-                        $("#supplier_office_id").removeAttr('disabled');
-                        $("#supplier_office_id").attr('required','required');
-                    } 
-                    $('#supplier_office_id').html(htmlS);
-                    $('#supplier_office_id').val('').attr("selected","selected").trigger('change');   
-                    $("#supplier_office_id").removeAttr('hidden');
-                    $('#place_of_dispatch_name').val($('#'+customer_type+'_name').val());
-                }
-
-                if(customer_type=='consignee'){
-                    $("#recipient_office_id").attr('disabled','disabled');
-                    $("#recipient_office_id").removeAttr('required');
-                    $('#recipient_office_id').val('').attr("selected","selected").trigger('change');
-
-                    var htmlS  ='<option value="">Select Branch</option>';
-                    if(res){
-                        $.each(res, function(i, item) { 
-                            var selected = (i==0) ? 'selected' : '';
-                            htmlS += '<option value="'+item.office_name+'" "'+selected+'">'+item.office_name+'</option>'
-                        }); 
-                        $("#recipient_office_id").removeAttr('disabled');
-                        $("#recipient_office_id").attr('required','required');
-                    } 
-                    $('#recipient_office_id').html(htmlS);
-                    $('#recipient_office_id').val('').attr("selected","selected").trigger('change');   
-                    $("#recipient_office_id").removeAttr('hidden');
-                    $('#place_of_delivery_name').val($('#'+customer_type+'_name').val());
-                }
+                $("#"+customer_type+"_branch_span").removeAttr('hidden');
             }
-        });	
-         //27-09-2024 If consignee or cosignor added manually, then remove city and state mandatory validation 
-        $('#'+customer_type+'_city_spn').removeAttr('hidden');
-        $('#'+customer_type+'_state_spn').removeAttr('hidden');
-        $('#'+customer_type+'_city').attr('required','required');
-        $('#'+customer_type+'_state').attr('required','required');
-
-    }else{ 
-
-        //If consignee or cosignor added manually, then remove city and state mandatory validation 
-        $('#'+customer_type+'_city_spn').attr('hidden','hidden');
-        $('#'+customer_type+'_state_spn').attr('hidden','hidden');
-        $('#'+customer_type+'_city').removeAttr('required');
-        $('#'+customer_type+'_state').removeAttr('required');
+        });				
     } 
-//    partyInfo(customer_id, customer_type); 
+   partyInfo(customer_id, customer_type); 
     
 }
 
@@ -309,5 +246,6 @@ function transportedBranches(customer_id,customer_type){
             }
         });				
     } 
-//    partyInfo(customer_id, customer_type);     
+   partyInfo(customer_id, customer_type); 
+    
 }

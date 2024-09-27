@@ -185,7 +185,7 @@
 
                             <?php if (isset($branch_detail)) { ?>
 
-                              <div class="col-12"></div>
+                              <!-- <div class="col-12"></div> -->
 
                               <div class="col-md-2">
                                 <label class="col-form-label">Status<span class="text-danger">*</span></label>

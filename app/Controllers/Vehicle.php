@@ -538,7 +538,7 @@ class Vehicle extends BaseController
    //Assigned Booking Vehicle List
    function assigned_booking_vehicle_list($id){
       $this->view['vehicle'] =  $this->vehicleModel->where('id', $id)->first();
-      $this->BVLModel->select('booking_vehicle_logs.*,b.booking_number , vehicle.rc_number, vt.name vehicle_type_nm,bp.city pickup_city,bd.city drop_city')
+      $this->BVLModel->select('booking_vehicle_logs.*,b.booking_number, b.booking_date , vehicle.rc_number, vt.name vehicle_type_nm,bp.city pickup_city,bd.city drop_city')
 
         ->join('vehicle', 'vehicle.id = booking_vehicle_logs.vehicle_id')
 

@@ -98,6 +98,7 @@ use App\Models\PartyModel;
                                 <th>Booking Number</th>
                                 <th>Vehicle Type</th>
                                 <th>Assigned On</th>
+                                <th>Booking Date</th>
                                 <th>Pickup City</th>
                                 <th>Drop City</th>
                             </tr>
@@ -113,6 +114,7 @@ use App\Models\PartyModel;
                                         <td><?= $item['booking_number'] ?></td>
                                         <td><?= isset($item['vehicle_type_nm']) ? $item['vehicle_type_nm'] : '-' ?></td>
                                         <td><?= date('d-m-Y', strtotime($item['assign_date']))  ?></td>
+                                        <td><?= date('d-m-Y', strtotime($item['booking_date']))  ?></td>
                                         <td><?= isset($item['pickup_city']) ? $item['pickup_city'] : '-' ?></td>
                                         <td><?= isset($item['drop_city']) ? $item['drop_city'] : '-' ?></td>
                                     </tr>
