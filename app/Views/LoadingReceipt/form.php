@@ -285,8 +285,8 @@
                         <div class="col-md-4">
                             <?php 
                             $label = 'City';  ?>
-                            <label class="col-form-label">City<span class="text-danger" id="consignor_city_spn"  <?= ($loading_receipts['consignor_id'] == 0) ? 'hidden' : ''  ?>>*</span></label>
-                            <input name="consignor_city" id="consignor_city" value="<?= set_value('consignor_city', (isset($loading_receipts['consignor_city']) ? $loading_receipts['consignor_city'] : ''))?>" class="form-control <?= (($validation->getError('consignor_city')) ? 'is-invalid' : '')?>" placeholder="City" autocomplete="off"  <?= ($loading_receipts['consignor_id'] == 0) ? '' : 'required' ?> />
+                            <label class="col-form-label">City<span class="text-danger" id="consignor_city_spn"  <?= (isset($loading_receipts['consignor_id']) && $loading_receipts['consignor_id'] == 0) ? 'hidden' : ''  ?>>*</span></label>
+                            <input name="consignor_city" id="consignor_city" value="<?= set_value('consignor_city', (isset($loading_receipts['consignor_city']) ? $loading_receipts['consignor_city'] : ''))?>" class="form-control <?= (($validation->getError('consignor_city')) ? 'is-invalid' : '')?>" placeholder="City" autocomplete="off"  <?= (isset($loading_receipts['consignor_id']) && $loading_receipts['consignor_id'] == 0) ? '' : 'required' ?> />
                           <?php 
                             // echo form_input(['name'=>'consignor_city','id'=>'consignor_city','value'=>set_value('consignor_city', (isset($loading_receipts['consignor_city']) ? $loading_receipts['consignor_city'] : '')),'class'=>'form-control '.(($validation->getError('consignor_city')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off', 'required'=>'required']);
                             echo ($validation->getError('consignor_city')) ? '<div class="invalid-feedback">'.$validation->getError('consignor_city').'</div>' : '';
@@ -294,8 +294,8 @@
                         </div>
 
                         <div class="col-md-4">
-                            <label class="col-form-label">State<span class="text-danger"  id="consignor_state_spn"  <?= ($loading_receipts['consignor_id'] == 0) ? 'hidden' : ''  ?> >*</span></label> 
-                            <select class="form-select select2"  <?= ($loading_receipts['consignor_id'] == 0) ? '' : 'required'  ?> name="consignor_state" id="consignor_state" aria-label="Default select example">
+                            <label class="col-form-label">State<span class="text-danger"  id="consignor_state_spn"  <?= (isset($loading_receipts['consignor_id']) && $loading_receipts['consignor_id'] == 0) ? 'hidden' : ''  ?> >*</span></label> 
+                            <select class="form-select select2"  <?= (isset($loading_receipts['consignor_id']) && $loading_receipts['consignor_id'] == 0) ? '' : 'required'  ?> name="consignor_state" id="consignor_state" aria-label="Default select example">
                                 <option value="">Select State</option>
                                 <?php foreach ($states as $o) { ?>
                                 <option value="<?= $o['state_id']?>" <?= (isset($loading_receipts['consignor_state']) && ($loading_receipts['consignor_state'] == $o['state_id'])) ? 'selected' : ''?>><?= $o['state_name'] ?></option>
@@ -466,8 +466,8 @@
                             <?php 
                             $label = 'City';
                              ?>  
-                             <label class="col-form-label">City<span class="text-danger" id="consignee_city_spn"  <?= ($loading_receipts['consignee_id'] == 0) ? 'hidden' : ''  ?>>*</span></label> 
-                             <input name="consignee_city" id="consignee_city" value="<?= set_value('consignee_city', (isset($loading_receipts['consignee_city']) ? $loading_receipts['consignee_city'] : ''))?>" class="form-control <?= (($validation->getError('consignee_city')) ? 'is-invalid' : '')?>" placeholder="City" autocomplete="off"  <?= ($loading_receipts['consignee_id'] == 0) ? '' : 'required' ?> />
+                             <label class="col-form-label">City<span class="text-danger" id="consignee_city_spn"  <?= (isset($loading_receipts['consignee_id']) &&  $loading_receipts['consignee_id'] == 0) ? 'hidden' : ''  ?>>*</span></label> 
+                             <input name="consignee_city" id="consignee_city" value="<?= set_value('consignee_city', (isset($loading_receipts['consignee_city']) ? $loading_receipts['consignee_city'] : ''))?>" class="form-control <?= (($validation->getError('consignee_city')) ? 'is-invalid' : '')?>" placeholder="City" autocomplete="off"  <?= (isset($loading_receipts['consignee_id']) && $loading_receipts['consignee_id'] == 0) ? '' : 'required' ?> />
                             <?php 
                             // echo form_input(['name'=>'consignee_city','id'=>'consignee_city','value'=>set_value('consignee_city', (isset($loading_receipts['consignee_city']) ? $loading_receipts['consignee_city'] : '')),'class'=>'form-control '.(($validation->getError('consignee_city')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'required'=>'required']);
                             echo ($validation->getError('consignee_city')) ? '<div class="invalid-feedback">'.$validation->getError('consignee_city').'</div>' : '';
@@ -475,8 +475,8 @@
                         </div>
 
                         <div class="col-md-4">
-                            <label class="col-form-label">State<span class="text-danger" id="consignee_state_spn" <?= ($loading_receipts['consignee_id'] == 0) ? 'hidden' : ''  ?>>*</span></label> 
-                            <select class="form-select select2" <?= ($loading_receipts['consignee_id'] == 0) ? '' : 'required' ?>  name="consignee_state" id="consignee_state" aria-label="Default select example">
+                            <label class="col-form-label">State<span class="text-danger" id="consignee_state_spn" <?= (isset($loading_receipts['consignee_id']) && $loading_receipts['consignee_id'] == 0) ? 'hidden' : ''  ?>>*</span></label> 
+                            <select class="form-select select2" <?= (isset($loading_receipts['consignee_id']) && $loading_receipts['consignee_id'] == 0) ? '' : 'required' ?>  name="consignee_state" id="consignee_state" aria-label="Default select example">
                                 <option value="">Select State</option>
                                 <?php foreach ($states as $o) { ?> 
                                 <option value="<?= $o['state_id'] ?>" <?= (isset($loading_receipts['consignee_state']) && ($loading_receipts['consignee_state'] == $o['state_id'])) ? 'selected' : ''?> ><?= $o['state_name'] ?></option> 
