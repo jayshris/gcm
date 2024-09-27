@@ -76,7 +76,9 @@ class LoadingReceiptModel extends Model
         'place_of_dispatch_name',
         'edit_count',
         'is_approved',
-        'is_update_vehicle'
+        'is_update_vehicle',
+        'supplier_office_id',
+        'recipient_office_id'
     ];
 
     protected bool $allowEmptyInserts = false;
