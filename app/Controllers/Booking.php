@@ -125,7 +125,7 @@ class Booking extends BaseController
 
         $query = "(SELECT vehicle.rc_number FROM booking_transactions bt join vehicle on vehicle.id = bt.vehicle_id  WHERE booking_status_id = 11 and booking_id = bookings.id group by bt.booking_id)";
         $this->BModel->select('bookings.*, party.party_name , 
-         IF(bookings.status = 11,'.$query .', vehicle.rc_number) as rc_number,
+         IF(bookings.status = 11,v2.rc_number, vehicle.rc_number) as rc_number,
           IF(bookings.status = 0, "Created", booking_status.status_name) as status_name,
           IF(bookings.status = 0, "bg-success", booking_status.status_bg) as status_bg,
           lr.id as lr_id,lr.status lr_Status,lr.approved lr_approved')
@@ -133,7 +133,9 @@ class Booking extends BaseController
             ->join('party', 'party.id = customer.party_id', 'left')
             ->join('vehicle', 'vehicle.id = bookings.vehicle_id', 'left')
             ->join('booking_status', 'booking_status.id = bookings.status', 'left')
-            ->join('loading_receipts lr', 'bookings.id = lr.booking_id', 'left');
+            ->join('loading_receipts lr', 'bookings.id = lr.booking_id', 'left')
+            ->join('booking_transactions bts', 'bookings.id = bts.booking_id and booking_status_id =11', 'left')
+            ->join('vehicle v2', 'v2.id = bts.vehicle_id', 'left');
 
         if ($this->request->getPost('status') != '') {
             $this->BModel->where('bookings.status', $this->request->getPost('status'));
@@ -146,7 +148,11 @@ class Booking extends BaseController
         }
 
         if ($this->request->getPost('vehicle_rc') != '') {
-            $this->BModel->where('bookings.vehicle_id', $this->request->getPost('vehicle_rc'));
+            if($this->request->getPost('status') == 11){
+                $this->BModel->where('v2.id', $this->request->getPost('vehicle_rc'));
+            }else{
+                $this->BModel->where('bookings.vehicle_id', $this->request->getPost('vehicle_rc'));
+            }
         }
 
         if ($this->request->getPost('booking_id') != '') {
@@ -154,7 +160,7 @@ class Booking extends BaseController
         }
 
         $this->view['bookings'] = $this->BModel->orderBy('bookings.id', 'desc')->groupBy('bookings.id')->findAll();
-        // echo $this->BModel->getLastQuery().'<pre>';print_r($this->view['bookings']);exit;
+        // echo count($this->view['bookings']).' '.$this->BModel->getLastQuery().'<pre>';print_r($this->view['bookings']);exit;
 
         $this->view['statuses'] = $this->BSModel->where('status_name !=','')->findAll();
         $this->view['pickup'] = $this->BPModel;
