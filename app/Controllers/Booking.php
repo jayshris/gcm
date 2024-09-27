@@ -246,6 +246,22 @@ class Booking extends BaseController
                         $this->view['booking_number'] =$booking_number;
                         $this->view['booking_type'] =$post['booking_type'];
                         $this->view['booking_id'] = $booking_id;
+
+                          //get last drop vehicle location if selected vehicle 27-09-2024
+                        if($post['vehicle_rc'] > 0){
+                            //last trip end booking drop location
+                            $this->view['last_booking_transaction'] = $this->BookingTransactionModel
+                            ->select('b.id bid,bd.city,s.state_name,bd.pincode, booking_transactions.*')
+                            ->join('bookings b', 'b.id = booking_transactions.booking_id')
+                            ->join('booking_drops bd', 'b.id = bd.booking_id')
+                            ->join('states s', 's.state_id = bd.state')
+                            ->where(['booking_transactions.vehicle_id'=>$post['vehicle_rc'],'booking_transactions.booking_status_id' => 11])
+                            ->orderBy('booking_transactions.booking_id','desc')
+                            ->first();
+                            // echo '  <pre>';print_r($post);
+                            // echo $this->BookingTransactionModel->getLastQuery().'<pre>';print_r($this->view['last_booking_transaction']); 
+                            // exit; 
+                        }                         
                     }elseif(isset($post['next_or_generate_link']) && ($post['next_or_generate_link'] == 'generate_link')){
                         $token = md5(date('YMDHis'));
         
@@ -264,7 +280,7 @@ class Booking extends BaseController
                     }
                 }
                 
-            }else if(isset($post['booking_details']) && ($post['booking_details'] ==  'PTL' || $post['booking_details'] ==  'FTL')){
+            }else if(isset($post['booking_details']) && ($post['booking_details'] ==  'PTL' || $post['booking_details'] ==  'FTL')){  
                 //validation for booking details
                 $error = $this->validate([
                     'pickup_state_id' =>  'required',
@@ -370,8 +386,7 @@ class Booking extends BaseController
             ->findAll();
 
         // $db = \Config\Database::connect();  
-        // echo  $db->getLastQuery()->getQuery(); 
-        // echo '  <pre>';print_r($this->view['customers'] );exit; 
+        // echo  $db->getLastQuery()->getQuery();  
 
         return view('Booking/create', $this->view); 
     } 
@@ -1137,6 +1152,7 @@ class Booking extends BaseController
         $this->view['token'] = $id;
         $this->view['booking_details'] = $this->BModel->where('id', $id)->first();
         $this->view['booking_vehicle_details'] = $this->VModel->where('id',$this->view['booking_details']['vehicle_id'])->first();
+
         $this->view['booking_pickups'] = $this->BPModel->where('booking_id', $id)->first();
         $this->view['booking_drops'] = $this->BDModel->where('booking_id', $id)->first();
         $this->view['booking_expences'] = $this->BEModel->where('booking_id', $id)->findAll();  

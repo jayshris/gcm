@@ -84,8 +84,8 @@
     </div>	
     
     <div class="col-md-4">
-        <label class="col-form-label">Other Expenses<span class="text-danger">*</span></label>
-        <input type="decimal" step="0.01" id="other_expenses" class="form-control" required name="other_expenses" readonly value="<?= isset($booking_details['other_expenses'])  ? $booking_details['other_expenses'] : 0  ?>" >
+        <label class="col-form-label">Other Expenses</label>
+        <input type="decimal" step="0.01" id="other_expenses" class="form-control" name="other_expenses" readonly value="<?= isset($booking_details['other_expenses'])  ? $booking_details['other_expenses'] : 0  ?>" >
     </div>	
     
     <div class="col-md-4">

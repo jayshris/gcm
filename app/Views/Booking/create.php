@@ -49,8 +49,21 @@
                             <h6>Booking Number: <?= $booking_number ?></h6>  
                             <br/>
                             <h6>Customer: <?= isset($booking_customer['party_name']) ? $booking_customer['party_name'] : '' ?></h6>  
-                            <label class="col-form-label">Pickup Details<span class="text-danger">*</span></label>
-
+                            <br/>
+                            <?php 
+                            $city = isset($last_booking_transaction['city']) && ($last_booking_transaction['city']) ? $last_booking_transaction['city']: '';
+                            $state = isset($last_booking_transaction['state_name']) && ($last_booking_transaction['state_name']) ? ' , '.$last_booking_transaction['state_name']: '';
+                            $pincode = isset($last_booking_transaction['pincode']) && ($last_booking_transaction['pincode']) ? ' , '.$last_booking_transaction['pincode']: '';
+                            ?>
+                            <?php if($city || $state || $pincode){ ?>
+                              <h6>Last Drop:  
+                                  <?= $city. $state .$pincode  ?>
+                              </h6>
+                             <?php } ?>
+                             <br/>
+                             <div class="col-md-12">
+                              <label class="col-form-label">Pickup Details<span class="text-danger">*</span></label>
+                            </div>
                             <div class="col-md-3">
                                 <label class="col-form-label">State<span class="text-danger">*</span></label>
                                 <select class="form-select" name="pickup_state_id" aria-label="Default select example" required onchange="getCitiesByState(this.value,'pickup_city')">
@@ -94,8 +107,10 @@
                                 }   
                                 ?>
                             </div> 
- 
+                                
+                            <div class="col-md-12">
                             <label class="col-form-label">Drop Details<span class="text-danger">*</span></label>
+                            </div>
                             <div class="col-md-3">
                                 <label class="col-form-label">State<span class="text-danger">*</span></label>
                                 <select class="form-select" name="drop_state_id" aria-label="Default select example" required onchange="getCitiesByState(this.value,'drop_city')">
@@ -217,8 +232,8 @@
                             </div>
  
                             <div class="col-md-3">
-                                <label class="col-form-label">Other Expenses<span class="text-danger">*</span></label>
-                                <input type="decimal" step="0.01" id="other_expenses" class="form-control" required name="other_expenses" readonly value="" >
+                                <label class="col-form-label">Other Expenses</label>
+                                <input type="decimal" step="0.01" id="other_expenses" class="form-control" name="other_expenses" readonly value="" >
                             </div>
 
                             <div class="col-md-3">
