@@ -59,6 +59,11 @@
                                                         <label class="col-form-label"><?= ($loading_receipts['consignment_date']) ? date('d M Y',strtotime($loading_receipts['consignment_date'])) : '-' ?></label> 
                                                     </div>   														
 
+                                                    <div class="col-md-4">
+                                                        <label class="col-form-label">Seal No.: </label>
+                                                        <label class="col-form-label"><?= ($loading_receipts['seal_no']) ? $loading_receipts['seal_no'] : '-' ?></label> 
+                                                    </div> 
+
                                                     <hr>
                                                     <?php if(isset($loading_receipts['transporter_id']) && ($loading_receipts['transporter_id'] > 0)){ ?>   
                                                     

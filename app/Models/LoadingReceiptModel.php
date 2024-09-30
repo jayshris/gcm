@@ -77,6 +77,7 @@ class LoadingReceiptModel extends Model
         'edit_count',
         'is_approved',
         'is_update_vehicle',
+        'seal_no'
     ];
 
     protected bool $allowEmptyInserts = false;

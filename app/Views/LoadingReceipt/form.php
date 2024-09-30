@@ -114,7 +114,15 @@
                             ?>
                         </div>
 
-                        <div class="col-md-4"></div>
+                        <div class="col-md-4">
+                            <label class="col-form-label">Seal No.</label>
+                            <input type="text" name="seal_no" id="seal_no" class="form-control" value="<?= (isset($loading_receipts['seal_no'])) ?  $loading_receipts['seal_no'] : ''?>">
+                            <?php
+                            if ($validation->getError('seal_no')) {
+                                echo '<div class="alert alert-danger mt-2">' . $validation->getError('seal_no') . '</div>';
+                            }
+                            ?>
+                        </div>
 
                         <div class="col-md-4" id="transporter_bilti_no_div" <?= isset($loading_receipts['transporter_id']) && ($loading_receipts['transporter_id'] > 0) ? '' : 'Hidden' ?>>
                             <?php $label = 'Transporter Bilti No';?>
@@ -422,7 +430,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <label class="col-form-label">Consignee Name<span class="text-danger">*</span></label>
-                            <input type="hidden"  name="consignee_id" id="consignee_id" class="form-control" value="<?= isset($loading_receipts['consignor_id']) ? $loading_receipts['consignor_id'] : '' ?>">   
+                            <input type="hidden"  name="consignee_id" id="consignee_id" class="form-control" value="<?= isset($loading_receipts['consignee_id']) ? $loading_receipts['consignee_id'] : '' ?>">   
                             <select class="form-select" name="consignee_name" id="consignee_name" aria-label="Default select example" required onchange="customerBranches( $(this).find(':selected').attr('consignee_id'),'consignee','recipient')">
                                     <option value="">Select Consignee</option> 
                                     <?php if(!empty($consignees)){ ?>
@@ -714,7 +722,7 @@
 
                         <div class="col-md-6">
                             <label class="col-form-label">Invoice/BOE Date</label>
-                            <input type="date" name="invoice_boe_date" id="invoice_boe_date" class="form-control" value="<?= (isset($loading_receipts['invoice_boe_date'])) ?  $loading_receipts['invoice_boe_date'] : ''?>">
+                            <input type="date" name="invoice_boe_date" id="invoice_boe_date" class="form-control" value="<?= (isset($loading_receipts['invoice_boe_date'])) ?  date('Y-m-d',strtotime($loading_receipts['invoice_boe_date'])) : ''?>">
                             <?php
                             if ($validation->getError('invoice_boe_date')) {
                                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('invoice_boe_date') . '</div>';

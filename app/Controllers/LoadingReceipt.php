@@ -229,6 +229,7 @@ class LoadingReceipt extends BaseController
           'transporter_state' =>  $this->request->getVar('transporter_state'),
           'transporter_pincode' =>  $this->request->getVar('transporter_pincode'),
           'transporter_GSTIN' =>  $this->request->getVar('transporter_GSTIN'),
+          'seal_no' =>  $this->request->getVar('seal_no'),
         ];
 
         $this->LoadingReceiptModel->save($data); 
@@ -450,6 +451,7 @@ class LoadingReceipt extends BaseController
           'transporter_GSTIN' =>  $this->request->getVar('transporter_GSTIN'),
           'edit_count' => ($this->view['loading_receipts']['edit_count']+1),
           'approved' => 0,
+          'seal_no' =>  $this->request->getVar('seal_no'),
         ];
 
         // echo 'data<pre>';print_r($data);exit;
@@ -713,6 +715,7 @@ class LoadingReceipt extends BaseController
           'transporter_GSTIN' =>  $this->request->getVar('transporter_GSTIN'),
           'approved' => ($this->request->getVar('approved')) ? $this->request->getVar('approved') : 0,
           'is_approved' => ($this->request->getVar('approved')) ? $this->request->getVar('approved') : 0,
+          'seal_no' =>  $this->request->getVar('seal_no'),
         ];
 
         // echo 'data<pre>';print_r($data);exit;

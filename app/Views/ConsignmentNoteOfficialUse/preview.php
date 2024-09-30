@@ -123,12 +123,12 @@
                                             </tr>
                                             <tr style="height:21pt">
                                                 <td class="td1" colspan="3">
-                                                    <p class="s9 tdp1">ConsignmentNo   <span class="s10"><?= $lr['consignment_no'] ?></span></p>
-                                                    <p class="s9 tdp2">ConsignmentDate   <span class="s10"><?= date('d M Y', strtotime($lr['consignment_date'])) ?></span></p>
+                                                    <p class="s9 tdp1">Consignment No. <span class="s10"><?= $lr['consignment_no'] ?></span></p>
+                                                    <p class="s9 tdp2">Consignment Date <span class="s10"><?= date('d M Y', strtotime($lr['consignment_date'])) ?></span></p>
                                                 </td>
                                                 <td class="td2" colspan="3">
-                                                    <p class="s9 tdp1">BookingBranch   <span class="s10"><?= isset($lr['branch_name']) && (!empty($lr['branch_name'])) ? $lr['branch_name'] : '-' ?></span></p>
-                                                    <p class="s9 tdp2">SealNo</p>
+                                                    <p class="s9 tdp1">Booking Branch <span class="s10"><?= isset($lr['branch_name']) && (!empty($lr['branch_name'])) ? $lr['branch_name'] : '-' ?></span></p>
+                                                    <p class="s9 tdp2">Seal No. <span class="s10"><?= isset($lr['seal_no']) && (!empty($lr['seal_no'])) ? $lr['seal_no'] : '-' ?></span></p>
                                                 </td>
                                             </tr>
                                             <tr style="height:27pt">
