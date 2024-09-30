@@ -66,7 +66,15 @@ class Proformainvoices extends BaseController
           $this->ProformaInvoiceModel->where('proforma_invoices.booking_id', $this->request->getPost('booking_id'));
         }
 
-        $this->view['proforma_invoices']  = $this->ProformaInvoiceModel->orderBy('p.party_name','ASC')->findAll();
+        if ($this->request->getPost('start_date') != '') {
+            $this->ProformaInvoiceModel->where('DATE(proforma_invoices.created_at) >= ', $this->request->getPost('start_date'));
+        } 
+
+        if ($this->request->getPost('end_date') != '') {
+            $this->ProformaInvoiceModel->where('DATE(proforma_invoices.created_at) <= ', $this->request->getPost('end_date'));
+        }
+
+        $this->view['proforma_invoices']  = $this->ProformaInvoiceModel->orderBy('proforma_invoices.id','DESC')->findAll();
         // echo '<pre>'.$this->ProformaInvoiceModel->getLastQuery().'<pre>';print_r( $this->view['proforma_invoices']);exit;
 
         $this->view['customers'] = $this->getCustomers();
@@ -255,7 +263,7 @@ class Proformainvoices extends BaseController
    
     function preview($id){   
       $this->view['proforma_invoice'] = $this->ProformaInvoiceModel
-      ->select('proforma_invoices.*,b.*,b.status booking_status,p.*,v.rc_number,s.state_name,bps.state_name pickup_state,bds.state_name drop_state,c.party_type_id,c.party_id,bc.party_name customer_party_name')
+      ->select('proforma_invoices.*,b.*,b.status booking_status,p.*,p.id pid,v.rc_number,s.state_name,bps.state_name pickup_state,bds.state_name drop_state,c.party_type_id,c.party_id,bc.party_name customer_party_name,bc.id bc_id')
       ->join('bookings b','b.id=proforma_invoices.booking_id')
       // ->join('party p','p.id = proforma_invoices.bill_to_party_id')
       ->join('customer c', 'c.id = proforma_invoices.bill_to_party_id','left') 

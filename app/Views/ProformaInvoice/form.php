@@ -376,11 +376,12 @@
 		$('#invoice_total_amount').val(invoice_total_amount.toFixed(2)); 
 	}
 	function calculateTax(id){
-		var tax_percent = parseFloat($('#'+id+'_percent').val());  
+		var tax_percent = parseFloat($('#'+id+'_percent').val());
+		var other_expenses = parseFloat($('#other_expenses').val());  
 		// alert(tax_percent);
 		if(tax_percent > 0){
 			var freight  =  parseFloat($('#freight').val());
-			var tax_total = (freight*tax_percent)/100;
+			var tax_total = ((freight+other_expenses)*tax_percent)/100;
 			// alert('#'+id+'_total'+' / freight ='+freight+' / tax_total ='+tax_total);
 			$('#'+id+'_total').val(tax_total.toFixed(2));
 		}else{

@@ -398,7 +398,7 @@
                               <div class="col-md-6">
                                 <div class="form-wrap">
                                   <label class="col-form-label">Joining Date<span class="text-danger">*</span></label>
-                                  <input class="form-control" name="joiningdate" id="joiningdate" type="date" <?= set_value('joiningdate') ?>required>
+                                  <input class="form-control" name="joiningdate" id="joiningdate" type="date" value="<?= set_value('joiningdate') ?>" required>
                                   <?php if ($validation->getError('joiningdate')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('joiningdate') . '</div>';
                                   } ?>
@@ -408,7 +408,7 @@
                               <div class="col-md-6">
                                 <div class="form-wrap">
                                   <label class="col-form-label">Relieving Date</label>
-                                  <input class="form-control" name="releaveing_date" id="releaveing_date" type="date" <?= set_value('releaveing_date') ?>>
+                                  <input class="form-control" name="releaveing_date" id="releaveing_date" type="date" value="<?= set_value('releaveing_date') ?>">
                                   <?php if ($validation->getError('releaveing_date')) {
                                     echo '<div class="alert alert-danger mt-2">' . $validation->getError('releaveing_date') . '</div>';
                                   } ?>

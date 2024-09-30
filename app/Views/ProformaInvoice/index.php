@@ -31,10 +31,17 @@
 						 
 						<form method="post" enctype="multipart/form-data" action="<?php echo base_url($currentController); ?>">
 						<div class="card main-card">
-							<div class="card-body"> 
-								<h4>Search / Filter</h4>
-								<hr>
+							<div class="card-body">  
 								<div class="row">    
+									<div class="col-md-8">
+									<h4>Search / Filter</h4>
+									</div>
+									<div class="col-md-4 text-end ">
+									<?php echo makeListActions($currentController, $Action, 0, 1); ?>
+									</div> 
+									
+									<div class="row mt-2">
+									<hr>
 									<div class="col-md-3">
 										<label class="col-form-label">Customer Name</label>
 										<select class="form-select select2" name="customer_id" id="customer_id">
@@ -56,12 +63,23 @@
 									</div>
 									
 									<div class="col-md-3">
-										<button class="btn btn-info mt-4">Search</button>&nbsp;&nbsp;
-										<a href="<?php echo base_url($currentController); ?>" class="btn btn-warning mt-4">Reset</a>&nbsp;&nbsp;
+										<div class="form-wrap">
+											<label class="col-form-label">Start Date:</label>
+											<input class="form-control" name="start_date" id="start_date" type="date" value="<?= set_value('start_date') ?>" /> 
+										</div>
+									</div>
+									
+									<div class="col-md-3">
+										<div class="form-wrap">
+											<label class="col-form-label">End Date:</label>
+											<input class="form-control" name="end_date" id="end_date" type="date" value="<?= set_value('end_date') ?>" /> 
+										</div>
 									</div>
 
-									<div class="col-md-2 text-end mt-3">
-										<?php echo makeListActions($currentController, $Action, 0, 1); ?>
+									<div class="col-md-3">
+										<button class="btn btn-info">Search</button>&nbsp;&nbsp;
+										<a href="<?php echo base_url($currentController); ?>" class="btn btn-warning">Reset</a>&nbsp;&nbsp;
+									</div> 
 									</div>
 								</div>
 							</div>
@@ -99,6 +117,7 @@
 											<th>Customer Name</th>
 											<th>Invoice Amount</th>
 											<th>Customer Contact No.</th>
+											<th>Invoice Date</th>
 										</tr>
 										</thead>
 										<tbody>
@@ -115,6 +134,7 @@
 												<td><?= isset($b['party_name']) ? $b['party_name'] : '-' ?></td>
 												<td><?= number_format($b['invoice_total_amount'],2) ?></td>
 												<td><?= isset($b['primary_phone']) ? $b['primary_phone'] : '-' ?></td> 
+												<td><?= date('d M Y',strtotime($b['created_at'])) ?></td> 
 											</td>
 											</tr>
 										<?php } ?>
@@ -184,6 +204,15 @@
       return false;
     }
 
+	$(document).ready(function() {
+		$('#start_date').change(function() { 
+            $('#end_date').attr('min',$('#start_date').val() );
+        });
+
+        $('#end_date').change(function() {
+            $('#start_date').attr('max',$('#end_date').val() );
+        });
+	});
   </script>											
 </body>
 

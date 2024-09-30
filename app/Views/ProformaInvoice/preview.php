@@ -192,7 +192,7 @@
 															<p class="s10 p14" >WEIGHT- <?= ($proforma_invoice['guranteed_wt'] >0) ? $proforma_invoice['guranteed_wt'].' KG' : 0 .' KG' ?></p>
 														</td>
 													</tr> 
-
+													<?php if($proforma_invoice['bc_id'] != $proforma_invoice['pid']){ ?>
 													<tr style="height:21pt"> 
 														<td class="td27" colspan="3">
 														<p class="s10 p14" >-</p>
@@ -201,6 +201,7 @@
 															<p class="s10 p14" >COMMISSION AGENT - <?= ($proforma_invoice['customer_party_name'] != '') ? ucwords(strtolower($proforma_invoice['customer_party_name'])) : ' -' ?></p>
 														</td>
 													</tr> 
+													<?php } ?>
 
 													<tr style="height:11pt">
 														<td  class="td34" >
