@@ -264,7 +264,7 @@
                             <select class="form-select select2" <?= isset($loading_receipts['consignor_id']) && ($loading_receipts['consignor_id'] >0) ? 'required' : 'disabled' ?> name="supplier_office_id" id="supplier_office_id" aria-label="Default select example"  onchange="changeIdIpt($(this).val(),$('#consignor_id').val(),'consignor_id','supplier')"  >
                                 <option value="">Select Branch</option> 
                                 <?php if(isset($consignor_branches)) { foreach ($consignor_branches as $o) {?> 
-                                <option value="<?= $o['office_name'] ?>" <?= (isset($loading_receipts['supplier_office_id']) && ($loading_receipts['supplier_office_id'] == $o['office_name'])) ? 'selected' : ''?>><?= $o['office_name'] ?></option>
+                                <option value="<?= $o['office_name'] ?>" <?= (isset($loading_receipts['consignor_office']) && ($loading_receipts['consignor_office'] == $o['office_name'])) ? 'selected' : ''?>><?= $o['office_name'] ?></option>
                                 <?php  }} ?>
                             </select>
                             <?php
@@ -443,7 +443,7 @@
                             <select class="form-select select2" <?= isset($loading_receipts['consignee_id']) && ($loading_receipts['consignee_id'] >0) ? 'required' : 'disabled' ?> name="recipient_office_id" id="recipient_office_id" aria-label="Default select example"  onchange="changeIdIpt($(this).val(),$('#consignee_id').val(),'consignee_id','recipient')" >
                                 <option value="">Select Branch</option>
                                 <?php if(isset($consignee_branches)) { foreach ($consignee_branches as $o) {?> 
-                                <option value="<?= $o['office_name'] ?>" <?= (isset($loading_receipts['recipient_office_id']) && ($loading_receipts['recipient_office_id'] == $o['office_name'])) ? 'selected' : ''?>><?= $o['office_name'] ?></option>
+                                <option value="<?= $o['office_name'] ?>" <?= (isset($loading_receipts['consignee_office']) && ($loading_receipts['consignee_office'] == $o['office_name'])) ? 'selected' : ''?>><?= $o['office_name'] ?></option>
                                 <?php  }} ?>
                             </select>
                             <?php
