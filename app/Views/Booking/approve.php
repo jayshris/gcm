@@ -108,11 +108,24 @@
                               <select class="form-select" name="customer_type" id="customer_type" aria-label="Default select example">
                                 <option value="">Select Type</option>
                               </select>
-                            </div>
+                            </div> 
 
-                            <div class="col-md-12"></div>
- 
-                            <label class="col-form-label">Pickup Details<span class="text-danger">*</span></label>
+                            <?php 
+                            $city = isset($last_booking_transaction['city']) && ($last_booking_transaction['city']) ? $last_booking_transaction['city']: '';
+                            $state = isset($last_booking_transaction['state_name']) && ($last_booking_transaction['state_name']) ? ' , '.$last_booking_transaction['state_name']: '';
+                            $pincode = isset($last_booking_transaction['pincode']) && ($last_booking_transaction['pincode']) ? ' , '.$last_booking_transaction['pincode']: '';
+                            ?>
+                            <?php if($city || $state || $pincode){ ?>
+                              <div class="col-md-12">
+                              <h6>Last Drop:  
+                                  <?= $city. $state .$pincode  ?>
+                              </h6>
+                              </div>
+                            <?php } ?>  
+
+                            <div class="col-md-12">
+                              <label class="col-form-label">Pickup Details<span class="text-danger">*</span></label>
+                            </div>  
 
                             <div class="col-md-3">
                                 <label class="col-form-label">State<span class="text-danger">*</span></label>
@@ -156,8 +169,9 @@
                                 }   
                                 ?>
                             </div>
-
-                            <label class="col-form-label">Drop Details<span class="text-danger">*</span></label>
+                            <div class="col-md-12">
+                              <label class="col-form-label">Drop Details<span class="text-danger">*</span></label>
+                            </div>
                             <div class="col-md-3">
                                 <label class="col-form-label">State<span class="text-danger">*</span></label>
                                 <select class="form-select" name="drop_state_id" aria-label="Default select example" required  onchange="getCitiesByState(this.value,'drop_city')">

@@ -129,7 +129,7 @@
                               <input type="date" readonly name="booking_date" value="<?= $booking_details['booking_date'] ?>"  class="form-control"> 
                             </div>
 
-                            <div class="form-wrap col-md-12"> 
+                            <div class="col-md-12"> 
                                 <label class="col-form-label" style="padding-right: 10px;">
                                     Booking Type<span class="text-danger">*</span>
                                 </label>
@@ -138,11 +138,25 @@
                                 <input type="radio" name="booking_type" id="PTL" value="PTL" <?= $booking_details['booking_type'] == 'PTL' ? 'checked' : '' ?>  >
                                 <label for="PTL">PTL</label>  
                             </div>
-                            <!-- Added booking details -->
-
-                            <div class="col-md-12"></div>
+                            <!-- Added booking details --> 
                              
+                            <?php 
+                            $city = isset($last_booking_transaction['city']) && ($last_booking_transaction['city']) ? $last_booking_transaction['city']: '';
+                            $state = isset($last_booking_transaction['state_name']) && ($last_booking_transaction['state_name']) ? ' , '.$last_booking_transaction['state_name']: '';
+                            $pincode = isset($last_booking_transaction['pincode']) && ($last_booking_transaction['pincode']) ? ' , '.$last_booking_transaction['pincode']: '';
+                            ?>
+                            <?php if($city || $state || $pincode){ ?>
+                            <div class="col-md-12"> 
+                            <h6>Last Drop:  
+                                <?= $city. $state .$pincode  ?>
+                            </h6>
+                            </div>
+                            <?php } ?> 
+                           
+
+                            <div class="col-md-12">
                             <label class="col-form-label">Pickup Details<span class="text-danger">*</span></label>
+                            </div> 
 
                             <div class="col-md-3">
                                 <label class="col-form-label">State<span class="text-danger">*</span></label>
@@ -195,8 +209,9 @@
                                 }   
                                 ?>
                             </div> 
- 
+                            <div class="col-md-12">
                             <label class="col-form-label">Drop Details<span class="text-danger">*</span></label>
+                            </div> 
                             <div class="col-md-3">
                                 <label class="col-form-label">State<span class="text-danger">*</span></label>
                                 <select class="form-select" name="drop_state_id" aria-label="Default select example" required  onchange="getCitiesByState(this.value,'drop_city')">

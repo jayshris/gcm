@@ -42,8 +42,7 @@
                           <h6>Assign Vehicle To Booking</h6>
                         </div>
                         <div class="profile-details">
-                          <div class="row g-3"> 
-
+                          <div class="row g-3">    
                             <div class="col-md-4">
                               <label class="col-form-label">Customer Name<span class="text-danger">*</span></label>
                               <select class="form-select " disabled name="customer_id" id="customer_id" aria-label="Default select example" onchange="$.getPartyType();">
@@ -183,6 +182,10 @@
                               </select>
                             </div>  
                            
+                            <div class="col-md-12 hidden" id="last_drop">
+                              
+                            </div>
+
                             <div class="col-md-12"></div> 
                             <div class="row g-3 vehicle_booking_detais">
                               
@@ -317,6 +320,8 @@
     }
 
     $.getBookingVehicleDetails = function() {
+      $('#last_drop').attr('hidden','hidden');
+
       var vehicle_rc = $('#vehicle_rc').val();
       if(vehicle_rc >0 ){
         $.ajax({
@@ -351,6 +356,21 @@
             });
            
             $('.vehicle_booking_detais').html(booking_details);
+          }
+        });
+
+        $.ajax({
+          method: "POST",
+          url: '<?php echo base_url('booking/getLastVehicleBookingDetails') ?>',
+          data: {
+            vehicle_id: vehicle_rc,
+            booking_id:<?= $booking_details['id'] ?>
+          }, 
+          success: function(response) { 
+            if(response){
+              $('#last_drop').removeAttr('hidden');
+              $('#last_drop').html('<h6>Last Drop: '+response+'</h6>');
+            } 
           }
         });
       } 

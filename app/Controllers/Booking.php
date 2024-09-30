@@ -253,20 +253,10 @@ class Booking extends BaseController
                         $this->view['booking_type'] =$post['booking_type'];
                         $this->view['booking_id'] = $booking_id;
 
-                          //get last drop vehicle location if selected vehicle 27-09-2024
+                        //get last drop vehicle location if selected vehicle 27-09-2024
                         if($post['vehicle_rc'] > 0){
                             //last trip end booking drop location
-                            $this->view['last_booking_transaction'] = $this->BookingTransactionModel
-                            ->select('b.id bid,bd.city,s.state_name,bd.pincode, booking_transactions.*')
-                            ->join('bookings b', 'b.id = booking_transactions.booking_id')
-                            ->join('booking_drops bd', 'b.id = bd.booking_id')
-                            ->join('states s', 's.state_id = bd.state')
-                            ->where(['booking_transactions.vehicle_id'=>$post['vehicle_rc'],'booking_transactions.booking_status_id' => 11])
-                            ->orderBy('booking_transactions.booking_id','desc')
-                            ->first();
-                            // echo '  <pre>';print_r($post);
-                            // echo $this->BookingTransactionModel->getLastQuery().'<pre>';print_r($this->view['last_booking_transaction']); 
-                            // exit; 
+                            $this->view['last_booking_transaction'] = $this->getLastDropOfBooking($post['vehicle_rc']);  
                         }                         
                     }elseif(isset($post['next_or_generate_link']) && ($post['next_or_generate_link'] == 'generate_link')){
                         $token = md5(date('YMDHis'));
@@ -655,7 +645,14 @@ class Booking extends BaseController
             }
         } 
         $this->view['token'] = $id;
-        $this->view['expense_heads'] =  $this->ExpenseHeadModel->orderBy('head_name', 'asc')->findAll();
+        $this->view['expense_heads'] =  $this->ExpenseHeadModel->orderBy('head_name', 'asc')->findAll(); 
+
+        //get last drop vehicle location if selected vehicle 27-09-2024
+        if($this->view['booking_details']['vehicle_id'] > 0){
+            //last trip end booking drop location
+            $this->view['last_booking_transaction'] = $this->getLastDropOfBooking($this->view['booking_details']['vehicle_id'],$id);  
+        } 
+
         return view('Booking/approve', $this->view); 
     }
 
@@ -818,7 +815,8 @@ class Booking extends BaseController
         
        //get last log i.e unassign_date = ''
        $this->view['booking_vehicle'] = $this->BVLModel->where('booking_id', $id)->where('(unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date) = 0)')->first();
-        //   echo '<pre>';print_r($this->view['booking_vehicle']);exit;
+        //   echo '<pre>';print_r($this->view['booking_vehicle']);exit;    
+
        if ($this->request->getPost()) {
             $result = $this->assignVehicleBooking($id,$this->request->getPost(),-1);
             if($result){
@@ -1208,6 +1206,11 @@ class Booking extends BaseController
         ->findall();
         // echo ' employees <pre>';print_r($this->view['employees'] );exit; 
         $this->view['vehicle_rcs'] = [];
+        //get last drop vehicle location if selected vehicle 27-09-2024
+        if($this->view['booking_details']['vehicle_id'] > 0){
+            //last trip end booking drop location
+            $this->view['last_booking_transaction'] = $this->getLastDropOfBooking($this->view['booking_details']['vehicle_id'],$id);  
+        } 
         return view('Booking/edit', $this->view); 
     }
     
@@ -2255,5 +2258,36 @@ class Booking extends BaseController
         ->join('party', 'party.id = d.party_id','left')
         ->join('vehicle v', 'v.id = booking_transactions.vehicle_id','left')
         ->where(['booking_id' => $id,'booking_status_id' => $status])->findAll(); 
+    }
+
+    function getLastDropOfBooking($vehicle_id,$booking_id=0){
+        $conditions['booking_transactions.vehicle_id']=$vehicle_id;
+        $conditions['booking_transactions.booking_status_id']= 11;
+        if($booking_id > 0){
+            $conditions['booking_transactions.booking_id !=']= $booking_id;
+        }
+        return $this->BookingTransactionModel
+        ->select('b.id bid,bd.city,s.state_name,bd.pincode, booking_transactions.*')
+        ->join('bookings b', 'b.id = booking_transactions.booking_id')
+        ->join('booking_drops bd', 'b.id = bd.booking_id')
+        ->join('states s', 's.state_id = bd.state')
+        ->where($conditions)
+        ->orderBy('booking_transactions.booking_id','desc')
+        ->first();
+        // echo $this->BookingTransactionModel->getLastQuery().'<pre>';print_r($dt);exit; 
+    }
+
+    //get last drop vehicle location if selected vehicle 30-09-2024
+    function getLastVehicleBookingDetails(){  
+        $last_drop = '';
+        if($this->request->getPost('vehicle_id') > 0){
+            //last trip end booking drop location
+            $last_booking_transaction= $this->getLastDropOfBooking($this->request->getPost('vehicle_id'),$this->request->getPost('booking_id'));  
+            $city = isset($last_booking_transaction['city']) && ($last_booking_transaction['city']) ? $last_booking_transaction['city']: '';
+            $state = isset($last_booking_transaction['state_name']) && ($last_booking_transaction['state_name']) ? ' , '.$last_booking_transaction['state_name']: '';
+            $pincode = isset($last_booking_transaction['pincode']) && ($last_booking_transaction['pincode']) ? ' , '.$last_booking_transaction['pincode']: '';
+            $last_drop = $city. $state .$pincode;
+        } 
+        echo $last_drop;exit;
     }
 }
