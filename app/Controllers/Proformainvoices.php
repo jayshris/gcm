@@ -190,6 +190,7 @@ class Proformainvoices extends BaseController
       $data['invoice_total_amount'] = $post['invoice_total_amount'];
       $data['customer_branch_id'] = $post['customer_branch_id'];
       $data['other_expenses'] = $post['other_expenses'];
+      $data['commission_amount'] = $post['commission_amount'];
       // echo  'ProformaInvoice <pre>';print_r($data); 
       // echo  'post <pre>';print_r($post);exit;
       
@@ -270,8 +271,8 @@ class Proformainvoices extends BaseController
       ->join('party p', 'p.id = c.party_id','left') 
       ->join('customer c2', 'c2.id = b.customer_id','left') 
       ->join('party bc', 'bc.id = c2.party_id','left') 
-      ->join('booking_pickups bp','b.id=bp.booking_id')
-      ->join('booking_drops bd','b.id=bd.booking_id')
+      ->join('booking_pickups bp','b.id=bp.booking_id','left')
+      ->join('booking_drops bd','b.id=bd.booking_id','left')
       ->join('states bps', 'bp.state = bps.state_id','left')
       ->join('states bds', 'bd.state = bds.state_id','left')
       ->join('vehicle v', 'v.id = b.vehicle_id','left')

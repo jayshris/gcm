@@ -102,6 +102,11 @@
         <label class="col-form-label">Balance</label>
         <input type="number" name="balance" id="balance" readonly onchange="$.calculation()" class="form-control" value="<?= $booking_details['balance'] ?>" >
     </div>
+
+    <div class="col-md-4">
+        <label class="col-form-label">Commission Amount</label>
+        <input type="number" step="0.01" name="commission_amount" id="commission_amount" class="form-control" value="<?= isset($booking_details['commission_amount']) ? $booking_details['commission_amount'] : 0 ?>" >
+    </div>
     </div>
    
     

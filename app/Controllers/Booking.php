@@ -1217,6 +1217,7 @@ class Booking extends BaseController
         ->join('customer c', 'c.id = b.customer_id','left')
         ->join('party p', 'p.id = c.party_id','left') 
         ->where('b.id !=', $id)
+        ->where('b.booking_type', 'PTL')
         ->where('booking_vehicle_logs.unassign_date is NULL')
         ->where('booking_vehicle_logs.vehicle_id', $vehicle_id)
         ->groupBy('booking_vehicle_logs.vehicle_id')
@@ -1227,6 +1228,7 @@ class Booking extends BaseController
         return $this->BVLModel->select('ROUND(sum(b.guranteed_wt),2) total_charged_weight,ROUND(sum(b.freight),2) total_freight ')
         ->join('bookings b', 'b.id = booking_vehicle_logs.booking_id')   
         ->where('booking_vehicle_logs.unassign_date is NULL')
+        ->where('b.booking_type', 'PTL')
         ->where('booking_vehicle_logs.vehicle_id', $vehicle_id)
         ->groupBy('b.id')
         ->first();
@@ -1267,8 +1269,11 @@ class Booking extends BaseController
             ->where('dvp.vehicle_id',$vehicle_id) 
             ->first();
 
-            $this->view['ptl_bookings'] = $this->getPTLBookings($id,$vehicle_id);
-            $this->view['booking_total'] = $this->getTotalPTLBookings($id,$vehicle_id);
+            if($this->view['booking_details']['booking_type'] == 'PTL'){
+                $this->view['ptl_bookings'] = $this->getPTLBookings($id,$vehicle_id);
+                $this->view['booking_total'] = $this->getTotalPTLBookings($id,$vehicle_id);
+            }
+            
             // echo '  <pre>';print_r($this->view['ptl_bookings']);exit;
             // echo '  <pre>';print_r($this->view['booking_total']);exit;
         }
