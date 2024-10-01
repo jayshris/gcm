@@ -47,11 +47,11 @@
 															<label class="form-check-label" for="inlineRadio1">Driver</label>
 														</div>
 														<div class="form-check form-check-inline">
-															<input class="form-check-input" type="radio" name="payment_for" disabled id="inlineRadio2" value="vendor">
+															<input class="form-check-input" type="radio" name="payment_for" id="inlineRadio2" value="vendor">
 															<label class="form-check-label" for="inlineRadio2">Vendor</label>
 														</div>
 													</div> 
-													<div class="col-md-6"> 
+													<div class="col-md-6 driver_div"> 
 														<label class="col-form-label">
 														Driver<span class="text-danger">*</span>
 														</label>
@@ -72,7 +72,7 @@
 															<label class="col-form-label">
 															Payment Types<span class="text-danger">*</span>
 															</label>
-															<select class="form-class select2" id="payment_type_id" name="payment_type_id"  onchange="displayDivs()" required>
+															<select class="select" id="payment_type_id" name="payment_type_id"  onchange="displayDivs()" required>
 															<option  value="">Select</option>
 															<?php foreach($payment_types as $val){?>
 																<option value="<?= $val['id'] ?>"><?= $val['name'] ?></option>
@@ -85,7 +85,7 @@
 															?>
 														</div>
 													</div>
-													<div class="col-md-6"> 
+													<div class="col-md-6 driver_div"> 
 														<label class="col-form-label">Reason</label>
 														<select class="form-control select2" id="reason_id" name="reason_id">
 														<option value="">Select Booking</option> 
@@ -383,8 +383,7 @@
 			var returnval  = false;
 			if (upi_Id == null) {
 				returnval =  "false";
-			}
-			alert('upi_Id '+upi_Id + ' regex.test(upi_Id) ' +regex.test(upi_Id)); 
+			} 
 			// Return true if the upi_Id
 			// matched the ReGex
 			if (regex.test(upi_Id) == true) {
@@ -485,6 +484,21 @@
 				});
 			} 
 		}
+
+		$("input[name='payment_for']").click(function(){      
+			var payment_for = $('input[name="payment_for"]:checked').val();
+			$('.driver_div').attr('hidden','hidden');   
+			$('#driver_id').removeAttr('required');   
+			if(payment_for=='driver'){ 
+				$('.driver_div').removeAttr('hidden');   
+				$('#driver_id').attr('required','required');    
+			} 
+			if(payment_for == 'vendor'){
+				$("#payment_type_id").children('option').attr('hidden','hidden');
+				// $("#payment_type_id").children("option[value='3']").show()
+				$("#payment_type_id").select2();
+			}
+		});
 	</script>
 </body>
 
