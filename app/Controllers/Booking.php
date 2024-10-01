@@ -139,10 +139,12 @@ class Booking extends BaseController
 
         if ($this->request->getPost('status') != '') {
             $this->BModel->where('bookings.status', $this->request->getPost('status'));
-        }else{
-            $this->BModel->whereNotIn('bookings.status', [11,15]);
+        }else if($this->request->getGet('status')){
+            $this->BModel->where('bookings.status', $this->request->getGet('status'));
+        } else {
+            $this->BModel->whereNotIn('bookings.status', [11, 15]);
         }
-
+        
         if ($this->request->getPost('customer_id') != '') {
             $this->BModel->where('bookings.customer_id', $this->request->getPost('customer_id'));
         }

@@ -39,18 +39,18 @@
 
             <form method="post" enctype="multipart/form-data" action="<?php echo base_url('booking'); ?>">
               <div class="card main-card">
-                <div class="card-body">  
+                <div class="card-body">
                   <div class="row">
                     <div class="col-md-8">
                       <h4>Search / Filter</h4>
                     </div>
-                    <div class="col-md-4 text-end ">
+                    <div class="col-md-4 text-end">
                       <?php echo makeListActions($currentController, $Action, 0, 1); ?>
                     </div>
-                  
-                    
+
+
                     <div class="row mt-2">
-                    <hr>
+                      <hr>
                       <div class="col-md-3">
                         <div class="form-wrap">
                           <label class="col-form-label">Booking Number</label>
@@ -80,28 +80,33 @@
                         <select class="form-select select2" name="customer_id" id="customer_id">
                           <option value="">Select Customer</option>
                           <?php foreach ($customers as $c) { ?>
-                            <option value="<?= $c['id'] ?>" <?= (set_value('customer_id') == $c['id']) ? 'selected' : '' ?> ><?= $c['party_name'] ?></option>
-                        <?php } ?>
-                        </select> 
+                            <option value="<?= $c['id'] ?>" <?= (set_value('customer_id') == $c['id']) ? 'selected' : '' ?>><?= $c['party_name'] ?></option>
+                          <?php } ?>
+                        </select>
                       </div>
-                      
+
                       <div class="col-md-3">
                         <label class="col-form-label">RC No.</label>
                         <select class="form-select select2" name="vehicle_rc" id="vehicle_rc">
                           <option value="">Select RC No.</option>
                           <?php foreach ($vehicles as $v) { ?>
-                            <option value="<?= $v['id'] ?>" <?= (set_value('vehicle_rc') == $v['id']) ? 'selected' : '' ?>  ><?= $v['rc_number'] ?></option> 
+                            <option value="<?= $v['id'] ?>" <?= (set_value('vehicle_rc') == $v['id']) ? 'selected' : '' ?>><?= $v['rc_number'] ?></option>
                           <?php } ?>
                         </select>
                       </div>
-                      
+
                       <div class="col-md-3">
                         <button class="btn btn-info">Search</button>&nbsp;&nbsp;
                         <a href="./booking" class="btn btn-warning">Reset</a>&nbsp;&nbsp;
                       </div>
-  
+
+                      <div class="col-md-9 text-end">
+                        <a href="<?= base_url('booking?status=11') ?>" class="btn btn-warning">Trip End</a>
+                        <a href="<?= base_url('booking?status=10') ?>" class="btn btn-warning">POD Verification</a>
+                      </div>
+
                     </div>
-                  </div> 
+                  </div>
 
                 </div>
               </div>
@@ -181,24 +186,25 @@
                           <td><?= isset($from['city']) ? $from['city'] : '' ?></td>
                           <td><?= isset($to['city']) ? $to['city'] : '' ?></td>
                           <td><span class="badge badge-pill <?= $b['status_bg'] ?>"><?= $b['status_name'] ?></span></td>
-                          <?php 
-                              $status = 'Not Generated';$lr_flag = 0;
-                              if(isset($b['lr_Status']) && ($b['lr_Status'] >0) ){
-                                $status = 'Generated';
-                                $lr_flag = 1;
-                              } 
-                              if(isset($b['lr_approved']) && ($b['lr_approved'] >0) ){
-                                $status = 'Approved';
-                                $lr_flag = 1;
-                              }
-                              if(isset($b['lr_Status']) && ($b['lr_Status'] ==2) ){
-                                $status = 'Cancelled';
-                                $lr_flag = 0;
-                              }
-                            ?>
-                          <td><span class="badge badge-pill <?= ($lr_flag >0 ? 'bg-success' : 'bg-danger') ?>">                            
-                             <?= $status ?></span>
-                          </td>  
+                          <?php
+                          $status = 'Not Generated';
+                          $lr_flag = 0;
+                          if (isset($b['lr_Status']) && ($b['lr_Status'] > 0)) {
+                            $status = 'Generated';
+                            $lr_flag = 1;
+                          }
+                          if (isset($b['lr_approved']) && ($b['lr_approved'] > 0)) {
+                            $status = 'Approved';
+                            $lr_flag = 1;
+                          }
+                          if (isset($b['lr_Status']) && ($b['lr_Status'] == 2)) {
+                            $status = 'Cancelled';
+                            $lr_flag = 0;
+                          }
+                          ?>
+                          <td><span class="badge badge-pill <?= ($lr_flag > 0 ? 'bg-success' : 'bg-danger') ?>">
+                              <?= $status ?></span>
+                          </td>
                           </td>
                         </tr>
                       <?php } ?>
@@ -229,31 +235,31 @@
   </div>
   <!-- /Main Wrapper -->
 
-<!-- modal  -->
-<div class="modal fade" id="gcmModal" tabindex="-1" aria-labelledby="gcmModalLabel" aria-hidden="true">
+  <!-- modal  -->
+  <div class="modal fade" id="gcmModal" tabindex="-1" aria-labelledby="gcmModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-md">
       <div class="modal-content">
-        <?php echo form_open_multipart('', ['name'=>'actionForm', 'id' => 'bookigStatusUpdate']); ?> 
+        <?php echo form_open_multipart('', ['name' => 'actionForm', 'id' => 'bookigStatusUpdate']); ?>
         <div class="modal-header">
           <h5 class="modal-title" id="gcmModalLabel"></h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-           <div class="col-md-12">
-              <label class="col-form-label">Start Date : <span class="text-danger">*</span></label>
-              <input type="datetime-local" required name="status_date"  id="status_date" value="<?= date('Y-m-d H:i');?>" max="<?= date('Y-m-d H:i');?>" class="form-control">
-              <input type="hidden" id="confirmMsg" />
-          </div> 
+          <div class="col-md-12">
+            <label class="col-form-label">Start Date : <span class="text-danger">*</span></label>
+            <input type="datetime-local" required name="status_date" id="status_date" value="<?= date('Y-m-d H:i'); ?>" max="<?= date('Y-m-d H:i'); ?>" class="form-control">
+            <input type="hidden" id="confirmMsg" />
+          </div>
         </div>
         <div class="modal-footer">
-        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
+          <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
         </div>
 
       </div>
     </div>
   </div>
-  
+
 
   <!-- scripts link  -->
   <?= $this->include('partials/vendor-scripts') ?>
@@ -261,31 +267,31 @@
   <!-- page specific scripts  -->
   <script>
     $('form#bookigStatusUpdate').submit(function() {
-      return confirm(($('#confirmMsg').val()).trim()); 
+      return confirm(($('#confirmMsg').val()).trim());
     });
-    $(document).ready(function() { 
-        $(document).on("click", ".action_link", function() {  
-         var id = $(this).attr('token');
-         var title = $(this).attr('title');
-         var msg = $(this).attr('msg');
-         var secLink = $(this).attr('secLink');
-          $.ajax({
-              type: 'GET',
-              url: '<?= base_url($currentController.'/getBookingDetails/') ?>'+id+'/'+secLink,
-              dataType:'json',
-              success: function(data) {
-                console.log(data);
-                if(data){
-                  $('#status_date').attr('min',data.statusDate);
-                }
-                $('#gcmModalLabel').html(title); 
-                $('#confirmMsg').val(msg);
-                $('form#bookigStatusUpdate').attr('action','<?= base_url($currentController.'/') ?>'+secLink+'/'+id)
-                $('#gcmModal').modal('show'); 
-              }
-          });
+    $(document).ready(function() {
+      $(document).on("click", ".action_link", function() {
+        var id = $(this).attr('token');
+        var title = $(this).attr('title');
+        var msg = $(this).attr('msg');
+        var secLink = $(this).attr('secLink');
+        $.ajax({
+          type: 'GET',
+          url: '<?= base_url($currentController . '/getBookingDetails/') ?>' + id + '/' + secLink,
+          dataType: 'json',
+          success: function(data) {
+            console.log(data);
+            if (data) {
+              $('#status_date').attr('min', data.statusDate);
+            }
+            $('#gcmModalLabel').html(title);
+            $('#confirmMsg').val(msg);
+            $('form#bookigStatusUpdate').attr('action', '<?= base_url($currentController . '/') ?>' + secLink + '/' + id)
+            $('#gcmModal').modal('show');
+          }
+        });
       });
-    }); 
+    });
 
     function delete_data(id) {
       if (confirm("Are you sure you want to remove this product category ?")) {
