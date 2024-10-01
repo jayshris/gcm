@@ -230,6 +230,8 @@ class LoadingReceipt extends BaseController
           'transporter_pincode' =>  $this->request->getVar('transporter_pincode'),
           'transporter_GSTIN' =>  $this->request->getVar('transporter_GSTIN'),
           'seal_no' =>  $this->request->getVar('seal_no'),
+          'supplier_office_id' => ( $this->request->getVar('supplier_office_id')) ? $this->request->getVar('supplier_office_id') : 0,
+          'recipient_office_id' =>  ($this->request->getVar('recipient_office_id')) ? $this->request->getVar('recipient_office_id') : 0,
         ];
 
         $this->LoadingReceiptModel->save($data); 
@@ -452,6 +454,8 @@ class LoadingReceipt extends BaseController
           'edit_count' => ($this->view['loading_receipts']['edit_count']+1),
           'approved' => 0,
           'seal_no' =>  $this->request->getVar('seal_no'),
+          'supplier_office_id' => ( $this->request->getVar('supplier_office_id')) ? $this->request->getVar('supplier_office_id') : 0,
+          'recipient_office_id' =>  ($this->request->getVar('recipient_office_id')) ? $this->request->getVar('recipient_office_id') : 0,
         ];
 
         // echo 'data<pre>';print_r($data);exit;
@@ -716,6 +720,8 @@ class LoadingReceipt extends BaseController
           'approved' => ($this->request->getVar('approved')) ? $this->request->getVar('approved') : 0,
           'is_approved' => ($this->request->getVar('approved')) ? $this->request->getVar('approved') : 0,
           'seal_no' =>  $this->request->getVar('seal_no'),
+          'supplier_office_id' => ( $this->request->getVar('supplier_office_id')) ? $this->request->getVar('supplier_office_id') : 0,
+          'recipient_office_id' =>  ($this->request->getVar('recipient_office_id')) ? $this->request->getVar('recipient_office_id') : 0,
         ];
 
         // echo 'data<pre>';print_r($data);exit;
