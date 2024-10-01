@@ -1533,45 +1533,58 @@ class Booking extends BaseController
     
     function upload_pod($booking_id){
         $this->view['token'] = $booking_id;
-        if ($this->request->getPost()) {            
-            $error = $this->validate([
-                'pod_date' => [
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => 'The pod date field is required'
+        if ($this->request->getPost()) {   
+            // echo '<pre>';print_r($this->request->getPost());exit;  
+            if($this->request->getPost('is_upload_pod') == 1){
+                $this->validate([
+                    'pod_date' => [
+                        'rules' => 'required',
+                        'errors' => [
+                            'required' => 'The pod date field is required'
+                        ],
                     ],
-                ],
-                'received_by' => [
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => 'The received by field is required' 
+                    'received_by' => [
+                        'rules' => 'required',
+                        'errors' => [
+                            'required' => 'The received by field is required' 
+                        ],
                     ],
-                ],
-                'upload_doc' => [
-                    'rules' => 'uploaded[upload_doc]|mime_in[upload_doc,image/png,image/PNG,image/jpg,image/jpeg,image/JPEG,application/pdf]',
-                    'errors' => [
-                        'mime_in' => 'Image must be in jpeg/png/pdf format' 
+                    'upload_doc' => [
+                        'rules' => 'uploaded[upload_doc]|mime_in[upload_doc,image/png,image/PNG,image/jpg,image/jpeg,image/JPEG,application/pdf]',
+                        'errors' => [
+                            'mime_in' => 'Image must be in jpeg/png/pdf format' 
+                        ]
                     ]
-                ]
-            ]);
+                ]);
+            }else{
+                $this->validate([
+                    'remarks' => [
+                        'rules' => 'required',
+                        'errors' => [
+                            'required' => 'The remarks field is required'
+                        ],
+                    ], 
+                ]);
+            }
 
-            if (!$error) { 
-                $this->view['error'] = $this->validator; 
+            $validation = \Config\Services::validation(); 
+            if (!empty($validation->getErrors())) {
+                $this->view['error'] = $this->validator;
             } else {
-                // echo '$result<pre>';print_r($this->request->getPost());exit;
+                // echo '$result<pre>';print_r($this->request->getPost());//exit;
                 $result = $this->BUPModel->where('booking_id', $booking_id)->where('status',1)->first();
                 // echo '$result<pre>';print_r($result);exit;
                 if($result){ 
-                    $this->BUPModel->update($result['id'], [ 
-                        'status' => 0
-                    ]);
+                    // $this->BUPModel->update($result['id'], [ 
+                    //     'status' => 0
+                    // ]);
                 } 
 
                 $image = $this->request->getFile('upload_doc');
              
                 $image_name = '';
-                if (isset($image)) {
-                    if ($image->isValid() && !$image->hasMoved()) {
+                if (isset($image)) { 
+                    if ($image->isValid() && !$image->hasMoved()) { 
                         $image_name = $image->getRandomName();
                         $imgpath = 'public/uploads/booking_pods';
                         if (!is_dir($imgpath)) {
@@ -1580,16 +1593,20 @@ class Booking extends BaseController
                         $image->move($imgpath, $image_name);
                     }
                 } 
-                // echo $image_name.'<pre>';print_r($this->request->getFile('upload_doc'));
+                // echo $image_name.' = image_name <pre>';print_r($this->request->getFile('upload_doc'));
                 // exit;
-                $this->BUPModel->save([
-                    'booking_id' => $booking_id,
-                    'upload_doc' => $image_name,
-                    'received_by' => $this->request->getPost('received_by'),
-                    'pod_date' => $this->request->getPost('pod_date'),
-                    'remarks' => $this->request->getPost('remarks'),
-                    'created_by' => $this->added_by
-                ]);
+                $data['booking_id']= $booking_id;
+                $data['remarks']= $this->request->getPost('remarks');
+                $data['created_by']= $this->added_by;
+                $data['is_upload_pod']= $this->request->getPost('is_upload_pod');
+                   
+                if($this->request->getPost('is_upload_pod') == 1){ 
+                    $data['upload_doc']= $image_name;
+                    $data['received_by']=$this->request->getPost('received_by');
+                    $data['pod_date']= $this->request->getPost('pod_date');
+                } 
+                //  echo '$data<pre>';print_r($data);exit;
+                $this->BUPModel->save($data);
 
                 //update booking status 10 - uploaded 
                 $this->BModel->update($booking_id, [ 

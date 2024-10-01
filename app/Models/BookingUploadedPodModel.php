@@ -12,7 +12,7 @@ class BookingUploadedPodModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['booking_id','upload_doc','received_by','pod_date','created_by','status','remarks'];
+    protected $allowedFields    = ['booking_id','upload_doc','received_by','pod_date','created_by','status','remarks','is_upload_pod'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

@@ -28,7 +28,18 @@
                                                 </div>
                                                 <div class="profile-details">
                                                     <div class="row mb-3 g-3">
-                                                        <div class="col-md-3">
+                                                        <div class="col-md-12"> 
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="radio" name="is_upload_pod" checked id="upload_pod" value="1">
+                                                                <label class="form-check-label" for="upload_pod">Upload POD</label>
+                                                            </div>
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="radio" name="is_upload_pod"  id="no_pod" value="0">
+                                                                <label class="form-check-label" for="no_pod">POD not Available</label>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="col-md-3 upload_pod">
                                                             <label class="col-form-label">Upload Doc<span class="text-danger">*</span></label>
                                                             <input type="file" name="upload_doc" class="form-control" required accept=".png, .jpg, .jpeg,.pdf">
                                                             <?php
@@ -39,12 +50,12 @@
                                                             <span class="text-info" id="lr-info">JPEG,PNG,PDF</span>
                                                         </div>
 
-                                                        <div class="col-md-3">
+                                                        <div class="col-md-3 upload_pod">
                                                             <label class="col-form-label">Received By<span class="text-danger">*</span></label>
                                                             <input type="text" name="received_by" class="form-control" required>
                                                         </div>
 
-                                                        <div class="col-md-3">
+                                                        <div class="col-md-3 upload_pod">
                                                             <label class="col-form-label">POD Date<span class="text-danger">*</span></label>
                                                             <input type="date" required name="pod_date" min="<?= date('Y-m-d',strtotime($booking_details['booking_date'])) ?>" value="<?= date('Y-m-d');?>" max="<?= date('Y-m-d');?>"  class="form-control">
                                                             <?php
@@ -54,8 +65,8 @@
                                                             ?>
                                                         </div> 
 
-                                                        <div class="col-md-3">
-                                                            <label class="col-form-label">Remarks</label>
+                                                        <div class="col-md-3 not_pod">
+                                                            <label class="col-form-label">Remarks <span class="text-danger" hidden>*</span></label>
                                                             <input type="text" name="remarks" class="form-control">
                                                         </div>
 
@@ -268,6 +279,25 @@
         }
       })
     }
+
+    $("input[name='is_upload_pod']").click(function(){      
+      var is_upload_pod = $('input[name="is_upload_pod"]:checked').val(); 
+      if(is_upload_pod==1){ 
+        $('.upload_pod input').attr('required','required');
+        $('.upload_pod span.text-danger').removeAttr('hidden');   
+        $('.upload_pod').removeAttr('hidden');   
+
+        $('.not_pod input').removeAttr('required');  
+        $('.not_pod span.text-danger').attr('hidden','hidden');   
+      }else{        
+        $('.upload_pod input').removeAttr('required');  
+        $('.upload_pod span.text-danger').attr('hidden','hidden');
+        $('.upload_pod').attr('hidden','hidden');
+       
+        $('.not_pod input').attr('required','required');  
+        $('.not_pod span.text-danger').removeAttr('hidden');
+      }
+    });
     </script>                                                                  
 </body>
 
