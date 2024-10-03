@@ -116,7 +116,7 @@
                               <input type="hidden" name="id[]" value="<?= $b['id']?>" id="booking_id_<?= $b['id']?>" />
                               <input type="checkbox" class="form-check-input" style="height: 25px; width:25px;" name="is_physical_pod_received[]" id="is_physical_pod_received_<?= $b['id']?>" value="1" onchange="validateInpt(<?= $b['id']?>)"/> 
                             </td> 
-                            <td><input type="date" class="form-control pod-inpt" name="pod_received_date[]" id="pod_received_date_<?= $b['id']?>" max="<?= date('Y-m-d')?>" onchange="validateInpt(<?= $b['id']?>);"/></td>
+                            <td><input type="date" class="form-control pod-inpt" name="pod_received_date[]" id="pod_received_date_<?= $b['id']?>" min="<?= date('Y-m-d',strtotime($b['booking_date'])) ?>" max="<?= date('Y-m-d')?>" onchange="validateInpt(<?= $b['id']?>);"/></td>
                           </tr>
                         <?php } ?>
                       </tbody>

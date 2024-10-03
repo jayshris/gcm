@@ -84,7 +84,7 @@
                             <td><?= $b['transporter_name'] ? $b['transporter_name'] : '-' ?></td>   
                             <td><?= $b['pod_received_date'] ? date('d M Y',strtotime($b['pod_received_date'])) : '-' ?></td>  
                             <td><input type="hidden" name="id[]" value="<?= $b['id']?>" id="booking_id_<?= $b['id']?>" />
-                                <input type="date" class="form-control pod-inpt" required name="courier_date[]" id="courier_date_<?= $b['id']?>" /></td>
+                                <input type="date" class="form-control pod-inpt" min="<?= date('Y-m-d',strtotime($b['pod_received_date'])) ?>" required name="courier_date[]" id="courier_date_<?= $b['id']?>" /></td>
                             <td><select class="dropdown pod-inpt col-md-12" required name="courier_company_id[]" id="courier_company_id_<?= $b['id']?>">
                                 <?php foreach(COURIER_COMPANIES as $key=>$val){ ?>
                                     <option value="<?= $key ?>"><?= $val ?></option>

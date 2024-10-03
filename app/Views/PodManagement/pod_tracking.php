@@ -87,7 +87,7 @@
                             <td><?= $b['tracking_no'] ? $b['tracking_no'] : '-' ?></td>   
                             <td>
                                 <input type="hidden" name="id[]" value="<?= $b['id']?>" id="booking_id_<?= $b['id']?>" />
-                                <input type="date" class="form-control pod-inpt" required name="courier_delivery_date[]" id="courier_delivery_date_<?= $b['id']?>" />
+                                <input type="date" class="form-control pod-inpt" required name="courier_delivery_date[]" id="courier_delivery_date_<?= $b['id']?>" min="<?= date('Y-m-d',strtotime($b['courier_date'])) ?>" />
                             </td>
                           </tr>
                         <?php } ?>
