@@ -1271,6 +1271,7 @@ class Booking extends BaseController
             $this->view['driver'] = $this->DModel->select('driver.id, party.party_name as driver_name,party.primary_phone')
             ->join('driver_vehicle_map dvp', 'driver.id = dvp.driver_id')
             ->join('party', 'party.id = driver.party_id')
+            ->where('(dvp.unassign_date = "" or dvp.unassign_date IS NULL or (UNIX_TIMESTAMP(dvp.unassign_date) = 0))')
             ->where('dvp.vehicle_id',$vehicle_id) 
             ->first();
 

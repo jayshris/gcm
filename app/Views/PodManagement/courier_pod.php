@@ -24,7 +24,7 @@
             <div class="page-header">
               <div class="row align-items-center">
                 <div class="col-8">
-                  <h4 class="page-title">Receive POD</h4>
+                  <h4 class="page-title">Courier POD</h4>
                 </div>
                 <div class="col-4 text-end">
                   <div class="head-icons">
@@ -35,37 +35,10 @@
               </div>
             </div>
             <!-- /Page Header --> 
-            <form method="post" enctype="multipart/form-data" action="<?= base_url($currentController.'/'.$currentMethod) ?>">
+            <form method="post" enctype="multipart/form-data" action="<?= base_url($currentController.'/'.$currentMethod) ?>" id="myForm">
+                
               <div class="card main-card">
-                <div class="card-body">
-                    <div class="row"> 
-                        <div class="col-md-8">
-                        <h4>Search / Filter</h4>
-                        </div>
-                        
-                        <div class="row mt-2">
-                            <hr>
-                            <div class="col-md-3"> 
-                                <label class="col-form-label">Vehicle Number</label>
-                                <select class="form-select select2" name="vehicle_id">
-                                    <option value="">Select Vehicle No.</option>
-                                    <?php foreach ($vehicles as $s) { ?>
-                                    <option value="<?= $s['id'] ?>" <?= (set_value('vehicle_id') == $s['id']) ? 'selected' : '' ?>><?= $s['rc_number'] ?></option>
-                                    <?php } ?>
-                                </select> 
-                            </div>
-                            <div class="col-md-3">
-                                <button class="btn btn-info mt-4">Search</button>&nbsp;&nbsp;
-                                <a href="<?= base_url($currentController.'/'.$currentMethod) ?>" class="btn btn-warning mt-4">Reset</a>&nbsp;&nbsp;
-                            </div>
-                        </div>
-
-                    </div>
-                  </div> 
-                </div>  
-              <div class="card main-card">
-                <div class="card-body">
-
+                <div class="card-body"> 
                   <div class="row mb-3">
                     <div class="col-md-12 col-sm-12">
                       <?php
@@ -80,7 +53,6 @@
                       }
                       ?>
                     </div>
-
                   </div>
                   <!-- /Search -->
 
@@ -90,14 +62,14 @@
                       <thead class="thead-light">
                         <tr>
                           <th>#</th> 
-                          <th>Booking No</th> 
-                          <th>Customer Name</th> 
-                          <th>Transporter Name</th> 
-                          <th>Pickup</th>
-                          <th>Drop</th>
-                          <th>Unloading Date </th>
-                          <th>Received POD</th>
+                          <th>Booking No.</th> 
+                          <th>Vehicle No.</th> 
+                          <th>Customer</th> 
+                          <th>Transporter</th>  
                           <th>POD Receive Date</th> 
+                          <th>Courier Date</th> 
+                          <th>Courier Company</th> 
+                          <th>Tracking No</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -107,16 +79,19 @@
                           <tr>
                             <td><?= $i++; ?>.</td>  
                             <td><?= $b['booking_number'] ?></td> 
+                            <td><?= $b['rc_number'] ? $b['rc_number'] : '-' ?></td>  
                             <td><?= $b['party_name'] ? $b['party_name'] : '-' ?></td>  
-                            <td><?= $b['transporter_name'] ? $b['transporter_name'] : '-' ?></td>  
-                            <td><?= isset($b['bp_city']) ? $b['bp_city'] : '-' ?></td>
-                            <td><?= isset($b['bd_city']) ? $b['bd_city'] : '-' ?></td> 
-                            <td><?= ($b['unloading_date']) ? date('d M Y',strtotime($b['unloading_date'])) : '-'  ?></td>  
-                            <td>
-                              <input type="hidden" name="id[]" value="<?= $b['id']?>" id="booking_id_<?= $b['id']?>" />
-                              <input type="checkbox" class="form-check-input" style="height: 25px; width:25px;" name="is_physical_pod_received[]" id="is_physical_pod_received_<?= $b['id']?>" value="1" onchange="validateInpt(<?= $b['id']?>)"/> 
-                            </td> 
-                            <td><input type="date" class="form-control pod-inpt" name="pod_received_date[]" id="pod_received_date_<?= $b['id']?>" max="<?= date('Y-m-d')?>" onchange="validateInpt(<?= $b['id']?>);"/></td>
+                            <td><?= $b['transporter_name'] ? $b['transporter_name'] : '-' ?></td>   
+                            <td><?= $b['pod_received_date'] ? date('d M Y',strtotime($b['pod_received_date'])) : '-' ?></td>  
+                            <td><input type="hidden" name="id[]" value="<?= $b['id']?>" id="booking_id_<?= $b['id']?>" />
+                                <input type="date" class="form-control pod-inpt" required name="courier_date[]" id="courier_date_<?= $b['id']?>" /></td>
+                            <td><select class="dropdown pod-inpt col-md-12" required name="courier_company_id[]" id="courier_company_id_<?= $b['id']?>">
+                                <?php foreach(COURIER_COMPANIES as $key=>$val){ ?>
+                                    <option value="<?= $key ?>"><?= $val ?></option>
+                                <?php }?>
+                                </select>
+                            </td>
+                            <td><input type="text" class="form-control pod-inpt" required name="tracking_no[]" id="tracking_no_<?= $b['id']?>" /></td>
                           </tr>
                         <?php } ?>
                       </tbody>
@@ -153,7 +128,7 @@
 
   </div>
   <!-- /Main Wrapper -->
- 
+  
   <!-- scripts link  -->
   <?= $this->include('partials/vendor-scripts') ?>
 
@@ -181,22 +156,25 @@
           $('.dataTables_paginate').appendTo('.datatable-paginate');
           $('.dataTables_length').appendTo('.datatable-length');
         },
+        "bPaginate": false,
         "aoColumnDefs": [
-            { "bSortable": false, "aTargets": [ 7,8] },  
+            { "bSortable": false, "aTargets": [ 6,7,8] },  
         ]
       });
     }
 
-    function validateInpt(id){
-      // alert($('#is_physical_pod_received_'+id+'').is(":checked") + ' dt = '+$('#pod_received_date_'+id+'').val());
-      if($('#is_physical_pod_received_'+id+'').is(":checked") && $('#pod_received_date_'+id+'').val() ==''){
-        $('#pod_received_date_'+id+'').css('border-color','red');
-        $('#pod_received_date_'+id+'').attr('required','required');
-      }else{
-        $('.pod-inpt').removeAttr('required');
-        $('.pod-inpt').css('border-color','#E8E8E8');
-      }
-    }
+    // $(document).ready(function(){
+    //     $('#myForm').on('submit', function(e){
+    //         e.preventDefault();
+    //         var values = $('.pod-inpt').val();
+    //         alert(values + ' attr '+$('.pod-inpt').attr('id'));
+    //         // $('#myForm').validate();
+    //         console.log(values);
+    //         // if (values) {
+    //         //     this.submit();
+    //         // }
+    //     });
+    // });
   </script>
 </body>
 
