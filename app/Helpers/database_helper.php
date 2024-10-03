@@ -168,9 +168,9 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 						if ($module == 'vehicle') {
 							if ($secLink == 'assigned_booking_vehicle_list')	$makeButton = 0;
 						}
-						if ($module == 'proformainvoices') {
-							if ($secLink == 'edit' && ($row['status'] == 11))	$makeButton = 0;
-						}
+						// if ($module == 'proformainvoices') {
+						// 	if ($secLink == 'edit' && ($row['status'] == 11))	$makeButton = 0;
+						// }
 
 						if ($makeButton == 1) {
 							if ($module == 'booking' && ($secLink == 'trip_start' || $secLink == 'trip_restart' || $secLink == 'cancel' || $secLink == 'unloading' || $secLink == 'trip_running')) {		

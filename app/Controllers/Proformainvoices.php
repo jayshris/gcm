@@ -101,8 +101,11 @@ class Proformainvoices extends BaseController
 
     function getvehicles($id = 0){ 
         $condition = $id> 0 ? ' and proforma_invoices.id != '.$id: ''; 
-        return  $this->BookingsModel->select('v.id,v.rc_number') 
+        return $this->BookingsModel->select('v.id,v.rc_number') 
         ->join('vehicle v','bookings.vehicle_id = v.id') 
+        ->where('EXISTS (SELECT 1 
+                    FROM   loading_receipts
+                    WHERE  loading_receipts.booking_id = bookings.id)')
         ->where('NOT EXISTS (SELECT 1 
                 FROM   proforma_invoices
                 WHERE  proforma_invoices.booking_id = bookings.id '.$condition.')')
@@ -110,19 +113,20 @@ class Proformainvoices extends BaseController
         ->where(['bookings.status != '=> 11]) 
         ->orderBy('v.id', 'desc')
         ->groupBy('bookings.vehicle_id')
-        ->findAll();
-        
+        ->findAll(); 
     }
 
     function getBooking($id = 0){
       $condition = $id> 0 ? ' and proforma_invoices.id != '.$id: '';  
       return $this->BookingsModel->where(['status >'=> '3'])  
       ->where(['status != '=> 11]) 
+      ->where('EXISTS (SELECT 1 
+                    FROM   loading_receipts
+                    WHERE  loading_receipts.booking_id = bookings.id)')
       ->where('NOT EXISTS (SELECT 1 
                 FROM   proforma_invoices
                 WHERE  proforma_invoices.booking_id = bookings.id '.$condition.')')
-      ->findAll();  
-
+      ->findAll();   
       // echo '<pre>'.$this->ProformaInvoiceModel->getLastQuery().'<pre>';print_r($d);exit;
     } 
     

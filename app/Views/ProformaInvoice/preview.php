@@ -338,7 +338,7 @@
 																<tr>
 																	<td class="profotd34" style="max-width: 25px;">Amount (in words): </td>
 																	<?php $amount = ($proforma_invoice['total_freight'] > 0) ? $proforma_invoice['total_freight'] : 0; ?>
-																	<td class="profotd34">Rs. <?= convert_number_to_words($amount) ?> Only</td>
+																	<td class="profotd34">Rs. <?= convert_number_to_words($invoice_total) ?> Only</td>
 																</tr>
 															</table>
 														</td>
