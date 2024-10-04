@@ -45,11 +45,15 @@
 											<div class="settings-sub-header">
 												<h4>Proforma Invoice</h4>
 											</div>
+											<?php if($token > 0) { ?> 
+												<input type="hidden" name="vehicle_id" value="<?= isset($proforma_invoice['vehicle_id']) ? $proforma_invoice['vehicle_id'] : 0 ?>"/>
+												<input type="hidden" name="booking_id" value="<?= isset($proforma_invoice['booking_id']) ? $proforma_invoice['booking_id'] : 0 ?>"/>
+											<?php } ?>
 											<div class="profile-details">
 												<div class="row g-3">
 													<div class="col-md-4">
-														<label class="col-form-label">Vehicle Number</label> 
-														<select class="form-select select2" name="vehicle_id" id="vehicle_number" aria-label="Default select example" onchange="$.getVehicleBookings();">
+														<label class="col-form-label">Vehicle Number</label>  
+														<select class="form-select select2" name="vehicle_id" id="vehicle_number" aria-label="Default select example" onchange="$.getVehicleBookings();" <?= ($token > 0) ? 'disabled' : '' ?>>
 															<option value="">Select Vehicle</option>
 															<?php foreach ($vehicles as $o) { ?> 
 																<option value="<?= $o['id'] ?>"  <?= (isset($proforma_invoice['vehicle_id']) && ($proforma_invoice['vehicle_id'] == $o['id'])) ? 'selected' : ''?> ><?= $o['rc_number'] ?></option> 
@@ -64,7 +68,7 @@
 
 													<div class="col-md-4">
 														<label class="col-form-label">Booking Order No<span class="text-danger">*</span></label> 
-														<select class="form-select select2" required name="booking_id" id="booking_id" aria-label="Default select example"  onchange="$.getBookingDetails();">
+														<select class="form-select select2" required name="booking_id" id="booking_id" aria-label="Default select example"  onchange="$.getBookingDetails();" <?= ($token > 0) ? 'disabled' : '' ?>>
 															<option value="">Select Booking No.</option>
 															<?php foreach ($bookings as $o) { ?>
 															<option value="<?= $o['id'] ?>" <?= (isset($proforma_invoice['booking_id']) && ($proforma_invoice['booking_id'] == $o['id'])) ? 'selected' : ''?> ><?= $o['booking_number'] ?></option> 
@@ -102,8 +106,8 @@
 														</select>
 														<input type="hidden" id="selecected_customer_branch_id" value="<?= isset($proforma_invoice['customer_branch_id']) && ($proforma_invoice['customer_branch_id'] > 0) ? $proforma_invoice['customer_branch_id'] : 0 ?>"/>
 														<?php
-														if ($validation->getError('booking_id')) {
-															echo '<div class="alert alert-danger mt-2">' . $validation->getError('booking_id') . '</div>';
+														if ($validation->getError('customer_branch_id')) {
+															echo '<div class="alert alert-danger mt-2">' . $validation->getError('customer_branch_id') . '</div>';
 														}
 														?>
 													</div>

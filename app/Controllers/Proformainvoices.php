@@ -110,7 +110,7 @@ class Proformainvoices extends BaseController
                 FROM   proforma_invoices
                 WHERE  proforma_invoices.booking_id = bookings.id '.$condition.')')
         ->where(['bookings.status >'=> '3']) 
-        ->where(['bookings.status != '=> 11]) 
+        // ->where(['bookings.status != '=> 11]) 
         ->orderBy('v.id', 'desc')
         ->groupBy('bookings.vehicle_id')
         ->findAll(); 
@@ -119,7 +119,7 @@ class Proformainvoices extends BaseController
     function getBooking($id = 0){
       $condition = $id> 0 ? ' and proforma_invoices.id != '.$id: '';  
       return $this->BookingsModel->where(['status >'=> '3'])  
-      ->where(['status != '=> 11]) 
+      // ->where(['status != '=> 11]) 
       ->where('EXISTS (SELECT 1 
                     FROM   loading_receipts
                     WHERE  loading_receipts.booking_id = bookings.id)')
@@ -249,7 +249,9 @@ class Proformainvoices extends BaseController
         ]);   
         if (!$error) {
           $this->view['error']   = $this->validator;
-        } else {            
+        } else {        
+          // echo 'post <pre>';print_r($this->request->getVar());exit;
+    
           $this->update_proforma_transaction($this->request->getVar(),$id);           
           $this->session->setFlashdata('success', 'Proforma Invoice Updated Successfully');
           return $this->response->redirect(base_url('/proformainvoices'));
