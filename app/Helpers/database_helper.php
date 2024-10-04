@@ -86,7 +86,12 @@ function makeListActions($module = '', $actions = [], $token = 0, $pos = '2', $d
 				}
 
 				if ($pos == 1) {
-					$menu .= '<li>' . anchor(PANEL . $module . '/' . $secLink, '<i class="' . $cssClass . '"></i> &nbsp;' . ucfirst($secName), ['class' => 'btn btn-primary']) . '</li>';
+					if ($module == 'pod_management' && trim($secName) =='receive pod') { $secName = 'Receive POD'; }
+					else if ($module == 'pod_management' && trim($secName) =='courier pod') { $secName = 'Courier POD'; }
+					else if ($module == 'pod_management' && trim($secName) =='pod tracking') { $secName = 'POD Tracking'; }
+					else{ $secName = ucfirst($secName); }
+
+					$menu .= '<li>' . anchor(PANEL . $module . '/' . $secLink, '<i class="' . $cssClass . '"></i> &nbsp;' .($secName), ['class' => 'btn btn-primary']) . '</li>';
 				} elseif ($pos == 2 && !empty($token)) {
 					if ($dropdown) {
 						$menu .= anchor(PANEL . $module . '/' . $secLink . '/' . $token, '<i class="' . $cssClass . '"></i> ' . ucfirst($secName), ['class' => 'dropdown-item', 'onclick' => $confirm]);

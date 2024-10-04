@@ -22,8 +22,7 @@
     <div class="page-wrapper">
       <div class="content">
 
-        <div class="row">
-          <div class="col-md-12">
+        <div class="row"> 
 
             <!-- Page Header -->
             <div class="page-header">
@@ -40,17 +39,64 @@
               </div>
             </div>
             <!-- /Page Header -->
-
-            <form method="post" enctype="multipart/form-data" action="<?php echo base_url('booking'); ?>">
+ 
               <div class="card main-card">
+              <form method="post" enctype="multipart/form-data" action="<?php echo base_url($currentController); ?>">
                 <div class="card-body">
                     <div class="row pod-mngmt"> 
+                      <div class="col-md-4">
+                        <h4>Search / Filter</h4>
+                      </div>
+                      <div class="col-md-8 text-end">
                         <?php echo makeListActions($currentController, $Action, 0, 1); ?> 
+                      </div>
+                        
+                      <div class="row mt-2">
+                        <hr>
+                        <div class="col-md-3">
+                          <div class="form-wrap">
+                            <label class="col-form-label">Booking Number</label>
+                            <select class="form-select select2" name="booking_id">
+                              <option value="">Select Booking No.</option>
+                              <?php foreach ($booking_numbers as $s) { ?>
+                                <option value="<?= $s['id'] ?>" <?= (set_value('booking_id') == $s['id']) ? 'selected' : '' ?>><?= $s['booking_number'] ?></option>
+                              <?php } ?>
+                            </select>
+                          </div>
+                        </div>
+                         
+                        <div class="col-md-3">
+                          <label class="col-form-label">Customer Name</label>
+                          <select class="form-select select2" name="customer_id" id="customer_id">
+                            <option value="">Select Customer</option>
+                            <?php foreach ($customers as $c) { ?>
+                              <option value="<?= $c['id'] ?>" <?= (set_value('customer_id') == $c['id']) ? 'selected' : '' ?>><?= $c['party_name'] ?></option>
+                            <?php } ?>
+                          </select>
+                        </div>
+
+                        <div class="col-md-3">
+                          <label class="col-form-label">RC No.</label>
+                          <select class="form-select select2" name="vehicle_rc" id="vehicle_rc">
+                            <option value="">Select RC No.</option>
+                            <?php foreach ($vehicles as $v) { ?>
+                              <option value="<?= $v['id'] ?>" <?= (set_value('vehicle_rc') == $v['id']) ? 'selected' : '' ?>><?= $v['rc_number'] ?></option>
+                            <?php } ?>
+                          </select>
+                        </div>
+
+                        <div class="col-md-3">
+                          <button class="btn btn-info mt-4">Search</button>&nbsp;&nbsp;
+                          <a href="<?php echo base_url($currentController); ?>" class="btn btn-warning  mt-4">Reset</a>&nbsp;&nbsp;
+                        </div>
+                        
+                      </div>
+
                     </div>
                   </div> 
-                </div>
-              </div>
-            </form> 
+                  </form>
+                </div> 
+             
 
             <div class="card main-card">
               <div class="card-body">
@@ -199,30 +245,47 @@
       return false;
     }
 
+    $(document).ready(function() { 
 
-    // datatable init
-    if ($(' #ProductCategory').length > 0) {
-      $('#ProductCategory').DataTable({
-        "bFilter": false,
-        "bInfo": false,
-        "autoWidth": true,
-        "language": {
-          search: ' ',
-          sLengthMenu: '_MENU_',
-          searchPlaceholder: "Search",
-          info: "_START_ - _END_ of _TOTAL_ items",
-          "lengthMenu": "Show _MENU_ entries",
-          paginate: {
-            next: 'Next <i class=" fa fa-angle-right"></i> ',
-            previous: '<i class="fa fa-angle-left"></i> Prev '
+      // datatable init
+      if ($(' #ProductCategory').length > 0) {
+        $('#ProductCategory').DataTable({
+          "bFilter": false,
+          "bInfo": false,
+          "autoWidth": true,
+          "language": {
+            search: ' ',
+            sLengthMenu: '_MENU_',
+            searchPlaceholder: "Search",
+            info: "_START_ - _END_ of _TOTAL_ items",
+            "lengthMenu": "Show _MENU_ entries",
+            paginate: {
+              next: 'Next <i class=" fa fa-angle-right"></i> ',
+              previous: '<i class="fa fa-angle-left"></i> Prev '
+            },
           },
-        },
-        initComplete: (settings, json) => {
-          $('.dataTables_paginate').appendTo('.datatable-paginate');
-          $('.dataTables_length').appendTo('.datatable-length');
-        }
-      });
-    }
+          initComplete: (settings, json) => {
+            $('.dataTables_paginate').appendTo('.datatable-paginate');
+            $('.dataTables_length').appendTo('.datatable-length');
+          },
+          columnDefs: [{ 
+              target: 6,  
+              render: DataTable.render.datetime( "DD MMM YYYY" )
+            },
+            { 
+              target: 7,  
+              render: DataTable.render.datetime( "DD MMM YYYY" )
+            },
+            { 
+              target: 9,  
+              render: DataTable.render.datetime( "DD MMM YYYY" )
+            }
+          ]
+        });
+      }
+      
+    }); 
+    
   </script>
 </body>
 

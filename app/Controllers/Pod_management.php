@@ -2,9 +2,11 @@
 
 namespace App\Controllers;
   
-use App\Controllers\BaseController;
-use App\Models\BookingsModel;
 use App\Models\VehicleModel;
+use App\Models\BookingsModel;
+use App\Models\CustomersModel;
+use App\Models\PartytypeModel;
+use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class Pod_management extends BaseController
@@ -13,11 +15,15 @@ class Pod_management extends BaseController
     public $TripPausedReasonModel;
     public $BModel;
     public $VehicleModel;
+    public $CModel;
+    public $PTModel;
     public function __construct()
     { 
       $this->session = \Config\Services::session(); 
       $this->BModel = new BookingsModel(); 
       $this->VehicleModel = new VehicleModel();
+      $this->CModel = new CustomersModel();
+      $this->PTModel = new PartytypeModel();
     }
   
     public function index()
@@ -29,11 +35,51 @@ class Pod_management extends BaseController
             ->join('vehicle v2', 'v2.id = bts.vehicle_id', 'left')
             ->join('booking_pickups bp', 'bookings.id = bp.booking_id', 'left')
             ->join('booking_drops bd', 'bookings.id = bd.booking_id', 'left');
+
+        if ($this->request->getPost('booking_id') != '') {
+            $this->BModel->where('bookings.id', $this->request->getPost('booking_id'));
+        }
+
+        if ($this->request->getPost('customer_id') != '') {
+            $this->BModel->where('bookings.customer_id', $this->request->getPost('customer_id'));
+        }
+
+        if ($this->request->getPost('vehicle_rc') != '') { 
+            $this->BModel->where('v2.id', $this->request->getPost('vehicle_rc')); 
+        }
+            
         $this->view['bookings'] = $this->BModel->where(['bookings.status' => 11,'is_physical_pod_received' => 1])->orderBy('bookings.id', 'desc')->findAll();
         // echo  $this->BModel->getLastQuery().'<pre>';print_r($this->view['bookings']);exit;
+
+        $this->view['booking_numbers'] = $this->BModel->select('id,booking_number')->findAll(); 
+        $this->view['vehicles'] = $this->getDriverAssignedVehicles();
+        $this->view['customers'] = $this->getCustomers();
         return view('PodManagement/index', $this->view); 
     } 
    
+    function getDriverAssignedVehicles(){
+            return $this->VehicleModel->select('vehicle.id, vehicle.rc_number, party.party_name')
+            ->join('driver_vehicle_map', 'driver_vehicle_map.vehicle_id = vehicle.id','left')
+            ->join('driver', 'driver.id = driver_vehicle_map.driver_id','left')
+            ->join('party', 'party.id = driver.party_id','left')
+            ->where('(driver_vehicle_map.unassign_date = "" or driver_vehicle_map.unassign_date IS NULL or (UNIX_TIMESTAMP(driver_vehicle_map.unassign_date) = 0))')
+            ->where('vehicle.status', 1)->groupBy('vehicle.id')->findAll(); 
+    }
+
+    function getCustomers(){
+        //Get only that customers which party sale is yes
+        $party_type_ids = $this->PTModel->select("(GROUP_CONCAT(id)) party_type_ids") 
+        ->where('sale', '1') 
+        ->first(); 
+            $party_type_ids = str_replace([',',', '],'|', $party_type_ids );
+        
+        return $this->CModel->select('customer.*, party.party_name')
+            ->join('party', 'party.id = customer.party_id')
+            ->where('customer.status', '1')
+            ->where('CONCAT(",", party_type_id, ",") REGEXP ",('.$party_type_ids['party_type_ids'].'),"')
+            ->findAll();
+    }
+
     function receive_pod(){
         $this->view['vehicles'] = $this->VehicleModel->select('vehicle.id,vehicle.rc_number') 
         ->where(['vehicle.status' =>1])  
@@ -52,8 +98,10 @@ class Pod_management extends BaseController
             ->join('booking_transactions bts', 'bookings.id = bts.booking_id and booking_status_id =11')
             ->join('vehicle v2', 'v2.id = bts.vehicle_id', 'left')
             ->join('booking_pickups bp', 'bookings.id = bp.booking_id', 'left')
-            ->join('booking_drops bd', 'bookings.id = bd.booking_id', 'left');
+            ->join('booking_drops bd', 'bookings.id = bd.booking_id', 'left'); 
+            
             $this->BModel->where('v2.id', $this->request->getPost('vehicle_id'));
+
             $this->view['bookings'] = $this->BModel->where(['bookings.status' => 11,'is_physical_pod_received' => 0])->orderBy('bookings.id', 'desc')->findAll();
             // echo  $this->BModel->getLastQuery().'<pre>';print_r($this->view['bookings']);exit;
         }
