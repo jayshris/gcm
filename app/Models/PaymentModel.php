@@ -29,6 +29,7 @@ class PaymentModel extends Model
         'account_no',
         'transaction_no',
         'reason_id',
+        'payment_for',
         'created_by',
         'updated_by'
     ];

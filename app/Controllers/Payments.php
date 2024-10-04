@@ -51,7 +51,7 @@ class Payments extends BaseController
     {      
         $this->view['payments']  = $this->PaymentModel
         ->select('payments.*,p.party_name,pt.name payment_type,v.rc_number')
-        ->join('driver d','d.id= payments.driver_id')
+        ->join('driver d','d.id= payments.driver_id','left')
         ->join('party p', 'p.id = d.party_id','left') 
         ->join('payment_types pt','pt.id= payments.payment_type_id') 
         ->join('vehicle v', 'v.id = payments.vehicle_id','left') 
@@ -61,14 +61,14 @@ class Payments extends BaseController
     }  
 
     function create(){
-        $this->view['drivers'] = $this->DModel->select('driver.*, party.party_name as driver_name,b.id b_id,b.booking_number')  
+        $this->view['drivers'] = $this->DModel->select('driver.*,v.rc_number, party.party_name as driver_name,b.id b_id,b.booking_number')  
         ->join('party', 'party.id = driver.party_id') 
         ->join('driver_vehicle_map dvm', 'dvm.driver_id = driver.id and (dvm.unassign_date="" or dvm.unassign_date IS NULL or UNIX_TIMESTAMP(dvm.unassign_date) = 0)')
         ->join('vehicle v', 'dvm.vehicle_id = v.id')
         ->join('booking_vehicle_logs bvl', 'bvl.vehicle_id = v.id  and (bvl.unassign_date IS NULL or UNIX_TIMESTAMP(bvl.unassign_date) = 0)')
         ->join('bookings b', 'bvl.booking_id = b.id')
         ->where(['b.status >=' => 3,'b.status < '=>11])
-        // ->groupBy('v.id,driver.id')
+        ->groupBy('v.id,driver.id')
         ->orderBy('party.party_name', 'asc')
         ->findAll();
         
@@ -84,20 +84,13 @@ class Payments extends BaseController
         ->where("FIND_IN_SET (6,customer.party_type_id)")
         ->findAll(); 
 
+        $paymentTypeM = $this->PaymentTypeModel->where(['name'=>'Money'])->first(); 
+        $payment_type_id = isset($paymentTypeM['id']) ? $paymentTypeM['id'] : 0;
+        
+        $this->view['money_payment_type_id'] = $payment_type_id;
+
         if($this->request->getPost()){
-            $error = $this->validate([
-                'driver_id' => [
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => 'The driver field is required'
-                    ],
-                ],
-                'payment_type_id' => [
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => 'The payment type field is required'
-                    ],
-                ], 
+            $error = $this->validate([ 
                 'amount' => [
                     'rules' => 'required',
                     'errors' => [
@@ -111,6 +104,24 @@ class Payments extends BaseController
                     ],
                 ], 
             ]);
+            if($this->request->getPost('payment_for') == 'driver'){
+                $this->validate([
+                    'driver_id' => [
+                        'rules' => 'required',
+                        'errors' => [
+                            'required' => 'The driver field is required'
+                        ],
+                    ],
+                    'payment_type_id' => [
+                        'rules' => 'required',
+                        'errors' => [
+                            'required' => 'The payment type field is required'
+                        ],
+                    ], 
+                ]);
+                $payment_type_id = $this->request->getPost('payment_type_id');
+            } 
+
             if($this->request->getPost('payment_type_id') == 1){
                 $this->validate([
                     'fuel_fill_type' => [
@@ -122,7 +133,7 @@ class Payments extends BaseController
                 ]);
             }
 
-            if($this->request->getPost('vendor_id') == 2){
+            if($this->request->getPost('payment_type_id') == 2){
                 $this->validate([
                     'vendor_id' => [
                         'rules' => 'required',
@@ -133,7 +144,7 @@ class Payments extends BaseController
                 ]);
             }
 
-            if($this->request->getPost('vendor_id') == 1 || $this->request->getPost('vendor_id') == 2){
+            if($this->request->getPost('payment_type_id') == 1 || $this->request->getPost('payment_type_id') == 2){
                 $this->validate([
                     'vehicle_id' => [
                         'rules' => 'required',
@@ -218,29 +229,33 @@ class Payments extends BaseController
             }
             $validation = \Config\Services::validation();
             // echo 'POst dt<pre>';print_r($this->request->getPost());
-            // echo 'getErrors<pre>';print_r($validation->getErrors()); exit;
+            // echo 'getErrors<pre>';print_r($validation->getErrors()); //exit;
             if (!empty($validation->getErrors())) {
                 $this->view['error'] = $this->validator;
             } else {  
-              $data['fuel_fill_type'] = $this->request->getVar('fuel_fill_type');
-              $data['vehicle_id'] = $this->request->getVar('vehicle_id');
-              $data['driver_id'] = $this->request->getVar('driver_id');
-              $data['transfer_from_vehicle_id'] = $this->request->getVar('transfer_from_vehicle_id');
-              $data['km_reading'] = $this->request->getVar('km_reading');
-              $data['quantity'] = $this->request->getVar('quantity');
-              $data['fuel_pump_brand_id'] = $this->request->getVar('fuel_pump_brand_id');
-              $data['vendor_id'] = $this->request->getVar('vendor_id');
-              $data['amount'] = $this->request->getVar('amount');
-              $data['payment_type_id'] = $this->request->getVar('payment_type_id');
+              $data['fuel_fill_type'] = ($this->request->getVar('fuel_fill_type')) ? $this->request->getVar('fuel_fill_type') : '';
+              $data['vehicle_id'] = ($this->request->getVar('vehicle_id')) ? $this->request->getVar('vehicle_id') : 0;
+              $data['driver_id'] = ($this->request->getVar('driver_id')) ? $this->request->getVar('driver_id') : '';
+              $data['transfer_from_vehicle_id'] = ($this->request->getVar('transfer_from_vehicle_id')) ? $this->request->getVar('transfer_from_vehicle_id') : '';
+              $data['km_reading'] = ($this->request->getVar('km_reading')) ? $this->request->getVar('km_reading') : '';
+              $data['quantity'] = ($this->request->getVar('quantity')) ? $this->request->getVar('quantity') : '';
+              $data['fuel_pump_brand_id'] = ($this->request->getVar('fuel_pump_brand_id')) ? $this->request->getVar('fuel_pump_brand_id') : '';
+              $data['vendor_id'] = ($this->request->getVar('vendor_id')) ? $this->request->getVar('vendor_id') : '';
+              $data['amount'] = ($this->request->getVar('amount')) ? $this->request->getVar('amount') : '';
+              $data['payment_type_id'] = $payment_type_id;
               $data['payment_mode'] = $this->request->getVar('payment_mode');
               $data['card_no'] = $this->request->getVar('card_no');
               $data['upi_no'] = $this->request->getVar('upi_no');
               $data['account_no'] = $this->request->getVar('account_no');
               $data['transaction_no'] = $this->request->getVar('transaction_no');
-              $data['reason_id'] = $this->request->getVar('reason_id'); 
+              $data['reason_id'] = ($this->request->getVar('reason_id')) ? $this->request->getVar('reason_id') : ''; 
+              $data['payment_for'] = $this->request->getVar('payment_for');
               $data['created_by'] =  $this->added_by;
+              
+            //   echo 'data<pre>';print_r($data);exit;
+
               $this->PaymentModel->save($data); 
-              // echo 'data<pre>';print_r($data);exit;
+              
               $this->session->setFlashdata('success', 'Payment Added Successfully');
       
               return $this->response->redirect(base_url('/payments'));

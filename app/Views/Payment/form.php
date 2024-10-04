@@ -58,7 +58,7 @@
 														<select class="form-control select2" id="driver_id" name="driver_id" required onchange="getDriverVehicles();getDriverBookings();">
 														<option value="">Select</option>
 														<?php foreach($drivers as $val){?>
-															<option value="<?= $val['id'] ?>"><?= $val['driver_name'] ?></option>
+															<option value="<?= $val['id'] ?>"><?= $val['driver_name'].' - '.$val['rc_number'] ?></option>
 														<?php }?>
 														</select> 
 														<?php
@@ -72,6 +72,7 @@
 															<label class="col-form-label">
 															Payment Types<span class="text-danger">*</span>
 															</label>
+															<input type="hidden" name="money_payment_type_id" id="money_payment_type_id" value="<?= $money_payment_type_id; ?>" />
 															<select class="select" id="payment_type_id" name="payment_type_id"  onchange="displayDivs()" required>
 															<option  value="">Select</option>
 															<?php foreach($payment_types as $val){?>
@@ -91,7 +92,7 @@
 														<option value="">Select Booking</option> 
 														</select> 
 													</div>
-													<div class="col-md-6 payment_types_fuel_urea_html" hidden>
+													<div class="col-md-6 payment_types_fuel_urea_html driver_div" hidden>
 														<div class="form-wrap">
 															<label class="col-form-label">
 															Vehicle<span class="text-danger payment_types_fuel_urea_html" hidden>*</span>
@@ -132,7 +133,7 @@
 															Transfer From Vehicle<span class="text-danger fuel_fill_type_transfer" hidden>*</span>
 															</label>
 															<select class="form-class select2" id="transfer_from_vehicle_id" name="transfer_from_vehicle_id" onchange="duplicateVehicle('transfer_from_vehicle_id','vehicle_id')">
-															<option value="">Select Vehicle</option> 
+															<option value="">Select</option> 
 															</select>
 															<span class="text-danger duplicate_vehicle_spn" id="transfer_from_vehicle_id_spn" hidden>Vehicle No. is duplicate, please select another vehicle</span>
 															<?php
@@ -295,8 +296,8 @@
 
 	<script>
 		function displayDivs(){
-			var payment_type_id = $('#payment_type_id').val(); 
-			
+			var payment_type_id = $('#payment_type_id').val();  
+
 			//Fuel
 			if(payment_type_id == 1){
 				$('.fuel_fill_type_html').removeAttr('hidden');
@@ -304,6 +305,7 @@
 			}else{
 				$('.fuel_fill_type_html').attr('hidden','hidden');
 				$('.fuel_fill_type_inpt').removeAttr('required');
+				$('#fuel_fill_type').val('').trigger('change');
 			}
 
 			//Urea
@@ -313,6 +315,7 @@
 			}else{
 				$('.urea_html').attr('hidden','hidden');
 				$('.urea_inpt').removeAttr('required');
+				$('#vendor_id').val('').trigger('change');
 			}
 
 			//Money
@@ -320,6 +323,7 @@
 				$('.money_html').removeAttr('hidden'); 
 			}else{
 				$('.money_html').attr('hidden','hidden'); 
+				$('#adavanced_payment').val('');
 			}
 
 			//Fuel or Urea
@@ -329,6 +333,8 @@
 			}else{
 				$('.payment_types_fuel_urea_html').attr('hidden','hidden');
 				$('.payment_types_fuel_urea_inpt').removeAttr('required');
+				$('.payment_types_fuel_urea_inpt').val('');
+				$('#vehicle_id').val('').select2();
 			}
 		}
 
@@ -338,19 +344,21 @@
 			//transfer from other vehicle
 			if(fuel_fill_type == 1){
 				$('.fuel_fill_type_transfer').removeAttr('hidden');
-				$('.transfer_from_vehicle_id').attr('required','required');
+				$('#transfer_from_vehicle_id').attr('required','required');
 			}else{
 				$('.fuel_fill_type_transfer').attr('hidden','hidden');
-				$('.transfer_from_vehicle_id').removeAttr('required');
+				$('#transfer_from_vehicle_id').removeAttr('required');
+				$('#transfer_from_vehicle_id').val('').select2();
 			}
 
 			//from pump
 			if(fuel_fill_type == 2){
 				$('.fuel_fill_type_pump').removeAttr('hidden');
-				$('.fuel_pump_brand_id').attr('required','required');
+				$('#fuel_pump_brand_id').attr('required','required');
 			}else{
 				$('.fuel_fill_type_pump').attr('hidden','hidden');
-				$('.fuel_pump_brand_id').removeAttr('required');
+				$('#fuel_pump_brand_id').removeAttr('required');
+				$('#fuel_pump_brand_id').val('').select2();
 			}
 		}
 
@@ -491,12 +499,13 @@
 			$('#driver_id').removeAttr('required');   
 			if(payment_for=='driver'){ 
 				$('.driver_div').removeAttr('hidden');   
-				$('#driver_id').attr('required','required');    
+				$('#driver_id').attr('required','required');   
+				$("#payment_type_id").val('').trigger('change').select2();
+				$("#payment_type_id").select2({disabled:false}); 
 			} 
 			if(payment_for == 'vendor'){
-				$("#payment_type_id").children('option').attr('hidden','hidden');
-				// $("#payment_type_id").children("option[value='3']").show()
-				$("#payment_type_id").select2();
+				$("#payment_type_id").val($('#money_payment_type_id').val()).trigger('change').select2();
+				$("#payment_type_id").select2({disabled:'readonly'});
 			}
 		});
 	</script>
