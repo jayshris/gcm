@@ -183,6 +183,11 @@
         },
         "aoColumnDefs": [
             { "bSortable": false, "aTargets": [ 7,8] },  
+        ],
+        columnDefs: [{ 
+            target: 6,  
+            render: DataTable.render.datetime( "DD MMM YYYY" )
+          } 
         ]
       });
     }

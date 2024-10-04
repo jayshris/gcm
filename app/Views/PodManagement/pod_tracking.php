@@ -156,7 +156,16 @@
         "bPaginate": false,
         "aoColumnDefs": [
             { "bSortable": false, "aTargets": [8] },  
-        ]
+        ],
+          columnDefs: [{ 
+              target: 5,  
+              render: DataTable.render.datetime( "DD MMM YYYY" )
+            },
+            { 
+              target: 6,  
+              render: DataTable.render.datetime( "DD MMM YYYY" )
+            }
+          ]
       });
     } 
   </script>
