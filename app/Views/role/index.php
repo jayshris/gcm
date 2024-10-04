@@ -48,7 +48,7 @@ use App\Models\OfficeModel;
 
                 <!-- List -->
                 <div class="table-responsive custom-table">
-                  <table class="table" id="deal_list">
+                  <table class="table" id="deal_list2">
                     <thead class="thead-light">
                       <tr>
                         <th>Action</th>
@@ -74,7 +74,7 @@ use App\Models\OfficeModel;
                             $strtime='';
                             if(isset($row["modify_date"]) && $row["modify_date"] != NULL){
                               $strtime = strtotime($row["modify_date"]);
-                              $strtime = date('d-M-Y',$strtime);
+                              $strtime = date('d M Y',$strtime);
                             }
                             ?>                            
                               <tr>
@@ -119,6 +119,37 @@ use App\Models\OfficeModel;
         }
         return false;
     }
+
+    
+    // datatable init
+    if ($('#deal_list2').length > 0) {
+      $('#deal_list2').DataTable({
+        "bFilter": false,
+        "bInfo": false,
+        "autoWidth": true,
+        "language": {
+          search: ' ',
+          sLengthMenu: '_MENU_',
+          searchPlaceholder: "Search",
+          info: "_START_ - _END_ of _TOTAL_ items",
+          "lengthMenu": "Show _MENU_ entries",
+          paginate: {
+            next: 'Next <i class=" fa fa-angle-right"></i> ',
+            previous: '<i class="fa fa-angle-left"></i> Prev '
+          },
+        },
+        initComplete: (settings, json) => {
+          $('.dataTables_paginate').appendTo('.datatable-paginate');
+          $('.dataTables_length').appendTo('.datatable-length');
+        },
+        columnDefs: [{ 
+          target: 3,  
+          render: DataTable.render.datetime( "DD MMM YYYY" )
+        } 
+        ]
+      });
+    }
+
   </script>
 </body>
 </html>

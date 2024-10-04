@@ -82,11 +82,11 @@
                           $updated_at_str = '';
                           if (isset($fuelpumpbrand["created_at"])) {
                             $created_at_str = strtotime($fuelpumpbrand["created_at"]);
-                            $strtime = date('d-m-Y', $created_at_str);
+                            $strtime = date('d M Y', $created_at_str);
                           }
                           if (isset($fuelpumpbrand["updated_at"]) && ($fuelpumpbrand["updated_at"] != '0000-00-00 00:00:00')) {
                             $updated_at_str = strtotime($fuelpumpbrand["updated_at"]);
-                            $strtime1 = date('d-m-Y', $updated_at_str);
+                            $strtime1 = date('d M Y', $updated_at_str);
                           } else {
                             $strtime1 = '-';
                           }
@@ -160,7 +160,16 @@
         initComplete: (settings, json) => {
           $('.dataTables_paginate').appendTo('.datatable-paginate');
           $('.dataTables_length').appendTo('.datatable-length');
-        }
+        },
+        columnDefs: [{ 
+          target: 4,  
+          render: DataTable.render.datetime( "DD MMM YYYY" )
+        },
+        { 
+          target: 5,  
+          render: DataTable.render.datetime( "DD MMM YYYY" )
+        } 
+        ]
       });
     }
   </script>

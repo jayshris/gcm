@@ -73,8 +73,8 @@
                         <tr>
                           <td><?= makeListActions($currentController, $Action, $body['id'], 2) ?></td>
                           <td><?= $body['name'] ?></td>
-                          <td><?= date('d-m-Y', strtotime($body['created_at'])) ?></td>
-                          <td><?= $body['modified_at'] != '' ? date('d-m-Y', strtotime($body['modified_at'])) : '' ?></td>
+                          <td><?= date('d M Y', strtotime($body['created_at'])) ?></td>
+                          <td><?= $body['modified_at'] != '' ? date('d M Y', strtotime($body['modified_at'])) : '' ?></td>
                           <td>
                             <?php
                             if ($body['status']) {
@@ -145,7 +145,16 @@
         initComplete: (settings, json) => {
           $('.dataTables_paginate').appendTo('.datatable-paginate');
           $('.dataTables_length').appendTo('.datatable-length');
-        }
+        },
+        columnDefs: [{ 
+          target: 2,  
+          render: DataTable.render.datetime( "DD MMM YYYY" )
+        },
+        { 
+          target: 3,  
+          render: DataTable.render.datetime( "DD MMM YYYY" )
+        } 
+        ]
       });
     }
   </script>

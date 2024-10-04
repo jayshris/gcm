@@ -100,11 +100,11 @@
                           $updated_at_str = '';
                           if (isset($company["created_at"])) {
                             $created_at_str = strtotime($company["created_at"]);
-                            $created_at_str = date('d-m-Y', $created_at_str);
+                            $created_at_str = date('d M Y', $created_at_str);
                           }
                           if (isset($company["updated_at"])) {
                             $updated_at_str = strtotime($company["updated_at"]);
-                            $updated_at_str = date('d-m-Y', $updated_at_str);
+                            $updated_at_str = date('d M Y', $updated_at_str);
                           }
 
                           if ($company['status'] == 'Active') {
@@ -177,7 +177,16 @@
         initComplete: (settings, json) => {
           $('.dataTables_paginate').appendTo('.datatable-paginate');
           $('.dataTables_length').appendTo('.datatable-length');
-        }
+        },
+        columnDefs: [{ 
+          target: 2,  
+          render: DataTable.render.datetime( "DD MMM YYYY" )
+        },
+        { 
+          target: 3,  
+          render: DataTable.render.datetime( "DD MMM YYYY" )
+        } 
+        ]
       });
     }
   </script>

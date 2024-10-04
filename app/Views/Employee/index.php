@@ -90,9 +90,9 @@
                                     <td>' . $i++ . '.</td>
                                     <td>' . makeListActions($currentController, $Action, $employee['id'], 2) . '</td>
                                     <td>' . $employee["name"] . '</td>
-                                    <td>' . (isset($employee['created_at']) ? date('d-m-Y', strtotime($employee["created_at"])) : '') . '</td>
-                                    <td>' . (isset($employee['releaveing_date']) && ($employee['releaveing_date'] != '0000-00-00') ? date('d-m-Y', strtotime($employee["releaveing_date"])) : '') . '</td>
-                                    <td>' . (isset($employee['updated_at']) ? date('d-m-Y', strtotime($employee["updated_at"])) : '') . '</td>
+                                    <td>' . (isset($employee['created_at']) ? date('d M Y', strtotime($employee["created_at"])) : '') . '</td>
+                                    <td>' . (isset($employee['releaveing_date']) && ($employee['releaveing_date'] != '0000-00-00') ? date('d M Y', strtotime($employee["releaveing_date"])) : '') . '</td>
+                                    <td>' . (isset($employee['updated_at']) ? date('d M Y', strtotime($employee["updated_at"])) : '') . '</td>
                                     <td>' . $status . '</td>
                                 </tr>';
                         }
@@ -153,7 +153,20 @@
         initComplete: (settings, json) => {
           $('.dataTables_paginate').appendTo('.datatable-paginate');
           $('.dataTables_length').appendTo('.datatable-length');
-        }
+        },
+        columnDefs: [{ 
+            target: 3,  
+            render: DataTable.render.datetime( "DD MMM YYYY" )
+          },
+          { 
+            target: 4,  
+            render: DataTable.render.datetime( "DD MMM YYYY" )
+          },
+          { 
+            target: 5,  
+            render: DataTable.render.datetime( "DD MMM YYYY" )
+          }
+        ]
       });
     }
   </script>

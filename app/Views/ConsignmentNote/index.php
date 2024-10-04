@@ -154,7 +154,40 @@
 
     <!-- scripts link  -->
     <?= $this->include('partials/vendor-scripts') ?>
- 
-</body>
 
-</html>
+    <script>
+    $(document).ready(function() {  
+    // datatable init
+    if ($(' #loading-receipt-table').length > 0) {
+      $('#loading-receipt-table').DataTable({
+        "bFilter": false,
+        "bInfo": false,
+        "autoWidth": true,
+        "language": {
+          search: ' ',
+          sLengthMenu: '_MENU_',
+          searchPlaceholder: "Search",
+          info: "_START_ - _END_ of _TOTAL_ items",
+          "lengthMenu": "Show _MENU_ entries",
+          paginate: {
+            next: 'Next <i class=" fa fa-angle-right"></i> ',
+            previous: '<i class="fa fa-angle-left"></i> Prev '
+          },
+        },
+        initComplete: (settings, json) => {
+          $('.dataTables_paginate').appendTo('.datatable-paginate');
+          $('.dataTables_length').appendTo('.datatable-length');
+        },
+        columnDefs: [{ 
+            target: 5,  
+            render: DataTable.render.datetime( "DD MMM YYYY" )
+          } 
+        ]
+      });
+    }
+
+    }); 
+    </script>
+    </body>
+
+    </html>

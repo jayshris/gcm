@@ -76,7 +76,7 @@
                                                 <th><?= number_format($b['amount'],2) ?></th>
                                                 <td><?= $b['party_name'] ?></td>  
                                                 <td><?= ($b['rc_number']) ? $b['rc_number'] :'-' ?></td>  
-												<td><?= (strtotime($b['created_at']) > 0) ? date('d/m/Y h:i A',strtotime($b['created_at'])) : '-' ?></td>   
+												<td><?= (strtotime($b['created_at']) > 0) ? date('d M Y',strtotime($b['created_at'])) : '-' ?></td>   
 											</td>
 											</tr>
 										<?php } ?>
@@ -137,7 +137,12 @@
         } ,
 		"aoColumnDefs": [
 			{ "bSortable": false, "aTargets": [1] } 
-		]
+		],
+          columnDefs: [{ 
+              target: 5,  
+              render: DataTable.render.datetime( "DD MMM YYYY" )
+            } 
+          ]
       });
     }
 

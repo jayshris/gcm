@@ -63,7 +63,7 @@
                                                         <?= base_url('bookinglinks/edit/').$encode_url_id  .'/'. $l['token'] ?> &nbsp;
                                                         <button class="btn btn-warning" onclick="myFunction()"><i class="fa fa-clone" aria-hidden="true" title="Copy link"></i></button>
                                                     </td> 
-                                                    <td><?= date('d-m-Y h:i:s a', strtotime($l['gen_date'])) ?></td>
+                                                    <td><?= date('d M Y h:i:s a', strtotime($l['gen_date'])) ?></td>
                                                     <td>
                                                         <?php
                                                         $dateProvided = $l['gen_date'];
@@ -132,7 +132,12 @@
                 initComplete: (settings, json) => {
                     $('.dataTables_paginate').appendTo('.datatable-paginate');
                     $('.dataTables_length').appendTo('.datatable-length');
-                }
+                },
+                columnDefs: [{ 
+                    target: 2,  
+                    render: DataTable.render.datetime( "DD MMM YYYY" )
+                } 
+                ]
             });
         }
 

@@ -89,7 +89,7 @@ use App\Models\RoleModel;
                           $strtime = '';
                           if (isset($user["created_at"]) && $user["created_at"] != NULL) {
                             $strtime = strtotime($user["created_at"]);
-                            $strtime = date('d-m-Y', $strtime);
+                            $strtime = date('d M Y', $strtime);
                           }
 
                           $roleModel = new RoleModel();
@@ -168,7 +168,13 @@ use App\Models\RoleModel;
         initComplete: (settings, json) => {
           $('.dataTables_paginate').appendTo('.datatable-paginate');
           $('.dataTables_length').appendTo('.datatable-length');
-        }
+        },
+        columnDefs: [ 
+          { 
+            target: 7,  
+            render: DataTable.render.datetime( "DD MMM YYYY" )
+          }
+        ]
       });
     }
   </script>

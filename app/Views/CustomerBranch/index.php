@@ -197,7 +197,16 @@
           initComplete: (settings, json) => {
             $('.dataTables_paginate').appendTo('.datatable-paginate');
             $('.dataTables_length').appendTo('.datatable-length');
-          }
+          },
+          columnDefs: [{ 
+              target: 5,  
+              render: DataTable.render.datetime( "DD MMM YYYY" )
+            },
+            { 
+              target: 6,  
+              render: DataTable.render.datetime( "DD MMM YYYY" )
+            } 
+          ]
         });
       }
     </script>

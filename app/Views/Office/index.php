@@ -110,7 +110,7 @@ use App\Models\CompanyModel;
                           $strtime2 = '';
                           if (isset($office["updated_at"])) {
                             $strtime2 = strtotime($office["updated_at"]);
-                            $strtime2 = date('d-m-Y h:i:sa', $strtime2);
+                            $strtime2 = date('d M Y h:i:sa', $strtime2);
                           } else {
                             $strtime2 = '';
                           }
@@ -129,7 +129,7 @@ use App\Models\CompanyModel;
                                     <td>' . makeListActions($currentController, $Action, $token, 2) . '</td>
                                     <td>' . $office["name"] . '</td>
                                     <td>' . @$companydata['name'] . '</td>
-                                    <td>' . date('d-m-Y h:i:sa', $strtime) . '</td>
+                                    <td>' . date('d M Y h:i:sa', $strtime) . '</td>
                                     <td>' . $strtime2 . '</td>
                                     <td>' . $status . '</td>
                                 </tr>';
@@ -193,7 +193,16 @@ use App\Models\CompanyModel;
         initComplete: (settings, json) => {
           $('.dataTables_paginate').appendTo('.datatable-paginate');
           $('.dataTables_length').appendTo('.datatable-length');
-        }
+        },
+          columnDefs: [{ 
+              target: 3,  
+              render: DataTable.render.datetime( "DD MMM YYYY h:i:sa" )
+            },
+            { 
+              target: 4,  
+              render: DataTable.render.datetime( "DD MMM YYYY h:i:sa" )
+            } 
+          ]
       });
     }
   </script>

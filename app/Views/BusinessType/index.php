@@ -76,11 +76,11 @@
                           $updated_at_str = '';
                           if (isset($business["created_at"])) {
                             $created_at_str = strtotime($business["created_at"]);
-                            $strtime = date('d-m-Y', $created_at_str);
+                            $strtime = date('d M Y', $created_at_str);
                           }
                           if (isset($business["updated_at"]) && ($business["updated_at"] != '0000-00-00 00:00:00')) {
                             $updated_at_str = strtotime($business["updated_at"]);
-                            $strtime1 = date('d-m-Y', $updated_at_str);
+                            $strtime1 = date('d M Y', $updated_at_str);
                           } else {
                             $strtime1 = '-';
                           }
@@ -154,7 +154,12 @@
         initComplete: (settings, json) => {
           $('.dataTables_paginate').appendTo('.datatable-paginate');
           $('.dataTables_length').appendTo('.datatable-length');
-        }
+        },
+        columnDefs: [{ 
+          target: 3,  
+          render: DataTable.render.datetime( "DD MMM YYYY" )
+        } 
+        ]
       });
     }
   </script>

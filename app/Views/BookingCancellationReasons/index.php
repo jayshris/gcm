@@ -111,8 +111,8 @@
 												<td><?= $i++; ?>.</td> 
 												<td><?= makeListActions($currentController, $Action, $b['id'], 2) ?></td>
 												<td><?= $b['name'] ?></td>  
-												<td><?= (strtotime($b['created_at']) > 0) ? date('d/m/Y h:i A',strtotime($b['created_at'])) : '-' ?></td>  
-												<td><?= (strtotime($b['updated_at']) > 0) ? date('d/m/Y h:i A',strtotime($b['updated_at'])) : '-' ?></td>  
+												<td><?= (strtotime($b['created_at']) > 0) ? date('d M Y',strtotime($b['created_at'])) : '-' ?></td>  
+												<td><?= (strtotime($b['updated_at']) > 0) ? date('d M Y',strtotime($b['updated_at'])) : '-' ?></td>  
 												<td>
 													<?php if($b['status']){
 														echo '<span class="badge badge-pill bg-success">Active</span>';	
@@ -181,6 +181,15 @@
         } ,
 		"aoColumnDefs": [
 			{ "bSortable": false, "aTargets": [1] } 
+		],
+		columnDefs: [{ 
+			target: 3,  
+			render: DataTable.render.datetime( "DD MMM YYYY" )
+			},
+			{ 
+			target: 4,  
+			render: DataTable.render.datetime( "DD MMM YYYY" )
+			} 
 		]
       });
     }
