@@ -281,7 +281,17 @@ class LoadingReceipt extends BaseController
   }
   function edit($id){  
     $stateModel = new StateModel();
-    $this->view['loading_receipts'] = $this->LoadingReceiptModel->where(['id' => $id])->first();
+    $this->view['loading_receipts'] = $this->LoadingReceiptModel
+    ->select('loading_receipts.*,c.party_type_id')
+    ->join('bookings b', 'loading_receipts.booking_id = b.id','left')
+    ->join('customer c', 'c.id = b.customer_id','left')
+    ->where(['loading_receipts.id' => $id])->first();
+    // echo $this->LoadingReceiptModel->getLastQuery().'<pre>';print_r($this->view['loading_receipts']);exit;
+
+    //Check LR first or first party 
+    $party_type_id = isset($this->view['loading_receipts']['party_type_id']) ? $this->view['loading_receipts']['party_type_id'] : '';
+    $this->view['lr_party_type'] = $this->checkLRParty($party_type_id);
+    // echo  $party_type_id.'<pre>';print_r($this->view['lr_party_type']);exit;
 
     //Edit allow only 3 times
     if($this->view['loading_receipts']['edit_count'] >= 3){
@@ -469,6 +479,19 @@ class LoadingReceipt extends BaseController
     return view('LoadingReceipt/edit', $this->view); 
   }
 
+  function checkLRParty($party_type_id){
+    $party_type_ids = isset($party_type_id) ? explode(',',$party_type_id) : [];
+    $data = [];
+    if($party_type_ids){
+      $data['lr_third_party'] =  $this->PTModel->select('count(id) as cnt')
+                                ->where('lr_third_party',1)
+                                ->whereIn('id',$party_type_ids)->first(); 
+      $data['lr_first_party'] =  $this->PTModel->select('count(id) as cnt')
+                                ->where('lr_first_party',1)
+                                ->whereIn('id',$party_type_ids)->first(); 
+    }
+    return $data;
+  }
   function getBookingDetails(){
     $rows =  $this->BookingsModel->select('bookings.*,bp.city bp_city,bd.city bd_city,party.party_name,c.party_type_id,bookings.customer_id')
     ->join('booking_drops bd', 'bd.booking_id = bookings.id','left')
@@ -555,8 +578,20 @@ class LoadingReceipt extends BaseController
   }
 
   function approve($id){
-    $stateModel = new StateModel();
-    $this->view['loading_receipts'] = $this->LoadingReceiptModel->where(['id' => $id])->first();
+    $stateModel = new StateModel(); 
+
+    $this->view['loading_receipts'] = $this->LoadingReceiptModel
+    ->select('loading_receipts.*,c.party_type_id')
+    ->join('bookings b', 'loading_receipts.booking_id = b.id','left')
+    ->join('customer c', 'c.id = b.customer_id','left')
+    ->where(['loading_receipts.id' => $id])->first();
+    // echo $this->LoadingReceiptModel->getLastQuery().'<pre>';print_r($this->view['loading_receipts']);exit;
+
+    //Check LR first or third party 
+    $party_type_id = isset($this->view['loading_receipts']['party_type_id']) ? $this->view['loading_receipts']['party_type_id'] : '';
+    $this->view['lr_party_type'] = $this->checkLRParty($party_type_id);
+    // echo  $party_type_id.'<pre>';print_r($this->view['lr_party_type']);exit;
+    
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
     $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
     $this->view['transport_offices'] = $this->getTransporterBranches($this->view['loading_receipts']['transporter_id']); 

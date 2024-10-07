@@ -58,9 +58,18 @@ $.getBookingDetails = function() {
                     $('#e_way_expiry_date_div').attr('hidden','hidden');
                     $(".tr-req").attr('required','required');
                 } 
-
+                
                 if(res.is_lr_first_party > 0){
                     $('#payment_terms_div').removeAttr('hidden');
+
+                    //If lr first party then pincode should be mandatory for ship to and disapatch - 07-10-2024
+                    $('#place_of_delivery_pincode').attr('required','required');
+                    $('#place_of_dispatch_pincode').attr('required','required');
+                    $('.lr-pincode').removeAttr('hidden');
+                }else{
+                    $('#place_of_delivery_pincode').removeAttr('required');
+                    $('#place_of_dispatch_pincode').removeAttr('required');
+                    $('.lr-pincode').attr('hidden','hidden');
                 }
             }
         });

@@ -116,7 +116,7 @@
 
                         <div class="col-md-4">
                             <label class="col-form-label">Seal No.</label>
-                            <input type="text" name="seal_no" id="seal_no" class="form-control" value="<?= (isset($loading_receipts['seal_no'])) ?  $loading_receipts['seal_no'] : ''?>">
+                            <input type="text" name="seal_no" id="seal_no" autocomplete="off" class="form-control" value="<?= (isset($loading_receipts['seal_no'])) ?  $loading_receipts['seal_no'] : ''?>">
                             <?php
                             if ($validation->getError('seal_no')) {
                                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('seal_no') . '</div>';
@@ -409,9 +409,14 @@
                         <div class="col-md-4">
                             <?php 
                             $label = 'Pincode';
-                            echo '<label class="col-form-label">'.$label.' </label>';
-                            echo form_input(['name'=>'place_of_dispatch_pincode','id'=>'place_of_dispatch_pincode','value'=>set_value('place_of_dispatch_pincode', (isset($loading_receipts['place_of_dispatch_pincode']) ? $loading_receipts['place_of_dispatch_pincode'] : '')),'class'=>'form-control '.(($validation->getError('place_of_dispatch_pincode')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');",]);
-                            echo ($validation->getError('place_of_dispatch_pincode')) ? '<div class="invalid-feedback">'.$validation->getError('place_of_dispatch_pincode').'</div>' : '';
+                            $is_lr_first_party = isset($lr_party_type['lr_first_party']['cnt']) && ($lr_party_type['lr_first_party']['cnt'] > 0) ? $lr_party_type['lr_first_party']['cnt'] : 0;
+                            ?> <label class="col-form-label"><?= $label ?><span class="text-danger lr-pincode" <?= ($is_lr_first_party > 0) ? '' : 'hidden' ?> >*</span></label>
+                            <?php 
+                            //echo form_input(['name'=>'place_of_dispatch_pincode','id'=>'place_of_dispatch_pincode','value'=>set_value('place_of_dispatch_pincode', (isset($loading_receipts['place_of_dispatch_pincode']) ? $loading_receipts['place_of_dispatch_pincode'] : '')),'class'=>'form-control '.(($validation->getError('place_of_dispatch_pincode')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');",]);
+                            ?>
+                            <input type="text" name="place_of_dispatch_pincode" <?= ($is_lr_first_party > 0) ? 'required' : '' ?> value="<?= set_value('place_of_dispatch_pincode', (isset($loading_receipts['place_of_dispatch_pincode']) ? $loading_receipts['place_of_dispatch_pincode'] : '')) ?>" id="place_of_dispatch_pincode" class="form-control <?= (($validation->getError('place_of_dispatch_pincode')) ? 'is-invalid' : '') ?>" placeholder="<?= $label ?>" autocomplete="off" oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');">
+                            
+                            <?php echo ($validation->getError('place_of_dispatch_pincode')) ? '<div class="invalid-feedback">'.$validation->getError('place_of_dispatch_pincode').'</div>' : '';
                             ?>
                         </div>
                     </div>
@@ -590,9 +595,12 @@
                         <div class="col-md-4">
                             <?php 
                             $label = 'Pincode';
-                            echo '<label class="col-form-label">'.$label.'</label>';
-                            echo form_input(['name'=>'place_of_delivery_pincode','id'=>'place_of_delivery_pincode','value'=>set_value('place_of_delivery_pincode', (isset($loading_receipts['place_of_delivery_pincode']) ? $loading_receipts['place_of_delivery_pincode'] : '')),'class'=>'form-control '.(($validation->getError('place_of_delivery_pincode')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');"]);
-                            echo ($validation->getError('place_of_delivery_pincode')) ? '<div class="invalid-feedback">'.$validation->getError('place_of_delivery_pincode').'</div>' : '';
+                            $is_lr_first_party = isset($lr_party_type['lr_first_party']['cnt']) && ($lr_party_type['lr_first_party']['cnt'] > 0) ? $lr_party_type['lr_first_party']['cnt'] : 0;
+                            ?> <label class="col-form-label"><?= $label ?><span class="text-danger lr-pincode"  <?= ($is_lr_first_party > 0) ? '' : 'hidden' ?>>*</span></label>
+                            <input type="text" name="place_of_delivery_pincode"  <?= ($is_lr_first_party > 0) ? 'required' : '' ?>  value="<?= set_value('place_of_delivery_pincode', (isset($loading_receipts['place_of_delivery_pincode']) ? $loading_receipts['place_of_delivery_pincode'] : '')) ?>" id="place_of_delivery_pincode" class="form-control <?= (($validation->getError('place_of_delivery_pincode')) ? 'is-invalid' : '') ?>" placeholder="<?= $label ?>" autocomplete="off" oninput="this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');">
+
+                            <?php //echo form_input(['name'=>'place_of_delivery_pincode','id'=>'place_of_delivery_pincode','value'=>set_value('place_of_delivery_pincode', (isset($loading_receipts['place_of_delivery_pincode']) ? $loading_receipts['place_of_delivery_pincode'] : '')),'class'=>'form-control '.(($validation->getError('place_of_delivery_pincode')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');"]); ?>
+                            <?php echo ($validation->getError('place_of_delivery_pincode')) ? '<div class="invalid-feedback">'.$validation->getError('place_of_delivery_pincode').'</div>' : '';
                             ?>
                         </div>
                     </div>
@@ -655,7 +663,7 @@
                             ?>
                         </div>
 
-                        <div class="col-md-4" id="payment_terms_div" hidden>
+                        <div class="col-md-4" id="payment_terms_div" <?= ($is_lr_first_party > 0) ? '' : 'hidden' ?>>
                             <?php 
                             $label = 'Terms';
                             echo '<label class="col-form-label">'.$label.' </label>';
