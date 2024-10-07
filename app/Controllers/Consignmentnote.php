@@ -10,6 +10,7 @@ use App\Models\VehicleModel;
 use App\Models\BookingsModel; 
 use App\Controllers\BaseController;
 use App\Models\LoadingReceiptModel;
+use App\Models\PartytypeModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class Consignmentnote extends BaseController
@@ -20,7 +21,7 @@ class Consignmentnote extends BaseController
     public $LoadingReceiptModel;
     public $session;
     public $profile;
-  
+    public $PTModel;
     public function __construct()
     {
       $u = new UserModel(); 
@@ -30,6 +31,7 @@ class Consignmentnote extends BaseController
       $this->LoadingReceiptModel = new LoadingReceiptModel();
       $this->session = \Config\Services::session();
       $this->profile = new ProfileModel();
+      $this->PTModel = new PartytypeModel();
     }
   
     public function index()
@@ -73,6 +75,7 @@ class Consignmentnote extends BaseController
       CONCAT_WS(",", consignor_address,consignor_city,s.state_name,consignor_pincode) consignor_address_f,
       CONCAT_WS(",", place_of_delivery_address,place_of_delivery_city,s3.state_name,place_of_delivery_pincode) place_of_delivery_pincode_f ,
       CONCAT_WS(",", place_of_dispatch_address,place_of_dispatch_city,s4.state_name,place_of_dispatch_pincode) place_of_dispatch_address_f,
+      cust.party_type_id
       ')
       ->join('bookings b','loading_receipts.booking_id = b.id')
       ->join('vehicle v','loading_receipts.vehicle_id = v.id','left')
@@ -88,9 +91,28 @@ class Consignmentnote extends BaseController
       ->join('booking_drops bd','bd.booking_id = b.id','left')
       ->join('booking_pickups bp','bp.booking_id = b.id','left')
       ->where(['loading_receipts.id' => $id])->first();
-  
+
+      //Check LR first or first party 
+      $party_type_id = isset($this->view['lr']['party_type_id']) ? $this->view['lr']['party_type_id'] : '';
+      $this->view['lr_party_type'] = $this->checkLRParty($party_type_id);
+      // echo  $party_type_id.'<pre>';print_r($this->view['lr_party_type']);exit;
         
       // echo 'sdf<pre>';print_r($this->view['lr']);exit;
       return view('ConsignmentNote/preview', $this->view); 
     }
+
+    function checkLRParty($party_type_id){
+      $party_type_ids = isset($party_type_id) ? explode(',',$party_type_id) : [];
+      $data = [];
+      if($party_type_ids){
+        $data['lr_third_party'] =  $this->PTModel->select('count(id) as cnt')
+                                  ->where('lr_third_party',1)
+                                  ->whereIn('id',$party_type_ids)->first(); 
+        $data['lr_first_party'] =  $this->PTModel->select('count(id) as cnt')
+                                  ->where('lr_first_party',1)
+                                  ->whereIn('id',$party_type_ids)->first(); 
+      }
+      return $data;
+    }
+    
   }

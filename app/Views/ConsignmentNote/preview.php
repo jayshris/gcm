@@ -37,15 +37,18 @@
     <div class="content">
         <div class="row">
             <div  id="printableArea" class="col-md-12"> 
-                    <?= $this->include('ConsignmentNote/consignee_note.php') ?> 
-                    <?= $this->include('ConsignmentNote/terms_and_conditions.php') ?>
-                    <?= $this->include('ConsignmentNote/consignor_note.php') ?>
-                    <?= $this->include('ConsignmentNote/terms_and_conditions.php') ?>  
-                    <?= $this->include('ConsignmentNote/transporter_copy.php') ?> 
+                <?php $lr_third_party_cnt = isset($lr_party_type['lr_third_party']['cnt']) && ($lr_party_type['lr_third_party']['cnt'] > 0) ? $lr_party_type['lr_third_party']['cnt'] : 0; ?>
+                <?php if($lr_third_party_cnt == 0){ ?>  
+                <?= $this->include('ConsignmentNote/consignee_note.php') ?> 
+                <?= $this->include('ConsignmentNote/terms_and_conditions.php') ?>
+                <?= $this->include('ConsignmentNote/consignor_note.php') ?>
+                <?= $this->include('ConsignmentNote/terms_and_conditions.php') ?> 
+                <?php } ?> 
+                <?= $this->include('ConsignmentNote/transporter_copy.php') ?> 
             </div>
             <div class="submit-button noprint"> 
                 <button type="button" class="btn btn-danger" onclick="printDiv('printableArea')"><i class="fa fa-print" aria-hidden="true"></i> Print</button>
-                <a href="<?php echo base_url('/loadingreceipt'); ?>" class="btn btn-light">Cancel</a>
+                <a href="<?php echo base_url($currentController); ?>" class="btn btn-light">Cancel</a>
                 <!-- <a href="javascript:history.back()" class="btn btn-light">Cancel</a> -->
             </div> 
         </div>

@@ -148,7 +148,7 @@
 													</tr>
 													<tr style="height:21pt">  
 														<td  class="td33" colspan="4">
-															<p class="s10" style="text-indent: 0pt;line-height: 212%;text-align: left;">Date - <?= date('d M Y'); ?></p> 
+															<p class="s10" style="text-indent: 0pt;line-height: 212%;text-align: left;">Date - <?= date('d M Y',strtotime($proforma_invoice['created_at'])) ?></p> 
 														</td>
 													</tr>
 													<tr style="height:21pt">  

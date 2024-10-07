@@ -135,19 +135,19 @@
                 <p class="s9 p12" style="padding-left: 24pt;">Particulars</p>
             </td>
             <td  class="td35">
-                <p class="s9 p16" >HSNCode</p>
+                <p class="s9 p11" >HSN Code</p>
             </td>
             <td  class="td36" >
-                <p class="s9 p16" >No.ofPackages</p>
+                <p class="s9 p11" >No. of Packages</p>
             </td>
             <td  class="td37" >
-                <p class="s9 p12" style="padding-left: 19pt;">ActualWeight</p>
+                <p class="s9 p11">ActualWeight</p>
             </td>
             <td  class="td38" >
-                <p class="s9 p16" >Charge Weight</p>
+                <p class="s9 p11" >Charge Weight</p>
             </td>
             <td  class="td39" >
-                <p class="s9 p16" >PaymentTerms</p>
+                <p class="s9 p11" >PaymentTerms</p>
             </td>
         </tr>
         <tr style="height:21pt">
@@ -158,13 +158,13 @@
                 <p class="s10 p11" ><?= isset($lr['hsn_code']) && (!empty($lr['hsn_code'])) ? strtoupper($lr['hsn_code']) : '-' ?></p>
             </td>
             <td class="td42" >
-                <p class="s10 p11" ><?= isset($lr['no_of_packages']) && (!empty($lr['no_of_packages'])) ? strtoupper($lr['no_of_packages']) : '-' ?></p>
+                <p class="s10 p11" ><?= isset($lr['no_of_packages']) && (!empty($lr['no_of_packages'])) ? number_format($lr['no_of_packages'],2) : '-' ?></p>
             </td>
             <td class="td43" >
-                <p class="s10 p11" ><?= isset($lr['actual_weight']) && (!empty($lr['actual_weight'])) ? strtoupper($lr['actual_weight']) : '-' ?></p>
+                <p class="s10 p11" ><?= isset($lr['actual_weight']) && (!empty($lr['actual_weight'])) ? number_format($lr['actual_weight'],2).' KG' : ' 0 KG' ?></p>
             </td>
             <td class="td44" >
-                <p class="s10 p11" ><?= isset($lr['charge_weight']) && (!empty($lr['charge_weight'])) ? strtoupper($lr['charge_weight']) : '-' ?></p>
+                <p class="s10 p11" ><?= isset($lr['charge_weight']) && (!empty($lr['charge_weight'])) ? number_format($lr['charge_weight'],2).' KG' : ' 0 KG' ?></p>
             </td>
             <td class="td45" >
                 <p class="s10 p11" ><?= isset($lr['payment_terms']) && (!empty($lr['payment_terms'])) ? strtoupper($lr['payment_terms']) : '-' ?></p>
@@ -172,24 +172,24 @@
         </tr>
         <tr style="height:11pt">
             <td class="td46" colspan="2">
-                <p class="s10 p12" style="padding-left: 54pt;">EWAYBill Number</p>
+                <p class="s9 p11 txt-center">EWAYBill Number</p>
             </td>
             <td class="td47" colspan="2">
-                <p class="s10 p12" style="padding-left: 52pt;">EWAYBillExpiryDate</p>
+                <p class="s9 p11 txt-center">EWAYBillExpiryDate</p>
             </td>
             <td class="td48" colspan="2">
-                <p class="s11 p12" style="padding-left: 44pt;">FreightChargesAmount</p>
+                <p class="s9 p11 txt-center">FreightChargesAmount</p>
             </td>
         </tr>
         <tr style="height:13pt">
             <td class="td49" colspan="2">
-                <p class="s10 p11" ><?= isset($lr['e_way_bill_number']) && (!empty($lr['e_way_bill_number'])) ? strtoupper($lr['e_way_bill_number']) : '-' ?></p>
+                <p class="s10 p11 txt-center" ><?= isset($lr['e_way_bill_number']) && (!empty($lr['e_way_bill_number'])) ? strtoupper($lr['e_way_bill_number']) : '-' ?></p>
             </td>
             <td class="td50" colspan="2">
-                <p class="s10 p11" ><?= isset($lr['e_way_expiry_date']) && (strtotime($lr['e_way_expiry_date'])>0) ? date('d/m/Y',strtotime($lr['e_way_expiry_date'])) : '-' ?></p>
+                <p class="s10 p11 txt-center" ><?= isset($lr['e_way_expiry_date']) && (strtotime($lr['e_way_expiry_date'])>0) ? date('d/m/Y',strtotime($lr['e_way_expiry_date'])) : '-' ?></p>
             </td>
             <td class="td51" colspan="2">
-                <p class="s11 p11" ><?= isset($lr['freight_charges_amount']) && (!empty($lr['freight_charges_amount'])) ? strtoupper($lr['freight_charges_amount']) : '-' ?></p>
+                <p class="s11 p11 txt-center" ><?= isset($lr['freight_charges_amount']) && ($lr['freight_charges_amount'] > 0) ? 'Rs. '.number_format($lr['freight_charges_amount'],2) : 'Rs. 0' ?></p>
             </td>
         </tr>
         <tr style="height:11pt">
