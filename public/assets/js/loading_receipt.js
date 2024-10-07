@@ -5,6 +5,11 @@ $(document).ready(function() {
      $("#consignee_name").select2({
         tags: true
     });  
+
+    $('form').submit(function() { 
+        $(":submit").attr("disabled", "disabled");
+    });
+
 }); 
 
 var base_url = $('#base_url').val(); 

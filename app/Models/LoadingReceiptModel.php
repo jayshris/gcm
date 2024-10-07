@@ -79,7 +79,8 @@ class LoadingReceiptModel extends Model
         'is_update_vehicle',
         'seal_no',
         'supplier_office_id',
-        'recipient_office_id'
+        'recipient_office_id',
+        'added_by'
     ];
 
     protected bool $allowEmptyInserts = false;
