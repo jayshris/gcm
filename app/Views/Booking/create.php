@@ -676,6 +676,11 @@
       var drop_city =  $("#drop_city").select2({
         tags: true
       }); 
+
+      $('form').submit(function() { 
+        $(":submit").attr("disabled", "disabled");
+      });
+      
     });
 
     function changeCity(thisv,city_id_val,id){   

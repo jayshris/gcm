@@ -448,6 +448,11 @@
      $(document).ready(function() {
       $.getPartyType(); 
       $.getVehicles(); 
+
+      $('form').submit(function() { 
+        $(":submit").attr("disabled", "disabled");
+      });
+
     });
 
     $.addPickup = function() {

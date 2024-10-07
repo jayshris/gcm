@@ -630,6 +630,11 @@
       var drop_city =  $("#drop_city").select2({
         tags: true
       }); 
+
+      $('form').submit(function() { 
+        $(":submit").attr("disabled", "disabled");
+      });
+      
     });
     $("#pickup_city").val($('#selected_pickup_city').val()).trigger('change');
     $("#drop_city").val($('#selected_drop_city').val()).trigger('change');
