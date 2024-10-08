@@ -4,15 +4,15 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class VehicleCertificateModel extends Model
+class PaymentModeModel extends Model
 {
-    protected $table            = 'vehicle_certificates';
+    protected $table            = 'payment_modes';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['name', 'issue_date', 'expiry_date', 'vendor', 'issue_by', 'created_at', 'updated_at', 'deleted_at'];
+    protected $allowedFields    = ['name'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

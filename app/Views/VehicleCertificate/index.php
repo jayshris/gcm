@@ -27,6 +27,11 @@
                 <!-- Search -->
                 <div class="search-section">
                   <div class="row">
+
+                    <div class="col-md-12 mb-2">
+                      <?php echo makeListActions($currentController, $Action, 0, 1); ?>
+                    </div>
+
                     <div class="col-md-12">
                       <?php
                       $session = \Config\Services::session();
@@ -35,16 +40,6 @@
                       }
                       ?>
                     </div>
-                    <div class="col-md-5 col-sm-4">
-                      <div class="form-wrap icon-form">
-                        <span class="form-icon"><i class="ti ti-search"></i></span>
-                        <input type="text" class="form-control" placeholder="Search Deals">
-                      </div>
-                    </div>
-                    <div class="col-md-7 text-end">
-                      <?php echo makeListActions($currentController, $Action, 0, 1); ?>
-                    </div>
-
 
                   </div>
                 </div>
@@ -54,21 +49,32 @@
                   <table class="table" id="vcTable">
                     <thead class="thead-light">
                       <tr>
+                        <th>#</th>
                         <th>Action</th>
                         <th>Name</th>
+                        <th>Issue Date</th>
+                        <th>Expiry Date</th>
+                        <th>Vendor</th>
+                        <th>Issue Authority</th>
                       </tr>
                     </thead>
                     <tbody>
                       <?php
                       if ($certificate_data) {
+                        $i = 1;
                         foreach ($certificate_data as $certificate) {
 
                           $token = isset($certificate['id']) ? $certificate['id'] : 0;
 
                           echo '
                                 <tr>
+                                    <td>' . $i++ . '.</td>
                                     <td>' . makeListActions($currentController, $Action, $token, 2) . '</td>
                                     <td>' . $certificate["name"] . '</td>
+                                    <td>' . ($certificate["issue_date"] ? 'Yes' : 'No') . '</td>
+                                    <td>' . ($certificate["expiry_date"] ? 'Yes' : 'No') . '</td>
+                                    <td>' . ($certificate["vendor"] ? 'Yes' : 'No') . '</td>
+                                    <td>' . ($certificate["issue_by"] ? 'Yes' : 'No') . '</td>
                                 </tr>';
                         }
                       }

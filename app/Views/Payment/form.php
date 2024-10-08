@@ -224,9 +224,9 @@
 															</label>
 															<select class="form-class select2" id="payment_mode" name="payment_mode" onchange="displayPaymentMode()">
 															<option value="">Select</option>
-															<option value="1" validinpt="card">Card</option>
-															<option value="2" validinpt="upi">UPI</option>
-															<option value="3" validinpt="account">Account</option>
+															<?php if($payment_modes) { foreach($payment_modes as $payment_mode){ ?>
+															<option value="<?= $payment_mode['id']?>" validinpt="<?= strtolower($payment_mode['name']) ?>"><?= ucfirst($payment_mode['name']) ?></option> 
+															<?php } }?>
 															</select>
 															<?php
 															if ($validation->getError('payment_mode')) {

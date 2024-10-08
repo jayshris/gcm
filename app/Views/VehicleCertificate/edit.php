@@ -28,12 +28,12 @@
               <div class="col-xl-12 col-lg-12">
 
 
-              <div class="settings-sub-header">
-                <h6>Update Vehicle Certificates</h6>
-              </div>
-              <?= $this->include('VehicleCertificate/form.php') ?>
+                <div class="settings-sub-header">
+                  <h6>Update Vehicle Certificates</h6>
+                </div>
+                <?= $this->include('VehicleCertificate/form.php') ?>
 
-              
+
               </div>
             </div>
 

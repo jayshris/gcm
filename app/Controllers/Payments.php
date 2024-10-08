@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
    
+use App\Models\DriverModel;
 use App\Models\PaymentModel;
 use App\Models\ProfileModel;
 use App\Models\VehicleModel;
@@ -9,11 +10,11 @@ use App\Models\BookingsModel;
 use App\Models\CustomersModel;
 use App\Models\TaxInvoiceModel;
 use App\Models\ExpenseHeadModel;
+use App\Models\PaymentModeModel;
 use App\Models\PaymentTypeModel;
 use App\Models\FuelPumpBrandModel;
 use App\Controllers\BaseController;
 use App\Models\BookingExpensesModel;
-use App\Models\DriverModel;
 use App\Models\ProformaInvoiceModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
@@ -31,6 +32,8 @@ class Payments extends BaseController
     public $VehicleModel;
     public $FuelPumpBrandModel;
     public $DModel;
+    public $PaymentModeModel;
+    
     public function __construct()
     { 
       $this->session = \Config\Services::session(); 
@@ -45,6 +48,7 @@ class Payments extends BaseController
       $this->VehicleModel = new VehicleModel();
       $this->FuelPumpBrandModel = new FuelPumpBrandModel();
       $this->DModel = new DriverModel();
+      $this->PaymentModeModel = new PaymentModeModel();
     }
   
     public function index()
@@ -89,6 +93,8 @@ class Payments extends BaseController
         
         $this->view['money_payment_type_id'] = $payment_type_id;
 
+        $this->view['payment_modes'] = $this->PaymentModeModel->findAll(); 
+        // echo $this->PaymentModeModel->getLastQuery().'<pre>';print_r($this->view['payment_modes']); exit;
         if($this->request->getPost()){
             $error = $this->validate([ 
                 'amount' => [
