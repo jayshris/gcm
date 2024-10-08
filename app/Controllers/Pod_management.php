@@ -7,6 +7,7 @@ use App\Models\BookingsModel;
 use App\Models\CustomersModel;
 use App\Models\PartytypeModel;
 use App\Controllers\BaseController;
+use App\Models\ShippingCompaniesModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class Pod_management extends BaseController
@@ -17,6 +18,7 @@ class Pod_management extends BaseController
     public $VehicleModel;
     public $CModel;
     public $PTModel;
+    public $ShippingCompaniesModel;
     public function __construct()
     { 
       $this->session = \Config\Services::session(); 
@@ -24,6 +26,7 @@ class Pod_management extends BaseController
       $this->VehicleModel = new VehicleModel();
       $this->CModel = new CustomersModel();
       $this->PTModel = new PartytypeModel();
+      $this->ShippingCompaniesModel = new ShippingCompaniesModel();
     }
   
     public function index()
@@ -132,6 +135,7 @@ class Pod_management extends BaseController
     }
 
     function courier_pod(){ 
+         $this->view['shipping_companies'] = $this->ShippingCompaniesModel->where(['status'=>1,'isDeleted' =>0])->findAll();
          $this->BModel->select('bookings.*, party.party_name,p.party_name transporter_name, v2.rc_number,bp.city bp_city,bd.city bd_city')
         ->join('customer', 'customer.id = bookings.customer_id', 'left')
         ->join('party', 'party.id = customer.party_id', 'left')   

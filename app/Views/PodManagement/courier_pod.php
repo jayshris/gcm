@@ -86,14 +86,14 @@
                             <td><input type="hidden" name="id[]" value="<?= $b['id']?>" id="booking_id_<?= $b['id']?>" />
                                 <input type="date" class="form-control pod-inpt" min="<?= date('Y-m-d',strtotime($b['pod_received_date'])) ?>" required name="courier_date[]" id="courier_date_<?= $b['id']?>" /></td>
                             <td><select class="dropdown pod-inpt col-md-12" required name="courier_company_id[]" id="courier_company_id_<?= $b['id']?>">
-                                <?php foreach(COURIER_COMPANIES as $key=>$val){ ?>
-                                    <option value="<?= $key ?>"><?= $val ?></option>
+                                <?php if($shipping_companies){ foreach($shipping_companies as $val){ ?>
+                                    <option value="<?= $val['id'] ?>"><?= $val['name'] ?></option>
                                 <?php }?>
                                 </select>
                             </td>
                             <td><input type="text" class="form-control pod-inpt" required name="tracking_no[]" id="tracking_no_<?= $b['id']?>" /></td>
                           </tr>
-                        <?php } ?>
+                        <?php }} ?>
                       </tbody>
                     </table>
                   </div>
