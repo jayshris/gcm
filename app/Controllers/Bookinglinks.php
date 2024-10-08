@@ -13,6 +13,7 @@ use App\Models\VehicleModel;
 use App\Models\BookingsModel;
 use App\Models\EmployeeModel;
 use App\Models\CustomersModel;
+use App\Models\MaterialsModel;
 use App\Models\PartytypeModel;
 use App\Models\BookingLinkModel;
 use App\Models\ExpenseHeadModel;
@@ -55,6 +56,7 @@ class Bookinglinks extends BaseController
     public $ExpenseHeadModel;
     public $EmployeeModel;
     public $BookingLinkModel;
+    public $MaterialsModel;
     public function __construct()
     {
         $this->session = \Config\Services::session();
@@ -83,6 +85,7 @@ class Bookinglinks extends BaseController
         $this->ExpenseHeadModel = new ExpenseHeadModel();
         $this->EmployeeModel = new EmployeeModel();
         $this->BookingLinkModel = new BookingLinkModel();
+        $this->MaterialsModel = new MaterialsModel();
     }
 
 
@@ -99,6 +102,7 @@ class Bookinglinks extends BaseController
     }
 
     public function edit($id, $token = ''){
+        $this->view['booking_for'] = $this->MaterialsModel->where(['status'=>1,'isDeleted' =>0])->findAll();
         //Check booking link validation
         if($token){
             $id = base64_decode(str_replace(['-','_'], ['+','/'], $id)); 

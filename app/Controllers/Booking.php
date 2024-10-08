@@ -13,6 +13,7 @@ use App\Models\VehicleModel;
 use App\Models\BookingsModel;
 use App\Models\EmployeeModel;
 use App\Models\CustomersModel;
+use App\Models\MaterialsModel;
 use App\Models\PartytypeModel;
 use App\Models\BookingLinkModel;
 use App\Models\ExpenseHeadModel;
@@ -75,6 +76,9 @@ class Booking extends BaseController
     public $BookingsTripUpdateModel;
     public $DVLModel;
     public $ProformaInvoiceModel;
+    public $email;
+    public $MaterialsModel;
+    
     public function __construct()
     {
         // date_default_timezone_set("Asia/Kolkata");
@@ -117,6 +121,7 @@ class Booking extends BaseController
         $this->BookingsTripUpdateModel = new BookingsTripUpdateModel();
         $this->DVLModel = new DriverVehicleAssignModel();
         $this->ProformaInvoiceModel = new ProformaInvoiceModel();
+        $this->MaterialsModel = new MaterialsModel();
 
         $this->email = \Config\Services::email();
     }
@@ -124,7 +129,7 @@ class Booking extends BaseController
     public function index()
     {
         $this->view['booking_numbers'] = $this->BModel->select('id,booking_number')->findAll();
-
+        
         $query = "(SELECT vehicle.rc_number FROM booking_transactions bt join vehicle on vehicle.id = bt.vehicle_id  WHERE booking_status_id = 11 and booking_id = bookings.id group by bt.booking_id)";
         $this->BModel->select('bookings.*, party.party_name , 
          IF(bookings.status = 11,v2.rc_number, vehicle.rc_number) as rc_number,
@@ -201,6 +206,7 @@ class Booking extends BaseController
 
     public function create()
     {
+        $this->view['booking_for'] = $this->MaterialsModel->where(['status'=>1,'isDeleted' =>0])->findAll();
         if ($this->request->getPost()) {
             $post = $this->request->getPost();
             if (isset($post['office_id'])) {
@@ -507,6 +513,7 @@ class Booking extends BaseController
 
     public function approve($id)
     {
+        $this->view['booking_for'] = $this->MaterialsModel->where(['status'=>1,'isDeleted' =>0])->findAll();
         if ($this->request->getPost()) {
 
             // $isVehicle = $this->BModel->where('id', $id)->first()['vehicle_id'] > 0 ? true : false;
@@ -1026,6 +1033,7 @@ class Booking extends BaseController
 
     public function edit($id, $token = '')
     {
+        $this->view['booking_for'] = $this->MaterialsModel->where(['status'=>1,'isDeleted' =>0])->findAll();
         //Check booking link validation
         if ($token) {
             $id = base64_decode(str_replace(['-', '_'], ['+', '/'], $id));
@@ -1360,6 +1368,7 @@ class Booking extends BaseController
 
     public function approval_for_cancellation($id)
     {
+        $this->view['booking_for'] = $this->MaterialsModel->where(['status'=>1,'isDeleted' =>0])->findAll();
         $booking_details =  $this->BModel->where('id', $id)->first();
         if (isset($booking_details['status']) && $booking_details['status'] != 14) {
             $this->session->setFlashdata('danger', 'Booking is not send for cancellation approval');

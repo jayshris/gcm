@@ -49,9 +49,9 @@
                               <label class="col-form-label">Booking For <span class="text-danger">*</span></label>
                               <select class="form-select select2" required name="booking_for" id="booking_for" aria-label="Default select example">
                                 <option value="">Select Material</option>
-                                 <option value="1" <?= $booking_details['booking_for'] == '1' ? 'selected' : '' ?>>Market Material</option>
-                                <option value="2" <?= $booking_details['booking_for'] == '2' ? 'selected' : '' ?>>Own Material</option>
-                                <option value="3" <?= $booking_details['booking_for'] == '3' ? 'selected' : '' ?>>All Material</option>
+                                <?php if($booking_for) { foreach($booking_for as $val){?>
+                                  <option value="<?= $val['id'] ?>" <?= $booking_details['booking_for'] == $val['id'] ? 'selected' : '' ?> ><?= $val['name'] ?></option>
+                                <?php }}?>
                               </select>
                             </div>
 

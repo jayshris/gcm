@@ -277,9 +277,9 @@
                               <label class="col-form-label">Booking For</label>
                               <select class="form-select select2" name="booking_for" id="booking_for" aria-label="Default select example">
                                 <option value="">Select Material</option>
-                                <option value="1">Market Material</option>
-                                <option value="2">Own Material</option>
-                                <option value="3">All Material</option>
+                                  <?php if($booking_for) { foreach($booking_for as $val){?>
+                                    <option value="<?= $val['id'] ?>"><?= $val['name'] ?></option>
+                                  <?php }}?> 
                                 </select>
                               <?php
                               if ($validation->getError('booking_for')) {
