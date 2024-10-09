@@ -493,9 +493,11 @@ class LoadingReceipt extends BaseController
     return $data;
   }
   function getBookingDetails(){
-    $rows =  $this->BookingsModel->select('bookings.*,bp.city bp_city,bd.city bd_city,party.party_name,c.party_type_id,bookings.customer_id')
+    $rows =  $this->BookingsModel->select('bookings.*,concat(bp.city,", ",bps.state_name,IF(bp.pincode != "" , ", ", ""),bp.pincode) bp_city,concat(bd.city,", ",bds.state_name,IF(bd.pincode != "" , ", ", ""),bd.pincode) bd_city,party.party_name,c.party_type_id,bookings.customer_id')
     ->join('booking_drops bd', 'bd.booking_id = bookings.id','left')
+    ->join('states bds', 'bds.state_id = bd.state','left')
     ->join('booking_pickups bp', 'bp.booking_id  = bookings.id','left')
+    ->join('states bps', 'bps.state_id = bd.state','left')
     ->join('customer c', 'c.id = bookings.customer_id','left')
     ->join('party', 'party.id = c.party_id','left')
     ->where('bookings.id', $this->request->getPost('booking_id'))

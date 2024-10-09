@@ -8,6 +8,7 @@ use App\Models\PartyModel;
 use App\Models\StateModel;
 use App\Models\DriverModel;
 use App\Models\OfficeModel;
+use App\Models\CountryModel;
 use App\Models\ProfileModel;
 use App\Models\VehicleModel;
 use App\Models\BookingsModel;
@@ -78,7 +79,7 @@ class Booking extends BaseController
     public $ProformaInvoiceModel;
     public $email;
     public $MaterialsModel;
-    
+    public $CountryModel;
     public function __construct()
     {
         // date_default_timezone_set("Asia/Kolkata");
@@ -122,7 +123,7 @@ class Booking extends BaseController
         $this->DVLModel = new DriverVehicleAssignModel();
         $this->ProformaInvoiceModel = new ProformaInvoiceModel();
         $this->MaterialsModel = new MaterialsModel();
-
+        $this->CountryModel = new CountryModel();
         $this->email = \Config\Services::email();
     }
 
@@ -206,6 +207,7 @@ class Booking extends BaseController
 
     public function create()
     {
+        $this->view['countries'] = $this->CountryModel->where(['name'=>'India'])->findAll();
         $this->view['booking_for'] = $this->MaterialsModel->where(['status'=>1,'isDeleted' =>0])->findAll();
         if ($this->request->getPost()) {
             $post = $this->request->getPost();
@@ -335,6 +337,7 @@ class Booking extends BaseController
                         'state' => $this->request->getPost('pickup_state_id'),
                         'pincode' => $this->request->getPost('pickup_pin'),
                         'city_id' => $this->request->getPost('pickup_city_id'),
+                        'country_id' => $this->request->getPost('pickup_country_id'),
                     ]);
 
                     // save drops
@@ -345,6 +348,7 @@ class Booking extends BaseController
                         'state' => $this->request->getPost('drop_state_id'),
                         'pincode' => $this->request->getPost('drop_pin'),
                         'city_id' => $this->request->getPost('drop_city_id'),
+                        'country_id' => $this->request->getPost('drop_country_id'),
                     ]);
 
 
@@ -412,107 +416,9 @@ class Booking extends BaseController
         exit;
     }
 
-    public function create_bk()
-    {
-        if ($this->request->getPost()) {
-            $profile =  $this->profile->first(); //echo __LINE__.'<pre>';print_r($profile);die;
-            $last_booking = $this->BModel->orderBy('id', 'desc')->first();
-            $lastBooking = isset($last_booking['id']) ? ((int)$last_booking['id'] + 1) : 1;
-            $booking_number = isset($profile['booking_prefix']) ? $profile['booking_prefix'] . '/' . $lastBooking : 'BK/' . $lastBooking;
-
-            // save booking
-            $bookingData = [
-                'booking_number' => $booking_number,
-                'booking_for' => $this->request->getPost('booking_for'),
-                'office_id' => $this->request->getPost('office_id'),
-                'vehicle_type_id' => $this->request->getPost('vehicle_type'),
-                'vehicle_id' => $this->request->getPost('vehicle_rc'),
-                'customer_id' => $this->request->getPost('customer_id'),
-                'customer_branch' => $this->request->getPost('customer_branch'),
-                'customer_type' => ($this->request->getPost('customer_type')) ? $this->request->getPost('customer_type') : 0,
-                'pickup_date' => $this->request->getPost('pickup_date'),
-                'drop_date' => $this->request->getPost('drop_date'),
-                'rate_type' => $this->request->getPost('rate_type'),
-                'rate' => $this->request->getPost('rate'),
-                'booking_by' => $this->request->getPost('booking_by'),
-                'booking_date' => $this->request->getPost('booking_date'),
-                'guranteed_wt' => $this->request->getPost('guranteed_wt'),
-                'freight' => $this->request->getPost('freight'),
-                'advance' => $this->request->getPost('advance'),
-                'balance' => $this->request->getPost('balance'),
-                'discount' => $this->request->getPost('discount'),
-                'bill_to_party' => $this->request->getPost('bill_to'),
-                'remarks' => $this->request->getPost('remarks'),
-                'status' => '1',
-                'added_by' => $this->added_by,
-                'added_ip' => $this->added_ip
-            ]; //echo __LINE__.'<pre>';print_r($bookingData);die;
-            $booking_id = $this->BModel->insert($bookingData) ? $this->BModel->getInsertID() : '0';
-
-
-            if ($booking_id > 0) {
-
-                // save pickups
-                foreach ($this->request->getPost('pickup_seq') as $key => $val) {
-                    $this->BPModel->insert([
-                        'booking_id' => $booking_id,
-                        'sequence' => $this->request->getPost('pickup_seq')[$key],
-                        'city' => $this->request->getPost('pickup_city')[$key],
-                        'state' => $this->request->getPost('pickup_state_id')[$key],
-                        'pincode' => $this->request->getPost('pickup_pin')[$key]
-                    ]);
-                }
-
-                // save drops
-                foreach ($this->request->getPost('drop_seq') as $key => $val) {
-                    $this->BDModel->insert([
-                        'booking_id' => $booking_id,
-                        'sequence' => $this->request->getPost('drop_seq')[$key],
-                        'city' => $this->request->getPost('drop_city')[$key],
-                        'state' => $this->request->getPost('drop_state_id')[$key],
-                        'pincode' => $this->request->getPost('drop_pin')[$key]
-                    ]);
-                }
-
-                // save expenses
-                foreach ($this->request->getPost('expense') as $key => $val) {
-                    $this->BEModel->insert([
-                        'booking_id' => $booking_id,
-                        'expense' => $this->request->getPost('expense')[$key],
-                        'value' => $this->request->getPost('expense_value')[$key],
-                        'bill_to_party' => $this->request->getPost('expense_flag_' . $key) != null ? '1' : '0'
-                    ]);
-                }
-
-                $this->session->setFlashdata('success', 'Booking Successfully Added');
-
-                return $this->response->redirect(base_url('booking'));
-            } else {
-                $this->session->setFlashdata('success', 'Something went wrong. Please try again');
-                return $this->response->redirect(base_url('booking/create'));
-            }
-        } else {
-
-            $this->view['party'] = $this->PModel->select('party.*')->join('party_type_party_map', 'party_type_party_map.party_id = party.id')
-                ->whereIn('party_type_party_map.party_type_id', [1, 2, 5])->groupBy('party.id')->orderBy('party.party_name')->findAll();
-
-            $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
-
-            $this->view['vehicle_types'] = $this->VTModel->where('status', 'Active')->findAll();
-            $this->view['employees'] = $this->user->where('usertype', 'employee')->where('status', 'active')->findall();
-            $this->view['states'] =  $this->SModel->orderBy('state_name', 'asc')->findAll();
-
-            $this->view['customers'] = $this->CModel->select('customer.*, party.party_name')
-                ->join('party', 'party.id = customer.party_id')
-                ->where('customer.status', '1')
-                ->findAll();
-
-            return view('Booking/create', $this->view);
-        }
-    }
-
     public function approve($id)
     {
+        $this->view['countries'] = $this->CountryModel->where(['name'=>'India'])->findAll();
         $this->view['booking_for'] = $this->MaterialsModel->where(['status'=>1,'isDeleted' =>0])->findAll();
         if ($this->request->getPost()) {
 
@@ -581,6 +487,8 @@ class Booking extends BaseController
                 'state' => $this->request->getPost('pickup_state_id'),
                 'pincode' => $this->request->getPost('pickup_pin'),
                 'city_id' => $this->request->getPost('pickup_city_id'),
+                'country_id' => $this->request->getPost('pickup_country_id'),
+                
             ];
             $this->BPModel->set($bpdata)->where('booking_id', $id)->update();
 
@@ -591,6 +499,7 @@ class Booking extends BaseController
                 'state' => $this->request->getPost('drop_state_id'),
                 'pincode' => $this->request->getPost('drop_pin'),
                 'city_id' => $this->request->getPost('drop_city_id'),
+                'country_id' => $this->request->getPost('drop_country_id'),
             ];
             $this->BDModel->set($bddata)->where('booking_id', $id)->update();
 
@@ -1033,6 +942,7 @@ class Booking extends BaseController
 
     public function edit($id, $token = '')
     {
+        $this->view['countries'] = $this->CountryModel->where(['name'=>'India'])->findAll(); 
         $this->view['booking_for'] = $this->MaterialsModel->where(['status'=>1,'isDeleted' =>0])->findAll();
         //Check booking link validation
         if ($token) {
@@ -1121,6 +1031,7 @@ class Booking extends BaseController
                     'state' => $this->request->getPost('pickup_state_id'),
                     'pincode' => $this->request->getPost('pickup_pin'),
                     'city_id' => $this->request->getPost('pickup_city_id'),
+                    'country_id' => $this->request->getPost('pickup_country_id'),
                 ];
                 //if not exist then insert otherwise update
                 $isbpdata = $this->BPModel->where('booking_id', $id)->first();
@@ -1138,6 +1049,7 @@ class Booking extends BaseController
                     'state' => $this->request->getPost('drop_state_id'),
                     'pincode' => $this->request->getPost('drop_pin'),
                     'city_id' => $this->request->getPost('drop_city_id'),
+                    'country_id' => $this->request->getPost('drop_country_id'),
                 ];
 
                 $isbddata = $this->BDModel->where('booking_id', $id)->first();
@@ -1176,16 +1088,17 @@ class Booking extends BaseController
         $this->view['booking_details'] = $this->BModel->where('id', $id)->first();
         $this->view['booking_vehicle_details'] = $this->VModel->where('id', $this->view['booking_details']['vehicle_id'])->first();
 
-        $this->view['booking_pickups'] = $this->BPModel->where('booking_id', $id)->first();
+        $this->view['booking_pickups'] = $this->BPModel->where('booking_id', $id)->first(); 
         $this->view['booking_drops'] = $this->BDModel->where('booking_id', $id)->first();
+        // echo '  <pre>';print_r($this->view['booking_pickups'] );exit; 
         $this->view['booking_expences'] = $this->BEModel->where('booking_id', $id)->findAll();
         $this->view['states'] =  $this->SModel->orderBy('state_name', 'asc')->findAll();
 
         $this->view['pickup_cities'] = isset($this->view['booking_pickups']) ? $this->CityModel->where('state_id', $this->view['booking_pickups']['state'])->findAll() : [];
         $this->view['drop_cities'] = isset($this->view['booking_drops']) ? $this->CityModel->where('state_id', $this->view['booking_drops']['state'])->findAll() : [];
 
-        $this->view['selected_pickup_city'] = isset($this->view['booking_pickups']) ? $this->view['booking_pickups']['city'] : '';
-        $this->view['selected_drop_city'] = isset($this->view['booking_drops']) ? $this->view['booking_drops']['city'] : '';
+        $this->view['selected_pickup_city'] = isset($this->view['booking_pickups']) && ($this->view['booking_pickups']['city'] > 0) ? $this->view['booking_pickups']['city'] : 0;
+        $this->view['selected_drop_city'] = isset($this->view['booking_drops']) && ($this->view['booking_drops']['city'] > 0) ? $this->view['booking_drops']['city'] : 0;
 
         $this->view['pickup_cities']  = array_column($this->view['pickup_cities'], 'city', 'id');
         $this->view['drop_cities']  = array_column($this->view['drop_cities'], 'city', 'id');
@@ -2408,4 +2321,40 @@ class Booking extends BaseController
         echo $last_drop;
         exit;
     }
+
+    public function getStateByCountry()
+    {
+        $countries = $this->SModel->where('country_id', $this->request->getPost('country_id'))->findAll();
+        echo json_encode($countries);
+        exit;
+    }
+
+    public function getPincodeByCity($city_id)
+    { 
+        $cities = $this->CityModel->where('id', $city_id)->first();
+      
+        $city = isset($cities['city']) ? $cities['city'] : '';
+        
+        $result = []; 
+        if($city){    
+            $city = str_replace(['& ','&',' '],['','','_'],strtolower($city));  
+            // $result = file_get_contents('https://api.postalpincode.in/postoffice/'.$city);
+            
+            $c = curl_init();
+            curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($c, CURLOPT_URL, 'https://api.postalpincode.in/postoffice/'.$city);
+            $result = curl_exec($c);
+            curl_close($c);
+
+            $result = json_decode($result,true);
+            // echo '<pre>';print_r($result);exit; 
+            $response = isset($result[0]['Status']) && ($result[0]['Status'] == 'Success') ? ($result[0]['PostOffice']) : [];
+
+            $pincodes = ($response) ? array_values(array_unique(array_column($response,'Pincode'))) : [];
+            // echo '<pre>';print_r($pincodes); exit; 
+            echo json_encode($pincodes);exit;
+        }
+
+    }
+
 }

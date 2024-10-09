@@ -140,17 +140,36 @@
                             </div>
                             <!-- Added booking details -->
 
-                            <div class="col-md-12"></div>
+                            <div class="col-md-12">
                              
                             <label class="col-form-label">Pickup Details<span class="text-danger">*</span></label>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <label class="col-form-label">Country<span class="text-danger">*</span></label>
+                                <select class="form-select" name="pickup_country_id"  required onchange="getState(this.value,'pickup_state_id')">
+                                        <option value="">Select Country</option>
+                                        <?php foreach ($countries as $s) { ?>
+                                        <option value="<?= $s['country_id'] ?>" <?= isset($booking_pickups['country_id']) && ($booking_pickups['country_id'] == $s['country_id']) ? 'selected' : '' ?>><?= $s['name'] ?></option>
+                                        <?php } ?>
+                                        <option value="0" <?= isset($booking_pickups['country_id']) && ($booking_pickups['country_id'] == 0) ? 'selected' : '' ?> >Other Country</option>
+                                </select>
+                                <?php
+                                if ($validation->getError('country_id')) {
+                                    echo '<div class="alert alert-danger mt-2">' . $validation->getError('country_id') . '</div>';
+                                }   
+                                ?>
+                            </div>
 
                             <div class="col-md-3">
                                 <label class="col-form-label">State<span class="text-danger">*</span></label>
-                                <select class="form-select" name="pickup_state_id" aria-label="Default select example" required onchange="getCitiesByState(this.value,'pickup_city')">
+                                <input type="hidden"  name="selected_pickup_state_id" id="selected_pickup_state_id" class="form-control" value="<?= isset($booking_pickups['state']) ? $booking_pickups['state'] : '' ?>">   
+                                <select class="form-select" name="pickup_state_id" id="pickup_state_id" aria-label="Default select example" required onchange="getCitiesByState(this.value,'pickup_city')">
                                         <option value="">Select State</option>
                                         <?php foreach ($states as $s) { ?>
                                         <option value="<?= $s['state_id'] ?>" <?= isset($booking_pickups['state']) && ($booking_pickups['state'] == $s['state_id']) ? 'selected' : '' ?>><?= $s['state_name'] ?></option>
                                         <?php } ?>
+                                        <option value="0" <?= isset($booking_pickups['state']) && ($booking_pickups['state'] == 0) ? 'selected' : '' ?>>Other State</option>
                                 </select>
                                 <?php
                                 if ($validation->getError('pickup_state_id')) {
@@ -159,16 +178,17 @@
                                 ?>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label class="col-form-label">City<span class="text-danger">*</span></label> 
-                                <input type="hidden"  name="pickup_city_id" id="pickup_city_id" class="form-control" value="<?= isset($booking_pickups['city_id']) ? $booking_pickups['city_id'] : '' ?>">   
-                                <select class="form-select" name="pickup_city" id="pickup_city" aria-label="Default select example" required  onchange="changeCity(this,$(this).find(':selected').attr('pickup_city_id'),'pickup_city_id')">
+                                <input type="hidden"  name="pickup_city_id" id="pickup_city_id" class="form-control" value="<?= isset($booking_pickups['city_id']) ? $booking_pickups['city_id'] : 0 ?>">   
+                                <select class="form-select" name="pickup_city" id="pickup_city" aria-label="Default select example" required  onchange="changeCity(this,$(this).find(':selected').attr('pickup_city_id'),'pickup_city_id','pickup_pin');getPincodeByCity($(this).find(':selected').attr('pickup_city_id'),'pickup_pin');">
                                         <option value="">Select </option> 
-                                        <?php if(!empty($pickup_cities)){ ?>
-                                          <?php foreach($pickup_cities as $key => $c){ ?>
-                                            <option value="<?php echo $c;?>" pickup_city_id="<?php echo $key;?>"><?php echo $c;?></option>
-                                          <?php }?>
-                                        <?php } ?>
+                                        <?php //if(!empty($pickup_cities)){ ?>
+                                          <?php //foreach($pickup_cities as $key => $c){ ?>
+                                            <!-- <option value="<?php //echo $c;?>" pickup_city_id="<?php //echo $key;?>"><?php //echo $c;?></option> -->
+                                          <?php //}?>
+                                        <?php //} ?>
+                                        <option value="0" <?= isset($booking_pickups['city_id']) && ($booking_pickups['city_id'] == 0) ? 'selected' : '' ?>>Other City</option>
                                 </select>
                                 <?php
                                 if ($validation->getError('pickup_city')) {
@@ -177,16 +197,20 @@
                                 ?>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label class="col-form-label">PinCode</label>
-                                <input type="text" name="pickup_pin" class="form-control" value="<?= isset($booking_pickups['pincode']) ? $booking_pickups['pincode'] : '' ?>">
+                                <input type="hidden" name="selected_pickup_pin" id="selected_pickup_pin" class="form-control" value="<?= isset($booking_pickups['pincode']) ? $booking_pickups['pincode'] : '' ?>">
+                                
+                                <select class="form-select" name="pickup_pin" id="pickup_pin">
+                                    <option value="">Select </option>  
+                                </select>
                                 <?php if ($validation->getError('pickup_pin')) {
                                   echo '<div class="alert alert-danger mt-2">' . $validation->getError('pickup_pin') . '</div>';
                                 }   
                                 ?>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label class="col-form-label">Pickup Date <span class="text-danger">*</span></label>
                                 <input type="date" required name="pickup_date" id="pickup_date" min="<?= $booking_details['booking_date'] ?>" onchange="$.setDrop();" class="form-control" value="<?= isset($booking_details['pickup_date']) ? $booking_details['pickup_date'] : '' ?>">
                                 <?php
@@ -195,15 +219,33 @@
                                 }   
                                 ?>
                             </div> 
- 
+                            <div class="col-md-12">
                             <label class="col-form-label">Drop Details<span class="text-danger">*</span></label>
+                            </div> 
+                            <div class="col-md-3">
+                                <label class="col-form-label">Country<span class="text-danger">*</span></label>
+                                <select class="form-select" name="drop_country_id"  required onchange="getState(this.value,'drop_state_id')">
+                                        <option value="">Select Country</option>
+                                        <?php foreach ($countries as $s) { ?>
+                                        <option value="<?= $s['country_id'] ?>" <?= isset($booking_drops['country_id']) && ($booking_drops['country_id'] == $s['country_id']) ? 'selected' : '' ?>><?= $s['name'] ?></option>
+                                        <?php } ?>
+                                        <option value="0" <?= isset($booking_drops['country_id']) && ($booking_drops['country_id'] == 0) ? 'selected' : '' ?>>Other Country</option>
+                                </select>
+                                <?php
+                                if ($validation->getError('country_id')) {
+                                    echo '<div class="alert alert-danger mt-2">' . $validation->getError('country_id') . '</div>';
+                                }   
+                                ?>
+                            </div>
                             <div class="col-md-3">
                                 <label class="col-form-label">State<span class="text-danger">*</span></label>
-                                <select class="form-select" name="drop_state_id" aria-label="Default select example" required  onchange="getCitiesByState(this.value,'drop_city')">
+                                <input type="hidden"  name="selected_drop_state_id" id="selected_drop_state_id" class="form-control" value="<?= isset($booking_drops['state']) ? $booking_drops['state'] : '' ?>">   
+                                <select class="form-select" name="drop_state_id" id="drop_state_id" aria-label="Default select example" required  onchange="getCitiesByState(this.value,'drop_city')">
                                         <option value="">Select State</option>
                                         <?php foreach ($states as $s) { ?>
                                          <option value="<?= $s['state_id'] ?>" <?= isset($booking_drops['state']) && ($booking_drops['state'] == $s['state_id']) ? 'selected' : '' ?>><?= $s['state_name'] ?></option> 
                                         <?php } ?>
+                                        <option value="0" <?= isset($booking_drops['state']) && ($booking_drops['state'] == 0) ? 'selected' : '' ?>>Other State</option>
                                 </select>
                                 <?php
                                 if ($validation->getError('drop_state_id')) {
@@ -212,16 +254,17 @@
                                 ?>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label class="col-form-label">City<span class="text-danger">*</span></label>                                 
-                                <input type="hidden"  name="drop_city_id" id="drop_city_id" class="form-control" value="<?= isset($booking_drops['city_id']) ? $booking_drops['city_id'] : '' ?>">                               
-                                <select class="form-select" name="drop_city" id="drop_city" aria-label="Default select example" required  onchange="changeCity(this,$(this).find(':selected').attr('drop_city_id'),'drop_city_id')">
+                                <input type="hidden"  name="drop_city_id" id="drop_city_id" class="form-control" value="<?= isset($booking_drops['city_id']) ? $booking_drops['city_id'] : 0 ?>">                               
+                                <select class="form-select" name="drop_city" id="drop_city" aria-label="Default select example" required  onchange="changeCity(this,$(this).find(':selected').attr('drop_city_id'),'drop_city_id','drop_pin');getPincodeByCity($(this).find(':selected').attr('drop_city_id'),'drop_pin');">
                                         <option value="">Select </option> 
                                         <?php if(!empty($drop_cities)){ ?>
                                           <?php foreach($drop_cities as $key => $c){ ?>
                                             <option value="<?php echo $c;?>" drop_city_id="<?php echo $key;?>"><?php echo $c;?></option>
                                           <?php }?>
                                         <?php } ?>
+                                        <option value="0" <?= isset($booking_drops['city_id']) && ($booking_drops['city_id'] == 0) ? 'selected' : '' ?>>Other City</option>
                                 </select>
                                 <?php
                                 if ($validation->getError('drop_city')) {
@@ -230,16 +273,20 @@
                                 ?>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label class="col-form-label">PinCode</label>
-                                <input type="text" name="drop_pin" class="form-control" value="<?= isset($booking_drops['pincode']) ? $booking_drops['pincode'] : '' ?>">
+                                <input type="hidden" name="selected_drop_pin" id="selected_drop_pin" class="form-control" value="<?= isset($booking_drops['pincode']) ? $booking_drops['pincode'] : '' ?>">
+                                <select class="form-select" name="drop_pin" id="drop_pin">
+                                    <option value="">Select </option>  
+                                </select>
+                                
                                 <?php if ($validation->getError('drop_pin')) {
                                   echo '<div class="alert alert-danger mt-2">' . $validation->getError('drop_pin') . '</div>';
                                 }   
                                 ?>
                             </div>
  
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label class="col-form-label">Drop Date</label>
                                 <input type="date" name="drop_date" id="drop_date" min="<?= $booking_details['pickup_date'] ?>" class="form-control" value="<?= isset($booking_details['drop_date']) ? $booking_details['drop_date'] : '' ?>" >
                                 <?php if ($validation->getError('drop_date')) {
@@ -247,7 +294,7 @@
                                 }   
                                 ?>
                             </div> 
-   
+
                             <div class="col-md-12"></div>
 
                             <div class="col-md-3"> 
@@ -601,9 +648,73 @@
         console.log(rate_type, rate);
       }
     }
+ 
+    $(document).ready(function() {
+      var pickup_city =  $("#pickup_city").select2({
+        tags: true
+      }); 
+      var drop_city =  $("#drop_city").select2({
+        tags: true
+      }); 
+    }); 
+
+    function changeCity(thisv,city_id_val,id){   
+      $('#'+id).val( (city_id_val) > 0 ? city_id_val : 0) ;
+    }
 
     
+    $("#pickup_country_id").trigger('change');
+    $("#drop_country_id").trigger('change');
+
+    $("#pickup_state_id").val($('#selected_pickup_state_id').val()).trigger('change');
+    $("#drop_state_id").val($('#selected_drop_state_id').val()).trigger('change');
+
+    function getState(val,changed_id){ 
+      var html ='<option value="">Select</option>';  
+      if(val == 0){
+       html += '<option value="0">Other State</option>';
+       $('#'+changed_id).html(html);
+       $('#'+changed_id).trigger('change');
+      }
+      if(val > 0){
+            $.ajax({
+              method: "POST",
+              url: '<?php echo base_url('booking/getStateByCountry') ?>',
+              data: {
+                country_id: val
+              },
+              dataType:'json',
+              beforeSend: function() { 
+                   $("body").css({ opacity:0.5 });
+                    $('#save-btn').attr('disabled','disabled'); 
+              },
+              complete: function(){
+                $("body").css({ opacity:1});
+                 $('#save-btn').removeAttr('disabled'); 
+              },
+              success: function(response) {  
+                if(response){ 
+                  response.forEach(function(val) {
+                      html += '<option value="'+val.state_id+'" >'+val.state_name+'</option>'
+                  });
+                }
+                $('#'+changed_id).html(html);
+                $('#'+changed_id).trigger('change');
+              }
+            });
+        }
+    } 
+   
     function getCitiesByState(val,changed_id){ 
+      var selectedchanged_id = $('#selected_'+changed_id).val();
+      var html ='<option value="">Select</option>'; 
+      // alert('getCitiesByState '+val+' / val ' +changed_id + ' / selected '+ $('#selected_'+changed_id).val());
+      if(val == 0){ 
+      var selected = (selectedchanged_id == 0) ? 'selected': '';
+       html += '<option value="0" '+selected+'>Other City</option>';
+       $('#'+changed_id).html(html);
+       $('#'+changed_id).trigger('change'); 
+      }
       if(val > 0){
             $.ajax({
               method: "POST",
@@ -612,12 +723,20 @@
                 state_id: val
               },
               dataType:'json',
-              success: function(response) {
-                console.log(response);
+              beforeSend: function() { 
+                   $("body").css({ opacity:0.5 });
+                    $('#save-btn').attr('disabled','disabled'); 
+              },
+              complete: function(){
+                $("body").css({ opacity:1});
+                 $('#save-btn').removeAttr('disabled'); 
+              },
+              success: function(response) { 
                 var html ='<option value="0">Select</option>';
-                if(response){
+                if(response){ 
                   response.forEach(function(val) {
-                      html += '<option value="'+val.city+'" '+changed_id+'_id="'+val.id+'" >'+val.city+'</option>'
+                    var selected =(selectedchanged_id == val.city) ? 'selected': '';
+                      html += '<option value="'+val.city+'" '+changed_id+'_id="'+val.id+'"  >'+val.city+'</option>'
                   });
                 }
                 $('#'+changed_id).html(html);
@@ -626,19 +745,38 @@
             });
         }
     }
-    $(document).ready(function() {
-      var pickup_city =  $("#pickup_city").select2({
-        tags: true
-      }); 
-      var drop_city =  $("#drop_city").select2({
-        tags: true
-      }); 
-    });
-    $("#pickup_city").val($('#selected_pickup_city').val()).trigger('change');
-    $("#drop_city").val($('#selected_drop_city').val()).trigger('change');
-    function changeCity(thisv,city_id_val,id){   
-      $('#'+id).val( (city_id_val) > 0 ? city_id_val : 0) ;
-    }
+
+    function getPincodeByCity(city_id_val,changed_id){  
+      var html ='<option value="">Select</option>';   
+      if(city_id_val > 0){
+            $.ajax({
+              method: "POST",
+              url: '<?php echo base_url('booking/getPincodeByCity/') ?>'+city_id_val, 
+              dataType:'json',
+              beforeSend: function() { 
+                   $("body").css({ opacity:0.5 });
+                    $('#save-btn').attr('disabled','disabled'); 
+              },
+              complete: function(){
+                 $("body").css({ opacity:1});
+                 $('#save-btn').removeAttr('disabled'); 
+              },
+              success: function(response) {   
+                  if(response){  
+                    var selectedchanged_id = $('#selected_'+changed_id).val();
+                    response.forEach(function(val) { 
+                      var selected =(selectedchanged_id == val) ? 'selected': '';
+                        html += '<option value="'+val+'" '+selected+'>'+val +'</option>'
+                    });
+                  }
+                  $('#'+changed_id).html(html);  
+              }
+            });
+        }else{
+            $('#'+changed_id).html(html);
+        } 
+    } 
+
   </script>
 
 </body>

@@ -8,6 +8,7 @@ use App\Models\UserModel;
 use App\Models\PartyModel;
 use App\Models\StateModel;
 use App\Models\OfficeModel;
+use App\Models\CountryModel;
 use App\Models\ProfileModel;
 use App\Models\VehicleModel;
 use App\Models\BookingsModel;
@@ -57,6 +58,7 @@ class Bookinglinks extends BaseController
     public $EmployeeModel;
     public $BookingLinkModel;
     public $MaterialsModel;
+    public $CountryModel;
     public function __construct()
     {
         $this->session = \Config\Services::session();
@@ -86,6 +88,7 @@ class Bookinglinks extends BaseController
         $this->EmployeeModel = new EmployeeModel();
         $this->BookingLinkModel = new BookingLinkModel();
         $this->MaterialsModel = new MaterialsModel();
+        $this->CountryModel = new CountryModel();
     }
 
 
@@ -102,6 +105,7 @@ class Bookinglinks extends BaseController
     }
 
     public function edit($id, $token = ''){
+        $this->view['countries'] = $this->CountryModel->where(['name'=>'India'])->findAll();
         $this->view['booking_for'] = $this->MaterialsModel->where(['status'=>1,'isDeleted' =>0])->findAll();
         //Check booking link validation
         if($token){
@@ -179,6 +183,7 @@ class Bookinglinks extends BaseController
                     'state' => $this->request->getPost('pickup_state_id'),
                     'pincode' => $this->request->getPost('pickup_pin'),
                     'city_id' => $this->request->getPost('pickup_city_id'),
+                    'country_id' => $this->request->getPost('pickup_country_id'),
                 ]; 
                 //if not exist then insert otherwise update
                 $isbpdata = $this->BPModel->where('booking_id', $id)->first();
@@ -196,6 +201,7 @@ class Bookinglinks extends BaseController
                     'state' => $this->request->getPost('drop_state_id'),
                     'pincode' => $this->request->getPost('drop_pin'),
                     'city_id' => $this->request->getPost('drop_city_id'),
+                    'country_id' => $this->request->getPost('drop_country_id'),
                 ]; 
                 
                 $isbddata = $this->BDModel->where('booking_id', $id)->first();
