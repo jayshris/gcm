@@ -10,6 +10,13 @@ $(document).ready(function() {
         $(":submit").attr("disabled", "disabled");
     });
 
+    $("#consignor_city").select2({
+        tags: true
+    }); 
+    $("#consignee_city").select2({
+        tags: true
+    });   
+
 }); 
 
 var base_url = $('#base_url').val(); 
@@ -325,3 +332,126 @@ function transportedBranches(customer_id,customer_type){
     } 
 //    partyInfo(customer_id, customer_type);     
 }
+
+function changeCity(thisv,city_id_val,id,changed_id){   
+$('#'+id).val( (city_id_val) > 0 ? city_id_val : 0) ; 
+}
+
+$("#consignor_country_id").trigger('change');
+$("#consignee_country_id").trigger('change');
+
+$("#consignor_state").val($('#selected_consignor_state').val()).trigger('change');
+$("#consignee_state").val($('#selected_consignee_state').val()).trigger('change');
+
+function getState(val,changed_id){  
+var html ='<option value="">Select</option>';  
+var selectedchanged_id = $('#selected_'+changed_id).val();
+// alert('st '+changed_id + ' // '+selectedchanged_id);
+if(val == 0){
+    var selected = (selectedchanged_id == 0) ? 'selected': '';
+    html += '<option value="0" '+selected+'>Other State</option>';
+    $('#'+changed_id).html(html);
+    $('#'+changed_id).trigger('change');
+}
+if(val > 0){
+        $.ajax({
+        method: "POST",
+        url: base_url+'booking/getStateByCountry',
+        data: {
+            country_id: val
+        },
+        dataType:'json',
+        beforeSend: function() { 
+                $("body").css({ opacity:0.5 });
+                $('#save-btn').attr('disabled','disabled'); 
+        },
+        complete: function(){
+            $("body").css({ opacity:1});
+            $('#save-btn').removeAttr('disabled'); 
+        },
+        success: function(response) {  
+            if(response){ 
+            response.forEach(function(val) {
+                var selected = (selectedchanged_id == val.state_id) ? 'selected': '';
+                html += '<option value="'+val.state_id+'" '+selected+'>'+val.state_name+'</option>'
+            });
+            }
+            $('#'+changed_id).html(html);
+            $('#'+changed_id).trigger('change');
+        }
+        });
+    }
+} 
+
+function getCitiesByState(val,changed_id){ 
+var selectedchanged_id = $('#selected_'+changed_id+'_id').val();
+// alert('getCitiesByState   '+selectedchanged_id);
+var html ='<option value="">Select</option>'; 
+// alert('getCitiesByState '+val+' / val ' +changed_id + ' / selected '+ $('#selected_'+changed_id).val());
+if(val == 0){ 
+var selected = (selectedchanged_id == 0) ? 'selected': '';
+    html += '<option value="0" '+selected+'>Other City</option>';
+    $('#'+changed_id).html(html);
+    $('#'+changed_id).trigger('change'); 
+}
+if(val > 0){
+        $.ajax({
+        method: "POST",
+        url: base_url+'booking/getCitiesByState',
+        data: {
+            state_id: val
+        },
+        dataType:'json',
+        beforeSend: function() { 
+                $("body").css({ opacity:0.5 });
+                $('#save-btn').attr('disabled','disabled'); 
+        },
+        complete: function(){
+            $("body").css({ opacity:1});
+            $('#save-btn').removeAttr('disabled'); 
+        },
+        success: function(response) { 
+            var html ='<option value="0">Select</option>';
+            if(response){ 
+            response.forEach(function(val) {
+                var selected =(selectedchanged_id == val.id) ? 'selected': '';
+                html += '<option value="'+val.city+'" '+changed_id+'_id="'+val.id+'" '+selected+' >'+val.city+'</option>'
+            });
+            }
+            $('#'+changed_id).html(html);
+            $('#'+changed_id).trigger('change');
+        }
+        });
+    }
+}
+
+function getPincodeByCity(city_id_val,changed_id){  
+var html ='<option value="">Select</option>';   
+if(city_id_val > 0){
+        $.ajax({
+        method: "POST",
+        url: base_url+'booking/getPincodeByCity/'+city_id_val, 
+        dataType:'json',
+        beforeSend: function() { 
+                $("body").css({ opacity:0.5 });
+                $('#save-btn').attr('disabled','disabled'); 
+        },
+        complete: function(){
+            $("body").css({ opacity:1});
+            $('#save-btn').removeAttr('disabled'); 
+        },
+        success: function(response) {   
+            if(response){  
+                var selectedchanged_id = $('#selected_'+changed_id).val();
+                response.forEach(function(val) { 
+                var selected =(selectedchanged_id == val) ? 'selected': '';
+                    html += '<option value="'+val+'" '+selected+'>'+val +'</option>'
+                });
+            }
+            $('#'+changed_id).html(html);  
+        }
+        });
+    }else{
+        $('#'+changed_id).html(html);
+    } 
+} 

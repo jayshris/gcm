@@ -1,20 +1,22 @@
 <?php
 namespace App\Controllers;
 
+use App\Libraries\Common;
 use App\Models\UserModel;
-use App\Models\PartytypeModel;
 use App\Models\PartyModel;
-use App\Models\PartyDocumentsModel;
 use App\Models\StateModel;
 use App\Models\OfficeModel;
+use App\Models\CountryModel;
 use App\Models\ProfileModel;
 use App\Models\VehicleModel;
 use App\Models\BookingsModel; 
 use App\Models\CustomersModel;
+use App\Models\PartytypeModel;
 use App\Controllers\BaseController;
-use App\Models\BookingVehicleLogModel;
 use App\Models\CustomerBranchModel;
 use App\Models\LoadingReceiptModel;
+use App\Models\PartyDocumentsModel;
+use App\Models\BookingVehicleLogModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class LoadingReceipt extends BaseController
@@ -30,6 +32,8 @@ class LoadingReceipt extends BaseController
   public $PTModel;
   public $CustomerBranchModel;
   public $BVLModel;
+  public $CountryModel;
+  public $common;
   public function __construct()
   {
     $u = new UserModel(); 
@@ -44,6 +48,9 @@ class LoadingReceipt extends BaseController
     $this->PTModel = new PartytypeModel();
     $this->CustomerBranchModel = new CustomerBranchModel();
     $this->BVLModel = new BookingVehicleLogModel();  
+
+    $this->CountryModel = new CountryModel();
+    $this->common = new Common();
   } 
 
   public function index()
@@ -76,6 +83,7 @@ class LoadingReceipt extends BaseController
   } 
 
   function create(){  
+    $this->view['countries'] = $this->CountryModel->where(['name'=>'India'])->findAll();
     $stateModel = new StateModel();
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
     $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
@@ -232,6 +240,10 @@ class LoadingReceipt extends BaseController
           'seal_no' =>  $this->request->getVar('seal_no'),
           'supplier_office_id' => ( $this->request->getVar('supplier_office_id')) ? $this->request->getVar('supplier_office_id') : 0,
           'recipient_office_id' =>  ($this->request->getVar('recipient_office_id')) ? $this->request->getVar('recipient_office_id') : 0,
+          'consignor_country_id'   =>  $this->request->getVar('consignor_country_id'),
+          'consignee_country_id'   =>  $this->request->getVar('consignee_country_id'),
+          'consignor_city_id'   =>  $this->request->getVar('consignor_city_id'),
+          'consignee_city_id'   =>  $this->request->getVar('consignee_city_id'),
         ];
 
         $this->LoadingReceiptModel->save($data); 
@@ -280,6 +292,7 @@ class LoadingReceipt extends BaseController
     echo json_encode($rows);exit;
   }
   function edit($id){  
+    $this->view['countries'] = $this->CountryModel->where(['name'=>'India'])->findAll();
     $stateModel = new StateModel();
     $this->view['loading_receipts'] = $this->LoadingReceiptModel
     ->select('loading_receipts.*,c.party_type_id')
@@ -466,6 +479,10 @@ class LoadingReceipt extends BaseController
           'seal_no' =>  $this->request->getVar('seal_no'),
           'supplier_office_id' => ( $this->request->getVar('supplier_office_id')) ? $this->request->getVar('supplier_office_id') : 0,
           'recipient_office_id' =>  ($this->request->getVar('recipient_office_id')) ? $this->request->getVar('recipient_office_id') : 0,
+          'consignor_country_id'   =>  $this->request->getVar('consignor_country_id'),
+          'consignee_country_id'   =>  $this->request->getVar('consignee_country_id'),
+          'consignor_city_id'   =>  $this->request->getVar('consignor_city_id'),
+          'consignee_city_id'   =>  $this->request->getVar('consignee_city_id'),
         ];
 
         // echo 'data<pre>';print_r($data);exit;
@@ -580,6 +597,7 @@ class LoadingReceipt extends BaseController
   }
 
   function approve($id){
+    $this->view['countries'] = $this->CountryModel->where(['name'=>'India'])->findAll();
     $stateModel = new StateModel(); 
 
     $this->view['loading_receipts'] = $this->LoadingReceiptModel
@@ -759,6 +777,10 @@ class LoadingReceipt extends BaseController
           'seal_no' =>  $this->request->getVar('seal_no'),
           'supplier_office_id' => ( $this->request->getVar('supplier_office_id')) ? $this->request->getVar('supplier_office_id') : 0,
           'recipient_office_id' =>  ($this->request->getVar('recipient_office_id')) ? $this->request->getVar('recipient_office_id') : 0,
+          'consignor_country_id'   =>  $this->request->getVar('consignor_country_id'),
+          'consignee_country_id'   =>  $this->request->getVar('consignee_country_id'),
+          'consignor_city_id'   =>  $this->request->getVar('consignor_city_id'),
+          'consignee_city_id'   =>  $this->request->getVar('consignee_city_id'),
         ];
 
         // echo 'data<pre>';print_r($data);exit;

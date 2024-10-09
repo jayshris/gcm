@@ -290,24 +290,31 @@
                           <?php echo ($validation->getError('consignor_address')) ? '<div class="invalid-feedback">'.$validation->getError('consignor_address').'</div>' : ''; ?>
                         </div>
 
-                        <div class="col-md-4">
-                            <?php 
-                            $label = 'City';  ?>
-                            <label class="col-form-label">City<span class="text-danger" id="consignor_city_spn"  <?= (isset($loading_receipts['consignor_id']) && $loading_receipts['consignor_id'] == 0) ? 'hidden' : ''  ?>>*</span></label>
-                            <input name="consignor_city" id="consignor_city" value="<?= set_value('consignor_city', (isset($loading_receipts['consignor_city']) ? $loading_receipts['consignor_city'] : ''))?>" class="form-control <?= (($validation->getError('consignor_city')) ? 'is-invalid' : '')?>" placeholder="City" autocomplete="off"  <?= (isset($loading_receipts['consignor_id']) && $loading_receipts['consignor_id'] == 0) ? '' : 'required' ?> />
-                          <?php 
-                            // echo form_input(['name'=>'consignor_city','id'=>'consignor_city','value'=>set_value('consignor_city', (isset($loading_receipts['consignor_city']) ? $loading_receipts['consignor_city'] : '')),'class'=>'form-control '.(($validation->getError('consignor_city')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off', 'required'=>'required']);
-                            echo ($validation->getError('consignor_city')) ? '<div class="invalid-feedback">'.$validation->getError('consignor_city').'</div>' : '';
+                        <div class="col-md-6">
+                            <label class="col-form-label">Country<span class="text-danger">*</span></label>
+                            <select class="form-select" name="consignor_country_id" id="consignor_country_id"  required onchange="getState(this.value,'consignor_state')">
+                                    <option value="">Select Country</option>
+                                    <?php foreach ($countries as $s) { ?>
+                                    <option value="<?= $s['country_id'] ?>" <?= isset($loading_receipts['consignor_country_id']) && ($loading_receipts['consignor_country_id'] == $s['country_id']) ? 'selected' : '' ?>><?= $s['name'] ?></option>
+                                    <?php } ?>
+                                    <option value="0" <?= isset($loading_receipts['consignor_country_id']) && ($loading_receipts['id'] > 0 && $loading_receipts['consignor_country_id'] == 0) ? 'selected' : '' ?> >Other Country</option>
+                            </select>
+                            <?php
+                            if ($validation->getError('country_id')) {
+                                echo '<div class="alert alert-danger mt-2">' . $validation->getError('country_id') . '</div>';
+                            }   
                             ?>
                         </div>
-
-                        <div class="col-md-4">
+                        
+                        <div class="col-md-6">
                             <label class="col-form-label">State<span class="text-danger"  id="consignor_state_spn"  <?= (isset($loading_receipts['consignor_id']) && $loading_receipts['consignor_id'] == 0) ? 'hidden' : ''  ?> >*</span></label> 
-                            <select class="form-select select2"  <?= (isset($loading_receipts['consignor_id']) && $loading_receipts['consignor_id'] == 0) ? '' : 'required'  ?> name="consignor_state" id="consignor_state" aria-label="Default select example">
+                            <input type="hidden"  name="selected_consignor_state" id="selected_consignor_state" class="form-control" value="<?= isset($loading_receipts['consignor_state']) ? $loading_receipts['consignor_state'] : '' ?>">   
+                            <select class="form-select"  <?= (isset($loading_receipts['consignor_id']) && $loading_receipts['consignor_id'] == 0) ? '' : 'required'  ?> name="consignor_state" id="consignor_state"  onchange="getCitiesByState(this.value,'consignor_city')">
                                 <option value="">Select State</option>
                                 <?php foreach ($states as $o) { ?>
                                 <option value="<?= $o['state_id']?>" <?= (isset($loading_receipts['consignor_state']) && ($loading_receipts['consignor_state'] == $o['state_id'])) ? 'selected' : ''?>><?= $o['state_name'] ?></option>
                                 <?php } ?>
+                                <option value="0" <?= isset($loading_receipts['consignor_state']) && ($loading_receipts['id']> 0 && $loading_receipts['consignor_state'] == 0) ? 'selected' : '' ?>>Other State</option>
                             </select>
                             <?php
                             if ($validation->getError('consignor_state')) {
@@ -318,14 +325,35 @@
 
                         <div class="col-md-4">
                             <?php 
+                            $label = 'City';  ?>
+                            <label class="col-form-label">City<span class="text-danger" id="consignor_city_spn"  <?= (isset($loading_receipts['consignor_id']) && $loading_receipts['consignor_id'] == 0) ? 'hidden' : ''  ?>>*</span></label>
+                            <!-- <input name="consignor_city" id="consignor_city" value="<?php //echo set_value('consignor_city', (isset($loading_receipts['consignor_city']) ? $loading_receipts['consignor_city'] : ''))?>" class="form-control <?php //echo (($validation->getError('consignor_city')) ? 'is-invalid' : '')?>" placeholder="City" autocomplete="off"  <?php //echo (isset($loading_receipts['consignor_id']) && $loading_receipts['consignor_id'] == 0) ? '' : 'required' ?> /> -->
+                            
+                            <input type="hidden"  name="consignor_city_id" id="selected_consignor_city_id" class="form-control" value="<?= isset($loading_receipts['consignor_city_id']) ? $loading_receipts['consignor_city_id'] : 0 ?>">   
+                            <select class="form-select select2" name="consignor_city" id="consignor_city" required  onchange="changeCity(this,$(this).find(':selected').attr('consignor_city_id'),'consignor_city_id','consignor_pincode');getPincodeByCity($(this).find(':selected').attr('consignor_city_id'),'consignor_pincode');">
+                                    <option value="">Select </option>  
+                                    <option value="0" <?= isset($loading_receipts['consignor_city_id']) && ($loading_receipts['consignor_city_id'] == 0) ? 'selected' : '' ?>>Other City</option>
+                            </select>
+                            
+                            <?php echo ($validation->getError('consignor_city')) ? '<div class="invalid-feedback">'.$validation->getError('consignor_city').'</div>' : ''; ?>
+                        </div>   
+                            
+                        <div class="col-md-4">
+                            <?php 
                             $label = 'Pincode';
-                            echo '<label class="col-form-label">'.$label.'</label>';
-                            echo form_input(['name'=>'consignor_pincode','id'=>'consignor_pincode','value'=>set_value('consignor_pincode', (isset($loading_receipts['consignor_pincode']) ? $loading_receipts['consignor_pincode'] : '')),'class'=>'form-control '.(($validation->getError('consignor_pincode')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');"]);
-                            echo ($validation->getError('consignor_pincode')) ? '<div class="invalid-feedback">'.$validation->getError('consignor_pincode').'</div>' : '';
                             ?>
+                            <label class="col-form-label"><?= $label ?></label>
+                           <?php // echo form_input(['name'=>'consignor_pincode','id'=>'consignor_pincode','value'=>set_value('consignor_pincode', (isset($loading_receipts['consignor_pincode']) ? $loading_receipts['consignor_pincode'] : '')),'class'=>'form-control '.(($validation->getError('consignor_pincode')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');"]); ?>
+                            
+                            <input type="hidden" name="selected_consignor_pincode" id="selected_consignor_pincode" class="form-control" value="<?= isset($loading_receipts['consignor_pincode']) ? $loading_receipts['consignor_pincode'] : '' ?>">
+                            <select class="form-select" name="consignor_pincode" id="consignor_pincode">
+                                <option value="">Select </option>  
+                            </select>
+                            
+                            <?php echo ($validation->getError('consignor_pincode')) ? '<div class="invalid-feedback">'.$validation->getError('consignor_pincode').'</div>' : '';?>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <?php 
                             $isrequired = ($currentMethod=='approve') ? ['required' => 'required'] : [];  
                             $required = ($currentMethod=='approve') ? '<span class="text-danger">*</span>' : '';  
@@ -475,25 +503,31 @@
                             ?>
                         </div>
 
-                        <div class="col-md-4">
-                            <?php 
-                            $label = 'City';
-                             ?>  
-                             <label class="col-form-label">City<span class="text-danger" id="consignee_city_spn"  <?= (isset($loading_receipts['consignee_id']) &&  $loading_receipts['consignee_id'] == 0) ? 'hidden' : ''  ?>>*</span></label> 
-                             <input name="consignee_city" id="consignee_city" value="<?= set_value('consignee_city', (isset($loading_receipts['consignee_city']) ? $loading_receipts['consignee_city'] : ''))?>" class="form-control <?= (($validation->getError('consignee_city')) ? 'is-invalid' : '')?>" placeholder="City" autocomplete="off"  <?= (isset($loading_receipts['consignee_id']) && $loading_receipts['consignee_id'] == 0) ? '' : 'required' ?> />
-                            <?php 
-                            // echo form_input(['name'=>'consignee_city','id'=>'consignee_city','value'=>set_value('consignee_city', (isset($loading_receipts['consignee_city']) ? $loading_receipts['consignee_city'] : '')),'class'=>'form-control '.(($validation->getError('consignee_city')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'required'=>'required']);
-                            echo ($validation->getError('consignee_city')) ? '<div class="invalid-feedback">'.$validation->getError('consignee_city').'</div>' : '';
+                        <div class="col-md-6">
+                            <label class="col-form-label">Country<span class="text-danger">*</span></label>
+                            <select class="form-select" name="consignee_country_id" id="consignee_country_id" required onchange="getState(this.value,'consignee_state')">
+                                    <option value="">Select Country</option>
+                                    <?php foreach ($countries as $s) { ?>
+                                    <option value="<?= $s['country_id'] ?>" <?= isset($loading_receipts['consignee_country_id']) && ($loading_receipts['consignee_country_id'] == $s['country_id']) ? 'selected' : '' ?>><?= $s['name'] ?></option>
+                                    <?php } ?>
+                                    <option value="0" <?= isset($loading_receipts['consignee_country_id']) && ($loading_receipts['id'] > 0 && $loading_receipts['consignee_country_id'] == 0) ? 'selected' : '' ?> >Other Country</option>
+                            </select>
+                            <?php
+                            if ($validation->getError('country_id')) {
+                                echo '<div class="alert alert-danger mt-2">' . $validation->getError('country_id') . '</div>';
+                            }   
                             ?>
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label class="col-form-label">State<span class="text-danger" id="consignee_state_spn" <?= (isset($loading_receipts['consignee_id']) && $loading_receipts['consignee_id'] == 0) ? 'hidden' : ''  ?>>*</span></label> 
-                            <select class="form-select select2" <?= (isset($loading_receipts['consignee_id']) && $loading_receipts['consignee_id'] == 0) ? '' : 'required' ?>  name="consignee_state" id="consignee_state" aria-label="Default select example">
+                            <input type="hidden"  name="selected_consignee_state" id="selected_consignee_state" class="form-control" value="<?= isset($loading_receipts['consignee_state']) ? $loading_receipts['consignee_state'] : '' ?>">   
+                            <select class="form-select select2" <?= (isset($loading_receipts['consignee_id']) && $loading_receipts['consignee_id'] == 0) ? '' : 'required' ?>  name="consignee_state" id="consignee_state" onchange="getCitiesByState(this.value,'consignee_city')">
                                 <option value="">Select State</option>
                                 <?php foreach ($states as $o) { ?> 
                                 <option value="<?= $o['state_id'] ?>" <?= (isset($loading_receipts['consignee_state']) && ($loading_receipts['consignee_state'] == $o['state_id'])) ? 'selected' : ''?> ><?= $o['state_name'] ?></option> 
                                 <?php } ?>
+                                <option value="0" <?= isset($loading_receipts['consignee_state']) && ($loading_receipts['id']> 0 && $loading_receipts['consignee_state'] == 0) ? 'selected' : '' ?>>Other State</option>
                             </select>
                             <?php
                             if ($validation->getError('consignee_state')) {
@@ -504,10 +538,33 @@
 
                         <div class="col-md-4">
                             <?php 
+                            $label = 'City';
+                             ?>  
+                             <label class="col-form-label">City<span class="text-danger" id="consignee_city_spn"  <?= (isset($loading_receipts['consignee_id']) &&  $loading_receipts['consignee_id'] == 0) ? 'hidden' : ''  ?>>*</span></label> 
+                             <!-- <input name="consignee_city" id="consignee_city" value="<?= set_value('consignee_city', (isset($loading_receipts['consignee_city']) ? $loading_receipts['consignee_city'] : ''))?>" class="form-control <?= (($validation->getError('consignee_city')) ? 'is-invalid' : '')?>" placeholder="City" autocomplete="off"  <?= (isset($loading_receipts['consignee_id']) && $loading_receipts['consignee_id'] == 0) ? '' : 'required' ?> /> -->
+                           
+                             <input type="hidden"  name="consignee_city_id" id="selected_consignee_city_id" class="form-control" value="<?= isset($loading_receipts['consignee_city_id']) ? $loading_receipts['consignee_city_id'] : 0 ?>">   
+                            <select class="form-select select2" name="consignee_city" id="consignee_city" required  onchange="changeCity(this,$(this).find(':selected').attr('consignee_city_id'),'consignee_city_id','consignee_pincode');getPincodeByCity($(this).find(':selected').attr('consignee_city_id'),'consignee_pincode');">
+                                    <option value="">Select </option>  
+                                    <option value="0" <?= isset($loading_receipts['consignee_city_id']) && ($loading_receipts['consignee_city_id'] == 0) ? 'selected' : '' ?>>Other City</option>
+                            </select>
+                           <?php 
+                            // echo form_input(['name'=>'consignee_city','id'=>'consignee_city','value'=>set_value('consignee_city', (isset($loading_receipts['consignee_city']) ? $loading_receipts['consignee_city'] : '')),'class'=>'form-control '.(($validation->getError('consignee_city')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'required'=>'required']);
+                            echo ($validation->getError('consignee_city')) ? '<div class="invalid-feedback">'.$validation->getError('consignee_city').'</div>' : '';
+                            ?>
+                        </div> 
+
+                        <div class="col-md-4">
+                            <?php 
                             $label = 'Pincode';
                             echo '<label class="col-form-label">'.$label.' </label>';
-                            echo form_input(['name'=>'consignee_pincode','id'=>'consignee_pincode','value'=>set_value('consignee_pincode', (isset($loading_receipts['consignee_pincode']) ? $loading_receipts['consignee_pincode'] : '')),'class'=>'form-control '.(($validation->getError('consignee_pincode')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');"]);
-                            echo ($validation->getError('consignee_pincode')) ? '<div class="invalid-feedback">'.$validation->getError('consignee_pincode').'</div>' : '';
+                           // echo form_input(['name'=>'consignee_pincode','id'=>'consignee_pincode','value'=>set_value('consignee_pincode', (isset($loading_receipts['consignee_pincode']) ? $loading_receipts['consignee_pincode'] : '')),'class'=>'form-control '.(($validation->getError('consignee_pincode')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');"]);
+                            ?>
+                              <input type="hidden" name="selected_consignee_pincode" id="selected_consignee_pincode" class="form-control" value="<?= isset($loading_receipts['consignee_pincode']) ? $loading_receipts['consignee_pincode'] : '' ?>">
+                            <select class="form-select" name="consignee_pincode" id="consignee_pincode">
+                                <option value="">Select </option>  
+                            </select>
+                            <?php echo ($validation->getError('consignee_pincode')) ? '<div class="invalid-feedback">'.$validation->getError('consignee_pincode').'</div>' : '';
                             ?>
                         </div>
 
@@ -829,6 +886,6 @@
 </div> 
 
 <div class="submit-button">
-    <input type="submit" name="add_loadingreceipt" class="btn btn-primary" value="Save">
+    <input type="submit" name="add_loadingreceipt" id="save-btn" class="btn btn-primary" value="Save">
     <a href="<?php echo base_url(); ?>loadingreceipt" class="btn btn-light">Cancel</a>
 </div>

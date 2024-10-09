@@ -80,7 +80,11 @@ class LoadingReceiptModel extends Model
         'seal_no',
         'supplier_office_id',
         'recipient_office_id',
-        'added_by'
+        'added_by',
+        'consignor_country_id',
+        'consignee_country_id',
+        'consignor_city_id',
+        'consignee_city_id'
     ];
 
     protected bool $allowEmptyInserts = false;
