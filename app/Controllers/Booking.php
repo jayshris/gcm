@@ -23,6 +23,7 @@ use App\Models\BookingDropsModel;
 use App\Models\NotificationModel;
 use App\Models\BookingStatusModel;
 use App\Controllers\BaseController;
+use App\Libraries\Common;
 use App\Models\BookingPickupsModel;
 use App\Models\CustomerBranchModel;
 use App\Models\LoadingReceiptModel;
@@ -80,6 +81,7 @@ class Booking extends BaseController
     public $email;
     public $MaterialsModel;
     public $CountryModel;
+    public $common;
     public function __construct()
     {
         // date_default_timezone_set("Asia/Kolkata");
@@ -125,6 +127,8 @@ class Booking extends BaseController
         $this->MaterialsModel = new MaterialsModel();
         $this->CountryModel = new CountryModel();
         $this->email = \Config\Services::email();
+
+        $this->common = new Common();
     }
 
     public function index()
@@ -2339,13 +2343,8 @@ class Booking extends BaseController
         if($city){    
             $city = str_replace(['& ','&',' '],['','','_'],strtolower($city));  
             // $result = file_get_contents('https://api.postalpincode.in/postoffice/'.$city);
-            
-            $c = curl_init();
-            curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($c, CURLOPT_URL, 'https://api.postalpincode.in/postoffice/'.$city);
-            $result = curl_exec($c);
-            curl_close($c);
-
+  
+            $result = $this->common->getPincodeByCity($city);
             $result = json_decode($result,true);
             // echo '<pre>';print_r($result);exit; 
             $response = isset($result[0]['Status']) && ($result[0]['Status'] == 'Success') ? ($result[0]['PostOffice']) : [];
