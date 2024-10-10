@@ -4,7 +4,9 @@ namespace App\Controllers;
 use App\Libraries\Common;
 use App\Models\CityModel;
 use App\Models\UserModel;
+use App\Models\PartytypeModel;
 use App\Models\PartyModel;
+use App\Models\PartyDocumentsModel;
 use App\Models\StateModel;
 use App\Models\OfficeModel;
 use App\Models\CountryModel;
@@ -12,11 +14,9 @@ use App\Models\ProfileModel;
 use App\Models\VehicleModel;
 use App\Models\BookingsModel; 
 use App\Models\CustomersModel;
-use App\Models\PartytypeModel;
 use App\Controllers\BaseController;
 use App\Models\CustomerBranchModel;
 use App\Models\LoadingReceiptModel;
-use App\Models\PartyDocumentsModel;
 use App\Models\ProformaInvoiceModel;
 use App\Models\BookingVehicleLogModel;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -38,8 +38,11 @@ class LoadingReceipt extends BaseController
   public $common;
   public $CityModel;
   public $ProformaInvoiceModel;
+  public $email;
   public function __construct()
   {
+    $this->email = \Config\Services::email();
+
     $u = new UserModel(); 
     $this->OModel = new OfficeModel();
     $this->BookingsModel = new BookingsModel();
@@ -51,13 +54,61 @@ class LoadingReceipt extends BaseController
     $this->CustomersModel = new CustomersModel();
     $this->PTModel = new PartytypeModel();
     $this->CustomerBranchModel = new CustomerBranchModel();
-    $this->BVLModel = new BookingVehicleLogModel();  
-
+    $this->BVLModel = new BookingVehicleLogModel(); 
+    
     $this->CountryModel = new CountryModel();
     $this->common = new Common();
     $this->CityModel = new CityModel();
     $this->ProformaInvoiceModel= new ProformaInvoiceModel();
   } 
+
+  public function sendEmail(){
+    $id = ($this->request->getPost('id')) && !empty($this->request->getPost('id')) ? $this->request->getPost('id') : '0';
+    $fromName = 'GAE CARGO MOVERS PVT LTD';//($this->request->getPost('email_from')) && !empty($this->request->getPost('email_from')) ? $this->request->getPost('email_from') : 'GAE Group';
+    $toEmail = ($this->request->getPost('email_to')) && !empty($this->request->getPost('email_to')) ? $this->request->getPost('email_to') : 'kishorejha.php@gmail.com';
+    $subject = ($this->request->getPost('email_subject')) && !empty($this->request->getPost('email_subject')) ? $this->request->getPost('email_subject') : 'Loading Receipt of Consignment';
+    $message = ($this->request->getPost('email_body')) && !empty($this->request->getPost('email_body')) ? $this->request->getPost('email_body') : 'PFA';
+
+    $config['protocol']   = 'smtp';
+    $config['SMTPHost']   = 'mail.aubade-tech.com';
+    $config['SMTPPort']   = 465;
+    $config['SMTPUser']   = 'booking@gaegroup.in';
+    $config['SMTPPass']   = 'August@110321';
+    $config['SMTPCrypto'] = 'ssl';
+    $config['charset']    = 'utf-8';
+    $config['mailType']   = 'html';
+    $config['newline']    = "\r\n";
+
+    $this->email->initialize($config);
+    $this->email->setFrom('booking@gaegroup.in', $fromName);
+    $this->email->setTo($toEmail);
+    /*$this->email->setTo('kishorejha.php@gmail.com');
+    $this->email->setCC('mehta00999@gmail.com');
+    $this->email->setCC('sumeet@aubade-tech.com');
+    $this->email->setCC('kishore@aubade-tech.com');*/
+    // $this->email->setBCC('bcc@example.com');
+
+    $this->email->setSubject($subject);
+    $this->email->setMessage($message);
+    $this->view['loading_receipts'] = $this->LoadingReceiptModel->where('id',$id)->first();
+    $fileName = (isset($this->view['loading_receipts']['consignment_no']) && !empty($this->view['loading_receipts']['consignment_no'])) ? str_replace('/','_',$this->view['loading_receipts']['consignment_no']) : 'loading_receipt_'.$id;
+    $filePath = 'public/uploads/loading_receipts/'.$fileName.'.pdf';
+    $this->email->attach(FCPATH.$filePath, $fileName);
+    //$pdf_path = FCPATH . 'public\uploads\LR-mail.pdf';
+    //$this->email->attach($pdf_path, 'pdf_file.pdf', 'application/pdf');
+
+    if ($this->email->send()) {
+      //echo 'Email sent successfully';die;
+      $session = \Config\Services::session();
+      $session->setFlashdata('success', 'Email sent successfully!');
+      return redirect()->to('/loadingreceipt/preview/'.$id);
+    } else {
+      //echo 'Error occured in sending email: ' . $this->email->printDebugger();die;
+      $session = \Config\Services::session();
+      $session->setFlashdata('error', 'Error occured in sending email: ' . $this->email->printDebugger());
+      return redirect()->to('/loadingreceipt/preview/'.$id);
+    }
+  }
 
   public function index()
   {  
@@ -292,6 +343,7 @@ class LoadingReceipt extends BaseController
     $rows = (object) array_merge((array) $party, (array) $gstn);
     echo json_encode($rows);exit;
   }
+
   function getTransporterBranches($id){
     return $this->CustomerBranchModel->where([
       'customer_id'=> $id
@@ -550,15 +602,15 @@ class LoadingReceipt extends BaseController
     
     echo json_encode($rows);exit;
   }
-  
+
   public function delete($id = null)
   {  
     //Check if ProformaInvoiceModel is generated then don't allow to delete LR
     $proformaInvoice = $this->checkProformaInvoiceForLR($id);  
 
     if(empty($proformaInvoice)){
-      $this->LoadingReceiptModel->where('id', $id)->delete($id); 
-      $this->session->setFlashdata('success', 'Loading receipt has been deleted successfully');
+    $this->LoadingReceiptModel->where('id', $id)->delete($id); 
+    $this->session->setFlashdata('success', 'Loading receipt has been deleted successfully');
     }else{ 
       $this->session->setFlashdata('danger', 'Loading receipt can not be delete because of proforma invoice is generated.');
     }
@@ -595,7 +647,56 @@ class LoadingReceipt extends BaseController
     ->where(['loading_receipts.id' => $id])->first(); 
 
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll(); 
-    // echo '<pre>';print_r($this->view['loading_receipts']);exit;
+    
+    //Send Email
+    if($this->request->getPost()){
+      $id = ($this->request->getPost('id')) && !empty($this->request->getPost('id')) ? $this->request->getPost('id') : '0';
+      $fromName = ($this->request->getPost('email_from')) && !empty($this->request->getPost('email_from')) ? $this->request->getPost('email_from') : 'GAE Group';
+      $toEmail = ($this->request->getPost('email_to')) && !empty($this->request->getPost('email_to')) ? $this->request->getPost('email_to') : 'kishorejha.php@gmail.com';
+      $subject = ($this->request->getPost('email_subject')) && !empty($this->request->getPost('email_subject')) ? $this->request->getPost('email_subject') : 'Loading Receipt of Consignment';
+      $message = ($this->request->getPost('email_body')) && !empty($this->request->getPost('email_body')) ? $this->request->getPost('email_body') : 'PFA';
+
+      $config['protocol']   = 'smtp';
+      $config['SMTPHost']   = 'mail.aubade-tech.com';
+      $config['SMTPPort']   = 465;
+      $config['SMTPUser']   = 'booking@gaegroup.in';
+      $config['SMTPPass']   = 'August@110321';
+      $config['SMTPCrypto'] = 'ssl';
+      $config['charset']    = 'utf-8';
+      $config['mailType']   = 'html';
+      $config['newline']    = "\r\n";
+
+      $this->email->initialize($config);
+      $this->email->setFrom('booking@gaegroup.in', $fromName);
+      $this->email->setTo($toEmail);
+      /*$this->email->setTo('kishorejha.php@gmail.com');
+      $this->email->setCC('mehta00999@gmail.com');
+      $this->email->setCC('sumeet@aubade-tech.com');
+      $this->email->setCC('kishore@aubade-tech.com');*/
+      // $this->email->setBCC('bcc@example.com');
+
+      $this->email->setSubject($subject);
+      $this->email->setMessage($message);
+
+      $fileName = (isset($this->view['loading_receipts']['consignment_no']) && !empty($this->view['loading_receipts']['consignment_no'])) ? str_replace('/','_',$this->view['loading_receipts']['consignment_no']) : 'loading_receipt_'.$id;
+      $filePath = 'public/uploads/loading_receipts/'.$fileName.'.pdf';
+      $this->email->attach(FCPATH.$filePath, $fileName);
+      //$pdf_path = FCPATH . 'public\uploads\LR-mail.pdf';
+      //$this->email->attach($pdf_path, 'pdf_file.pdf', 'application/pdf');
+
+      if ($this->email->send()) {
+        //echo 'Email sent successfully';die;
+        $session = \Config\Services::session();
+        $session->setFlashdata('success', 'Email sent successfully!');
+        return redirect()->to('/loadingreceipt/preview/'.$id);
+      } else {
+        //echo 'Error occured in sending email: ' . $this->email->printDebugger();die;
+        $session = \Config\Services::session();
+        $session->setFlashdata('error', 'Error occured in sending email: ' . $this->email->printDebugger());
+        return redirect()->to('/loadingreceipt/preview/'.$id);
+      }
+    }
+
     return view('LoadingReceipt/preview', $this->view); 
   }
 
@@ -621,7 +722,7 @@ class LoadingReceipt extends BaseController
 
   function approve($id){
     $this->view['countries'] = $this->CountryModel->where(['name'=>'India'])->findAll();
-    $stateModel = new StateModel(); 
+    $stateModel = new StateModel();
 
     $this->view['loading_receipts'] = $this->LoadingReceiptModel
     ->select('loading_receipts.*,c.party_type_id')
@@ -920,5 +1021,5 @@ class LoadingReceipt extends BaseController
     ->join('proforma_invoices pr','b.id = pr.booking_id')
     ->where('loading_receipts.id', $lrId)
     ->first(); 
- }
+  }
 }
