@@ -121,7 +121,7 @@ function changeIdIpt(branch_id,party_id,id,key = 'consignor'){
         dataType: "json",
         success: function(res) {
                 // $("#"+key+"_state").val(res.state_id).attr("selected","selected").trigger('change');  
-                $("#"+pre+"_state").val(res.state_id).attr("selected","selected").trigger('change');  
+                // $("#"+pre+"_state").val(res.state_id).attr("selected","selected").trigger('change');  
                 // $("#"+key+"_address").val(res.address);
                 $("#"+pre+"_address").val(res.address);
 
@@ -133,6 +133,13 @@ function changeIdIpt(branch_id,party_id,id,key = 'consignor'){
 
                 //$("#"+key+"_GSTIN").val(res.gst); 
                 $("#"+pre+"_GSTIN").val(res.gst);
+
+                $("#selected_"+pre+"_state").val(res.state_id);  
+                $("#selected_"+pre+"_city_id").val(res.city_id); 
+                $("#selected_"+pre+"_pincode").val(res.pincode); 
+                $("#"+pre+"_country_id").val(res.country_id).trigger('change'); 
+ 
+
             }
         }); 
         

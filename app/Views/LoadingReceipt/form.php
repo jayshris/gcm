@@ -328,8 +328,8 @@
                             $label = 'City';  ?>
                             <label class="col-form-label">City<span class="text-danger" id="consignor_city_spn"  <?= (isset($loading_receipts['consignor_id']) && $loading_receipts['consignor_id'] == 0) ? 'hidden' : ''  ?>>*</span></label>
                             <!-- <input name="consignor_city" id="consignor_city" value="<?php //echo set_value('consignor_city', (isset($loading_receipts['consignor_city']) ? $loading_receipts['consignor_city'] : ''))?>" class="form-control <?php //echo (($validation->getError('consignor_city')) ? 'is-invalid' : '')?>" placeholder="City" autocomplete="off"  <?php //echo (isset($loading_receipts['consignor_id']) && $loading_receipts['consignor_id'] == 0) ? '' : 'required' ?> /> -->
-                            
-                            <input type="hidden"  name="consignor_city_id" id="selected_consignor_city_id" class="form-control" value="<?= isset($loading_receipts['consignor_city_id']) ? $loading_receipts['consignor_city_id'] : 0 ?>">   
+                            <input type="hidden"  name="selected_consignor_city_id" id="selected_consignor_city_id" class="form-control" value="<?= isset($loading_receipts['consignor_city_id']) ? $loading_receipts['consignor_city_id'] : 0 ?>">   
+                            <input type="hidden"  name="consignor_city_id" id="consignor_city_id" class="form-control" value="<?= isset($loading_receipts['consignor_city_id']) ? $loading_receipts['consignor_city_id'] : 0 ?>">   
                             <select class="form-select select2" name="consignor_city" id="consignor_city" required  onchange="changeCity(this,$(this).find(':selected').attr('consignor_city_id'),'consignor_city_id','consignor_pincode');getPincodeByCity($(this).find(':selected').attr('consignor_city_id'),'consignor_pincode');">
                                     <option value="">Select </option>  
                                     <option value="0" <?= isset($loading_receipts['consignor_city_id']) && ($loading_receipts['consignor_city_id'] == 0) ? 'selected' : '' ?>>Other City</option>
@@ -542,8 +542,8 @@
                              ?>  
                              <label class="col-form-label">City<span class="text-danger" id="consignee_city_spn"  <?= (isset($loading_receipts['consignee_id']) &&  $loading_receipts['consignee_id'] == 0) ? 'hidden' : ''  ?>>*</span></label> 
                              <!-- <input name="consignee_city" id="consignee_city" value="<?= set_value('consignee_city', (isset($loading_receipts['consignee_city']) ? $loading_receipts['consignee_city'] : ''))?>" class="form-control <?= (($validation->getError('consignee_city')) ? 'is-invalid' : '')?>" placeholder="City" autocomplete="off"  <?= (isset($loading_receipts['consignee_id']) && $loading_receipts['consignee_id'] == 0) ? '' : 'required' ?> /> -->
-                           
                              <input type="hidden"  name="consignee_city_id" id="selected_consignee_city_id" class="form-control" value="<?= isset($loading_receipts['consignee_city_id']) ? $loading_receipts['consignee_city_id'] : 0 ?>">   
+                             <input type="hidden"  name="consignee_city_id" id="consignee_city_id" class="form-control" value="<?= isset($loading_receipts['consignee_city_id']) ? $loading_receipts['consignee_city_id'] : 0 ?>">   
                             <select class="form-select select2" name="consignee_city" id="consignee_city" required  onchange="changeCity(this,$(this).find(':selected').attr('consignee_city_id'),'consignee_city_id','consignee_pincode');getPincodeByCity($(this).find(':selected').attr('consignee_city_id'),'consignee_pincode');">
                                     <option value="">Select </option>  
                                     <option value="0" <?= isset($loading_receipts['consignee_city_id']) && ($loading_receipts['consignee_city_id'] == 0) ? 'selected' : '' ?>>Other City</option>

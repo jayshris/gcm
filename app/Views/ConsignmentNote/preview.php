@@ -48,7 +48,7 @@
             </div>
             <div class="submit-button noprint"> 
                 <button type="button" class="btn btn-danger" onclick="printDiv('printableArea')"><i class="fa fa-print" aria-hidden="true"></i> Print</button>
-                <a href="<?php echo base_url($currentController); ?>" class="btn btn-light">Cancel</a>
+                <a href="<?php echo base_url('loadingreceipt'); ?>" class="btn btn-light">Cancel</a>
                 <!-- <a href="javascript:history.back()" class="btn btn-light">Cancel</a> -->
             </div> 
         </div>

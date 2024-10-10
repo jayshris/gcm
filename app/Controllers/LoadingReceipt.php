@@ -2,6 +2,7 @@
 namespace App\Controllers;
 
 use App\Libraries\Common;
+use App\Models\CityModel;
 use App\Models\UserModel;
 use App\Models\PartyModel;
 use App\Models\StateModel;
@@ -34,6 +35,7 @@ class LoadingReceipt extends BaseController
   public $BVLModel;
   public $CountryModel;
   public $common;
+  public $CityModel;
   public function __construct()
   {
     $u = new UserModel(); 
@@ -51,6 +53,7 @@ class LoadingReceipt extends BaseController
 
     $this->CountryModel = new CountryModel();
     $this->common = new Common();
+    $this->CityModel = new CityModel();
   } 
 
   public function index()
@@ -264,10 +267,15 @@ class LoadingReceipt extends BaseController
   }
 
   function getPartyDetails(){ 
+    $countries = $this->CountryModel->where(['name'=>'India'])->first();
+    // echo '<pre>';print_r($countries);exit;
     $rows =  $this->CustomerBranchModel->where([
       'customer_id'=>$this->request->getPost('party_id'),
       'office_name'=>$this->request->getPost('branch_id')
       ])->first();  
+    $city = isset( $rows['city']) ? $this->CityModel->where(['city'=>trim($rows['city'])])->first() : [];
+    $rows['country_id'] =  isset($countries['country_id']) ? $countries['country_id'] : 0;
+    $rows['city_id'] =  isset($city['id']) ? $city['id'] : 0;
     echo json_encode($rows);exit;
   }
 
