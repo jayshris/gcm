@@ -9,6 +9,7 @@ use App\Models\ProfileModel;
 use App\Models\VehicleModel;
 use App\Models\BookingsModel; 
 use App\Controllers\BaseController;
+use App\Models\DriverModel;
 use App\Models\LoadingReceiptModel;
 use App\Models\PartytypeModel;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -22,6 +23,7 @@ class Consignmentnote extends BaseController
     public $session;
     public $profile;
     public $PTModel;
+    public $DModel;
     public function __construct()
     {
       $u = new UserModel(); 
@@ -32,6 +34,7 @@ class Consignmentnote extends BaseController
       $this->session = \Config\Services::session();
       $this->profile = new ProfileModel();
       $this->PTModel = new PartytypeModel();
+      $this->DModel = new DriverModel();
     }
   
     public function index()
@@ -75,7 +78,8 @@ class Consignmentnote extends BaseController
       CONCAT_WS(",", consignor_address,consignor_city,s.state_name,consignor_pincode) consignor_address_f,
       CONCAT_WS(",", place_of_delivery_address,place_of_delivery_city,s3.state_name,place_of_delivery_pincode) place_of_delivery_pincode_f ,
       CONCAT_WS(",", place_of_dispatch_address,place_of_dispatch_city,s4.state_name,place_of_dispatch_pincode) place_of_dispatch_address_f,
-      cust.party_type_id
+      cust.party_type_id,
+      v.id v_id
       ')
       ->join('bookings b','loading_receipts.booking_id = b.id')
       ->join('vehicle v','loading_receipts.vehicle_id = v.id','left')
@@ -97,7 +101,18 @@ class Consignmentnote extends BaseController
       $this->view['lr_party_type'] = $this->checkLRParty($party_type_id);
       // echo  $party_type_id.'<pre>';print_r($this->view['lr_party_type']);exit;
         
-      // echo 'sdf<pre>';print_r($this->view['lr']);exit;
+      ///Get driver details
+      $vehicle_id = isset($this->view['lr']['v_id']) && ($this->view['lr']['v_id'] > 0) ? $this->view['lr']['v_id'] : 0;
+      if ($vehicle_id > 0) { 
+            $this->view['driver'] = $this->DModel->select('driver.id, party.party_name as driver_name,party.primary_phone')
+                ->join('driver_vehicle_map dvp', 'driver.id = dvp.driver_id')
+                ->join('party', 'party.id = driver.party_id')
+                // ->where('(dvp.unassign_date = "" or dvp.unassign_date IS NULL or (UNIX_TIMESTAMP(dvp.unassign_date) = 0))')
+                ->orderBy('dvp.id','DESC')
+                ->first();  
+        }
+        // echo  ' <pre>';print_r($this->view['lr']); 
+      // echo $vehicle_id .'  '.$this->DModel->getLastQuery().' <pre>';print_r($this->view['driver']);exit;
       return view('ConsignmentNote/preview', $this->view); 
     }
 
