@@ -112,6 +112,9 @@
 														?>
 													</div>
 
+													<div class="row g-3" id="particulars-hsn-code"> 
+                                                    </div>
+
 													<div class="col-md-12"  id="expense_div_body"></div>
 
 													<div class="row g-3"  id="tax_applicable_div" >
@@ -232,7 +235,7 @@
 					$('.invoice_total_amount_div').removeAttr('hidden'); 
 					if(id == 0){
 						$.calculation();	
-					}
+					} 
 				}
 			});
 
@@ -258,11 +261,23 @@
 				}
 			});
  
+			$.ajax({
+				method: "POST",
+				url: '<?php echo base_url('proformainvoices/getLRBookingDetails/'); ?>'+booking_id, 
+				dataType:'json',
+				success: function(res) {  
+					var particulars_hsn_html ='<div class="col-md-6"><label class="col-form-label"><b>Particulars : </b>'+res.particulars+'</label></div>';
+					particulars_hsn_html +='<div class="col-md-6"><label class="col-form-label"><b>HSN Code : </b>'+res.hsn_code+'</label></div>';
+					$('#particulars-hsn-code').html(particulars_hsn_html);
+				}
+			});
+
 		}else{
 			$('#expense_div_body').html('');
 			$('#bill_to_party_id').val(''); 
 			$('.invoice_total_amount_div').attr('hidden','hidden');
 			$('#customer_name').val('');
+			$('#particulars-hsn-code').html('');
 		} 	
 			
 	}	

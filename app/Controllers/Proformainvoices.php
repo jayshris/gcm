@@ -105,7 +105,7 @@ class Proformainvoices extends BaseController
         ->join('vehicle v','bookings.vehicle_id = v.id') 
         ->where('EXISTS (SELECT 1 
                     FROM   loading_receipts
-                    WHERE  loading_receipts.booking_id = bookings.id)')
+                    WHERE  loading_receipts.booking_id = bookings.id and loading_receipts.approved = 1)')
         ->where('NOT EXISTS (SELECT 1 
                 FROM   proforma_invoices
                 WHERE  proforma_invoices.booking_id = bookings.id '.$condition.')')
@@ -122,7 +122,7 @@ class Proformainvoices extends BaseController
       // ->where(['status != '=> 11]) 
       ->where('EXISTS (SELECT 1 
                     FROM   loading_receipts
-                    WHERE  loading_receipts.booking_id = bookings.id)')
+                    WHERE  loading_receipts.booking_id = bookings.id and loading_receipts.approved = 1)')
       ->where('NOT EXISTS (SELECT 1 
                 FROM   proforma_invoices
                 WHERE  proforma_invoices.booking_id = bookings.id '.$condition.')')
@@ -396,5 +396,14 @@ class Proformainvoices extends BaseController
       ->where(['customer_branches.status'=>'1','customer_id' =>$customer_id]) 
       ->findAll();
       echo json_encode($customer_branches);exit;
+    }
+
+    function getLRBookingDetails($booking_id){
+      $lrDetails = $this->BookingsModel
+      ->select('lr.*') 
+      ->join('loading_receipts lr','bookings.id = lr.booking_id')
+      ->where('lr.booking_id', $booking_id)
+      ->first(); 
+      echo json_encode($lrDetails);exit;
     }
 }
