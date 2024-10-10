@@ -1,0 +1,1 @@
+ALTER TABLE `loading_receipts` CHANGE `freight_charges_amount` `freight_charges_amount` VARCHAR(100) NOT NULL;
