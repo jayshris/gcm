@@ -17,6 +17,7 @@ use App\Controllers\BaseController;
 use App\Models\CustomerBranchModel;
 use App\Models\LoadingReceiptModel;
 use App\Models\PartyDocumentsModel;
+use App\Models\ProformaInvoiceModel;
 use App\Models\BookingVehicleLogModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
@@ -36,6 +37,7 @@ class LoadingReceipt extends BaseController
   public $CountryModel;
   public $common;
   public $CityModel;
+  public $ProformaInvoiceModel;
   public function __construct()
   {
     $u = new UserModel(); 
@@ -54,6 +56,7 @@ class LoadingReceipt extends BaseController
     $this->CountryModel = new CountryModel();
     $this->common = new Common();
     $this->CityModel = new CityModel();
+    $this->ProformaInvoiceModel= new ProformaInvoiceModel();
   } 
 
   public function index()
@@ -300,6 +303,10 @@ class LoadingReceipt extends BaseController
     echo json_encode($rows);exit;
   }
   function edit($id){  
+    //Check if ProformaInvoiceModel is generated then don't allow to delete LR
+    $this->view['proformaInvoice'] =  $this->checkProformaInvoiceForLR($id); 
+    // echo 'proformaInvoice<pre>';print_r($this->view['proformaInvoice']);exit;
+
     $this->view['countries'] = $this->CountryModel->where(['name'=>'India'])->findAll();
     $stateModel = new StateModel();
     $this->view['loading_receipts'] = $this->LoadingReceiptModel
@@ -543,11 +550,19 @@ class LoadingReceipt extends BaseController
     
     echo json_encode($rows);exit;
   }
-
+  
   public function delete($id = null)
   {  
-    $this->LoadingReceiptModel->where('id', $id)->delete($id); 
-    $this->session->setFlashdata('success', 'Loading receipt has been deleted successfully');
+    //Check if ProformaInvoiceModel is generated then don't allow to delete LR
+    $proformaInvoice = $this->checkProformaInvoiceForLR($id);  
+
+    if(empty($proformaInvoice)){
+      $this->LoadingReceiptModel->where('id', $id)->delete($id); 
+      $this->session->setFlashdata('success', 'Loading receipt has been deleted successfully');
+    }else{ 
+      $this->session->setFlashdata('danger', 'Loading receipt can not be delete because of proforma invoice is generated.');
+    }
+    
     return $this->response->redirect(base_url('/loadingreceipt')); 
   } 
 
@@ -896,4 +911,14 @@ class LoadingReceipt extends BaseController
 
     return view('LoadingReceipt/update_vehicle', $this->view); 
   }
+
+  function checkProformaInvoiceForLR($lrId){
+    //Check if ProformaInvoiceModel is generated then don't allow to delete LR
+    return $this->LoadingReceiptModel
+    ->select('pr.id')
+    ->join('bookings b','b.id = loading_receipts.booking_id')
+    ->join('proforma_invoices pr','b.id = pr.booking_id')
+    ->where('loading_receipts.id', $lrId)
+    ->first(); 
+ }
 }

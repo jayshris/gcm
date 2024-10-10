@@ -1,3 +1,11 @@
+<style>
+    .div-disabled{
+        pointer-events:none; 
+    }
+    .div-disabled input, .div-disabled select,.div-disabled .select2-container--default .select2-selection--single{
+        background-color: lightgray !important;
+    }  
+</style>
 <?php
     $uriSegments = explode("/", parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
     $last = array_pop($uriSegments);
@@ -239,9 +247,9 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="col-lg-6 col-md-6 d-flex">
+        </div> 
+       
+        <div class="col-lg-6 col-md-6 d-flex <?= (isset($proformaInvoice) && !empty($proformaInvoice)) ? 'div-disabled' : ''?>" >
             <div class="security-grid flex-fill">
                 <div class="security-header">
                     <div class="security-heading">
@@ -452,7 +460,7 @@
             </div>
         </div>   
 
-        <div class="col-lg-6 col-md-6 d-flex">
+        <div class="col-lg-6 col-md-6 d-flex <?= (isset($proformaInvoice) && !empty($proformaInvoice)) ? 'div-disabled' : ''?>" title="<?= (isset($proformaInvoice) && !empty($proformaInvoice)) ? 'This section can not be editable because of proforma invoice is generated.' : ''?>" >
             <div class="security-grid flex-fill">
                 <div class="security-header">
                     <div class="security-heading">
@@ -758,7 +766,8 @@
                             <?php 
                             $label = 'Freight Charges Amount';
                             echo '<label class="col-form-label">'.$label.' </label>';
-                            echo form_input(['name'=>'freight_charges_amount','id'=>'freight_charges_amount','value'=>set_value('freight_charges_amount', (isset($loading_receipts['freight_charges_amount']) ? $loading_receipts['freight_charges_amount'] : '')),'class'=>'form-control '.(($validation->getError('freight_charges_amount')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9.]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');"]);
+                            //echo form_input(['name'=>'freight_charges_amount','id'=>'freight_charges_amount','value'=>set_value('freight_charges_amount', (isset($loading_receipts['freight_charges_amount']) ? $loading_receipts['freight_charges_amount'] : '')),'class'=>'form-control '.(($validation->getError('freight_charges_amount')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9.]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');"]);
+                            echo form_input(['name'=>'freight_charges_amount','id'=>'freight_charges_amount','value'=>set_value('freight_charges_amount', (isset($loading_receipts['freight_charges_amount']) ? $loading_receipts['freight_charges_amount'] : '')),'class'=>'form-control '.(($validation->getError('freight_charges_amount')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off']);
                             echo ($validation->getError('freight_charges_amount')) ? '<div class="invalid-feedback">'.$validation->getError('freight_charges_amount').'</div>' : '';
                             ?>
                         </div>

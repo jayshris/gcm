@@ -54,6 +54,7 @@ $.getBookingDetails = function() {
                 $("#delivery_station").val(res.bd_city);
                 $("#charge_weight").val(res.guranteed_wt);
                 $("#customer_name").val(res.party_name);
+                $("#freight_charges_amount").val(res.freight);
                 if(res.is_lr_third_party > 0){
                     $("#transporter_bilti_no_div").removeAttr('hidden'); 
                     $("#e_way_bill_no_div").removeAttr('hidden'); 
@@ -89,6 +90,7 @@ $.getBookingDetails = function() {
         $("#delivery_station").val('');
         $("#charge_weight").val('');
         $("#customer_name").val('');
+        $("#freight_charges_amount").val('');
     }			
 }
 
@@ -188,10 +190,10 @@ function customerBranches(customer_id,customer_type,supplier_or_recipient){
     $("#"+customer_type+"_office_id").removeAttr('required');
     $('#'+customer_type+'_office_id').val('').attr("selected","selected").trigger('change');
     $("#"+customer_type+"_branch_span").attr('hidden','hidden');
-
+    $("#"+supplier_or_recipient+"_branch_span").attr('hidden','hidden');
     $('#'+supplier_or_recipient+'_office_id').val('').attr("selected","selected").trigger('change');
     $('#'+supplier_or_recipient+'_office_id').attr('disabled','disabled');
-
+    
     if(customer_id > 0 ){
         $('#'+customer_type+'_id').val(customer_id); 
         $.ajax({
@@ -263,7 +265,7 @@ function customerBranches(customer_id,customer_type,supplier_or_recipient){
         $('#'+customer_type+'_state').attr('required','required');
 
     }else{ 
-
+        $('#'+customer_type+'_id').val(0); 
         //If consignee or cosignor added manually, then remove city and state mandatory validation 
         $('#'+customer_type+'_city_spn').attr('hidden','hidden');
         $('#'+customer_type+'_state_spn').attr('hidden','hidden');
