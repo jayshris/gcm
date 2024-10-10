@@ -1632,7 +1632,7 @@ class Booking extends BaseController
                 }
 
                 //update booking status 
-                $this->update_booking_status($booking_id, 10);
+                $this->update_booking_status($booking_id, 10,0,0,isset($data['pod_date']) ? $data['pod_date'] :'');
                 $this->update_PTLBookings($booking_id, 10);
                 $this->session->setFlashdata('success', 'Uploaded pod Successfully');
                 return $this->response->redirect(base_url('booking'));
@@ -1843,9 +1843,9 @@ class Booking extends BaseController
                 // echo '  <pre>';print_r($booking_data);exit; 
                 $this->BModel->update($id, $booking_data);
 
-                //update booking status 
-                $this->update_booking_status($id, 5);
-                $this->update_PTLBookings($id, 5);
+                //update booking status  
+                $this->update_booking_status($id, 5,0,0,$this->request->getPost('loading_date_time'));
+                $this->update_PTLBookings($id, 5,0,0,$this->request->getPost('loading_date_time'));
                 $this->session->setFlashdata('success', "Loading done successfully");
                 return $this->response->redirect(base_url('booking'));
             }

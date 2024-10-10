@@ -529,7 +529,7 @@ class LoadingReceipt extends BaseController
     ->join('booking_drops bd', 'bd.booking_id = bookings.id','left')
     ->join('states bds', 'bds.state_id = bd.state','left')
     ->join('booking_pickups bp', 'bp.booking_id  = bookings.id','left')
-    ->join('states bps', 'bps.state_id = bd.state','left')
+    ->join('states bps', 'bps.state_id = bp.state','left')
     ->join('customer c', 'c.id = bookings.customer_id','left')
     ->join('party', 'party.id = c.party_id','left')
     ->where('bookings.id', $this->request->getPost('booking_id'))
