@@ -34,6 +34,8 @@
         <div class="">
             <div id="printableArea" class="">
 
+            <?php $lr_third_party_cnt = isset($lr_party_type['lr_third_party']['cnt']) && ($lr_party_type['lr_third_party']['cnt'] > 0) ? $lr_party_type['lr_third_party']['cnt'] : 0; ?>
+            <?php if($lr_third_party_cnt == 0){ ?>  
                 <!-- Consignee Note  -->
                 <table cellspacing="0" class="print-table" style="width: 100%;">
                     <tbody>
@@ -84,7 +86,7 @@
                             </td>
                             <td class="td2" colspan="3">
                                 <p class="s9 tdp1">BookingBranch <span class="s10"><?= isset($lr['branch_name']) && (!empty($lr['branch_name'])) ? $lr['branch_name'] : '-' ?></span></p>
-                                <p class="s9 tdp2">SealNo</p>
+                                <p class="s9 tdp2">Seal No. <span class="s10"><?= isset($lr['seal_no']) && (!empty($lr['seal_no'])) ? $lr['seal_no'] : '-' ?></span></p>
                             </td>
                         </tr>
                         <tr style="height:27pt">
@@ -521,7 +523,7 @@
                                 </p>
                             </td>
                             <td class="s6td" colspan="3" align="right">
-                                <p class="s6 p13"><b>FOR CONSIGNEE</b></p>
+                                <p class="s6 p13"><b>FOR CONSIGNOR</b></p>
                             </td>
                         </tr>
                         <tr style="height:21pt">
@@ -531,7 +533,7 @@
                             </td>
                             <td class="td2" colspan="3">
                                 <p class="s9 tdp1">BookingBranch <span class="s10"><?= isset($lr['branch_name']) && (!empty($lr['branch_name'])) ? $lr['branch_name'] : '-' ?></span></p>
-                                <p class="s9 tdp2">SealNo</p>
+                                <p class="s9 tdp2">Seal No. <span class="s10"><?= isset($lr['seal_no']) && (!empty($lr['seal_no'])) ? $lr['seal_no'] : '-' ?></span></p>
                             </td>
                         </tr>
                         <tr style="height:27pt">
@@ -926,7 +928,7 @@
                         </tr>
                     </tbody>
                 </table>
-
+                <?php } ?> 
                 <!-- transporter copy -->
                 <table cellspacing="0" class="print-table">
                     <tbody>
@@ -977,7 +979,7 @@
                             </td>
                             <td class="td2" colspan="3">
                                 <p class="s9 tdp1">BookingBranch <span class="s10"><?= isset($lr['branch_name']) && (!empty($lr['branch_name'])) ? $lr['branch_name'] : '-' ?></span></p>
-                                <p class="s9 tdp2">SealNo</p>
+                                <p class="s9 tdp2">Seal No. <span class="s10"><?= isset($lr['seal_no']) && (!empty($lr['seal_no'])) ? $lr['seal_no'] : '-' ?></span></p>
                             </td>
                         </tr>
                         <tr style="height:27pt">
