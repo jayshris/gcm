@@ -2049,15 +2049,18 @@ class Booking extends BaseController
         $this->view['purpose_of_updates'] = $this->PurposeOfUpdateModel->select('id,name,is_money_mandatory,is_fuel_mandatory')
             ->where(['purpose_of_updates.status' => 1])
             ->findall();
-        $this->view['employees'] = $this->EmployeeModel->select('employee.id,employee.name')
+        $this->view['employees'] = $this->EmployeeModel->select('employee.id,employee.name,releaveing_date')
             ->where(['employee.status' => 1])
+            ->where("(releaveing_date > '".date('Y-m-d')."' or releaveing_date  is null or (UNIX_TIMESTAMP(releaveing_date) = 0)  )")
             ->findall();
+        // echo $this->EmployeeModel->getLastQuery().'<pre>';print_r($this->view['employees']); exit;
+    
         $this->view['data'] = $this->BookingsTripUpdateModel->select('bookings_trip_updates.*,e.name e_name,pou.name pou_name')
             ->join('employee e', 'e.id = bookings_trip_updates.updated_by')
             ->join('purpose_of_updates pou', 'pou.id = bookings_trip_updates.purpose_of_update_id')
             ->where('bookings_trip_updates.booking_id', $id)
             ->orderBy('id', 'desc')->findAll();
-        // echo '  <pre>';print_r($this->view['data']); exit;
+        
         if ($this->request->getPost()) { 
             $purpose_of_update = $this->PurposeOfUpdateModel->select('id,name,is_money_mandatory,is_fuel_mandatory')
             ->where(['id'=>$this->request->getPost('purpose_of_update')])
