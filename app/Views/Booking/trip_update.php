@@ -43,8 +43,8 @@
                                                             <label class="col-form-label">Purpose Of Update<span class="text-danger">*</span></label>
                                                             <select name="purpose_of_update" id="purpose_of_update" class="form-select" required onchange="validateFuelMoney()">
                                                                 <option value="">Select Purpose Of Update</option> 
-                                                                <?php if(!empty(PURPOSE_OF_UPDATES)) {foreach(PURPOSE_OF_UPDATES as $key => $purpose_ofupdate){ ?>
-                                                                <option value="<?= $key?>" <?= (set_value('purpose_of_update')) && (set_value('purpose_of_update') == $key) ? 'selected' : '' ?>><?= ucfirst($purpose_ofupdate) ?></option>
+                                                                <?php if(!empty($purpose_of_updates)) {foreach($purpose_of_updates as $key => $purpose_ofupdate){ ?>
+                                                                <option value="<?= $purpose_ofupdate['id']?>" <?= (set_value('purpose_of_update')) && (set_value('purpose_of_update') == $purpose_ofupdate['id']) ? 'selected' : '' ?> is_money_mandatory="<?= $purpose_ofupdate['is_money_mandatory'] ?>"  is_fuel_mandatory="<?= $purpose_ofupdate['is_fuel_mandatory'] ?>"><?= ucfirst($purpose_ofupdate['name']) ?></option>
                                                                 <?php }}?>
                                                             </select>
                                                             <?php
@@ -154,7 +154,7 @@
                                             <td><?= $val['location']; ?></td>
                                             <td><?= $val['e_name']; ?></td>
                                             <td><?= $val['remarks']; ?></td>
-                                            <td><?= $purpose_of_updates[$val['purpose_of_update']]; ?></td>
+                                            <td><?= isset($val['pou_name']) ? $val['pou_name'] : '-'; ?></td>
                                             <td><?= number_format($val['fuel'],2); ?></td>
                                             <td><?= number_format($val['money'],2); ?></td>
                                             </tr>
@@ -231,16 +231,18 @@
     // 6. Tyre - Money Mandatory
     // 7. Other - Money Mandatory
     function validateFuelMoney(){
-        var purpose_of_update = $('#purpose_of_update').val();
+        var purpose_of_update = $('#purpose_of_update').val(); 
+        var is_money_mandatory = $('#purpose_of_update option:selected').attr('is_money_mandatory');
+        var is_fuel_mandatory = $('#purpose_of_update option:selected').attr('is_fuel_mandatory');
         $('#fuel_txt').removeAttr('required');
         $('#money_txt').removeAttr('required');
         $('#fuel_span').attr('hidden','hidden');
         $('#money_span').attr('hidden','hidden');
-        if(purpose_of_update == 2){
+        if(is_fuel_mandatory == 1){
             $('#fuel_txt').attr('required','required'); 
             $('#fuel_span').removeAttr('hidden');
         } 
-        if($.inArray(purpose_of_update, ['3','4','5','6','7']) !== -1){
+        if(is_money_mandatory == 1){
             $('#money_txt').attr('required','required'); 
             $('#money_span').removeAttr('hidden');
         }
