@@ -52,7 +52,7 @@
 										</select> 
 									</div>
 									
-									<div class="col-md-3">
+									<div class="col-md-2">
 										<label class="col-form-label">Booking No.</label>
 										<select class="form-select select2" name="booking_id" id="booking_id">
 											<option value="">Select Booking No.</option>
@@ -63,13 +63,23 @@
 									</div>
 									
 									<div class="col-md-3">
+										<label class="col-form-label">Proforma Invoice No.</label>
+										<select class="form-select select2" name="proforma_invoices_no" id="proforma_invoices_no">
+											<option value="">Select Proforma Invoice No.</option>
+											<?php foreach ($proforma_invoice_nos as $v) { ?>
+											<option value="<?= $v['id'] ?>" <?= (set_value('proforma_invoices_no') == $v['id']) ? 'selected' : '' ?>  ><?= $v['proforma_invoices_no'] ?></option> 
+											<?php } ?>
+										</select>
+									</div>
+
+									<div class="col-md-2">
 										<div class="form-wrap">
 											<label class="col-form-label">Start Date:</label>
 											<input class="form-control" name="start_date" id="start_date" type="date" value="<?= set_value('start_date') ?>" /> 
 										</div>
 									</div>
 									
-									<div class="col-md-3">
+									<div class="col-md-2">
 										<div class="form-wrap">
 											<label class="col-form-label">End Date:</label>
 											<input class="form-control" name="end_date" id="end_date" type="date" value="<?= set_value('end_date') ?>" /> 

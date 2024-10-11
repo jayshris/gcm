@@ -50,6 +50,7 @@ class Proformainvoices extends BaseController
   
     public function index()
     {    
+        $this->view['proforma_invoice_nos']  = $this->ProformaInvoiceModel->select('id,proforma_invoices_no')->orderBy('proforma_invoices.id','DESC')->findAll();
         $query = "(SELECT vehicle.rc_number FROM booking_transactions bt join vehicle on vehicle.id = bt.vehicle_id  WHERE booking_status_id = 11 and booking_id = b.id group by bt.booking_id)";
         $this->ProformaInvoiceModel->select('proforma_invoices.*,b.booking_number, 
         IF(b.status = 11,'.$query .', v.rc_number) as rc_number,
@@ -74,14 +75,19 @@ class Proformainvoices extends BaseController
             $this->ProformaInvoiceModel->where('DATE(proforma_invoices.created_at) <= ', $this->request->getPost('end_date'));
         }
 
+        if ($this->request->getPost('proforma_invoices_no') > 0 ) { 
+            $this->ProformaInvoiceModel->where('proforma_invoices.id ', $this->request->getPost('proforma_invoices_no'));
+        }
+
         $this->view['proforma_invoices']  = $this->ProformaInvoiceModel->orderBy('proforma_invoices.id','DESC')->findAll();
+       
         // echo '<pre>'.$this->ProformaInvoiceModel->getLastQuery().'<pre>';print_r( $this->view['proforma_invoices']);exit;
 
         $this->view['customers'] = $this->getCustomers();
         $this->view['bookings'] = $this->BookingsModel
         ->select('bookings.id,bookings.booking_number')
-        ->where(['status >'=> 3])   
-        ->where(['status != '=> 11])   
+        // ->where(['status >'=> 3])   
+        // ->where(['status != '=> 11])   
         ->findAll();  
         return view('ProformaInvoice/index', $this->view); 
     } 
