@@ -303,8 +303,13 @@ class LoadingReceipt extends BaseController
           'consignee_city_id'   =>  $this->request->getVar('consignee_city_id'),
         ];
 
-        $this->LoadingReceiptModel->save($data); 
+        // $this->LoadingReceiptModel->save($data); 
+        $lastInsertID = $this->LoadingReceiptModel->insert($data) ? $this->LoadingReceiptModel->getInsertID() : '0';
         // echo 'data<pre>';print_r($data);exit;
+
+        //Create pdf 
+        $this->makePDF($lastInsertID);
+
         $this->session->setFlashdata('success', 'Loading Receipt Added Successfully');
 
         return $this->response->redirect(base_url('/loadingreceipt'));
@@ -354,7 +359,7 @@ class LoadingReceipt extends BaseController
     $rows =  $this->getTransporterBranches($this->request->getPost('customer_id'));
     echo json_encode($rows);exit;
   }
-  function edit($id){  
+  function edit($id){   
     //Check if ProformaInvoiceModel is generated then don't allow to delete LR
     $this->view['proformaInvoice'] =  $this->checkProformaInvoiceForLR($id); 
     // echo 'proformaInvoice<pre>';print_r($this->view['proformaInvoice']);exit;
@@ -555,6 +560,10 @@ class LoadingReceipt extends BaseController
         // echo 'data<pre>';print_r($data);exit;
         $this->LoadingReceiptModel->update($id,$data); 
         
+
+        //Update pdf 
+        $this->makePDF($id);
+
         $this->session->setFlashdata('success', 'Loading Receipt Updated Successfully');
 
         return $this->response->redirect(base_url('/loadingreceipt'));
@@ -648,6 +657,24 @@ class LoadingReceipt extends BaseController
 
     $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll(); 
     
+
+    //Check pdf is exist or not
+    $fileName = (isset($this->view['loading_receipts']['consignment_no']) && !empty($this->view['loading_receipts']['consignment_no'])) ? str_replace('/','_',$this->view['loading_receipts']['consignment_no']) : 'loading_receipt_'.$id;
+    $this->view['lr_file_path'] =  'public/uploads/loading_receipts/'.$fileName.'.pdf';
+    // echo  $this->view['lr_file_path'];
+    if (!file_exists($this->view['lr_file_path'])) {
+      $this->makePDF($id);  
+    } 
+    // exit;
+    
+    //Temparary user id get static as per profile code
+    $user_id = 1;//(session()->get('id')) ? session()->get('id') : 0;
+    $profiledata = new ProfileModel(); 
+    $this->view['profile_data'] = $profiledata
+    ->select('profile.*,s.state_name')
+    ->join('states s','profile.state = s.state_id','left')
+    ->where('logged_in_userid', $user_id)->first();
+    // echo $user_id.'<pre>';print_r($this->view['profile_data']);exit;
     //Send Email
     if($this->request->getPost()){
       $id = ($this->request->getPost('id')) && !empty($this->request->getPost('id')) ? $this->request->getPost('id') : '0';
@@ -1021,5 +1048,29 @@ class LoadingReceipt extends BaseController
     ->join('proforma_invoices pr','b.id = pr.booking_id')
     ->where('loading_receipts.id', $lrId)
     ->first(); 
+  }
+
+  function makePDF($id){
+    set_time_limit(0);
+    ini_set('memory_limit', '-1');
+    ob_clean();
+    $consignmentNoteObj = new Consignmentnote();
+    $this->view['lr'] = $consignmentNoteObj->getLoadingReceiptDetails($id);
+    // echo '<pre>';print_r($this->view['lr']);exit;
+
+    $html = view('ConsignmentNote/preview_pdf', $this->view);
+    $loading_receipt = $this->LoadingReceiptModel->where(['id' => $id])->first();
+    $fileName = (isset($loading_receipt['consignment_no']) && !empty($loading_receipt['consignment_no'])) ? str_replace('/','_',$loading_receipt['consignment_no']) : 'loading_receipt_'.$id;
+    $filePath = 'public/uploads/loading_receipts/'.$fileName.'.pdf';
+    
+    $mpdf = new \Mpdf\Mpdf(['orientation' => 'P', 'format' => 'A4']);
+    $mpdf->WriteHTML($html); 
+
+    // Output a PDF file directly to the browser
+    // $this->response->setHeader('Content-Type', 'application/pdf');
+   
+    $mpdf->Output($filePath, 'F'); // for downloading in project folder  
+
+    return $fileName;
   }
 }

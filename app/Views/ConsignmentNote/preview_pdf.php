@@ -468,13 +468,13 @@
                                 <p class="s10 txt-center">CONTACT NUMBER-+91-7669027909</p>
                             </td>
                             <td style="width:179pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-                                <p class="s10 txt-center">MUNDRA (GUJARAT) BRANCH</p>
-                                <p class="s10 txt-center">CONTACT PERSON–ALOK GUPTA</p>
-                                <p class="s10 txt-center">CONTACT NUMBER-+91-7669027900</p>
+                            <p class="s10 txt-center">CHENNAI BRANCH</p>
+                                <p class="s10 txt-center">CONTACT PERSON–MANJEET THAKAN</p>
+                                <p class="s10 txt-center">CONTACT NUMBER-+91-7669027904</p>
                             </td>
                             <td style="width:179pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
                                 <p class="s10 txt-center">ACCOUNTS QUERY</p>
-                                <p class="s10 txt-center">CONTACT PERSON–NEHA SINGH</p>
+                                <p class="s10 txt-center"></p>
                                 <p class="s10 txt-center">CONTACT NUMBER-+91-7669027906</p>
                             </td>
                         </tr>
@@ -914,13 +914,13 @@
                                 <p class="s10 txt-center">CONTACT NUMBER-+91-7669027909</p>
                             </td>
                             <td style="width:179pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-                                <p class="s10 txt-center">MUNDRA (GUJARAT) BRANCH</p>
-                                <p class="s10 txt-center">CONTACT PERSON–ALOK GUPTA</p>
-                                <p class="s10 txt-center">CONTACT NUMBER-+91-7669027900</p>
+                                <p class="s10 txt-center">CHENNAI BRANCH</p>
+                                <p class="s10 txt-center">CONTACT PERSON–MANJEET THAKAN</p>
+                                <p class="s10 txt-center">CONTACT NUMBER-+91-7669027904</p>
                             </td>
                             <td style="width:179pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
                                 <p class="s10 txt-center">ACCOUNTS QUERY</p>
-                                <p class="s10 txt-center">CONTACT PERSON–NEHA SINGH</p>
+                                <p class="s10 txt-center"></p>
                                 <p class="s10 txt-center">CONTACT NUMBER-+91-7669027906</p>
                             </td>
                         </tr>

@@ -75,13 +75,13 @@
                                                         <label class="col-form-label"><?= ($loading_receipts['seal_no']) ? $loading_receipts['seal_no'] : '-' ?></label> 
                                                     </div>
 
-                                                    <hr>
-                                                    <?php if (isset($loading_receipts['transporter_id']) && ($loading_receipts['transporter_id'] > 0)) { ?>
+                                                    <hr> 
+                                                    <?php //if (isset($loading_receipts['transporter_id']) && ($loading_receipts['transporter_id'] > 0)) { ?>
 
                                                         <h6>Transporter Details: </h6>
                                                         <div class="col-md-4">
                                                             <label class="col-form-label">Transporter Bilti No.: </label>
-                                                            <label class="col-form-label"><?= ($loading_receipts['transporter_bilti_no']) ? $loading_receipts['transporter_bilti_no'] : '-' ?></label>
+                                                            <label class="col-form-label"><?= ($loading_receipts['transporter_id'] > 0) ? $loading_receipts['transporter_bilti_no'] : $loading_receipts['consignment_no'] ?></label>
                                                         </div>
                                                         <div class="col-md-4">
                                                             <label class="col-form-label">E-Way Bill No.: </label>
@@ -89,34 +89,34 @@
                                                         </div>
                                                         <div class="col-md-4">
                                                             <label class="col-form-label">Transporter Name: </label>
-                                                            <label class="col-form-label"><?= ($loading_receipts['transporter_name']) ? $loading_receipts['transporter_name'] : '-' ?></label>
+                                                            <label class="col-form-label"><?= ($loading_receipts['transporter_id'] > 0) ? $loading_receipts['transporter_name'] : $profile_data['company_name'] ?></label>
                                                         </div>
                                                         <div class="col-md-4">
                                                             <label class="col-form-label">Branch Name: </label>
-                                                            <label class="col-form-label"><?= ($loading_receipts['transporter_branch_name']) ? $loading_receipts['transporter_branch_name'] : '-' ?></label>
+                                                            <label class="col-form-label"><?= ($loading_receipts['transporter_id'] > 0) ? $loading_receipts['transporter_branch_name'] : '-' ?></label>
                                                         </div>
                                                         <div class="col-md-4">
                                                             <label class="col-form-label">Address: </label>
-                                                            <label class="col-form-label"><?= ($loading_receipts['transporter_address']) ? $loading_receipts['transporter_address'] : '-' ?></label>
+                                                            <label class="col-form-label"><?= ($loading_receipts['transporter_address']) ? $loading_receipts['transporter_address'] : $profile_data['company_business_address'] ?></label>
                                                         </div>
                                                         <div class="col-md-4">
                                                             <label class="col-form-label">City: </label>
-                                                            <label class="col-form-label"><?= ($loading_receipts['transporter_city']) ? $loading_receipts['transporter_city'] : '-' ?></label>
+                                                            <label class="col-form-label"><?= ($loading_receipts['transporter_city']) ? $loading_receipts['transporter_city'] : $profile_data['city'] ?></label>
                                                         </div>
                                                         <div class="col-md-4">
                                                             <label class="col-form-label">State: </label>
-                                                            <label class="col-form-label"><?= ($loading_receipts['transporter_state_name']) ? $loading_receipts['transporter_state_name'] : '-' ?></label>
+                                                            <label class="col-form-label"><?= ($loading_receipts['transporter_state_name']) ? $loading_receipts['transporter_state_name'] : $profile_data['state_name']?></label>
                                                         </div>
                                                         <div class="col-md-4">
                                                             <label class="col-form-label">Pincode: </label>
-                                                            <label class="col-form-label"><?= ($loading_receipts['transporter_pincode']) ? $loading_receipts['transporter_pincode'] : '-' ?></label>
+                                                            <label class="col-form-label"><?= ($loading_receipts['transporter_pincode']) ? $loading_receipts['transporter_pincode'] : $profile_data['pincode'] ?></label>
                                                         </div>
                                                         <div class="col-md-4">
                                                             <label class="col-form-label">GSTN: </label>
-                                                            <label class="col-form-label"><?= ($loading_receipts['transporter_GSTIN']) ? $loading_receipts['transporter_GSTIN'] : '-' ?></label>
+                                                            <label class="col-form-label"><?= ($loading_receipts['transporter_GSTIN']) ? $loading_receipts['transporter_GSTIN'] : $profile_data['gst'] ?></label>
                                                         </div>
                                                         <hr>
-                                                    <?php } ?>
+                                                    <?php //} ?>
 
                                                     <h6>Supplier:</h6>
                                                     <div class="col-md-4">
@@ -309,7 +309,10 @@
                                             </div>
                                             <div class="submit-button">
                                                 <?php if (isset($loading_receipts['approved']) && ($loading_receipts['approved'] == 1)) { ?>
-                                                    <a href="<?php echo base_url('consignmentnote/preview/' . $loading_receipts['id']); ?>" class="btn btn-primary" target="_blank"><i class="fa fa-print" aria-hidden="true"></i> &nbsp; Print</a>&nbsp;
+                                                    <!-- <a href="<?php //echo base_url('consignmentnote/preview/' . $loading_receipts['id']); ?>" class="btn btn-primary" target="_blank"><i class="fa fa-print" aria-hidden="true"></i> &nbsp; Print</a>&nbsp; -->
+                                                   
+                                                    <a href="<?= base_url($lr_file_path) ?>" class="btn btn-primary" target="_blank"><i class="fa fa-print" aria-hidden="true"></i> &nbsp; Print</a>&nbsp;
+                                                     
                                                     <!-- <a href="<?php echo base_url('consignmentnote/preview/' . $loading_receipts['id'] . '?print=1'); ?>" class="btn btn-success"><i class="ti ti-mail" aria-hidden="true"></i> Send Email</a> -->
                                                     <button class="btn btn-success sendmail"><i class="ti ti-mail" aria-hidden="true"></i> Send Email</button>
                                                 <?php } ?>

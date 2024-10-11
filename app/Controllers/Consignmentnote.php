@@ -72,32 +72,7 @@ class Consignmentnote extends BaseController
   }
 
     function preview($id){ 
-    $this->view['lr'] = $this->LoadingReceiptModel
-      ->select('loading_receipts.*,b.booking_number,o.name branch_name,v.rc_number,s.state_name consignor_state,s2.state_name consignee_state,
-      s3.state_name place_of_delivery_state,s4.state_name place_of_dispatch_state  ,party.party_name as customer,b.booking_date,bd.city bd_city,
-      bp.city bp_city,p.party_name as bill_to_party_nm,c.address as bill_to_address,c.phone bill_to_phone,
-      CONCAT_WS(",", consignee_address,consignee_city,s2.state_name,consignee_pincode) consignee_address_f,
-      CONCAT_WS(",", consignor_address,consignor_city,s.state_name,consignor_pincode) consignor_address_f,
-      CONCAT_WS(",", place_of_delivery_address,place_of_delivery_city,s3.state_name,place_of_delivery_pincode) place_of_delivery_pincode_f ,
-      CONCAT_WS(",", place_of_dispatch_address,place_of_dispatch_city,s4.state_name,place_of_dispatch_pincode) place_of_dispatch_address_f,
-      cust.party_type_id,
-      v.id v_id
-      ')
-      ->join('bookings b', 'loading_receipts.booking_id = b.id')
-      ->join('vehicle v', 'loading_receipts.vehicle_id = v.id', 'left')
-      ->join('office o', 'loading_receipts.office_id = o.id', 'left')
-      ->join('states s', 'loading_receipts.consignor_state = s.state_id', 'left')
-      ->join('states s2', 'loading_receipts.consignee_state = s2.state_id', 'left')
-      ->join('states s3', 'loading_receipts.place_of_delivery_state = s3.state_id', 'left')
-      ->join('states s4', 'loading_receipts.place_of_dispatch_state = s4.state_id', 'left')
-      ->join('customer cust', 'cust.id = b.customer_id', 'left')
-      ->join('party', 'party.id = cust.party_id', 'left')
-      ->join('customer c', 'c.id = b.bill_to_party', 'left')
-      ->join('party p', 'p.id = c.party_id', 'left')
-      ->join('booking_drops bd', 'bd.booking_id = b.id', 'left')
-      ->join('booking_pickups bp', 'bp.booking_id = b.id', 'left')
-      ->where(['loading_receipts.id' => $id])->first();
-
+     $this->view['lr'] = $this->getLoadingReceiptDetails($id);
       
       //Check LR first or first party 
       $party_type_id = isset($this->view['lr']['party_type_id']) ? $this->view['lr']['party_type_id'] : '';
@@ -125,17 +100,17 @@ class Consignmentnote extends BaseController
 
       $fileName = (isset($this->view['lr']['consignment_no']) && !empty($this->view['lr']['consignment_no'])) ? str_replace('/','_',$this->view['lr']['consignment_no']) : 'loading_receipt_'.$id;
       $filePath = 'public/uploads/loading_receipts/'.$fileName.'.pdf';
-
-      $mpdf = new \Mpdf\Mpdf(['orientation' => 'P', 'format' => 'A4']);
-      $mpdf->WriteHTML($html);
-      // $mpdf->WriteHTML('Hello world');
-      
-      // Output a PDF file directly to the browser
-      $this->response->setHeader('Content-Type', 'application/pdf');
-      
-      // $mpdf->Output('public\uploads\LR-mail.pdf', 'I');die;
-      $mpdf->Output($filePath, 'F'); // for downloading in project folder
-      // echo 'fileName '.$fileName.'<pre>';print_r($this->request->getGet());exit;
+      if (!file_exists($filePath)) {
+        $mpdf = new \Mpdf\Mpdf(['orientation' => 'P', 'format' => 'A4']);
+        $mpdf->WriteHTML($html); 
+        
+        // Output a PDF file directly to the browser
+        // $this->response->setHeader('Content-Type', 'application/pdf');
+        
+        // $mpdf->Output('public\uploads\LR-mail.pdf', 'I');die;
+        $mpdf->Output($filePath, 'F'); // for downloading in project folder
+        // echo 'fileName '.$fileName.'<pre>';print_r($this->request->getGet());exit;
+      }  
       echo $fileName.'.pdf';exit;
       
       // ========= for mail ==================================================================== 
@@ -194,5 +169,33 @@ class Consignmentnote extends BaseController
                                 ->whereIn('id',$party_type_ids)->first(); 
     }
     return $data;
+  }
+
+  function getLoadingReceiptDetails($id){
+    return $this->LoadingReceiptModel
+    ->select('loading_receipts.*,b.booking_number,o.name branch_name,v.rc_number,s.state_name consignor_state,s2.state_name consignee_state,
+    s3.state_name place_of_delivery_state,s4.state_name place_of_dispatch_state  ,party.party_name as customer,b.booking_date,bd.city bd_city,
+    bp.city bp_city,p.party_name as bill_to_party_nm,c.address as bill_to_address,c.phone bill_to_phone,
+    CONCAT_WS(",", consignee_address,consignee_city,s2.state_name,consignee_pincode) consignee_address_f,
+    CONCAT_WS(",", consignor_address,consignor_city,s.state_name,consignor_pincode) consignor_address_f,
+    CONCAT_WS(",", place_of_delivery_address,place_of_delivery_city,s3.state_name,place_of_delivery_pincode) place_of_delivery_pincode_f ,
+    CONCAT_WS(",", place_of_dispatch_address,place_of_dispatch_city,s4.state_name,place_of_dispatch_pincode) place_of_dispatch_address_f,
+    cust.party_type_id,
+    v.id v_id
+    ')
+    ->join('bookings b', 'loading_receipts.booking_id = b.id')
+    ->join('vehicle v', 'loading_receipts.vehicle_id = v.id', 'left')
+    ->join('office o', 'loading_receipts.office_id = o.id', 'left')
+    ->join('states s', 'loading_receipts.consignor_state = s.state_id', 'left')
+    ->join('states s2', 'loading_receipts.consignee_state = s2.state_id', 'left')
+    ->join('states s3', 'loading_receipts.place_of_delivery_state = s3.state_id', 'left')
+    ->join('states s4', 'loading_receipts.place_of_dispatch_state = s4.state_id', 'left')
+    ->join('customer cust', 'cust.id = b.customer_id', 'left')
+    ->join('party', 'party.id = cust.party_id', 'left')
+    ->join('customer c', 'c.id = b.bill_to_party', 'left')
+    ->join('party p', 'p.id = c.party_id', 'left')
+    ->join('booking_drops bd', 'bd.booking_id = b.id', 'left')
+    ->join('booking_pickups bp', 'bp.booking_id = b.id', 'left')
+    ->where(['loading_receipts.id' => $id])->first();
   }
 }
