@@ -59,7 +59,7 @@
                       <select class="form-select select2" name="party_id">
                         <option value="">Select Party</option>
                         <?php foreach ($parties as $party) {
-                          echo '<option value="' . $party['id'] . '" ' . (set_value('party_id') == $party['id'] ? 'selected' : '') . '>' . $party['party_name'] . '</option>';
+                          echo '<option value="' . $party['party_id'] . '" ' . (set_value('party_id') == $party['party_id'] ? 'selected' : '') . '>' . $party['party_name'] . '</option>';
                         } ?>
                       </select>
                     </div>

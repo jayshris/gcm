@@ -8,8 +8,8 @@ use App\Models\StateModel;
 use App\Models\CustomersModel;
 use App\Models\PartytypeModel;
 use App\Models\BranchAddressModel;
+use App\Controllers\BaseController;
 use App\Models\CustomerBranchModel;
-use App\Controllers\BaseController; 
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\CustomerBranchPersonModel;
 
@@ -42,6 +42,7 @@ class Customers extends BaseController
         $this->added_by = isset($_SESSION['id']) ? $_SESSION['id'] : '0';
         $this->added_ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
 
+        
         $this->CBModel = new CustomerBranchModel();
         $this->CBPModel = new CustomerBranchPersonModel();
         $this->BAModel = new BranchAddressModel();
@@ -55,24 +56,30 @@ class Customers extends BaseController
         } else {
 
             $this->view['party_types'] = $this->PTModel->where('status', 'Active')->findAll();
-            $this->view['parties'] = $this->PModel->where('approved', '1')->orderBy('party_name', 'asc')->findAll();
+            $this->view['parties'] = $this->CModel->select('customer.*,party.id as party_id, party.party_name')
+                ->join('party', 'party.id = customer.party_id')
+                ->where('party.created_by !=', '')
+                ->orderBy('party.party_name', 'asc')
+                ->findAll();
 
             if ($this->request->getPost('party_type_id') > 0) {
                 $this->CModel->where('party_type_id', $this->request->getPost('party_type_id'));
             }
             if ($this->request->getPost('party_id') > 0) {
-                $this->CModel->where('party_id', $this->request->getPost('party_id'));
+                $this->CModel->where('party.id', $this->request->getPost('party_id'));
             }
             if ($this->request->getPost('status') != '') {
                 $this->CModel->where('customer.status', $this->request->getPost('status'));
             } else {
                 $this->CModel->where('customer.status', '1');
             }
-            $this->view['customers'] = $this->CModel->select('customer.*, party.party_name')
+            $this->view['customers'] = $this->CModel->select('customer.*,party.id as party_id, party.party_name')
                 ->join('party', 'party.id = customer.party_id')
                 ->where('party.created_by !=', '')
                 ->orderBy('party.party_name', 'asc')
                 ->findAll();
+
+                // echo $this->CModel->getLastQuery().'<pre>';print_r($this->view['customers']); exit;
 
             return view('Customers/index', $this->view);
         }
@@ -159,7 +166,7 @@ class Customers extends BaseController
 
         echo json_encode($party);
     }
-
+    
     public function preview($id)
     {  
         $this->view['customer_detail'] = $this->CModel
@@ -196,10 +203,11 @@ class Customers extends BaseController
                 $this->view['customer_branches'][$key]['reg_address'] = $this->BAModel
                 ->select('branch_address.*,s.state_name')
                 ->join('states s','s.state_id = branch_address.state','left')
-                ->where('branch_id', $id)->orderBy('id', 'desc')->findAll();
+                ->where('branch_id', $val['id'])->orderBy('id', 'desc')->findAll();
+                //$this->view['customer_branches'][$key]['reg_address']['query'] = $this->BAModel->getLastQuery();
             }
         }
-        // echo '<pre>';print_r( $this->view['customer_branches']);exit;
+         //echo '<pre>';print_r( $this->view['customer_branches']);exit;
 
         return view('Customers/preview', $this->view);
     }
