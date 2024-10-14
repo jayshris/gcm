@@ -109,21 +109,25 @@ class Pod_management extends BaseController
             // echo  $this->BModel->getLastQuery().'<pre>';print_r($this->view['bookings']);exit;
         }
     
-        if($this->request->getPost('vehicle_id') && $this->request->getPost('is_physical_pod_received') && $this->request->getPost('pod_received_date')){
+        
+        if($this->request->getPost('vehicle_id') && $this->request->getPost('pod_received_date')){ 
             // echo '<pre>';print_r($this->request->getPost());//exit;
             // save pod details
             $success = false;
             foreach ($this->request->getPost('id') as $key => $id) { 
-                $is_physical_pod_received = $this->request->getPost('is_physical_pod_received');
-                $pod_received_date = $this->request->getPost('pod_received_date');
-                if((isset($is_physical_pod_received[$key]) && $is_physical_pod_received[$key] >0) && (isset($pod_received_date[$key]) && $pod_received_date[$key] != '')){                 
+                $is_physical_pod_received = ($this->request->getPost('is_physical_pod_received_' . $key )) ? $this->request->getPost('is_physical_pod_received_' . $key ) : 0 ;
+                $pod_received_date = $this->request->getPost('pod_received_date'); 
+
+                // echo $id.' // '.$is_physical_pod_received.' // pod_received_date <pre>';print_r($pod_received_date);echo '</br></br></br>';
+                if((isset($is_physical_pod_received) && $is_physical_pod_received >0) && (isset($pod_received_date[$key]) && $pod_received_date[$key] != '')){                 
                     $this->BModel->update($id,[
-                        'is_physical_pod_received' => $this->request->getPost('is_physical_pod_received')[$key],
+                        'is_physical_pod_received' => $is_physical_pod_received,
                         'pod_received_date' => $this->request->getPost('pod_received_date')[$key],
                     ]); 
                     $success = true;
                 }
             } 
+            // exit;
             if($success){
                 $this->session->setFlashdata('success', 'Received POD Successfully'); 
                 return $this->response->redirect(base_url('pod_management/receive_pod'));
