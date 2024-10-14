@@ -1234,7 +1234,7 @@ class Driver extends BaseController
     return view('Driver/absconding', $this->view);
   }
 
-  function blacklist($id){
+  function blacklist($id=0){
     if ($this->request->getPost()) {  
       $driver = $this->DModel->where('id',$id)->first();
       $data['driver_id'] = $id;

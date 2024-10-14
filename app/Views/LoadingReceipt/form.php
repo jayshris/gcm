@@ -22,9 +22,9 @@
             <div class="security-grid flex-fill">
                 <div class="security-header">
                     <div class="security-heading">
-                        <h4>Booking Detail:</h4>
+                        <h4 style="color: #E41F07;">Booking Detail</h4>
                     </div>
-                    <hr>
+                    <hr style="color: #E41F07;">
 
                     <div class="row">
                         <div class="col-md-4">
@@ -253,8 +253,8 @@
             <div class="security-grid flex-fill">
                 <div class="security-header">
                     <div class="security-heading">
-                        <h4>Supplier:</h4>
-                    </div><hr>
+                        <h4 style="color: #E41F07;">Supplier</h4>
+                    </div><hr style="color: #E41F07;">
 
                     <div class="row">
                         <div class="col-md-6">
@@ -380,9 +380,9 @@
             <div class="security-grid flex-fill">
                 <div class="security-header">
                     <div class="security-heading">
-                        <h4>Dispatch From:</h4>
+                        <h4 style="color: #E41F07;">Dispatch From</h4>
                     </div>
-                    <hr>
+                    <hr style="color: #E41F07;">
 
                     <div class="row">
                         <div class="col-md-6">
@@ -464,9 +464,9 @@
             <div class="security-grid flex-fill">
                 <div class="security-header">
                     <div class="security-heading">
-                        <h4>Recipient:</h4>
+                        <h4 style="color: #E41F07;">Recipient</h4>
                     </div>
-                    <hr>
+                    <hr style="color: #E41F07;">
 
                     <div class="row">
                         <div class="col-md-6">
@@ -595,9 +595,9 @@
             <div class="security-grid flex-fill">
                 <div class="security-header">
                     <div class="security-heading">
-                        <h4>Ship To:</h4>
+                        <h4 style="color: #E41F07;">Ship To</h4>
                     </div>
-                    <hr>
+                    <hr style="color: #E41F07;">
 
                     <div class="row">
                         <div class="col-md-6">
@@ -678,9 +678,9 @@
             <div class="security-grid flex-fill">
                 <div class="security-header">
                     <div class="security-heading">
-                        <h4>Material Details:</h4>
+                        <h4 style="color: #E41F07;">Material Details</h4>
                     </div>
-                    <hr>
+                    <hr style="color: #E41F07;">
 
                     <div class="row">
                         <div class="col-md-4">
@@ -780,9 +780,9 @@
             <div class="security-grid flex-fill">
                 <div class="security-header">
                     <div class="security-heading">
-                        <h4>Party Document Details:</h4>
+                        <h4 style="color: #E41F07;">Party Document Details</h4>
                     </div>
-                    <hr>
+                    <hr style="color: #E41F07;">
 
                     <div class="row">
                         <div class="col-md-6">
@@ -821,9 +821,9 @@
             <div class="security-grid flex-fill">
                 <div class="security-header">
                     <div class="security-heading">
-                        <h4>Dispatch Details:</h4>
+                        <h4 style="color: #E41F07;">Dispatch Details</h4>
                     </div>
-                    <hr>
+                    <hr style="color: #E41F07;">
 
                     <div class="row">
                         <div class="col-md-6">
@@ -854,9 +854,9 @@
             <div class="security-grid flex-fill">
                 <div class="security-header">
                     <div class="security-heading">
-                        <h4>Transit Insurance (Insurance Co.):</h4>
+                        <h4 style="color: #E41F07;">Transit Insurance (Insurance Co.)</h4>
                     </div>
-                    <hr>
+                    <hr style="color: #E41F07;">
 
                     <div class="row">
                         <div class="col-md-6">

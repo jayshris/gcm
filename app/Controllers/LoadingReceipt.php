@@ -20,6 +20,7 @@ use App\Models\LoadingReceiptModel;
 use App\Models\ProformaInvoiceModel;
 use App\Models\BookingVehicleLogModel;
 use CodeIgniter\HTTP\ResponseInterface;
+use App\Libraries\Perfios;
 
 class LoadingReceipt extends BaseController
 { 
@@ -39,6 +40,7 @@ class LoadingReceipt extends BaseController
   public $CityModel;
   public $ProformaInvoiceModel;
   public $email;
+  public $StateModel;
   public function __construct()
   {
     $this->email = \Config\Services::email();
@@ -57,6 +59,7 @@ class LoadingReceipt extends BaseController
     $this->BVLModel = new BookingVehicleLogModel(); 
     
     $this->CountryModel = new CountryModel();
+    $this->StateModel = new StateModel();
     $this->common = new Common();
     $this->CityModel = new CityModel();
     $this->ProformaInvoiceModel= new ProformaInvoiceModel();
@@ -139,10 +142,9 @@ class LoadingReceipt extends BaseController
     return view('LoadingReceipt/index', $this->view); 
   } 
 
-  function create(){  
+  function create(){
     $this->view['countries'] = $this->CountryModel->where(['name'=>'India'])->findAll();
-    $stateModel = new StateModel();
-    $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
+    $this->view['states'] = $this->StateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
     $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
     $this->view['transport_offices'] = []; 
     $this->view['bookings'] = $this->BookingsModel    
@@ -185,7 +187,19 @@ class LoadingReceipt extends BaseController
         ->join('party', 'party.id = customer.party_id')
         ->where('customer.status', '1')
         ->where('CONCAT(",", party_type_id, ",") REGEXP ",('.$party_type_ids['party_type_ids'].'),"')
-        ->findAll();
+        ->findAll();    
+
+    $search = ($this->request->getVar('search')) ? $this->request->getVar('search') : false;
+    if (($search)) {
+      $this->view['loading_receipts']['bill_no'] = ($this->request->getVar('bill_no')) ? $this->request->getVar('bill_no') : '';
+      $this->view['loading_receipts']['bill_date'] = ($this->request->getVar('bill_date')) ? $this->request->getVar('bill_date') : '';
+      $this->view['loading_receipts']['bill_generator'] = ($this->request->getVar('bill_generator')) ? $this->request->getVar('bill_generator') : '';
+      $this->view['loading_receipts']['doc_no'] = ($this->request->getVar('doc_no')) ? $this->request->getVar('doc_no') : '';
+      
+      if (!empty($this->view['loading_receipts']['bill_no']) && !empty($this->view['loading_receipts']['bill_date']) && !empty($this->view['loading_receipts']['bill_generator']) && !empty($this->view['loading_receipts']['doc_no'])) {
+        $this->getEWayBill_Perfios($this->view['loading_receipts']);
+      }
+    }
 
     if($this->request->getPost()){
       $error = $this->validate([
@@ -318,6 +332,81 @@ class LoadingReceipt extends BaseController
     return view('LoadingReceipt/create', $this->view); 
   }
 
+  public function getEWayBill_Perfios($data=[]){
+    $perfios = new Perfios();
+    $apiResp = $perfios->ewayBill($data);
+    $info = json_decode($apiResp);//echo __LINE__.'<pre>';print_r($info);die;
+    if(!empty($info) && isset($info->statusCode) && $info->statusCode=='101'){
+      $r = (isset($info->result) && !empty($info->result)) ? $info->result : (object)[];
+      if(!empty($r)){
+        $this->view['loading_receipts']['ewaybillNo']           = isset($r->ewaybillNo) ? $r->ewaybillNo : '';
+        $this->view['loading_receipts']['ewaybillDate']         = isset($r->ewaybillDate) ? $r->ewaybillDate : '';
+        $this->view['loading_receipts']['ewaybillGenerator']    = isset($r->ewaybillGenerator) ? $r->ewaybillGenerator : '';
+        $this->view['loading_receipts']['ewaybillGeneratorName']= isset($r->ewaybillGeneratorName) ? $r->ewaybillGeneratorName : '';
+        $this->view['loading_receipts']['reporting_datetime']   = (isset($r->validFrom) && !empty($r->validFrom)) ? $r->validFrom.', 12:00 am' : '';
+        $this->view['loading_receipts']['releasing_datetime']   = isset($r->validTo) ? $r->validTo : '';
+
+        $this->view['loading_receipts']['pdfLink']              = isset($r->pdfLink) ? $r->pdfLink : '';
+
+        $placeOfDispatch = isset($r->placeOfDispatch) ? $r->placeOfDispatch : (object)[];
+        if(!empty($placeOfDispatch)){
+          $this->view['loading_receipts']['place_of_dispatch_city']   = isset($placeOfDispatch->city) ? $placeOfDispatch->city : '';
+          $this->view['loading_receipts']['place_of_dispatch_state']  = (isset($placeOfDispatch->state) && !empty($placeOfDispatch->state)) ? $this->getStateIdByName($placeOfDispatch->state) : '';
+          $this->view['loading_receipts']['place_of_dispatch_pincode']= isset($placeOfDispatch->pincode) ? $placeOfDispatch->pincode : '';
+        }
+
+        $placeOfDelivery = isset($r->placeOfDelivery) ? $r->placeOfDelivery : (object)[];
+        if(!empty($placeOfDelivery)){
+          $this->view['loading_receipts']['place_of_delivery_city']   = isset($placeOfDelivery->city) ? $placeOfDelivery->city : '';
+          $this->view['loading_receipts']['place_of_delivery_state']  = (isset($placeOfDelivery->state) && !empty($placeOfDelivery->state)) ? $this->getStateIdByName($placeOfDelivery->state) : '';
+          $this->view['loading_receipts']['place_of_delivery_pincode']= isset($placeOfDelivery->pincode) ? $placeOfDelivery->pincode : '';
+        }
+
+        $recipient = isset($r->recipient) ? $r->recipient : (object)[];
+        if(!empty($recipient)){
+          $this->view['loading_receipts']['name']   = isset($recipient->name) ? $recipient->name : '';
+          $this->view['loading_receipts']['gstin']  = isset($recipient->gstin) ? $recipient->gstin : '';
+        }
+
+        $transaction = isset($r->transaction) ? $r->transaction : (object)[];
+        if(!empty($transaction)){
+          $this->view['loading_receipts']['invoice_boe_no']   = isset($transaction->documentNo) ? $transaction->documentNo : '';
+          $this->view['loading_receipts']['invoice_boe_date'] =  isset($transaction->documentDate) ? $transaction->documentDate : '';
+          $this->view['loading_receipts']['transactionType']  = isset($transaction->transactionType) ? $transaction->transactionType : '';
+          $this->view['loading_receipts']['invoice_value']    = isset($transaction->valueOfGoods) ? $transaction->valueOfGoods : '';
+          $this->view['loading_receipts']['hsn_code']         = isset($transaction->hsnCode) ? $transaction->hsnCode : '';
+          $this->view['loading_receipts']['particulars']      = isset($transaction->hsnDesc) ? $transaction->hsnDesc : '';
+          $this->view['loading_receipts']['reasonForTransportation']  = isset($transaction->reasonForTransportation) ? $transaction->reasonForTransportation : '';
+        }
+
+        $transporter = isset($r->transporter) ? $r->transporter : (object)[];
+        if(!empty($transporter)){
+          $this->view['loading_receipts']['transporter_id']   = isset($transporter->name) ? $transporter->name : '';
+          $this->view['loading_receipts']['transporter_GSTIN']= isset($transporter->gstin) ? $transporter->gstin : '';
+        }
+
+        $transportation = isset($r->transportation) ? $r->transportation : (object)[];
+        if(!empty($transportation)){
+          $this->view['loading_receipts']['mode']         = isset($transportation->mode) ? $transportation->mode : '';
+          $this->view['loading_receipts']['vehicleNo']    = isset($transportation->vehicleNo) ? $transportation->vehicleNo : '';
+          $this->view['loading_receipts']['from']         = isset($transportation->from) ? $transportation->from : '';
+          $this->view['loading_receipts']['enteredDate']  = isset($transportation->enteredDate) ? $transportation->enteredDate : '';
+          $this->view['loading_receipts']['enteredBy']    = isset($transportation->enteredBy) ? $transportation->enteredBy : '';
+        }
+      }
+    }
+    else{
+      $this->view['api_error'] = (!empty($gstInfo) && isset($gstInfo->statusMessage)) ? $gstInfo->statusMessage : '';
+    }
+  }
+
+  public function getStateIdByName($name=''){
+    $row = $this->StateModel->where(['state_name' => $name])->first();
+    if(!empty($row))
+      return $row['state_id'];
+    return 0;
+  }
+
   function getCustomerBranches(){
     $rows =  $this->CustomerBranchModel->where([
       'customer_id'=> $this->request->getPost('customer_id')
@@ -359,13 +448,13 @@ class LoadingReceipt extends BaseController
     $rows =  $this->getTransporterBranches($this->request->getPost('customer_id'));
     echo json_encode($rows);exit;
   }
-  function edit($id){   
+
+  function edit($id){
     //Check if ProformaInvoiceModel is generated then don't allow to delete LR
     $this->view['proformaInvoice'] =  $this->checkProformaInvoiceForLR($id); 
     // echo 'proformaInvoice<pre>';print_r($this->view['proformaInvoice']);exit;
 
     $this->view['countries'] = $this->CountryModel->where(['name'=>'India'])->findAll();
-    $stateModel = new StateModel();
     $this->view['loading_receipts'] = $this->LoadingReceiptModel
     ->select('loading_receipts.*,c.party_type_id')
     ->join('bookings b', 'loading_receipts.booking_id = b.id','left')
@@ -383,7 +472,7 @@ class LoadingReceipt extends BaseController
       $this->session->setFlashdata('danger', 'Loading Receipt can be edited only 3 times'); 
       return $this->response->redirect(base_url('/loadingreceipt'));
     } 
-    $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
+    $this->view['states'] = $this->StateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
     $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
     $this->view['transport_offices'] = $this->getTransporterBranches($this->view['loading_receipts']['transporter_id']); 
     
@@ -585,6 +674,7 @@ class LoadingReceipt extends BaseController
     }
     return $data;
   }
+
   function getBookingDetails(){
     $rows =  $this->BookingsModel->select('bookings.*,concat(bp.city,", ",bps.state_name,IF(bp.pincode != "" , ", ", ""),bp.pincode) bp_city,concat(bd.city,", ",bds.state_name,IF(bd.pincode != "" , ", ", ""),bd.pincode) bd_city,party.party_name,c.party_type_id,bookings.customer_id')
     ->join('booking_drops bd', 'bd.booking_id = bookings.id','left')
@@ -628,7 +718,6 @@ class LoadingReceipt extends BaseController
   } 
 
   function preview($id){
-    $stateModel = new StateModel();
     $this->view['loading_receipts'] = $this->LoadingReceiptModel
     ->select('loading_receipts.*,b.booking_number,o.name branch_name,v.rc_number,s.state_name consignor_state,s2.state_name consignee_state,s3.state_name place_of_delivery_state,s4.state_name place_of_dispatch_state
      , IF(UNIX_TIMESTAMP(loading_receipts.reporting_datetime) > 0, loading_receipts.reporting_datetime, "") reporting_datetime
@@ -655,7 +744,7 @@ class LoadingReceipt extends BaseController
     ->join('states s5','loading_receipts.transporter_state = s5.state_id','left')
     ->where(['loading_receipts.id' => $id])->first(); 
 
-    $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll(); 
+    $this->view['states'] = $this->StateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll(); 
     
 
     //Check pdf is exist or not
@@ -749,7 +838,6 @@ class LoadingReceipt extends BaseController
 
   function approve($id){
     $this->view['countries'] = $this->CountryModel->where(['name'=>'India'])->findAll();
-    $stateModel = new StateModel();
 
     $this->view['loading_receipts'] = $this->LoadingReceiptModel
     ->select('loading_receipts.*,c.party_type_id')
@@ -763,7 +851,7 @@ class LoadingReceipt extends BaseController
     $this->view['lr_party_type'] = $this->checkLRParty($party_type_id);
     // echo  $party_type_id.'<pre>';print_r($this->view['lr_party_type']);exit;
     
-    $this->view['states'] = $stateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
+    $this->view['states'] = $this->StateModel->where(['isStatus' => '1'])->orderBy('state_name', 'ASC')->findAll();
     $this->view['offices'] = $this->OModel->where('status', '1')->findAll();
     $this->view['transport_offices'] = $this->getTransporterBranches($this->view['loading_receipts']['transporter_id']); 
     $this->view['bookings'] = $this->BookingsModel    
