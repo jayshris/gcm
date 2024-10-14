@@ -354,7 +354,7 @@
                            <?php // echo form_input(['name'=>'consignor_pincode','id'=>'consignor_pincode','value'=>set_value('consignor_pincode', (isset($loading_receipts['consignor_pincode']) ? $loading_receipts['consignor_pincode'] : '')),'class'=>'form-control '.(($validation->getError('consignor_pincode')) ? 'is-invalid' : ''), 'placeholder'=>$label, 'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');"]); ?>
                             
                             <input type="hidden" name="selected_consignor_pincode" id="selected_consignor_pincode" class="form-control" value="<?= isset($loading_receipts['consignor_pincode']) ? $loading_receipts['consignor_pincode'] : '' ?>">
-                            <select class="form-select" name="consignor_pincode" id="consignor_pincode">
+                            <select class="form-select select2" name="consignor_pincode" id="consignor_pincode">
                                 <option value="">Select </option>  
                             </select>
                             
@@ -568,8 +568,8 @@
                             echo '<label class="col-form-label">'.$label.' </label>';
                            // echo form_input(['name'=>'consignee_pincode','id'=>'consignee_pincode','value'=>set_value('consignee_pincode', (isset($loading_receipts['consignee_pincode']) ? $loading_receipts['consignee_pincode'] : '')),'class'=>'form-control '.(($validation->getError('consignee_pincode')) ? 'is-invalid' : ''),'placeholder'=>$label,'autocomplete'=>'off', 'oninput'=>"this.value = this.value.replace(/[^0-9]/g, ''); this.value = this.value.replace(/(\..*)\./g, '$1');"]);
                             ?>
-                              <input type="hidden" name="selected_consignee_pincode" id="selected_consignee_pincode" class="form-control" value="<?= isset($loading_receipts['consignee_pincode']) ? $loading_receipts['consignee_pincode'] : '' ?>">
-                            <select class="form-select" name="consignee_pincode" id="consignee_pincode">
+                            <input type="hidden" name="selected_consignee_pincode" id="selected_consignee_pincode" class="form-control" value="<?= isset($loading_receipts['consignee_pincode']) ? $loading_receipts['consignee_pincode'] : '' ?>">
+                            <select class="form-select select2" name="consignee_pincode" id="consignee_pincode">
                                 <option value="">Select </option>  
                             </select>
                             <?php echo ($validation->getError('consignee_pincode')) ? '<div class="invalid-feedback">'.$validation->getError('consignee_pincode').'</div>' : '';

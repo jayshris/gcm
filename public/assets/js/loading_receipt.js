@@ -16,7 +16,12 @@ $(document).ready(function() {
     $("#consignee_city").select2({
         tags: true
     });   
-
+    $("#consignor_pincode").select2({
+        tags: true
+    });
+    $("#consignee_pincode").select2({
+        tags: true
+    });
 }); 
 
 var base_url = $('#base_url').val(); 
@@ -452,10 +457,17 @@ if(city_id_val > 0){
         success: function(response) {   
             if(response){  
                 var selectedchanged_id = $('#selected_'+changed_id).val();
-                response.forEach(function(val) { 
-                var selected =(selectedchanged_id == val) ? 'selected': '';
+                // response = selectedchanged_id ? response.push(selectedchanged_id) : response;
+                
+                console.log(response);
+                console.log(selectedchanged_id);
+                response.push(selectedchanged_id);
+                console.log(response);
+                console.log('--------');
+                 response.forEach(function(val) {   
+                    var selected =(selectedchanged_id == val) ? 'selected': '';
                     html += '<option value="'+val+'" '+selected+'>'+val +'</option>'
-                });
+                }); 
             }
             $('#'+changed_id).html(html);  
         }

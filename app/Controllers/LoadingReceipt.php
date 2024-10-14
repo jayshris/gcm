@@ -507,8 +507,8 @@ class LoadingReceipt extends BaseController
 
     $this->view['consignors']  = array_column($this->view['consignors_list'],'party_name','id');
     $this->view['consignees']  = array_column($this->view['consignees_list'],'party_name','id');
-
   
+    
     if(isset($this->view['loading_receipts']) && !empty($this->view['loading_receipts']['consignor_name'])){
         if(!in_array($this->view['loading_receipts']['consignor_name'],$this->view['consignors'])){
             array_push($this->view['consignors'],$this->view['loading_receipts']['consignor_name']);
