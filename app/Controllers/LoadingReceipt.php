@@ -492,12 +492,12 @@ class LoadingReceipt extends BaseController
    
     //consignor, consignees changes
       
-    $this->view['consignors_list'] = $this->CustomersModel->select('party.party_name,customer.id')
+    $this->view['consignors_list'] = $this->CustomersModel->select('party.party_name,customer.id,customer.party_type_id')
     ->join('party', 'customer.party_id = party.id')
     ->where("FIND_IN_SET (8,customer.party_type_id)")
     ->orderBy('party.party_name')->findAll();          
 
-    $this->view['consignees_list'] = $this->CustomersModel->select('party.party_name,customer.id')
+    $this->view['consignees_list'] = $this->CustomersModel->select('party.party_name,customer.id,customer.party_type_id')
     ->join('party', 'customer.party_id = party.id')
     ->where("FIND_IN_SET (9,customer.party_type_id)")
     ->orderBy('party.party_name')->findAll();   
@@ -868,12 +868,12 @@ class LoadingReceipt extends BaseController
    
     //consignor, consignees changes
       
-    $this->view['consignors_list'] = $this->CustomersModel->select('party.*')
+    $this->view['consignors_list'] = $this->CustomersModel->select('party.*,customer.id,customer.party_type_id')
     ->join('party', 'customer.party_id = party.id')
     ->where("FIND_IN_SET (8,customer.party_type_id)")
     ->orderBy('party.party_name')->findAll();          
 
-    $this->view['consignees_list'] = $this->CustomersModel->select('party.*')
+    $this->view['consignees_list'] = $this->CustomersModel->select('party.*,customer.id,customer.party_type_id')
     ->join('party', 'customer.party_id = party.id')
     ->where("FIND_IN_SET (9,customer.party_type_id)")
     ->orderBy('party.party_name')->findAll();   
