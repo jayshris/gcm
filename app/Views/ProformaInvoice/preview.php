@@ -95,7 +95,7 @@
 											<table cellspacing="0" id="printTable" class="print-table">
 												<tbody> 
 													<tr style="height:77pt"> 
-														<td colspan="7" class="td-head">
+														<td colspan="8" class="td-head">
 															<table border="0" cellspacing="0" cellpadding="0">
 																<tbody>
 																	<tr>
@@ -127,7 +127,7 @@
 														</td>
 													</tr>
 													<tr style="height:21pt">
-														<td class="s6td" colspan="7">
+														<td class="s6td" colspan="8">
 															<p class="s6 p13 txt-center">
 																<span class="s7">PROFORMA &nbsp;INVOICE</span>
 															</p>
@@ -135,24 +135,24 @@
 													</tr>
 													
 													<tr style="height:21pt"> 
-														<td class="td27" colspan="3" rowspan="4">
+														<td class="td27" colspan="3" rowspan="5">
 															<p class="s10 p14"><?= $proforma_invoice['party_name'] ?></p>
 															<p class="s10 p14"><?= $proforma_invoice['business_address'] ?></p>
 															<p class="s10 p14"><?= $proforma_invoice['city'] .', '.$proforma_invoice['state_name'] .'-'.$proforma_invoice['postcode'] ?></p>
 															<p class="s10 p14" >CONTACT PERSON:- <?= $proforma_invoice['contact_person'] ?></p>
 														</td> 
-														<td class="td29" colspan="4">
+														<td class="td29" colspan="5">
 															<p class="s10 p14" >NO - <?= $proforma_invoice['proforma_invoices_no'] ?> </p>
 														</td>
 														
 													</tr>
 													<tr style="height:21pt">  
-														<td  class="td33" colspan="4">
+														<td  class="td33" colspan="5">
 															<p class="s10" style="text-indent: 0pt;line-height: 212%;text-align: left;">Date - <?= date('d M Y',strtotime($proforma_invoice['created_at'])) ?></p> 
 														</td>
 													</tr>
 													<tr style="height:21pt">  
-														<td  class="td33" colspan="4">
+														<td  class="td33" colspan="5">
 															<div class="s10" style="float: left;width: 63%;">
 																BOOKING NUMBER - <?= $proforma_invoice['booking_number'] ?>
 															</div>
@@ -161,7 +161,15 @@
 														</td>
 													</tr> 
 													<tr style="height:21pt">  
-														<td  class="td33" colspan="4">
+														<td  class="td33" colspan="5">
+															<div class="s10" style="float: left;width: 55%;">
+															   CONSIGNMENT NO. - <?= $proforma_invoice['consignment_no'] ?>
+															</div>
+															<div class="s10">CONSIGNMENT DATE - <?= date('d M Y',strtotime($proforma_invoice['consignment_date'])) ?></div>
+														</td>
+													</tr> 
+													<tr style="height:21pt">  
+														<td  class="td33" colspan="5">
 															<p class="s10" style="text-indent: 0pt;line-height: 212%;text-align: left;">VEHICLE NO - <?= $proforma_invoice['rc_number'] ?></p> 
 														</td>
 													</tr>
@@ -170,7 +178,7 @@
 														<td class="td27" colspan="3">
 															<p class="s10 p14" >EMAIL:- <?= $proforma_invoice['email'] ?></p>
 														</td> 
-														<td class="td29" colspan="4">
+														<td class="td29" colspan="5">
 															<p class="s10 p14" >PICKUP PLACE - <?= $proforma_invoice['pickup_state'] ?></p>
 														</td>
 													</tr>
@@ -179,17 +187,17 @@
 														<td class="td27" colspan="3">
 															<p class="s10 p14" >MOBILE:- <?= $proforma_invoice['primary_phone'] ?></p>
 														</td> 
-														<td class="td29" colspan="4">
+														<td class="td29" colspan="5">
 															<p class="s10 p14" >PLACE OF DESTINATION - <?= $proforma_invoice['drop_state'] ?></p>
 														</td>                                                
 													</tr> 
 
 													<tr style="height:21pt"> 
 														<td class="td27" colspan="3">
-														<p class="s10 p14" ><?= isset($party_doc['gst']) && ($party_doc['gst'] != '') ? $party_doc['gst'] : '-' ?></p>
+														<p class="s10 p14" >GSTIN:- <?= isset($party_doc['gst']) && ($party_doc['gst'] != '') ? $party_doc['gst'] : '-' ?></p>
 														</td> 
-														<td class="td29" colspan="4">
-															<p class="s10 p14" >WEIGHT- <?= ($proforma_invoice['guranteed_wt'] >0) ? $proforma_invoice['guranteed_wt'].' KG' : 0 .' KG' ?></p>
+														<td class="td29" colspan="5">
+															<p class="s10 p14" >ACTUAL WEIGHT- <?= ($proforma_invoice['actual_weight'] >0) ? number_format($proforma_invoice['actual_weight'],2).' KG' : 0 .' KG' ?></p>
 														</td>
 													</tr> 
 													<?php if($proforma_invoice['bc_id'] != $proforma_invoice['pid']){ ?>
@@ -197,7 +205,7 @@
 														<td class="td27" colspan="3">
 														<p class="s10 p14" >-</p>
 														</td> 
-														<td class="td29" colspan="4">
+														<td class="td29" colspan="5">
 															<p class="s10 p14" >COMMISSION AGENT - <?= ($proforma_invoice['customer_party_name'] != '') ? ucwords(strtolower($proforma_invoice['customer_party_name'])) : ' -' ?></p>
 														</td>
 													</tr> 
@@ -205,19 +213,22 @@
 
 													<tr style="height:11pt">
 														<td  class="td34" >
-															<p class="s9 p12" style="padding-left: 24pt;">S.N</p>
+															<p class="s9 p12" style="padding-left: 24pt;">S.NO.</p>
 														</td>
 														<td  class="td35">
 															<p class="s9 p16" >Particulars</p>
 														</td>
 														<td  class="td36" >
-															<p class="s9 p16" ></p>
+															<p class="s9 p16" >HSN CODE</p>
 														</td>
 														<td  class="td36" >
-															<p class="s9 p16" >Qty.</p>
+															<p class="s9 p16" >CHARGE TYPE</p>
 														</td>
 														<td  class="td37" >
-															<p class="s9 p12" style="padding-left: 19pt;">Unit</p>
+															<p class="s9 p12" style="padding-left: 19pt;">NO. OF BOXES</p>
+														</td>
+														<td  class="td36" >
+															<p class="s9 p16" >CHARGED WT(KGS)</p>
 														</td>
 														<td  class="td38" >
 															<p class="s9 p16" >Price</p>
@@ -231,29 +242,32 @@
 															<p class="s10" style="padding-left: 22pt;padding-right: 2pt;text-indent: -19pt;line-height: 10pt;text-align: left;">1.</p>
 														</td>
 														<td class="td41" >
-															<p class="s10 p11" >Frieght Charges</p>
+															<p class="s10 p11" ><?= ($proforma_invoice['particulars'] >0) ? $proforma_invoice['particulars'] : '' ?></p>
 														</td>
 														<td class="td42" >
-															<p class="s10 p11" ></p>
+															<p class="s10 p11"><?= ($proforma_invoice['hsn_code'] >0) ? $proforma_invoice['hsn_code'] : '' ?></p>
 														</td>
 														<td class="td41" >
-															<p class="s10 p11" ><?= ($proforma_invoice['guranteed_wt'] >0) ? $proforma_invoice['guranteed_wt'] : 0 ?></p>
+															<p class="s10 p11" >Freight Charges</p>
 														</td>
 														<td class="td43" >
-															<p class="s10 p11" >KG</p>
+															<p class="s10 p11" ><?= ($proforma_invoice['no_of_packages'] >0) ? $proforma_invoice['no_of_packages'] : '' ?></p>
+														</td>
+														<td class="td43" >
+															<p class="s10 p11" ><?= ($proforma_invoice['charge_weight'] >0) ? number_format($proforma_invoice['charge_weight'],2).' KGS' : '0 KGS' ?></p>
 														</td>
 														<td class="td44" >
-															<p class="s10 p11" ><?= $proforma_invoice['total_freight'] ?></p>
+															<p class="s10 p11" ><?= number_format($proforma_invoice['total_freight'],2) ?></p>
 														</td>
-														<td class="td45" >
-															<p class="s10 p11" ><?= $proforma_invoice['total_freight'] ?></p>
+														<td class="td45" style="width: 5% !important;">
+															<p class="s10 p11" ><?= number_format($proforma_invoice['total_freight'],2) ?></p>
 														</td>
 													</tr>
 													<?php 
 													if(!empty($booking_expences)){
 														foreach($booking_expences as $k=>$booking_expence){ ?>
 															<tr style="height:11pt">
-																<td class="<?= (count($booking_expences) == $k+1) ? 'td46 b-tp-none' : 'b-bt-none b-lt1'?>" colspan="6">
+																<td class="<?= (count($booking_expences) == $k+1) ? 'td46 b-tp-none' : 'b-bt-none b-lt1'?>" colspan="7">
 																	<p class="s10 p12 prtds10"><?= ($booking_expence['head_name']) ? ucfirst($booking_expence['head_name']) : '' ?></p>
 																</td> 
 																<td class="<?= (count($booking_expences) == $k+1) ? 'td48 b-tp-none' : 'b-bt-none b-lt1 b-rt1'?>" colspan="1">
@@ -266,7 +280,7 @@
 													<?php if(isset($is_tax_applicable['cnt']) && ($is_tax_applicable['cnt'] > 0)){ ?>			
 													<?PHP if($proforma_invoice['sgst_percent'] >0){ ?>											
 													<tr style="height:11pt">
-														<td class="b-bt-none b-lt1" colspan="6">
+														<td class="b-bt-none b-lt1" colspan="7">
 															<p class="s10 p12 prtds10">SGST @ <?= ($proforma_invoice['sgst_percent'] >0) ? number_format($proforma_invoice['sgst_percent'],2) : 0 ?>%</p>
 														</td> 
 														<td class="b-bt-none b-rt1 b-lt1" colspan="1">
@@ -276,7 +290,7 @@
 													<?PHP if($proforma_invoice['cgst_percent'] >0){ ?>
 													<?php } ?>  
 													<tr style="height:11pt">
-														<td class="b-bt-none b-lt1" colspan="6">
+														<td class="b-bt-none b-lt1" colspan="7">
 															<p class="s10 p12 prtds10">CGST @ <?= ($proforma_invoice['cgst_percent'] >0) ? number_format($proforma_invoice['cgst_percent'],2) : 0 ?>%</p>
 														</td> 
 														<td class="b-bt-none b-rt1 b-lt1" colspan="1">
@@ -286,7 +300,7 @@
 													<?php } ?>  
 													<?PHP if($proforma_invoice['igst_percent'] >0){ ?>
 													<tr style="height:11pt">
-														<td class="b-bt-none b-lt1" colspan="6">
+														<td class="b-bt-none b-lt1" colspan="7">
 															<p class="s10 p12 prtds10">IGST @ <?= ($proforma_invoice['igst_percent'] >0) ? number_format($proforma_invoice['igst_percent'],2) : 0 ?>%</p>
 														</td> 
 														<td class="b-bt-none b-rt1 b-lt1" colspan="1">
@@ -296,7 +310,7 @@
 													<?php } ?>  
 													<?php } ?>
 													<tr style="height:11pt">
-														<td class="td46" colspan="6">
+														<td class="td46" colspan="7">
 															<p class="s10 p12 prtds10">Total Invoice Value</p>
 														</td> 
 														<td class="td48" colspan="1">
@@ -306,7 +320,7 @@
 														</td>
 													</tr>  
 													<!-- <tr style="height:11pt">
-														<td class="td34" colspan="7">
+														<td class="td34" colspan="8">
 															<table border="0" cellspacing="0" cellpadding="0">
 																<tr>
 																	<td class="profotd34">Tax Rate</td>
@@ -333,7 +347,7 @@
 														</td>
 													</tr> -->
 													<tr style="height:11pt">
-														<td class="td34" colspan="7">
+														<td class="td34" colspan="8">
 															<table border="0" cellspacing="0" cellpadding="0" style="width: 100%;"> 
 																<tr>
 																	<td class="profotd34" style="max-width: 25px;">Amount (in words): </td>
@@ -347,7 +361,7 @@
 														<td class="td34">
 															<p class="s9 p12" style="padding-left: 24pt;">Bank Detail:</p>
 														</td>
-														<td class="td52" colspan="6">
+														<td class="td52" colspan="7">
 															<p class="s9" style="padding-left: 10pt;padding-right: 28pt;text-indent: 0pt;line-height: 9pt;">
 															Bank Name:ICICI Bank
 															</p>
@@ -355,7 +369,7 @@
 															Branch Name: BG-221, SANJAY GANDHI TRANSPORT NAGAR, DELHI - 110042
 															</p>
 															<p class="s9" style="padding-left: 10pt;padding-right: 28pt;text-indent: 0pt;line-height: 9pt;">
-															A/C NO: 723505000126
+															A/C NO: 723505000148
 															</p>
 															<p class="s9" style="padding-left: 10pt;padding-right: 28pt;text-indent: 0pt;line-height: 9pt;">
 															IFSC: ICIC0007235
@@ -364,7 +378,7 @@
 													</tr>
 		
 													<tr style="height:59pt">                                                
-														<td colspan="4" rowspan="2"  class="td63">
+														<td colspan="5" rowspan="2"  class="td63">
 															<p class="s9 pdl12 pdl8">
 															Terms & Conditions:  
 															</p> 
@@ -374,7 +388,7 @@
 															3.Advance against Freight Charges, as agreed, shall be required to be paid within 24 hours from truck load.<br/>
 															</p> 
 														</td>
-														<td colspan="4" class="td63">
+														<td colspan="5" class="td63">
 															<p class="s9 pdl12 pdl8">
 															Receiver's Signature:  
 															</p> 
@@ -382,7 +396,7 @@
 													
 													</tr>
 													<tr style="height:45pt">
-														<td colspan="4" class="td64">
+														<td colspan="5" class="td64">
 															<p class="s9 p17 mrg-tp5">
 																For GAE CARGO MOVERS PRIVATE LIMITED</p>
 															<p class="p18"><span></span></p>
@@ -402,7 +416,7 @@
 														</td>
 													</tr>
 													<tr style="height:11pt">
-														<td class="td52" colspan="7">
+														<td class="td52" colspan="8">
 															<p class="s9" style="padding-left: 10pt;padding-right: 28pt;text-indent: 0pt;line-height: 9pt;">
 																Remarks:
 															</p>
