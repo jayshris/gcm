@@ -37,7 +37,7 @@
     <div class="content">
         <div class="row">
             <div  id="printableArea" class="col-md-12"> 
-                <?php $lr_third_party_cnt = isset($lr_party_type['lr_third_party']['cnt']) && ($lr_party_type['lr_third_party']['cnt'] > 0) ? $lr_party_type['lr_third_party']['cnt'] : 0; ?>
+                <?php $lr_third_party_cnt = isset($lr['lr_party_type']['lr_third_party']['cnt']) && ($lr['lr_party_type']['lr_third_party']['cnt'] > 0) ? $lr['lr_party_type']['lr_third_party']['cnt'] : 0; ?>
                 <?php if($lr_third_party_cnt == 0){ ?>  
                 <?= $this->include('ConsignmentNote/consignee_note.php') ?> 
                 <?= $this->include('ConsignmentNote/terms_and_conditions.php') ?>

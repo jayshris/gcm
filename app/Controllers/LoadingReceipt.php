@@ -751,10 +751,9 @@ class LoadingReceipt extends BaseController
     $fileName = (isset($this->view['loading_receipts']['consignment_no']) && !empty($this->view['loading_receipts']['consignment_no'])) ? str_replace('/','_',$this->view['loading_receipts']['consignment_no']) : 'loading_receipt_'.$id;
     $this->view['lr_file_path'] =  'public/uploads/loading_receipts/'.$fileName.'.pdf';
     // echo  $this->view['lr_file_path'];
-    if (!file_exists($this->view['lr_file_path'])) {
-      $this->makePDF($id);  
-    } 
-    // exit;
+
+    //Make pdf
+    $this->makePDF($id);  
     
     //Temparary user id get static as per profile code
     $user_id = 1;//(session()->get('id')) ? session()->get('id') : 0;
@@ -1139,17 +1138,25 @@ class LoadingReceipt extends BaseController
   }
 
   function makePDF($id){
-    set_time_limit(0);
-    ini_set('memory_limit', '-1');
-    ob_clean();
-    $consignmentNoteObj = new Consignmentnote();
-    $this->view['lr'] = $consignmentNoteObj->getLoadingReceiptDetails($id);
-    // echo '<pre>';print_r($this->view['lr']);exit;
 
-    $html = view('ConsignmentNote/preview_pdf', $this->view);
     $loading_receipt = $this->LoadingReceiptModel->where(['id' => $id])->first();
     $fileName = (isset($loading_receipt['consignment_no']) && !empty($loading_receipt['consignment_no'])) ? str_replace('/','_',$loading_receipt['consignment_no']) : 'loading_receipt_'.$id;
     $filePath = 'public/uploads/loading_receipts/'.$fileName.'.pdf';
+ 
+     //Regenerate file
+     if (file_exists($filePath)) {
+       unlink($filePath);
+     } 
+
+    set_time_limit(0);
+    ini_set('memory_limit', '-1');
+    ob_clean();
+
+    $consignmentNoteObj = new Consignmentnote();
+    $this->view['lr'] = $consignmentNoteObj->getLoadingReceiptDetails($id);
+    //Check LR first or first party   
+
+    $html = view('ConsignmentNote/preview_pdf', $this->view); 
     
     $mpdf = new \Mpdf\Mpdf(['orientation' => 'P', 'format' => 'A4']);
     $mpdf->WriteHTML($html); 

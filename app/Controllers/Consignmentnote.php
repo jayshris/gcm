@@ -72,23 +72,7 @@ class Consignmentnote extends BaseController
   }
 
     function preview($id){ 
-     $this->view['lr'] = $this->getLoadingReceiptDetails($id);
-      
-      //Check LR first or first party 
-      $party_type_id = isset($this->view['lr']['party_type_id']) ? $this->view['lr']['party_type_id'] : '';
-      $this->view['lr_party_type'] = $this->checkLRParty($party_type_id);
-      // echo  $party_type_id.'<pre>';print_r($this->view['lr_party_type']);exit;
-        
-      ///Get driver details
-      $vehicle_id = isset($this->view['lr']['v_id']) && ($this->view['lr']['v_id'] > 0) ? $this->view['lr']['v_id'] : 0;
-      if ($vehicle_id > 0) { 
-            $this->view['driver'] = $this->DModel->select('driver.id, party.party_name as driver_name,party.primary_phone')
-                ->join('driver_vehicle_map dvp', 'driver.id = dvp.driver_id')
-                ->join('party', 'party.id = driver.party_id')
-                // ->where('(dvp.unassign_date = "" or dvp.unassign_date IS NULL or (UNIX_TIMESTAMP(dvp.unassign_date) = 0))')
-                ->orderBy('dvp.id','DESC')
-                ->first();  
-        }
+     $this->view['lr'] = $this->getLoadingReceiptDetails($id);  
         
     if ($this->request->getGet('print') > 0) {
       // ========= for pdf download ==================================================================== 
@@ -172,7 +156,7 @@ class Consignmentnote extends BaseController
   }
 
   function getLoadingReceiptDetails($id){
-    return $this->LoadingReceiptModel
+    $loading_receipts= $this->LoadingReceiptModel
     ->select('loading_receipts.*,b.booking_number,o.name branch_name,v.rc_number,s.state_name consignor_state,s2.state_name consignee_state,
     s3.state_name place_of_delivery_state,s4.state_name place_of_dispatch_state  ,party.party_name as customer,b.booking_date,bd.city bd_city,
     bp.city bp_city,p.party_name as bill_to_party_nm,c.address as bill_to_address,c.phone bill_to_phone,
@@ -197,5 +181,23 @@ class Consignmentnote extends BaseController
     ->join('booking_drops bd', 'bd.booking_id = b.id', 'left')
     ->join('booking_pickups bp', 'bp.booking_id = b.id', 'left')
     ->where(['loading_receipts.id' => $id])->first();
+
+    //Check LR first or first party 
+    $party_type_id = isset($loading_receipts['party_type_id']) ? $loading_receipts['party_type_id'] : '';
+    $loading_receipts['lr_party_type'] = $this->checkLRParty($party_type_id);
+    // echo  $party_type_id.'<pre>';print_r($this->view['lr_party_type']);exit;
+      
+    ///Get driver details
+    $vehicle_id = isset($loading_receipts['v_id']) && ($loading_receipts['v_id'] > 0) ?$loading_receipts['v_id'] : 0;
+    if ($vehicle_id > 0) { 
+      $loading_receipts['driver'] = $this->DModel->select('driver.id, party.party_name as driver_name,party.primary_phone')
+              ->join('driver_vehicle_map dvp', 'driver.id = dvp.driver_id')
+              ->join('party', 'party.id = driver.party_id')
+              // ->where('(dvp.unassign_date = "" or dvp.unassign_date IS NULL or (UNIX_TIMESTAMP(dvp.unassign_date) = 0))')
+              ->orderBy('dvp.id','DESC')
+              ->first();  
+    }
+
+    return $loading_receipts;
   }
 }
