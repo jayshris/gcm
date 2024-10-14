@@ -82,6 +82,11 @@
 													</div>
 
 													<div class="col-md-4">
+														<label class="col-form-label">Customer Name</label>
+														<input type="text" readonly id="customer_name" class="form-control" value="<?= isset($proforma_invoice['party_name']) && ($proforma_invoice['party_name']) ? $proforma_invoice['party_name'] : '' ?>"/>
+													</div>	
+
+													<div class="col-md-4">
 														<label class="col-form-label">Bill to Party<span class="text-danger">*</span></label>
 														<select class="form-select select2" required name="bill_to_party_id" id="bill_to_party_id" onchange="checkTaxApplicable();getCustomerBranches()">
 															<option value="">Select Bill to Party</option> 
@@ -92,15 +97,10 @@
 															echo '<div class="alert alert-danger mt-2">' . $validation->getError('bill_to_party_id') . '</div>';
 														}
 														?>
-													</div>	  
+													</div>	    
 
 													<div class="col-md-4">
-														<label class="col-form-label">Customer Name</label>
-														<input type="text" readonly id="customer_name" class="form-control" value="<?= isset($proforma_invoice['party_name']) && ($proforma_invoice['party_name']) ? $proforma_invoice['party_name'] : '' ?>"/>
-													</div>	  
-
-													<div class="col-md-4">
-														<label class="col-form-label">Customer Branch<span class="text-danger">*</span></label> 
+														<label class="col-form-label">Bill to Branch<span class="text-danger">*</span></label> 
 														<select class="form-select select2" required name="customer_branch_id" id="customer_branch_id">
 															<option value="">Select Branch</option> 
 														</select>

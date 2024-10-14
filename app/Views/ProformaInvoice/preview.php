@@ -212,11 +212,11 @@
 													<?php } ?>
 
 													<tr style="height:11pt">
-														<td  class="td34" >
-															<p class="s9 p12" style="padding-left: 24pt;">S.NO.</p>
+														<td  class="td34"  style="width:20px !important;">
+															<p class="s9 p12">S.NO.</p>
 														</td>
 														<td  class="td35">
-															<p class="s9 p16" >Particulars</p>
+															<p class="s9 p16">Particulars</p>
 														</td>
 														<td  class="td36" >
 															<p class="s9 p16" >HSN CODE</p>
@@ -225,7 +225,7 @@
 															<p class="s9 p16" >CHARGE TYPE</p>
 														</td>
 														<td  class="td37" >
-															<p class="s9 p12" style="padding-left: 19pt;">NO. OF BOXES</p>
+															<p class="s9 p12" style="padding-left: 3pt;">NO. OF BOXES</p>
 														</td>
 														<td  class="td36" >
 															<p class="s9 p16" >CHARGED WT(KGS)</p>
@@ -239,22 +239,22 @@
 													</tr>
 													<tr style="height:21pt">
 														<td  class="td40" >
-															<p class="s10" style="padding-left: 22pt;padding-right: 2pt;text-indent: -19pt;line-height: 10pt;text-align: left;">1.</p>
+															<p class="s10" style="width:10px !important;padding-left: 22pt;padding-right: 2pt;text-indent: -19pt;line-height: 10pt;text-align: left;">1.</p>
 														</td>
 														<td class="td41" >
-															<p class="s10 p11" ><?= ($proforma_invoice['particulars'] >0) ? $proforma_invoice['particulars'] : '' ?></p>
+															<p class="s10 p11" style="width:200px !important;"><?= ($proforma_invoice['particulars']) ? $proforma_invoice['particulars'] : '-' ?></p>
 														</td>
 														<td class="td42" >
-															<p class="s10 p11"><?= ($proforma_invoice['hsn_code'] >0) ? $proforma_invoice['hsn_code'] : '' ?></p>
+															<p class="s10 p11"><?= ($proforma_invoice['hsn_code']) ? $proforma_invoice['hsn_code'] : '-' ?></p>
 														</td>
 														<td class="td41" >
-															<p class="s10 p11" >Freight Charges</p>
+															<p class="s10 p11" style="width:80px !important;">Freight Charges</p>
 														</td>
 														<td class="td43" >
-															<p class="s10 p11" ><?= ($proforma_invoice['no_of_packages'] >0) ? $proforma_invoice['no_of_packages'] : '' ?></p>
+															<p class="s10 p11" ><?= ($proforma_invoice['no_of_packages'] >0) ? $proforma_invoice['no_of_packages'] : '0' ?></p>
 														</td>
 														<td class="td43" >
-															<p class="s10 p11" ><?= ($proforma_invoice['charge_weight'] >0) ? number_format($proforma_invoice['charge_weight'],2).' KGS' : '0 KGS' ?></p>
+															<p class="s10 p11" ><?= ($proforma_invoice['charge_weight'] >0) ? number_format($proforma_invoice['charge_weight'],2) : '0' ?></p>
 														</td>
 														<td class="td44" >
 															<p class="s10 p11" ><?= number_format($proforma_invoice['total_freight'],2) ?></p>
