@@ -27,33 +27,54 @@ class Dashboard extends BaseController
     public function getVehiclesAvailableForBooking($limit = 0) //driver assigned but not in booking
     {
 
-        $booked_vehicles = $this->BookingsModel->select('vehicle_id')
-            ->where('is_vehicle_assigned', '1')->whereNotIn('status', ['11', '15'])
-            ->groupBy('vehicle_id')->findAll();
+        // $booked_vehicles = $this->BookingsModel->select('bookings.vehicle_id')
+        //     ->join('vehicle', 'vehicle.id = bookings.vehicle_id')
+        //     ->where('bookings.is_vehicle_assigned', '1')
+        //     ->where('vehicle.working_status', '2')
+        //     ->whereNotIn('bookings.status', ['11', '15'])
+        //     ->groupBy('bookings.vehicle_id')->findAll();
 
-        if ($booked_vehicles) {
-            $arr = [];
-            foreach ($booked_vehicles as $b) {
-                array_push($arr, $b['vehicle_id']);
-            }
+        // if ($booked_vehicles) {
+        //     $arr = [];
+        //     foreach ($booked_vehicles as $b) {
+        //         array_push($arr, $b['vehicle_id']);
+        //     }
 
-            $res = $this->VehicleMapModel->select('
-                        driver_vehicle_map.driver_id,
-                        driver_vehicle_map.vehicle_id,
-                        party.party_name as driver_name,
-                        vehicle.rc_number,
-                        vehicle_type.name as type
-                    ')
-                ->join('driver', 'driver.id = driver_vehicle_map.driver_id')
-                ->join('party', 'party.id = driver.party_id')
-                ->join('vehicle', 'vehicle.id = driver_vehicle_map.vehicle_id')
-                ->join('vehicle_type', 'vehicle_type.id = vehicle.vehicle_type_id')
-                ->where('unassign_date', '')
-                ->whereNotIn('driver_vehicle_map.vehicle_id', $arr)
-                ->groupBy('driver_vehicle_map.vehicle_id')->orderBy('assign_date', 'desc')->findAll($limit);
+        //     $res = $this->VehicleMapModel->select('
+        //                 driver_vehicle_map.driver_id,
+        //                 driver_vehicle_map.vehicle_id,
+        //                 party.party_name as driver_name,
+        //                 vehicle.rc_number,
+        //                 vehicle_type.name as type
+        //             ')
+        //         ->join('driver', 'driver.id = driver_vehicle_map.driver_id')
+        //         ->join('party', 'party.id = driver.party_id')
+        //         ->join('vehicle', 'vehicle.id = driver_vehicle_map.vehicle_id')
+        //         ->join('vehicle_type', 'vehicle_type.id = vehicle.vehicle_type_id')
+        //         ->where('unassign_date', '')
+        //         ->whereNotIn('driver_vehicle_map.vehicle_id', $arr)
+        //         ->groupBy('driver_vehicle_map.vehicle_id')
+        //         ->orderBy('vehicle_type.name', 'desc')
+        //         ->orderBy('assign_date', 'desc')->findAll($limit);
 
-            return $res;
-        } else return [];
+        //     return $res;
+        // } else return [];
+
+        $res = $this->VehicleModel->select('vehicle.rc_number,vehicle_type.name as type,party.party_name as driver_name')
+            ->join('vehicle_type', 'vehicle_type.id = vehicle.vehicle_type_id')
+            ->join('driver_vehicle_map', 'driver_vehicle_map.vehicle_id = vehicle.id')
+            ->join('driver', 'driver.id = driver_vehicle_map.driver_id')
+            ->join('party', 'party.id = driver.party_id')
+            ->groupBy('vehicle.id')
+            ->where('vehicle.working_status', '2')
+            ->where('vehicle.status', '1')
+            ->orderBy('vehicle_type.name', 'desc')
+            ->findAll($limit);
+
+        // echo $this->VehicleModel->getLastQuery();
+        // die;
+
+        return $res;
     }
 
     public function getVehiclesHavingBookingAssigned($limit = 0) //vehicles in booking status = unloading or POD uploaded
@@ -72,7 +93,9 @@ class Dashboard extends BaseController
             ->join('vehicle_type', 'vehicle_type.id = vehicle.vehicle_type_id')
             ->join('bookings', 'bookings.vehicle_id = vehicle.id')
             ->where('unassign_date', '')
-            ->whereIn('bookings.status', ['9', '10'])
+            ->where('vehicle.working_status', '3')
+            ->whereIn('bookings.status', ['9'])
+            ->where('vehicle.status', '1')
             ->groupBy('driver_vehicle_map.vehicle_id')->orderBy('assign_date', 'desc')->findAll($limit);
 
         return $res;
@@ -104,7 +127,7 @@ class Dashboard extends BaseController
     {
         $res = $this->VehicleModel->select('vehicle.rc_number,vehicle_type.name as type')
             ->join('vehicle_type', 'vehicle_type.id = vehicle.vehicle_type_id')
-            ->where('working_status', '1')->findAll($limit);
+            ->where('working_status', '1')->where('vehicle.status', '1')->groupBy('vehicle.id')->findAll($limit);
 
         return $res;
     }
@@ -125,7 +148,9 @@ class Dashboard extends BaseController
             ->join('vehicle_type', 'vehicle_type.id = vehicle.vehicle_type_id')
             ->join('bookings', 'bookings.vehicle_id = vehicle.id')
             ->where('unassign_date', '')
-            ->whereIn('bookings.status', ['5'])
+            ->where('vehicle.working_status', '3')
+            ->whereIn('bookings.status', ['3', '4'])
+            ->where('vehicle.status', '1')
             ->groupBy('driver_vehicle_map.vehicle_id')->orderBy('assign_date', 'desc')->findAll($limit);
 
         return $res;
@@ -147,7 +172,9 @@ class Dashboard extends BaseController
             ->join('vehicle_type', 'vehicle_type.id = vehicle.vehicle_type_id')
             ->join('bookings', 'bookings.vehicle_id = vehicle.id')
             ->where('unassign_date', '')
-            ->whereIn('bookings.status', ['7'])
+            ->where('vehicle.working_status', '3')
+            ->whereIn('bookings.status', ['5', '6', '7', '8'])
+            ->where('vehicle.status', '1')
             ->groupBy('driver_vehicle_map.vehicle_id')->orderBy('assign_date', 'desc')->findAll($limit);
 
         return $res;
@@ -157,9 +184,9 @@ class Dashboard extends BaseController
     {
         if (session()->get('isLoggedIn')) {
 
-            $this->view['block1'] = $this->getVehiclesAvailableForBooking(5);
-            $this->view['block2'] = $this->getVehiclesHavingBookingAssigned(5);
-            $this->view['block3'] = $this->getVehiclesPaused(5);
+            $this->view['block1'] = $this->getVehiclesAvailableForBooking(20);
+            $this->view['block2'] = $this->getVehiclesHavingBookingAssigned(10);
+            $this->view['block3'] = $this->getVehiclesPaused(10);
             $this->view['block4'] = $this->getVehiclesEmpty(5);
             $this->view['block5'] = $this->getVehiclesInLoading(5);
             $this->view['block6'] = $this->getVehiclesInRunning(5);

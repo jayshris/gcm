@@ -78,8 +78,8 @@ use App\Models\PartyModel;
       <thead class="thead-light">
         <tr>
           <th>#</th>
-          <th>RC No.</th>
           <th>Type</th>
+          <th>RC No.</th>
           <th>Driver</th>
           <th>Empty Since</th>
         </tr>
@@ -89,8 +89,8 @@ use App\Models\PartyModel;
         foreach ($block1 as $b1) { ?>
           <tr>
             <td><?= $i++ ?>.</td>
-            <td><?= $b1['rc_number'] ?></td>
             <td><?= $b1['type'] ?></td>
+            <td><?= $b1['rc_number'] ?></td>
             <td><?= $b1['driver_name'] ?></td>
             <td></td>
           </tr>
@@ -140,8 +140,8 @@ use App\Models\PartyModel;
                     <thead class="thead-light">
                       <tr>
                         <th>#</th>
-                        <th>RC No.</th>
                         <th>Type</th>
+                        <th>RC No.</th>
                         <th>Driver</th>
                         <th>Empty Since</th>
                       </tr>
@@ -152,8 +152,8 @@ use App\Models\PartyModel;
                         foreach ($block1 as $b1) { ?>
                           <tr>
                             <td><?= $i++ ?>.</td>
-                            <td><?= $b1['rc_number'] ?></td>
                             <td><?= $b1['type'] ?></td>
+                            <td><?= $b1['rc_number'] ?></td>
                             <td><?= $b1['driver_name'] ?></td>
                             <td></td>
                           </tr>
