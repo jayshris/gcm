@@ -82,6 +82,7 @@ use App\Models\PartyModel;
           <th>RC No.</th>
           <th>Driver</th>
           <th>Empty Since</th>
+          <th>Last Drop</th> 
         </tr>
       </thead>
       <tbody>
@@ -92,7 +93,8 @@ use App\Models\PartyModel;
             <td><?= $b1['type'] ?></td>
             <td><?= $b1['rc_number'] ?></td>
             <td><?= $b1['driver_name'] ?></td>
-            <td></td>
+            <td><?= date('d M Y',strtotime($b1['last_booking_date'])) ?></td>
+            <td><?= $b1['drop_city'] ?></td> 
           </tr>
         <?php } ?>
 
@@ -144,6 +146,7 @@ use App\Models\PartyModel;
                         <th>RC No.</th>
                         <th>Driver</th>
                         <th>Empty Since</th>
+                        <th>Last Drop</th> 
                       </tr>
                     </thead>
                     <tbody>
@@ -155,7 +158,8 @@ use App\Models\PartyModel;
                             <td><?= $b1['type'] ?></td>
                             <td><?= $b1['rc_number'] ?></td>
                             <td><?= $b1['driver_name'] ?></td>
-                            <td></td>
+                            <td><?= date('d M y',strtotime($b1['last_booking_date'])) ?></td>
+                            <td><?= $b1['drop_city'] ?></td>  
                           </tr>
                         <?php }
                       } else { ?>
@@ -219,7 +223,12 @@ use App\Models\PartyModel;
         initComplete: (settings, json) => {
           $('.dataTables_paginate').appendTo('.datatable-paginate');
           $('.dataTables_length').appendTo('.datatable-length');
-        }
+        },
+        columnDefs: [{ 
+              target: 4,  
+              render: DataTable.render.datetime( "DD MMM YYYY" )
+          }, 
+        ]
       });
     }
 

@@ -73,6 +73,7 @@
 														<th width="10%">RC No.</th>
 														<th width="60%">Driver</th>
 														<th width="10%">Empty Since</th>
+														<th width="10%">Last Drop</th>
 													</tr>
 												</thead>
 												<tbody>
@@ -84,7 +85,8 @@
 																<td><?= $b1['type'] ?></td>
 																<td><?= $b1['rc_number'] ?></td>
 																<td><?= $b1['driver_name'] ?></td>
-																<td></td>
+																<td><?= date('d M Y',strtotime($b1['last_booking_date'])) ?></td>
+																<td><?= $b1['drop_city'] ?></td> 
 															</tr>
 														<?php }
 													} else { ?>

@@ -60,20 +60,24 @@ class Dashboard extends BaseController
         //     return $res;
         // } else return [];
 
-        $res = $this->VehicleModel->select('vehicle.rc_number,vehicle_type.name as type,party.party_name as driver_name')
+        $query = "(SELECT bt.status_date,bd.city,bds.state_name FROM booking_transactions bt JOIN bookings b on b.id = bt.booking_id LEFT JOIN booking_drops bd on bd.booking_id= b.id JOIN states bds on bds.state_id = bd.state WHERE bt.vehicle_id = vehicle.id and (bt.booking_status_id= 11 or bt.booking_status_id = 15) ORDER BY bt.id DESC LIMIT 1) status_date,city";
+        $res = $this->VehicleModel->select('vehicle.id,vehicle.rc_number,vehicle_type.name as type,party.party_name as driver_name
+             ,btt.booking_status_id,`btt`.`status_date` last_booking_date,bd.city drop_city,bds.state_name drop_state,btt.vehicle_id, btt.id btt_id')
             ->join('vehicle_type', 'vehicle_type.id = vehicle.vehicle_type_id')
             ->join('driver_vehicle_map', 'driver_vehicle_map.vehicle_id = vehicle.id')
             ->join('driver', 'driver.id = driver_vehicle_map.driver_id')
-            ->join('party', 'party.id = driver.party_id')
+            ->join('party', 'party.id = driver.party_id') 
+            ->join('booking_transactions btt', 'btt.id = (SELECT bt.id FROM booking_transactions bt WHERE bt.vehicle_id = vehicle.id and (bt.booking_status_id= 11 or bt.booking_status_id = 15) ORDER BY bt.id DESC LIMIT 1)','left')
+            ->join('bookings b', 'b.id = btt.booking_id','left')      
+            ->join('booking_drops bd', 'bd.booking_id= b.id ','left')         
+            ->join('states bds', 'bds.state_id = bd.state','left')            
             ->groupBy('vehicle.id')
             ->where('vehicle.working_status', '2')
             ->where('vehicle.status', '1')
             ->orderBy('vehicle_type.name', 'desc')
             ->findAll($limit);
 
-        // echo $this->VehicleModel->getLastQuery();
-        // die;
-
+        // echo $this->VehicleModel->getLastQuery().'<pre>';print_r($res);exit;
         return $res;
     }
 
