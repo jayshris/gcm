@@ -691,11 +691,10 @@
                               </div>
                             </div>
                             <?php } ?>
-
-                            
+ 
                             <!-- trip_update_details -->
                             <?php if(isset($trip_update_details) && !empty($trip_update_details)){?>
-                            <div class="col-lg-12 col-md-12 d-flex">
+                            <div class="col-lg-12 col-md-12 d-flex"  >
                               <div class="security-grid flex-fill">
                                 <div class="security-header">
                                   <div class="security-heading">
@@ -703,33 +702,37 @@
                                   </div><hr>
 
                                   <div class="row">
-                                      <table class="table table-bordered print-tbl">
-                                        <tbody>
-                                          <tr>
-                                            <th>#</th>
-                                            <th>Date</th>
-                                            <th>Location</th>
-                                            <th>Remarks</th> 
-                                            <th>Purpose Of Update</th>
-                                            <th>Fuel</th>
-                                            <th>Money</th> 
-                                          </tr>   
-                                          <?php
-                                          $i = 1;
-                                          foreach ($trip_update_details as $val) {
-                                          ?>
-                                            <tr>
-                                              <td><?= $i;$i++; ?>
-                                              <td> <?= date('d-M-Y H:i A',strtotime($val['status_date'])) ?></td> 
-                                              <td> <?= isset($val['location']) && ($val['location']) ? ucfirst($val['location']) : '-' ?></td>
-                                              <td> <?= isset($val['remarks']) && ($val['remarks']) ? ucfirst($val['remarks']) : '-' ?></td>
-                                              <td> <?= isset($val['purpose_of_update']) && ($val['purpose_of_update']) ? PURPOSE_OF_UPDATES[$val['purpose_of_update']] : '-' ?></td>   
-                                              <td> <?= isset($val['fuel']) && ($val['fuel']) ? number_format($val['fuel'],2) : '-' ?></td>
-                                              <td> <?= isset($val['money']) && ($val['money']) ? number_format($val['money'],2) : '-' ?></td> 
-                                            </tr>
-                                          <?php } ?> 
-                                        </tbody>
-                                      </table>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered print-tbl" width="100%">
+                                            <tbody>
+                                              <tr>
+                                                <th width="10%">#</th>
+                                                <th width="10%">Date</th>
+                                                <th width="10%">Location</th>
+                                                <th width="30%">Remarks</th> 
+                                                <th width="10%">Purpose Of Update</th>
+                                                <th width="10%">Fuel</th>
+                                                <th width="10%">Money</th> 
+                                                <th width="10%">Created By</th>
+                                              </tr>   
+                                              <?php
+                                              $i = 1;
+                                              foreach ($trip_update_details as $val) {
+                                              ?>
+                                                <tr>
+                                                  <td><?= $i;$i++; ?>
+                                                  <td> <?= date('d-M-Y',strtotime($val['status_date'])) ?></td> 
+                                                  <td> <?= isset($val['location']) && ($val['location']) ? ucfirst($val['location']) : '-' ?></td>
+                                                  <td style="white-space: break-spaces !important;" > THE VEHICLE HAS UNLOADED BUT POD DID NOT SEND	<?= isset($val['remarks']) && ($val['remarks']) ? ucfirst($val['remarks']) : '-' ?></td>
+                                                  <td><?= isset($val['purpose_of_update_name']) && ($val['purpose_of_update_name']) ? $val['purpose_of_update_name'] : '-' ?></td>   
+                                                  <td> <?= isset($val['fuel']) && ($val['fuel']) ? number_format($val['fuel'],2) : '-' ?></td>
+                                                  <td> <?= isset($val['money']) && ($val['money']) ? number_format($val['money'],2) : '-' ?></td> 
+                                                  <td> <?= ($val['created_by_name']) ? ucwords($val['created_by_name']) : '-' ?></td>
+                                                </tr>
+                                              <?php } ?> 
+                                            </tbody>
+                                          </table>
+                                    </div> 
                                   </div>
                                 </div>
                               </div>

@@ -2291,7 +2291,10 @@ class Booking extends BaseController
         $this->view['uploaded_pods_details'] = $this->BUPModel->where(['booking_id' => $id])->findAll();
         // echo 'trip_start_details  <pre>';print_r($this->view['trip_start_details'] );exit; 
 
-        $this->view['trip_update_details'] = $this->BookingsTripUpdateModel->where(['booking_id' => $id])->findAll();
+        $this->view['trip_update_details'] = $this->BookingsTripUpdateModel
+        ->select('bookings_trip_updates.*,pou.name purpose_of_update_name,concat(first_name," ",last_name) created_by_name')
+        ->join('users u', 'u.id = bookings_trip_updates.created_by','left')
+        ->join('purpose_of_updates pou', 'pou.id = bookings_trip_updates.purpose_of_update_id')->where(['booking_id' => $id])->findAll();
 
         return view('Booking/booking_details', $this->view);
     }
