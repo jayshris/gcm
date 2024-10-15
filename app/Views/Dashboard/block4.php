@@ -80,6 +80,8 @@ use App\Models\PartyModel;
           <th>#</th>
           <th>RC No.</th>
           <th>Type</th>
+          <th>Empty Since</th>
+					<th>Last Drop</th>
         </tr>
       </thead>
       <tbody>
@@ -90,6 +92,8 @@ use App\Models\PartyModel;
               <td><?= $i++ ?>.</td>
               <td><?= $b4['rc_number'] ?></td>
               <td><?= $b4['type'] ?></td>
+              <td><?= ($b4['last_booking_date']) ? date('d M Y',strtotime($b4['last_booking_date'])) : '-' ?></td>
+							<td><?= ($b4['drop_city']) ? $b4['drop_city'] : '-' ?></td> 
             </tr>
           <?php }
         } else { ?>
@@ -144,6 +148,8 @@ use App\Models\PartyModel;
                         <th>#</th>
                         <th>RC No.</th>
                         <th>Type</th>
+                        <th>Empty Since</th>
+												<th>Last Drop</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -153,6 +159,8 @@ use App\Models\PartyModel;
                           <td><?= $i++ ?>.</td>
                           <td><?= $b4['rc_number'] ?></td>
                           <td><?= $b4['type'] ?></td>
+                          <td><?= ($b4['last_booking_date']) ? date('d M Y',strtotime($b4['last_booking_date'])) : '-' ?></td>
+							            <td><?= ($b4['drop_city']) ? $b4['drop_city'] : '-' ?></td> 
                         </tr>
                       <?php } ?>
                     </tbody>
@@ -173,7 +181,7 @@ use App\Models\PartyModel;
             </div>
 
             <button type="button" class="btn btn-danger mt-4 noprint" onclick="window.print();"><i class="fa fa-print" aria-hidden="true"></i> Print</button>
-
+            <a href="<?php echo base_url($currentController); ?>" class="btn btn-light mt-4 noprint">Back</a>
           </div>
         </div>
 
@@ -209,7 +217,12 @@ use App\Models\PartyModel;
         initComplete: (settings, json) => {
           $('.dataTables_paginate').appendTo('.datatable-paginate');
           $('.dataTables_length').appendTo('.datatable-length');
-        }
+        },
+        columnDefs: [{ 
+              target: 3,  
+              render: DataTable.render.datetime( "DD MMM YYYY" )
+          }, 
+        ]
       });
     }
 

@@ -85,8 +85,8 @@
 																<td><?= $b1['type'] ?></td>
 																<td><?= $b1['rc_number'] ?></td>
 																<td><?= $b1['driver_name'] ?></td>
-																<td><?= date('d M Y',strtotime($b1['last_booking_date'])) ?></td>
-																<td><?= $b1['drop_city'] ?></td> 
+																<td><?= ($b1['last_booking_date']) ? date('d M Y',strtotime($b1['last_booking_date'])) : '-' ?></td>
+																<td><?= ($b1['drop_city']) ?  $b1['drop_city'] : '-' ?></td> 
 															</tr>
 														<?php }
 													} else { ?>
@@ -223,6 +223,8 @@
 														<th width="5%">#</th>
 														<th width="10%">RC No.</th>
 														<th width="15%">Type</th>
+														<th width="10%">Empty Since</th>
+														<th width="10%">Last Drop</th>
 													</tr>
 												</thead>
 												<tbody>
@@ -233,6 +235,8 @@
 																<td><?= $i++ ?>.</td>
 																<td><?= $b4['rc_number'] ?></td>
 																<td><?= $b4['type'] ?></td>
+																<td><?= ($b4['last_booking_date']) ? date('d M Y',strtotime($b4['last_booking_date'])) : '-' ?></td>
+																<td><?= ($b4['drop_city']) ? $b4['drop_city'] : '-' ?></td> 
 															</tr>
 														<?php }
 													} else { ?>

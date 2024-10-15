@@ -181,7 +181,7 @@ use App\Models\PartyModel;
             </div>
 
             <button type="button" class="btn btn-danger mt-4 noprint" onclick="window.print();"><i class="fa fa-print" aria-hidden="true"></i> Print</button>
-
+            <a href="<?php echo base_url($currentController); ?>" class="btn btn-light mt-4 noprint">Back</a>
           </div>
         </div>
 

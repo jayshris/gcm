@@ -71,10 +71,11 @@ class Dashboard extends BaseController
             ->join('bookings b', 'b.id = btt.booking_id','left')      
             ->join('booking_drops bd', 'bd.booking_id= b.id ','left')         
             ->join('states bds', 'bds.state_id = bd.state','left')            
-            ->groupBy('vehicle.id')
+            ->groupBy('vehicle.id') 
             ->where('vehicle.working_status', '2')
             ->where('vehicle.status', '1')
-            ->orderBy('vehicle_type.name', 'desc')
+            // ->orderBy('vehicle_type.name', 'desc')
+            ->orderBy('bd.city') 
             ->findAll($limit);
 
         // echo $this->VehicleModel->getLastQuery().'<pre>';print_r($res);exit;
@@ -129,9 +130,15 @@ class Dashboard extends BaseController
 
     public function getVehiclesEmpty($limit = 0) //vehicles where driver not assigned
     {
-        $res = $this->VehicleModel->select('vehicle.rc_number,vehicle_type.name as type')
+        $res = $this->VehicleModel->select('vehicle.rc_number,vehicle_type.name as type
+            ,btt.booking_status_id,`btt`.`status_date` last_booking_date,bd.city drop_city,bds.state_name drop_state,btt.vehicle_id, btt.id btt_id') 
             ->join('vehicle_type', 'vehicle_type.id = vehicle.vehicle_type_id')
-            ->where('working_status', '1')->where('vehicle.status', '1')->groupBy('vehicle.id')->findAll($limit);
+            ->join('booking_transactions btt', 'btt.id = (SELECT bt.id FROM booking_transactions bt WHERE bt.vehicle_id = vehicle.id and (bt.booking_status_id= 11 or bt.booking_status_id = 15) ORDER BY bt.id DESC LIMIT 1)','left')
+            ->join('bookings b', 'b.id = btt.booking_id','left')      
+            ->join('booking_drops bd', 'bd.booking_id= b.id ','left')         
+            ->join('states bds', 'bds.state_id = bd.state','left')          
+            ->where('working_status', '1')->where('vehicle.status', '1')->groupBy('vehicle.id')->orderBy('bd.city')->findAll($limit);
+            // echo $this->VehicleModel->getLastQuery().'<pre>';print_r($res);exit;
 
         return $res;
     }
