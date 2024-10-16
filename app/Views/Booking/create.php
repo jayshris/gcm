@@ -733,6 +733,14 @@
         tags: true
       }); 
 
+      var pickup_pin =  $("#pickup_pin").select2({
+        tags: true
+      }); 
+
+      var drop_pin =  $("#drop_pin").select2({
+        tags: true
+      }); 
+      
       $('form').submit(function() { 
         $(":submit").attr("disabled", "disabled");
       });

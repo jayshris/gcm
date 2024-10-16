@@ -457,14 +457,11 @@ if(city_id_val > 0){
         success: function(response) {   
             if(response){  
                 var selectedchanged_id = $('#selected_'+changed_id).val();
-                // response = selectedchanged_id ? response.push(selectedchanged_id) : response;
-                
-                console.log(response);
-                console.log(selectedchanged_id);
-                response.push(selectedchanged_id);
-                console.log(response);
-                console.log('--------');
-                 response.forEach(function(val) {   
+                console.log(selectedchanged_id); 
+                if(selectedchanged_id > 0){
+                    response.push(selectedchanged_id) 
+                }
+                response.forEach(function(val) {   
                     var selected =(selectedchanged_id == val) ? 'selected': '';
                     html += '<option value="'+val+'" '+selected+'>'+val +'</option>'
                 }); 

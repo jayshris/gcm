@@ -690,6 +690,14 @@
         tags: true
       }); 
 
+      var pickup_pin =  $("#pickup_pin").select2({
+        tags: true
+      }); 
+
+      var drop_pin =  $("#drop_pin").select2({
+        tags: true
+      }); 
+
       $('form').submit(function() { 
         $(":submit").attr("disabled", "disabled");
       });
@@ -760,6 +768,10 @@
               success: function(response) {   
                   if(response){  
                     var selectedchanged_id = $('#selected_'+changed_id).val();
+                    console.log(selectedchanged_id); 
+                    if(selectedchanged_id > 0){
+                        response.push(selectedchanged_id) 
+                    }
                     response.forEach(function(val) { 
                       var selected =(selectedchanged_id == val) ? 'selected': '';
                         html += '<option value="'+val+'" '+selected+'>'+val +'</option>'
