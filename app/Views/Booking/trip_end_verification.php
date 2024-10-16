@@ -32,7 +32,7 @@
                                                             <label class="col-form-label">Uploaded Doc<span class="text-danger">*</span></label>
                                                             <?php  
                                                             $doc = isset($pod_data['upload_doc']) && !empty($pod_data['upload_doc']) ?  $pod_data['upload_doc'] :  '';
-                                                            $file_type = !empty($doc) ?  mime_content_type(getcwd().'/public/uploads/booking_pods/'.$doc) : '';
+                                                            $file_type = !empty($doc) && file_exists(getcwd().'/public/uploads/booking_pods/'.$doc) ?  mime_content_type(getcwd().'/public/uploads/booking_pods/'.$doc) : '';
                                                             if($file_type == 'application/pdf'){?>
                                                                 <a href="<?= base_url('public/uploads/booking_pods/').$doc  ?>" class="btn btn-info" target="_blank" style="margin-left: 7px;width: 200px;">View Document</a>        
                                                             <?php }else{?>

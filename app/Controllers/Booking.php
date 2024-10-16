@@ -838,9 +838,9 @@ class Booking extends BaseController
         $this->updateDriverWorkingStatus($post['vehicle_rc'], 3);
 
         //update booking status 
-        $this->update_booking_status($id, $booking_status);
+        $this->update_booking_status($id, $booking_status,0,0,isset($post['assign_date']) ? $post['assign_date'] : '');
 
-        $this->update_PTLBookings($id, $booking_status, 0, 0, '', []);
+        $this->update_PTLBookings($id, $booking_status, 0, 0,isset($post['assign_date']) ? $post['assign_date'] : '');
 
         //Check if booking type is PTL and vehicle > 0, for booking_type and vehicle
         // If records exist then get parent_id ==0 and assign with new booking parent_id
@@ -1516,7 +1516,7 @@ class Booking extends BaseController
             }
 
             //update booking status 
-            $this->update_booking_status($id, $booking_status);
+            $this->update_booking_status($id, $booking_status,0,0,$this->request->getPost('unassign_date'));
 
             //Unlink PTL Bookings
             $this->unlinkPTLBookings($id);
@@ -1636,7 +1636,7 @@ class Booking extends BaseController
 
                 //update booking status 
                 $this->update_booking_status($booking_id, 10,0,0,isset($data['pod_date']) ? $data['pod_date'] :'');
-                $this->update_PTLBookings($booking_id, 10);
+                $this->update_PTLBookings($booking_id, 10,0,0,isset($data['pod_date']) ? $data['pod_date'] :'');
                 $this->session->setFlashdata('success', 'Uploaded pod Successfully');
                 return $this->response->redirect(base_url('booking'));
             }
