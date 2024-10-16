@@ -55,8 +55,8 @@
                                                         </div>
 
                                                         <div class="col-md-4">
-                                                            <label class="col-form-label">Location<span class="text-danger">*</span></label>
-                                                            <input type="text" name="location" class="form-control" required  value="<?= set_value('location') ?>" />
+                                                            <label class="col-form-label">Location</label>
+                                                            <input type="text" name="location" class="form-control" value="<?= set_value('location') ?>" />
                                                             <?php
                                                             if ($validation->getError('location')) {
                                                                 echo '<div class="alert alert-danger mt-2">' . $validation->getError('location') . '</div>';
@@ -65,8 +65,8 @@
                                                         </div> 
 
                                                         <div class="col-md-4">
-                                                            <label class="col-form-label">Authorised By<span class="text-danger">*</span></label>
-                                                            <select class="form-select" required name="updated_by">
+                                                            <label class="col-form-label">Authorised By</label>
+                                                            <select class="form-select" name="updated_by">
                                                                 <option value="">Select Employee</option>
                                                                 <?php foreach ($employees as $e) { ?>
                                                                 <option value="<?= $e['id'] ?>" <?= (set_value('updated_by') ==  $e['id']) ? 'selected' : '' ?>><?= $e['name'] ?></option>
@@ -150,7 +150,7 @@
                                             ?>
                                             <tr>
                                             <td><?= $i++; ?>.</td>
-                                            <td><?= date('d-m-Y H:i a',strtotime($val['status_date'])) ?></td>
+                                            <td><?= date('d M Y',strtotime($val['status_date'])) ?></td>
                                             <td><?= $val['location']; ?></td>
                                             <td><?= $val['e_name']; ?></td>
                                             <td><?= $val['remarks']; ?></td>
@@ -219,7 +219,12 @@
         initComplete: (settings, json) => {
           $('.dataTables_paginate').appendTo('.datatable-paginate');
           $('.dataTables_length').appendTo('.datatable-length');
-        }
+        },
+        columnDefs: [{ 
+            target: 1,  
+            render: DataTable.render.datetime( "DD MMM YYYY" )
+        }, 
+        ]
       });
     }
 

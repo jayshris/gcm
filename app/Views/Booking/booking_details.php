@@ -723,7 +723,7 @@
                                                   <td><?= $i;$i++; ?>
                                                   <td> <?= date('d-M-Y',strtotime($val['status_date'])) ?></td> 
                                                   <td> <?= isset($val['location']) && ($val['location']) ? ucfirst($val['location']) : '-' ?></td>
-                                                  <td style="white-space: break-spaces !important;" > THE VEHICLE HAS UNLOADED BUT POD DID NOT SEND	<?= isset($val['remarks']) && ($val['remarks']) ? ucfirst($val['remarks']) : '-' ?></td>
+                                                  <td style="white-space: break-spaces !important;" ><?= isset($val['remarks']) && ($val['remarks']) ? ucfirst($val['remarks']) : '-' ?></td>
                                                   <td><?= isset($val['purpose_of_update_name']) && ($val['purpose_of_update_name']) ? $val['purpose_of_update_name'] : '-' ?></td>   
                                                   <td> <?= isset($val['fuel']) && ($val['fuel']) ? number_format($val['fuel'],2) : '-' ?></td>
                                                   <td> <?= isset($val['money']) && ($val['money']) ? number_format($val['money'],2) : '-' ?></td> 

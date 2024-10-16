@@ -2056,8 +2056,8 @@ class Booking extends BaseController
         // echo $this->EmployeeModel->getLastQuery().'<pre>';print_r($this->view['employees']); exit;
     
         $this->view['data'] = $this->BookingsTripUpdateModel->select('bookings_trip_updates.*,e.name e_name,pou.name pou_name')
-            ->join('employee e', 'e.id = bookings_trip_updates.updated_by')
-            ->join('purpose_of_updates pou', 'pou.id = bookings_trip_updates.purpose_of_update_id')
+            ->join('employee e', 'e.id = bookings_trip_updates.updated_by','left')
+            ->join('purpose_of_updates pou', 'pou.id = bookings_trip_updates.purpose_of_update_id','left')
             ->where('bookings_trip_updates.booking_id', $id)
             ->orderBy('id', 'desc')->findAll();
         
@@ -2072,19 +2072,7 @@ class Booking extends BaseController
                     'errors' => [
                         'required' => 'The date time field is required'
                     ],
-                ],
-                'location' => [
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => 'The location field is required'
-                    ],
-                ],
-                'updated_by' => [
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => 'The authorised by field is required'
-                    ],
-                ],
+                ],  
                 'purpose_of_update' => [
                     'rules' => 'required',
                     'errors' => [
@@ -2292,8 +2280,9 @@ class Booking extends BaseController
         // echo 'trip_start_details  <pre>';print_r($this->view['trip_start_details'] );exit; 
 
         $this->view['trip_update_details'] = $this->BookingsTripUpdateModel
-        ->select('bookings_trip_updates.*,pou.name purpose_of_update_name,concat(first_name," ",last_name) created_by_name')
+        ->select('bookings_trip_updates.*,pou.name purpose_of_update_name,concat(first_name," ",last_name) created_by_name,e.name e_name')
         ->join('users u', 'u.id = bookings_trip_updates.created_by','left')
+        ->join('employee e', 'e.id = bookings_trip_updates.updated_by','left')
         ->join('purpose_of_updates pou', 'pou.id = bookings_trip_updates.purpose_of_update_id')->where(['booking_id' => $id])->findAll();
 
         return view('Booking/booking_details', $this->view);
