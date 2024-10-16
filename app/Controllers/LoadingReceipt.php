@@ -508,7 +508,6 @@ class LoadingReceipt extends BaseController
     $this->view['consignors']  = array_column($this->view['consignors_list'],'party_name','id');
     $this->view['consignees']  = array_column($this->view['consignees_list'],'party_name','id');
   
-    
     if(isset($this->view['loading_receipts']) && !empty($this->view['loading_receipts']['consignor_name'])){
         if(!in_array($this->view['loading_receipts']['consignor_name'],$this->view['consignors'])){
             array_push($this->view['consignors'],$this->view['loading_receipts']['consignor_name']);
@@ -1061,7 +1060,7 @@ class LoadingReceipt extends BaseController
       $this->view['loading_receipts'] = $this->LoadingReceiptModel->where(['id' => $id])->first();
       $this->view['vehicles'] =  $this->BookingsModel->select('v.id,v.rc_number') 
       ->join('vehicle v','bookings.vehicle_id = v.id')->orderBy('v.id', 'desc')
-      ->where(['bookings.approved'=> '1','bookings.is_vehicle_assigned' => 1])
+      ->where(['bookings.approved'=> '1','bookings.is_vehicle_assigned' => 1,'bookings.id' => $this->view['loading_receipts']['booking_id']])
       ->groupBy('bookings.vehicle_id')
       ->findAll();
       $this->view['token'] = $id;  
@@ -1098,21 +1097,25 @@ class LoadingReceipt extends BaseController
         } else {   
             // echo 'data <pre>';print_r($this->request->getPost()); 
         
-            $booking_vehicle = $this->BVLModel
-            ->where('booking_id', $this->view['loading_receipts']['booking_id'])
-            ->where('vehicle_id', $this->request->getPost('vehicle_id'))
-            ->where('(unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date = 0))')
-            ->first();
-            // echo 'booking_vehicle <pre>';print_r($booking_vehicle); 
-            //update booking trip update info 
-            if(isset($booking_vehicle['id']) && ($booking_vehicle['id']>0)){ 
-              $data['vehicle_location'] = $this->request->getPost('vehicle_location');
-              $data['lr_update_vehicle_date'] = $this->request->getPost('lr_update_vehicle_date');
-              $data['reason_id'] = $this->request->getPost('reason_id');
-              $data['remarks'] = $this->request->getPost('remarks'); 
-              // echo 'BVLModel <pre>';print_r($data); exit;
-              $this->BVLModel->update($booking_vehicle['id'],$data); 
-            }
+            // Update old booking vehicle for lr   
+            $this->updateLrBookingVehicle($this->view['loading_receipts']['vehicle_id'],$this->request->getPost());
+            
+            // $this->updateLrBookingVehicle($this->request->getPost('vehicle_id'),$this->request->getPost());
+            // $booking_vehicle = $this->BVLModel
+            // ->where('booking_id', $this->view['loading_receipts']['booking_id'])
+            // ->where('vehicle_id', $this->request->getPost('vehicle_id'))
+            // ->where('(unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date) = 0)')
+            // ->first();
+            // // echo 'booking_vehicle <pre>';print_r($booking_vehicle); exit;
+            // //update booking trip update info 
+            // if(isset($booking_vehicle['id']) && ($booking_vehicle['id']>0)){ 
+            //   $data['vehicle_location'] = $this->request->getPost('vehicle_location');
+            //   $data['lr_update_vehicle_date'] = $this->request->getPost('lr_update_vehicle_date');
+            //   $data['reason_id'] = $this->request->getPost('reason_id');
+            //   $data['remarks'] = $this->request->getPost('remarks'); 
+            //   // echo 'BVLModel <pre>';print_r($data); exit;
+            //   $this->BVLModel->update($booking_vehicle['id'],$data); 
+            // }
             // exit;
             $this->LoadingReceiptModel->update($id,[
               'vehicle_id' => $this->request->getPost('vehicle_id'),
@@ -1127,6 +1130,21 @@ class LoadingReceipt extends BaseController
     return view('LoadingReceipt/update_vehicle', $this->view); 
   }
 
+  function updateLrBookingVehicle($vehicle_id,$post){
+    $booking_vehicle = $this->BVLModel
+    ->where('booking_id', $this->view['loading_receipts']['booking_id'])
+    ->where('vehicle_id',$vehicle_id)
+    // ->where('(unassign_date IS NULL or UNIX_TIMESTAMP(unassign_date) = 0)')
+    ->first();
+    if(isset($booking_vehicle['id']) && ($booking_vehicle['id']>0)){ 
+      $data['vehicle_location'] = $post['vehicle_location'];
+      $data['lr_update_vehicle_date'] = $post['lr_update_vehicle_date'];
+      $data['reason_id'] = $post['reason_id'];
+      $data['remarks'] =$post['remarks']; 
+      // echo 'BVLModel <pre>';print_r($data); exit;
+      $this->BVLModel->update($booking_vehicle['id'],$data); 
+    }
+  }
   function checkProformaInvoiceForLR($lrId){
     //Check if ProformaInvoiceModel is generated then don't allow to delete LR
     return $this->LoadingReceiptModel

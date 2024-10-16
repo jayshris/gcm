@@ -4,14 +4,15 @@ namespace App\Controllers;
 
 use App\Models\UserModel;
 use App\Models\StateModel;
+use App\Models\DriverModel;
 use App\Models\OfficeModel;
 use App\Models\ProfileModel;
 use App\Models\VehicleModel;
 use App\Models\BookingsModel;
-use App\Controllers\BaseController;
-use App\Models\DriverModel;
-use App\Models\LoadingReceiptModel;
 use App\Models\PartytypeModel;
+use App\Controllers\BaseController;
+use App\Models\LoadingReceiptModel;
+use App\Models\BookingVehicleLogModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class Consignmentnote extends BaseController
@@ -25,6 +26,7 @@ class Consignmentnote extends BaseController
   public $PTModel;
   public $DModel;
   public $email;
+  public $BVLModel;
   public function __construct()
   {
     $u = new UserModel();
@@ -34,9 +36,10 @@ class Consignmentnote extends BaseController
     $this->LoadingReceiptModel = new LoadingReceiptModel();
     $this->session = \Config\Services::session();
     $this->profile = new ProfileModel();
-      $this->PTModel = new PartytypeModel();
+    $this->PTModel = new PartytypeModel();
     $this->DModel = new DriverModel();
     $this->email = \Config\Services::email();
+    $this->BVLModel = new BookingVehicleLogModel(); 
   }
 
   public function index()
@@ -193,11 +196,23 @@ class Consignmentnote extends BaseController
       $loading_receipts['driver'] = $this->DModel->select('driver.id, party.party_name as driver_name,party.primary_phone')
               ->join('driver_vehicle_map dvp', 'driver.id = dvp.driver_id')
               ->join('party', 'party.id = driver.party_id')
+              ->where('dvp.vehicle_id', $vehicle_id)
               // ->where('(dvp.unassign_date = "" or dvp.unassign_date IS NULL or (UNIX_TIMESTAMP(dvp.unassign_date) = 0))')
               ->orderBy('dvp.id','DESC')
               ->first();  
+
+    //Get all lr updated vehicle
+    $rc_number= $this->BVLModel
+    ->select('group_concat(v.rc_number) rc_number')
+    ->join('vehicle v','v.id= booking_vehicle_logs.vehicle_id')
+    ->where('booking_vehicle_logs.booking_id', $loading_receipts['booking_id']) 
+    ->where('(booking_vehicle_logs.lr_update_vehicle_date IS NOT NULL or UNIX_TIMESTAMP(booking_vehicle_logs.lr_update_vehicle_date) > 0)')
+    ->first();
+    $loading_receipts['rc_number'] = isset( $rc_number['rc_number']) && ($rc_number['rc_number']) ? $loading_receipts['rc_number'] .','.$rc_number['rc_number'] : $loading_receipts['rc_number'];
     }
 
+    // echo $this->BVLModel->getLastQuery().' <pre>';print_r($loading_receipts);exit;
+   
     return $loading_receipts;
   }
 }

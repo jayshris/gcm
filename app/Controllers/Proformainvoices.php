@@ -171,6 +171,23 @@ class Proformainvoices extends BaseController
       echo json_encode($bookings);exit;
     }
 
+    function getVehicleBookingDetails(){    
+      $this->view['bookings'] =  $this->BookingsModel->select('bookings.*, c.id c_id,p.party_name,lr.particulars,lr.hsn_code') 
+      ->join('customer c','bookings.customer_id = c.id') 
+      ->join('party p', 'c.party_id = p.id')
+      ->join('loading_receipts lr','bookings.id = lr.booking_id')
+      ->where(['bookings.status >'=> '3','bookings.status != '=> 11]) 
+      ->where('NOT EXISTS (SELECT 1 
+      FROM   proforma_invoices
+      WHERE  proforma_invoices.booking_id = bookings.id)')
+      ->where('bookings.vehicle_id', $this->request->getPost('vehicle_id'))
+      ->findAll();    
+
+      // echo $this->BookingsModel->getLastQuery().'<pre>';print_r($this->view['bookings']);exit;
+      
+      echo view('ProformaInvoice/booking_details_block', $this->view);
+    }
+
     function update_proforma_transaction($post,$id =0){
       if($id>0){
         $data['id'] = $id;

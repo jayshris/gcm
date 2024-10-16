@@ -52,8 +52,8 @@
 											<div class="profile-details">
 												<div class="row g-3">
 													<div class="col-md-4">
-														<label class="col-form-label">Vehicle Number<span class="text-danger">*</span></label>  
-														<select class="form-select select2" required name="vehicle_id" id="vehicle_number" aria-label="Default select example" onchange="$.getVehicleBookingDetails();" <?= ($token > 0) ? 'disabled' : '' ?>>
+														<label class="col-form-label">Vehicle Number</label>  
+														<select class="form-select select2" name="vehicle_id" id="vehicle_number" aria-label="Default select example" onchange="$.getVehicleBookings();" <?= ($token > 0) ? 'disabled' : '' ?>>
 															<option value="">Select Vehicle</option>
 															<?php foreach ($vehicles as $o) { ?> 
 																<option value="<?= $o['id'] ?>"  <?= (isset($proforma_invoice['vehicle_id']) && ($proforma_invoice['vehicle_id'] == $o['id'])) ? 'selected' : ''?> ><?= $o['rc_number'] ?></option> 
@@ -65,37 +65,55 @@
 														}
 														?>
 													</div>
-													<div class="row  g-3" id="booking_details_div">
-														
-													</div>
-													 
-													<div class="row g-3" hidden id="bill_to_party_div">
-														<div class="col-md-4">
-															<label class="col-form-label">Bill to Party<span class="text-danger">*</span></label>
-															<select class="form-select select2" required name="bill_to_party_id" id="bill_to_party_id" onchange="checkTaxApplicable();getCustomerBranches()">
-																<option value="">Select Bill to Party</option> 
-															</select>
-															<input type="hidden" id="selecected_bill_to_party_id" value="<?= isset($proforma_invoice['bill_to_party_id']) && ($proforma_invoice['bill_to_party_id'] > 0) ? $proforma_invoice['bill_to_party_id'] : 0 ?>"/>
-															<?php
-															if ($validation->getError('bill_to_party_id')) {
-																echo '<div class="alert alert-danger mt-2">' . $validation->getError('bill_to_party_id') . '</div>';
-															}
-															?>
-														</div>	    
 
-														<div class="col-md-4">
-															<label class="col-form-label">Bill to Branch<span class="text-danger">*</span></label> 
-															<select class="form-select select2" required name="customer_branch_id" id="customer_branch_id">
-																<option value="">Select Branch</option> 
-															</select>
-															<input type="hidden" id="selecected_customer_branch_id" value="<?= isset($proforma_invoice['customer_branch_id']) && ($proforma_invoice['customer_branch_id'] > 0) ? $proforma_invoice['customer_branch_id'] : 0 ?>"/>
-															<?php
-															if ($validation->getError('customer_branch_id')) {
-																echo '<div class="alert alert-danger mt-2">' . $validation->getError('customer_branch_id') . '</div>';
-															}
-															?>
-														</div>
-													</div>  
+													<div class="col-md-4">
+														<label class="col-form-label">Booking Order No<span class="text-danger">*</span></label> 
+														<select class="form-select select2" required name="booking_id" id="booking_id" aria-label="Default select example"  onchange="$.getBookingDetails();" <?= ($token > 0) ? 'disabled' : '' ?>>
+															<option value="">Select Booking No.</option>
+															<?php foreach ($bookings as $o) { ?>
+															<option value="<?= $o['id'] ?>" <?= (isset($proforma_invoice['booking_id']) && ($proforma_invoice['booking_id'] == $o['id'])) ? 'selected' : ''?> ><?= $o['booking_number'] ?></option> 
+															<?php } ?>
+														</select>
+														<?php
+														if ($validation->getError('booking_id')) {
+															echo '<div class="alert alert-danger mt-2">' . $validation->getError('booking_id') . '</div>';
+														}
+														?>
+													</div>
+
+													<div class="col-md-4">
+														<label class="col-form-label">Customer Name</label>
+														<input type="text" readonly id="customer_name" class="form-control" value="<?= isset($proforma_invoice['party_name']) && ($proforma_invoice['party_name']) ? $proforma_invoice['party_name'] : '' ?>"/>
+													</div>	
+
+													<div class="col-md-4">
+														<label class="col-form-label">Bill to Party<span class="text-danger">*</span></label>
+														<select class="form-select select2" required name="bill_to_party_id" id="bill_to_party_id" onchange="checkTaxApplicable();getCustomerBranches()">
+															<option value="">Select Bill to Party</option> 
+														</select>
+														<input type="hidden" id="selecected_bill_to_party_id" value="<?= isset($proforma_invoice['bill_to_party_id']) && ($proforma_invoice['bill_to_party_id'] > 0) ? $proforma_invoice['bill_to_party_id'] : 0 ?>"/>
+														<?php
+														if ($validation->getError('bill_to_party_id')) {
+															echo '<div class="alert alert-danger mt-2">' . $validation->getError('bill_to_party_id') . '</div>';
+														}
+														?>
+													</div>	    
+
+													<div class="col-md-4">
+														<label class="col-form-label">Bill to Branch<span class="text-danger">*</span></label> 
+														<select class="form-select select2" required name="customer_branch_id" id="customer_branch_id">
+															<option value="">Select Branch</option> 
+														</select>
+														<input type="hidden" id="selecected_customer_branch_id" value="<?= isset($proforma_invoice['customer_branch_id']) && ($proforma_invoice['customer_branch_id'] > 0) ? $proforma_invoice['customer_branch_id'] : 0 ?>"/>
+														<?php
+														if ($validation->getError('customer_branch_id')) {
+															echo '<div class="alert alert-danger mt-2">' . $validation->getError('customer_branch_id') . '</div>';
+														}
+														?>
+													</div>
+
+													<div class="row g-3" id="particulars-hsn-code"> 
+                                                    </div>
 
 													<div class="col-md-12"  id="expense_div_body"></div>
 
@@ -181,16 +199,26 @@
 			$.getBookingDetails($('#id').val());
 		}		
     });
-	$.getVehicleBookingDetails = function() {
+	$.getVehicleBookings = function() {
 		var vehicle_id = $('#vehicle_number').val(); 		
 		$.ajax({
 		method: "POST",
-		url: '<?php echo base_url('proformainvoices/getVehicleBookingDetails'); ?>' ,
+		url: '<?php echo base_url('proformainvoices/getVehicleBookings'); ?>' ,
 		data: {
 			vehicle_id: vehicle_id
-		}, 
+		},
+		dataType: "json",
 		success: function(res) { 
-				$('#booking_details_div').html(res);  
+				console.log(res);
+				var html  ='<option value="">Select Booking No.</option>';
+				if(res){
+					$.each(res, function(i, item) {  
+						var selected = (i=0) ? 'selected' : '';
+						html += '<option value="'+item.id+'" selected="'+selected+'">'+item.booking_number+'</option>'; 
+					}); 
+					$('#booking_id').html(html); 
+					$('#booking_id').val($('#booking_id').val()).attr("selected","selected").trigger('change');  
+				}
 			}
 		}); 
 		
@@ -402,35 +430,7 @@
 			})
 		}
 	}
-	function show_data(){  
-		let booking_ids = []; 
-		let customer_ids = []; 
-		var customer_exist=true;
-		$('#error_msg').html(); 
-		$('#error_msg').attr('hidden','hidden'); 
-		$("input:checkbox[name=booking_id]:checked").each(function() { 
-			booking_ids.push($(this).val()); 
-			let customer_id = $('#customer_id_'+$(this).val()).val();
-			alert( ' customer_id ' +'customer_ids.length '+customer_ids.length);
-			if (customer_ids.length>0 && $.inArray(customer_id, customer_ids) !== -1)
-			{
-				customer_exist=false;
-			}else{
-				customer_ids.push(customer_id);
-			}
-		});    
-		alert('booking_ids.length '+booking_ids.length +' //  customer_exist '+ customer_exist);
-		if(booking_ids.length < 0){ 
-			$('#error_msg').html("Checkbox is not selected, Please select one!"); 
-			$('#error_msg').removeAttr('hidden');
-		}
-		console.log(customer_ids);
-		if(customer_exist){
-			$('#error_msg').html("All Customer must be same!"); 
-			$('#error_msg').removeAttr('hidden');
-		} 
-	}  
-	</script> 
+	</script>
 </body>
 
 </html>
