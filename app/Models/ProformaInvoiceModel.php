@@ -12,7 +12,7 @@ class ProformaInvoiceModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['proforma_invoices_no','booking_id','bill_to_party_id','total_freight','created_by','updated_by','sgst_percent','sgst_total','cgst_percent','cgst_total','igst_percent','igst_total','discount','balance','guranteed_wt','advance','rate','rate_type','invoice_total_amount','customer_branch_id','other_expenses','commission_amount'];
+    protected $allowedFields    = ['proforma_invoices_no','booking_id','bill_to_party_id','total_freight','created_by','updated_by','sgst_percent','sgst_total','cgst_percent','cgst_total','igst_percent','igst_total','discount','balance','guranteed_wt','advance','rate','rate_type','invoice_total_amount','customer_branch_id','other_expenses','commission_amount','vehicle_id'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

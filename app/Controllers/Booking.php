@@ -2141,10 +2141,10 @@ class Booking extends BaseController
             $this->session->setFlashdata('danger', "Driver is not assign to vehicle, please assign driver");
             return $this->response->redirect(base_url('booking'));
         }
-        // echo ' <pre>';print_r($bookingVehicle);exit;   
-        //get last booking status before pause booking
-        $last_booking_status = $this->BookingTransactionModel->where(['booking_id' => $id, 'booking_status_id < ' => 8])->orderBy('id', 'desc')->first();
-        $booking_status = isset($last_booking_status['booking_status_id']) && ($last_booking_status['booking_status_id'] > 0) ? $last_booking_status['booking_status_id'] : 16;
+         
+        //get last booking status before pause booking 
+        //If last booking status is 1 - waiting for approval, then find befor that status not 8 
+        $booking_status =  $this->getLastBookingStatus($id);
         $this->BModel->update($id, ['status' => $booking_status]);
 
         //update booking status 
@@ -2152,6 +2152,22 @@ class Booking extends BaseController
         $this->update_PTLBookings($id, $booking_status, 0, 0, $this->request->getPost('status_date'));
         $this->session->setFlashdata('success', 'Trip is restarted');
         return $this->response->redirect(base_url('booking'));
+    }
+
+    function getLastBookingStatus($id){
+        $last_booking_status = $this->BookingTransactionModel->where(['booking_id' => $id, 'booking_status_id < ' => 8])->orderBy('id', 'desc')->first();
+    
+        //change 17-10-2024
+        //If last booking status is 1 - waiting for approval, then find before that status not 8 and 1 - 
+        $booking_status = isset($last_booking_status['booking_status_id']) && ($last_booking_status['booking_status_id'] > 0) ? $last_booking_status['booking_status_id'] : 16;
+        if($booking_status == 1 && isset($last_booking_status['id'])){
+            //get booking status < 8 and not equals current record
+            $last_booking_status = $this->BookingTransactionModel->where(['booking_id' => $id, 'booking_status_id < ' => 8,'booking_status_id !='=>1])->orderBy('id', 'desc')->first();
+            // echo $this->BookingTransactionModel->getLastQuery().' <pre>';print_r($last_booking_status);exit;  
+            return $last_booking_status['booking_status_id'];
+        }else{
+            return $booking_status;
+        }
     }
 
     function getBookingParentId($id, $booking_type, $vehicle_rc)

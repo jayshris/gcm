@@ -47,7 +47,7 @@
 											</div>
 											<?php if($token > 0) { ?> 
 												<input type="hidden" name="vehicle_id" value="<?= isset($proforma_invoice['vehicle_id']) ? $proforma_invoice['vehicle_id'] : 0 ?>"/>
-												<input type="hidden" name="booking_id" value="<?= isset($proforma_invoice['booking_id']) ? $proforma_invoice['booking_id'] : 0 ?>"/>
+												<!-- <input type="hidden" name="booking_id" value="<?= isset($proforma_invoice['booking_id']) ? $proforma_invoice['booking_id'] : 0 ?>"/> -->
 											<?php } ?>
 											<div class="profile-details">
 												<div class="row g-3">
@@ -151,7 +151,7 @@
 												</div>
 												<br>
 											</div> 
-											<div class="submit-button">
+											<div class="submit-button" id="form_submit" hidden>
 												<input type="submit" class="btn btn-primary" value="Save">
 												<a href="<?php echo base_url().$currentController; ?>"  class="btn btn-warning">Reset</a>
 												<a href="<?php echo base_url().$currentController; ?>" class="btn btn-light">Cancel</a>
@@ -175,45 +175,53 @@
 
 	<?= $this->include('partials/vendor-scripts') ?>
 														
-	<script>
+	<script> 
 	$(document).ready(function() {
-		if($('#id').val()){
-			$.getBookingDetails($('#id').val());
+		if(($('#id').val()) > 0){
+			$.getVehicleBookingDetails($('#id').val());
 		}		
     });
-	$.getVehicleBookingDetails = function() {
-		var vehicle_id = $('#vehicle_number').val(); 		
+	$.getVehicleBookingDetails = function(id) {
+		var vehicle_id = $('#vehicle_number').val(); 	
+		// alert('vehicle_id '+vehicle_id);	
 		$.ajax({
 		method: "POST",
-		url: '<?php echo base_url('proformainvoices/getVehicleBookingDetails'); ?>' ,
+		url: '<?php echo base_url('proformainvoices/getVehicleBookingDetails/'); ?>'+id ,
 		data: {
 			vehicle_id: vehicle_id
 		}, 
 		success: function(res) { 
 				$('#booking_details_div').html(res);  
-			}
+				if(($('#id').val()) > 0){ show_data(id); }  
+ 			}
 		}); 
 		
 	}
 
-	$.getBookingDetails = function(id = 0) {
-		var booking_id = $('#booking_id').val();  
-		if(booking_id){
+	$.getBookingDetails = function(booking_ids,id = 0) {  
+		if(booking_ids){
 			$.ajax({
 				method: "POST",
-				url: '<?php echo base_url('proformainvoices/getBookingExpense/'); ?>'+booking_id+'/'+id, 
+				url: '<?php echo base_url('proformainvoices/getMultipleBookingExpenses/'); ?>'+id, 
+				data: {
+					booking_ids: JSON.stringify(booking_ids),
+				}, 
 				success: function(res) { 
 					$('#expense_div_body').html(res);  
 					$('.invoice_total_amount_div').removeAttr('hidden'); 
 					if(id == 0){
 						$.calculation();	
-					} 
+					}  
+					
 				}
 			});
 
 			$.ajax({
 				method: "POST",
-				url: '<?php echo base_url('proformainvoices/getBookingCustomers/'); ?>'+booking_id, 
+				url: '<?php echo base_url('proformainvoices/getMultipleBookingCustomers'); ?>', 
+				data: {
+					booking_ids: JSON.stringify(booking_ids),
+				},
 				dataType:'json',
 				success: function(res) { 
 					var html = '<option value="">Select Bill to Party</option>';
@@ -225,31 +233,15 @@
 						});
 					}
 					$('#bill_to_party_id').html(html);
-					$('#bill_to_party_id').trigger('change');
-
-					if(res.booking_customer){
-						$('#customer_name').val(res.booking_customer);
-					}
+					$('#bill_to_party_id').trigger('change'); 
+					$('#bill_to_party_div').removeAttr('hidden');
 				}
-			});
- 
-			$.ajax({
-				method: "POST",
-				url: '<?php echo base_url('proformainvoices/getLRBookingDetails/'); ?>'+booking_id, 
-				dataType:'json',
-				success: function(res) {  
-					var particulars_hsn_html ='<div class="col-md-6"><label class="col-form-label"><b>Particulars : </b>'+res.particulars+'</label></div>';
-					particulars_hsn_html +='<div class="col-md-6"><label class="col-form-label"><b>HSN Code : </b>'+res.hsn_code+'</label></div>';
-					$('#particulars-hsn-code').html(particulars_hsn_html);
-				}
-			});
+			}); 
 
 		}else{
 			$('#expense_div_body').html('');
 			$('#bill_to_party_id').val(''); 
-			$('.invoice_total_amount_div').attr('hidden','hidden');
-			$('#customer_name').val('');
-			$('#particulars-hsn-code').html('');
+			$('.invoice_total_amount_div').attr('hidden','hidden'); 
 		} 	
 			
 	}	
@@ -402,33 +394,45 @@
 			})
 		}
 	}
-	function show_data(){  
+	function show_data(id =0){  
 		let booking_ids = []; 
-		let customer_ids = []; 
-		var customer_exist=true;
+		let differentCustIds = [];  
+		let differentRateTypes = [];  
 		$('#error_msg').html(); 
-		$('#error_msg').attr('hidden','hidden'); 
-		$("input:checkbox[name=booking_id]:checked").each(function() { 
+		$('#error_msg').attr('hidden','hidden');  
+		$("input:checkbox[name='booking_id[]']:checked").each(function() { 
 			booking_ids.push($(this).val()); 
 			let customer_id = $('#customer_id_'+$(this).val()).val();
-			alert( ' customer_id ' +'customer_ids.length '+customer_ids.length);
-			if (customer_ids.length>0 && $.inArray(customer_id, customer_ids) !== -1)
-			{
-				customer_exist=false;
-			}else{
-				customer_ids.push(customer_id);
-			}
+			let rate_type = $('#rate_type_'+$(this).val()).val();
+			if ($.inArray(customer_id, differentCustIds) == -1) differentCustIds.push(customer_id); 
+			if ($.inArray(rate_type, differentRateTypes) == -1) differentRateTypes.push(rate_type); 
 		});    
-		alert('booking_ids.length '+booking_ids.length +' //  customer_exist '+ customer_exist);
-		if(booking_ids.length < 0){ 
-			$('#error_msg').html("Checkbox is not selected, Please select one!"); 
-			$('#error_msg').removeAttr('hidden');
+		console.log(differentCustIds);console.log(differentRateTypes);
+		// alert('booking_ids.length '+booking_ids.length +' //  differentCustIds '+ differentCustIds.length +' //  differentRateTypes '+ differentRateTypes.length);
+		let error = false;
+		if(booking_ids.length < 1){  
+			$('#error_msg').html("Checkbox is not selected, Please select one!").removeAttr('hidden');error = true;
+		}else if(differentCustIds.length>1){
+			$('#error_msg').html("All Customer must be same! Please select similar customer bookings").removeAttr('hidden'); error = true; 
+		}else if(differentRateTypes.length>1){
+			$('#error_msg').html("Rate types must be same for all bookings!").removeAttr('hidden');error = true;  
 		}
-		console.log(customer_ids);
-		if(customer_exist){
-			$('#error_msg').html("All Customer must be same!"); 
-			$('#error_msg').removeAttr('hidden');
-		} 
+		
+		if(!error){
+			console.log(booking_ids);
+			$.getBookingDetails(booking_ids,id);
+
+			$('#form_submit').removeAttr('hidden');
+		}else{
+			$('#expense_div_body').html('');
+			$('#bill_to_party_id').val('');
+			$('#bill_to_party_id').trigger('change'); 
+			$('#bill_to_party_div').attr('hidden','hidden'); 
+			$('.invoice_total_amount_div').attr('hidden','hidden'); 
+			$('.tax_div').attr('hidden','hidden');
+			$('.tax_div input').val(0);
+			$('#form_submit').attr('hidden','hidden');
+		}  
 	}  
 	</script> 
 </body>
