@@ -71,15 +71,15 @@
                                                         <label class="col-form-label"><b>Invoice Amount: </b></label>
                                                         <label class="col-form-label"><?= 'Rs.'.number_format($proforma_invoice['invoice_total_amount'],2) ?></label>
                                                     </div>
+<!-- 
+													<div class="col-md-6">
+                                                        <label class="col-form-label"><b>Commission Agent: </b></label>
+                                                        <label class="col-form-label"><?= isset($proforma_invoice['party_name']) && ($proforma_invoice['party_name'] ) ?  $proforma_invoice['party_name']  : '-'  ?></label>
+                                                    </div>  -->
 
 													<div class="col-md-6">
                                                         <label class="col-form-label"><b>Booking No.: </b></label>
-                                                        <label class="col-form-label"><?= isset($proforma_invoice['proforma_invoice_details']) && ($proforma_invoice['proforma_invoice_details']) ? implode(',',$proforma_invoice['proforma_invoice_details']) : '-' ?></label>
-                                                    </div> 
-
-													<div class="col-md-6">
-                                                        <label class="col-form-label"><b>Commission Agent: </b></label>
-                                                        <label class="col-form-label"><?= isset($proforma_invoice['customer_party_name']) && ($proforma_invoice['customer_party_name']) ? implode(',',$proforma_invoice['customer_party_name']) : '-'  ?></label>
+                                                        <label class="col-form-label"><?= isset($proforma_invoice_details) && ($proforma_invoice_details) ? implode(',',array_column($proforma_invoice_details,'booking_number')) : '-' ?></label>
                                                     </div> 
 
                                                 </div>
