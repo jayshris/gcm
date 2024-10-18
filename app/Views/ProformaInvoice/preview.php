@@ -90,7 +90,7 @@
                                                 <a href="<?php echo base_url().$currentController; ?>" class="btn btn-light">Cancel</a>
                                             </div>  
 
-											<div class="card" id="printableArea" style="display: block;">
+											<div class="card" id="printableArea" style="display: none;">
 											<div class="card-body">
 											<table cellspacing="0" id="printTable" class="print-table">
 												<tbody> 
