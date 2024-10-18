@@ -5,7 +5,6 @@ namespace App\Controllers;
 use App\Models\ProfileModel;
 use App\Models\BookingsModel;
 use App\Models\CustomersModel;
-use App\Models\PartytypeModel;
 use App\Models\TaxInvoiceModel;
 use App\Models\ExpenseHeadModel;
 use App\Controllers\BaseController;
@@ -23,7 +22,6 @@ class Taxinvoices extends BaseController
     public $CModel;
     public $added_by;
     public $profile;
-    public $PTModel;
     public function __construct()
     { 
       $this->session = \Config\Services::session(); 
@@ -34,7 +32,6 @@ class Taxinvoices extends BaseController
       $this->CModel = new CustomersModel();
       $this->added_by = isset($_SESSION['id']) ? $_SESSION['id'] : '0';
       $this->profile = new ProfileModel();
-      $this->PTModel = new PartytypeModel();
     }
   
     public function index()
@@ -52,25 +49,12 @@ class Taxinvoices extends BaseController
         ->groupBy('bookings.vehicle_id')
         ->findAll();
     }
-    function getProformaVehicles(){
-      return  $this->BookingsModel->select('v.id,v.rc_number') 
-      ->join('proforma_invoice_bookings pib','pib.booking_id = bookings.id') 
-      ->join('proforma_invoices pi','pib.proforma_invoice_id = pi.id') 
-      ->join('vehicle v','pi.vehicle_id = v.id') 
-      // ->where(['bookings.status >='=> '11']) 
-      ->orderBy('v.id', 'desc')
-      ->groupBy('v.id')
-      ->findAll();
-      // echo $this->BookingsModel->getLastQuery().'<pre>';print_r($d);die;
-  }
     function getBooking(){
       return $this->BookingsModel->where(['status >='=> '11'])->findAll();  
     }
     function create(){     
       $this->view['bookings'] = $this->getBooking();  
-      $this->view['vehicles'] =  $this->getProformaVehicles();
-      $this->view['customers'] =  $this->getCustomers();
-      // echo  '<pre>';print_r($this->view['customers']); exit;
+      $this->view['vehicles'] =  $this->getvehicles();
 
       if($this->request->getPost()){
         $error = $this->validate([ 
@@ -146,7 +130,6 @@ class Taxinvoices extends BaseController
     function edit($id){  
       $this->view['bookings'] = $this->getBooking();  
       $this->view['vehicles'] =  $this->getvehicles();
-      $this->view['customers'] =  $this->getCustomers();
       $this->view['token'] = $id; 
       $this->view['invoice'] = $this->TaxInvoiceModel->where(['id' => $id])->first(); 
       
@@ -183,11 +166,10 @@ class Taxinvoices extends BaseController
       ->join('booking_drops bd','b.id=bd.booking_id')
       ->join('states bds', 'bd.state = bds.state_id','left')
       ->join('vehicle v', 'v.id = b.vehicle_id','left')
-      ->join('customer c','c.id=tax_invoices.bill_to_party_id','left')
-      ->join('party p','c.party_id = p.id','left')
+      ->join('customer c','c.id=tax_invoices.bill_to_party_id')
+      ->join('party p','c.party_id = p.id')
       ->join('states s', 'p.state_id = s.state_id','left')
       ->where(['tax_invoices.id' => $id])->first(); 
-      // echo $this->TaxInvoiceModel->getLastQuery().'<pre>';print_r($this->view['invoice']);exit;
 
       $this->view['booking_expences'] = $this->BEModel->select('booking_expenses.*,eh.*')
       ->join('expense_heads eh','eh.id = booking_expenses.expense')
@@ -232,7 +214,7 @@ class Taxinvoices extends BaseController
       // echo 'all_customers<pre>';print_r($unique_customers);  
       $customers = [];
       if(!empty($unique_customers)){
-        $customers = $this->CModel->select('customer.id,party.id pid,party.party_name')->whereIN('customer.id',$unique_customers)->join('party', 'customer.party_id = party.id')->orderBy('party.party_name')->findAll();
+        $customers = $this->CModel->whereIN('customer.id',$unique_customers)->join('party', 'customer.party_id = party.id')->orderBy('party.party_name')->findAll();
       }
       echo json_encode($customers);exit;
     }
@@ -240,46 +222,5 @@ class Taxinvoices extends BaseController
     function getBookingDetails($id){
       $bookings = $this->BookingsModel->where('id', $id)->first();       
       echo json_encode($bookings);exit;
-    }
-
-    function getCustomers()
-    {
-        //Get only that customers which party sale is yes
-        $party_type_ids = $this->PTModel->select("(GROUP_CONCAT(id)) party_type_ids")
-            ->where('sale', '1')
-            ->first();
-        $party_type_ids = str_replace([',', ', '], '|', $party_type_ids);
-
-        return $this->CModel->select('customer.*, party.party_name')
-            ->join('party', 'party.id = customer.party_id')
-            ->join('bookings b','customer.id = b.bill_to_party') 
-            ->join('proforma_invoice_bookings pib','pib.booking_id = b.id')  
-            ->where('customer.status', '1')
-            ->where('CONCAT(",", party_type_id, ",") REGEXP ",(' . $party_type_ids['party_type_ids'] . '),"')
-            ->groupBy('customer.id')
-            ->findAll();
-    }
-
-    function getVehicleBookingDetails($id= 0){   
-      $selectedBookings   = ($id>0) ? $this->TaxInvoiceModel->where(['proforma_invoice_id' =>$id])->findAll() : []; 
-      $this->view['selectedBookings'] = ($selectedBookings) ? array_column($selectedBookings,'booking_id') : [];
-      // echo  '<pre>';print_r($this->request->getPost());//exit;
-      $field = ($this->request->getPost('input_id') == 'vehicle_number') ? 'vehicle_id' : 'bill_to_party';
-
-      $this->view['bookings'] = $this->BookingsModel
-      ->select('bookings.*, c.id c_id,p.party_name,lr.particulars,lr.hsn_code,pi.proforma_invoices_no,v.rc_number') 
-      ->join('customer c','bookings.customer_id = c.id') 
-      ->join('party p', 'c.party_id = p.id')
-      ->join('loading_receipts lr','bookings.id = lr.booking_id')
-      ->join('proforma_invoice_bookings pib','pib.booking_id = bookings.id') 
-      ->join('proforma_invoices pi','pib.proforma_invoice_id = pi.id') 
-      ->join('vehicle v', 'bookings.vehicle_id = v.id')
-      ->where(['bookings.status >'=> '3','bookings.status != '=> 11])
-      ->where('bookings.'.$field, $this->request->getPost('input_id_val'))
-      ->groupBy('bookings.id')->findAll();    
-
-      // echo $this->BookingsModel->getLastQuery().'<pre>';print_r($this->view['bookings']);exit;
-      
-      echo view('TaxInvoices/booking_details_block', $this->view);
     }
 }

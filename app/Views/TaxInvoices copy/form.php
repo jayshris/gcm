@@ -37,10 +37,10 @@
 												<div class="row g-3">
 													<div class="col-md-4">
 														<label class="col-form-label">Vehicle Number</label> 
-														<select class="form-select select2" name="vehicle_id" id="vehicle_number" aria-label="Default select example" onchange="getulitpleVehicleBookings('vehicle_number',$('#id').val(),'bill_to_party_id');">
+														<select class="form-select select2" name="vehicle_id" id="vehicle_number" aria-label="Default select example" onchange="$.getVehicleBookings();">
 															<option value="">Select Vehicle</option>
 															<?php foreach ($vehicles as $o) { ?> 
-																<option value="<?= $o['id'] ?>" <?= (isset($invoice['vehicle_id']) && ($invoice['vehicle_id'] == $o['id'])) ? 'selected' : ''?>><?= $o['rc_number'] ?></option> 
+																<option value="<?= $o['id'] ?>"><?= $o['rc_number'] ?></option> 
 															<?php } ?>
 														</select>
 														<?php
@@ -50,7 +50,7 @@
 														?>
 													</div>
 
-													<!-- <div class="col-md-4">
+													<div class="col-md-4">
 														<label class="col-form-label">Booking Order No<span class="text-danger">*</span></label>
 														<select class="form-select select2" required name="booking_id" id="booking_id" aria-label="Default select example"  onchange="$.getBookingDetails();">
 														<option value="">Select Booking No.</option>
@@ -65,15 +65,12 @@
 															echo '<div class="alert alert-danger mt-2">' . $validation->getError('booking_id') . '</div>';
 														}
 														?>
-													</div> -->
+													</div>
 
 													<div class="col-md-4">
 														<label class="col-form-label">Bill to Party<span class="text-danger">*</span></label>
-														<select class="form-select select2" required name="bill_to_party_id" id="bill_to_party_id" onchange="getulitpleVehicleBookings('bill_to_party_id',$('#id').val(),'vehicle_number')">
+														<select class="form-select select2" required name="bill_to_party_id" id="bill_to_party_id" aria-label="Default select example">
 															<option value="">Select Bill to Party</option> 
-															<?php foreach ($customers as $o) { ?> 
-																<option value="<?= $o['id'] ?>" <?= (isset($invoice['bill_to_party_id']) && ($invoice['bill_to_party_id'] == $o['id'])) ? 'selected' : ''?>><?= $o['party_name'] ?></option> 
-															<?php } ?>
 														</select>
 														<input type="hidden" id="selecected_bill_to_party_id" value="<?= isset($invoice['bill_to_party_id']) && ($invoice['bill_to_party_id'] > 0) ? $invoice['bill_to_party_id'] : 0 ?>"/>
 														<?php
@@ -83,14 +80,11 @@
 														?>
 													</div>	  
 
-													<div class="row  g-3" id="booking_details_div">
-													</div>
-													
 													<div class="col-md-12"  id="expense_div_body"></div>
 												</div>
 												<br>
 											</div> 
-											<div class="submit-button" id="subtmit_btn" hidden>
+											<div class="submit-button">
 												<input type="submit" class="btn btn-primary" value="Save">
 												<a href="<?php echo base_url().$currentController; ?>"  class="btn btn-warning">Reset</a>
 												<a href="<?php echo base_url().$currentController; ?>" class="btn btn-light">Cancel</a>
@@ -117,13 +111,7 @@
 	<script>
 	$(document).ready(function() {
 		if($('#id').val()){
-			// $.getBookingDetails();
-			if($('#bill_to_party_id').val() >0){
-				getulitpleVehicleBookings('bill_to_party_id',$('#id').val(),'vehicle_id');	
-			}
-			if($('#bill_to_party_id').val() >0){
-				getulitpleVehicleBookings('vehicle_id',$('#id').val(),'bill_to_party_id');
-			}
+			$.getBookingDetails();
 		}		
     });
 	$.getVehicleBookings = function() {
@@ -268,31 +256,7 @@
         }
       })
     }
-	function getulitpleVehicleBookings(input_id,id,disable_id) {  
-		var input_id_val = $('#'+input_id).val();  
-		alert('input_id '+input_id+' / input_id_val = '+input_id_val);	
-		$('#booking_details_div').html('');  
-		if(input_id_val >0){
-			$('#'+disable_id).attr('disabled','disabled'); 
-			$.ajax({
-			method: "POST",
-			url: '<?php echo base_url('taxinvoices/getVehicleBookingDetails/'); ?>'+id ,
-			data: {
-				input_id: input_id,
-				input_id_val: input_id_val
-			}, 
-			success: function(res) { 
-					$('#booking_details_div').html(res);  
-					if(($('#id').val()) > 0){ show_data(id); }  
-				}
-			}); 		
-		}else{
-			$('#'+disable_id).removeAttr('disabled');
-			$('#'+input_id).removeAttr('disabled'); 
-		} 
-		
-		
-	}	
+
 	</script>
 </body>
 

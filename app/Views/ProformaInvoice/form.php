@@ -184,18 +184,20 @@
 	$.getVehicleBookingDetails = function(id) {
 		var vehicle_id = $('#vehicle_number').val(); 	
 		// alert('vehicle_id '+vehicle_id);	
-		$.ajax({
-		method: "POST",
-		url: '<?php echo base_url('proformainvoices/getVehicleBookingDetails/'); ?>'+id ,
-		data: {
-			vehicle_id: vehicle_id
-		}, 
-		success: function(res) { 
-				$('#booking_details_div').html(res);  
-				if(($('#id').val()) > 0){ show_data(id); }  
- 			}
-		}); 
-		
+		$('#booking_details_div').html('');  
+		if(vehicle_id > 0){
+			$.ajax({
+			method: "POST",
+			url: '<?php echo base_url('proformainvoices/getVehicleBookingDetails/'); ?>'+id ,
+			data: {
+				vehicle_id: vehicle_id
+			}, 
+			success: function(res) { 
+					$('#booking_details_div').html(res);  
+					if(($('#id').val()) > 0){ show_data(id); }  
+				}
+			}); 
+		}  
 	}
 
 	$.getBookingDetails = function(booking_ids,id = 0) {  

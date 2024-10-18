@@ -111,15 +111,15 @@ class Proformainvoices extends BaseController
     }
 
     function getvehicles($id = 0){ 
-        $condition = $id> 0 ? ' and proforma_invoices.id != '.$id: ''; 
+        $condition = $id> 0 ? ' and pib.proforma_invoice_id != '.$id: ''; 
         return $this->BookingsModel->select('v.id,v.rc_number') 
         ->join('vehicle v','bookings.vehicle_id = v.id') 
         ->where('EXISTS (SELECT 1 
                     FROM   loading_receipts
                     WHERE  loading_receipts.booking_id = bookings.id and loading_receipts.approved = 1)')
         ->where('NOT EXISTS (SELECT 1 
-                FROM   proforma_invoices
-                WHERE  proforma_invoices.booking_id = bookings.id '.$condition.')')
+                FROM   proforma_invoice_bookings pib
+                WHERE  pib.booking_id = bookings.id '.$condition.')')
         ->where(['bookings.status >'=> '3']) 
         // ->where(['bookings.status != '=> 11]) 
         ->orderBy('v.id', 'desc')
